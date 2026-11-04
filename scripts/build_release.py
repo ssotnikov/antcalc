@@ -141,6 +141,7 @@ def sign(args):
         raise ValueError("Signed artifacts are immutable; choose a fresh output directory")
     run([java, "-jar", signer, "sign", "--ks", keystore, "--ks-key-alias", policy["alias"],
          "--ks-pass", "env:ANTCALC_STORE_PASSWORD", "--key-pass", "env:ANTCALC_STORE_PASSWORD",
+         "--alignment-preserved", "true",
          "--v1-signing-enabled", "true", "--v2-signing-enabled", "true", "--v3-signing-enabled", "true",
          "--v4-signing-enabled", "false", "--out", output, args.unsigned])
     report = inspect_apk(output, args.project, args.sdk, signed=True)

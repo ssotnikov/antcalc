@@ -69,6 +69,19 @@ alone does not establish reproducibility. Keep tags immutable and use one
 `vMAJOR.MINOR.PATCH` tag format. Debug installations use a different certificate
 and cannot be silently replaced by the production app.
 
+The signer preserves existing ZIP alignment (`--alignment-preserved true`).
+Build Tools 35+ otherwise change alignment padding, breaking signature copying
+with apksigcopier. Verify every candidate with the actual independent build:
+
+```shell
+apksigcopier compare --unsigned signed/antcalc.apk independent/antcalc.apk
+python3 scripts/validate_store_metadata.py --code 16
+```
+
+Use the candidate's versionCode in the metadata command. `apksigner` must be
+available on PATH for apksigcopier. A failed comparison blocks the shared-signature
+F-Droid route; do not switch certificates to bypass it.
+
 ## Debug
 
 Windows: `build.ps1` keeps its existing `artifacts/antcalc.apk` output.
