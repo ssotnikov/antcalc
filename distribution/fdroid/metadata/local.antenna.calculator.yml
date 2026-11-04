@@ -21,8 +21,6 @@ Builds:
     subdir: app
     gradle:
       - yes
-    scandelete:
-      - gradle/wrapper/gradle-wrapper.jar
 
 AllowedAPKSigningKeys: 466bd25c4a28bb25161a8f2c7fef7d52713f8e285845d616f78ff9ea33f2047b
 
