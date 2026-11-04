@@ -1,0 +1,19 @@
+Antenna Calculator helps you estimate the initial dimensions of a quarter-wave monopole or half-wave dipole and adjust an antenna using its measured resonant frequency.
+
+Enter a frequency and shortening factor to see the wavelength, ideal dimensions and practical length estimates. For tuning, enter the actual antenna length, measured resonance and target frequency. For a dipole, the app shows the total length and the length of each arm.
+
+Features:
+• Frequency units: kHz, MHz and GHz, with 1 Hz resolution
+• Length units: mm, cm and m
+• Separate inputs for sizing and tuning
+• English and Russian interfaces
+• Light, dark and system themes
+• Bottom navigation and left/right swipes
+• Copy results together with their inputs and units
+• Built-in diagrams, formulas and reference material
+
+Calculations, help and locally saved settings work offline. Reference links open in an external browser only when you tap them. There are no ads, analytics, user accounts or in-app payments.
+
+These calculations provide starting dimensions for construction and measurement. Conductor diameter, insulation, nearby objects, radials and matching networks need separate consideration. The app does not replace resonance and impedance measurements.
+
+Requires Android 8.0 or later.

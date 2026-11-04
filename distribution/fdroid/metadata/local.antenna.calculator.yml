@@ -1,0 +1,32 @@
+Categories:
+  - Calculator
+License: MIT
+AuthorName: Sergey Sotnikov
+AuthorEmail: ssotnikov@gmail.com
+WebSite: https://ssotnikov.pro
+SourceCode: https://github.com/ssotnikov/antcalc
+IssueTracker: https://github.com/ssotnikov/antcalc/issues
+Changelog: https://github.com/ssotnikov/antcalc/releases
+
+AutoName: Antenna Calculator
+
+RepoType: git
+Repo: https://github.com/ssotnikov/antcalc.git
+Binaries: https://github.com/ssotnikov/antcalc/releases/download/v%v/antcalc.apk
+
+Builds:
+  - versionName: 0.14.0
+    versionCode: 16
+    commit: v0.14.0
+    subdir: app
+    gradle:
+      - yes
+    scandelete:
+      - gradle/wrapper/gradle-wrapper.jar
+
+AllowedAPKSigningKeys: 466bd25c4a28bb25161a8f2c7fef7d52713f8e285845d616f78ff9ea33f2047b
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9]+\.[0-9]+\.[0-9]+$
+CurrentVersion: 0.14.0
+CurrentVersionCode: 16

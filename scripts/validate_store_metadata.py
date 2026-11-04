@@ -5,14 +5,35 @@ from pathlib import Path
 import re
 import struct
 import sys
+import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 def png(path):
+    if path.stat().st_size > 3_000_000:
+        raise ValueError("PNG exceeds 3 MB: " + str(path))
     data = path.read_bytes()
     if len(data) < 33 or data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
         raise ValueError("Invalid PNG: " + str(path))
+    offset, seen_data, ended = 8, False, False
+    while offset + 12 <= len(data):
+        length = struct.unpack(">I", data[offset:offset + 4])[0]
+        end = offset + 12 + length
+        if end > len(data):
+            raise ValueError("Truncated PNG: " + str(path))
+        chunk = data[offset + 4:end - 4]
+        crc = struct.unpack(">I", data[end - 4:end])[0]
+        if zlib.crc32(chunk) != crc:
+            raise ValueError("PNG checksum mismatch: " + str(path))
+        kind = chunk[:4]
+        seen_data |= kind == b"IDAT"
+        offset = end
+        if kind == b"IEND":
+            ended = length == 0 and offset == len(data)
+            break
+    if not seen_data or not ended:
+        raise ValueError("Incomplete PNG: " + str(path))
     width, height = struct.unpack(">II", data[16:24])
     return width, height, data[25], len(data)
 

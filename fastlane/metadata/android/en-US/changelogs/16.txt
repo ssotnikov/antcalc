@@ -1,0 +1,1 @@
+First production build with a shared developer signature for distribution channels. Offline monopole and dipole sizing, measured-frequency tuning, English and Russian interfaces, themes, diagrams and formulas.

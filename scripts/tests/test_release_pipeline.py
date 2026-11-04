@@ -5,7 +5,9 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import struct
 import unittest
+import zlib
 from unittest.mock import patch
 
 SCRIPTS = Path(__file__).resolve().parents[1]
@@ -84,6 +86,30 @@ class ReleasePipelineTest(unittest.TestCase):
     def test_missing_media_is_not_treated_as_complete(self):
         self.prepare_metadata()
         with self.assertRaises(FileNotFoundError):
+            metadata.validate(self.root, 16)
+
+    def test_media_validation_rejects_bad_dimensions_and_corrupt_png(self):
+        self.prepare_metadata()
+        def png(width, height):
+            def chunk(kind, data):
+                value = kind + data
+                return struct.pack(">I", len(data)) + value + struct.pack(">I", zlib.crc32(value))
+            return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+                    + chunk(b"IDAT", zlib.compress((b"\0" * (width * 3 + 1)) * height)) + chunk(b"IEND", b""))
+        for locale in ("ru", "en-US"):
+            images = self.root / "fastlane/metadata/android" / locale / "images"
+            (images / "phoneScreenshots").mkdir(parents=True)
+            (images / "icon.png").write_bytes(png(512, 512))
+            for index in range(3):
+                (images / "phoneScreenshots" / f"{index}.png").write_bytes(png(640, 1080))
+        self.assertEqual(["en-US", "ru"], metadata.validate(self.root, 16))
+        icon = self.root / "fastlane/metadata/android/ru/images/icon.png"
+        icon.write_bytes(png(511, 512))
+        with self.assertRaisesRegex(ValueError, "Invalid application icon"):
+            metadata.validate(self.root, 16)
+        broken = bytearray(png(512, 512)); broken[20] ^= 1
+        icon.write_bytes(broken)
+        with self.assertRaisesRegex(ValueError, "checksum mismatch"):
             metadata.validate(self.root, 16)
 
 
