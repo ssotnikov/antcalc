@@ -1,0 +1,12 @@
+﻿.agents/
+.research/
+openspec/
+.gradle/
+.kotlin/
+.idea/
+**/build/
+local.properties
+*.iml
+artifacts/
+
+

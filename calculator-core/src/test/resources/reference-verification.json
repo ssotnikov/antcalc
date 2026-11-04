@@ -1,0 +1,126 @@
+[
+  {
+    "mode": "LEN",
+    "frequency_khz": 145000,
+    "target_khz": 155000,
+    "k_percent": 100,
+    "raw_mm": [
+      2068,
+      1034,
+      517,
+      1292
+    ],
+    "labels": [
+      "FR",
+      "L",
+      "L/2",
+      "L/4",
+      "5/8"
+    ]
+  },
+  {
+    "mode": "LEN",
+    "frequency_khz": 145000,
+    "target_khz": 155000,
+    "k_percent": 97,
+    "raw_mm": [
+      2006,
+      1003,
+      501,
+      1253
+    ],
+    "labels": [
+      "FR",
+      "L",
+      "L/2",
+      "L/4",
+      "5/8"
+    ]
+  },
+  {
+    "mode": "LEN",
+    "frequency_khz": 145000,
+    "target_khz": 155000,
+    "k_percent": 95,
+    "raw_mm": [
+      1965,
+      982,
+      491,
+      1228
+    ],
+    "labels": [
+      "FR",
+      "L",
+      "L/2",
+      "L/4",
+      "5/8"
+    ]
+  },
+  {
+    "mode": "LEN",
+    "frequency_khz": 145000,
+    "target_khz": 155000,
+    "k_percent": 93,
+    "raw_mm": [
+      1924,
+      962,
+      481,
+      1202
+    ],
+    "labels": [
+      "FR",
+      "L",
+      "L/2",
+      "L/4",
+      "5/8"
+    ]
+  },
+  {
+    "mode": "TRIM",
+    "frequency_khz": 145000,
+    "target_khz": 155000,
+    "k_percent": 95,
+    "raw_mm": [
+      491,
+      459,
+      32
+    ],
+    "labels": [
+      "NOW",
+      "NEED",
+      "-CUT"
+    ]
+  },
+  {
+    "mode": "TRIM",
+    "frequency_khz": 155000,
+    "target_khz": 145000,
+    "k_percent": 95,
+    "raw_mm": [
+      459,
+      491,
+      32
+    ],
+    "labels": [
+      "NOW",
+      "NEED",
+      "+ADD"
+    ]
+  },
+  {
+    "mode": "TRIM",
+    "frequency_khz": 145000,
+    "target_khz": 145000,
+    "k_percent": 95,
+    "raw_mm": [
+      491,
+      491,
+      0
+    ],
+    "labels": [
+      "NOW",
+      "NEED",
+      "+ADD"
+    ]
+  }
+]

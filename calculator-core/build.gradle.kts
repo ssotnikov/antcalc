@@ -1,0 +1,25 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+plugins {
+    alias(libs.plugins.kotlin.jvm)
+}
+
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(17)
+}
+
+dependencies {
+    testImplementation(libs.junit)
+    testImplementation(libs.gson)
+}
+
+tasks.test {
+    useJUnit()
+}

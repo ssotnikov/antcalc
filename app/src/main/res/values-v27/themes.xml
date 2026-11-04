@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AntennaCalculator.Starting" parent="Theme.AntennaCalculator.StartingBase">
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>

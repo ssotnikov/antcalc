@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Antenna Calculator</string>
+    <string name="settings_write_failed">Could not save settings</string>
+    <string name="settings_read_failed">Could not restore settings. You can still calculate without saving.</string>
+    <string name="settings_corrupt">Saved data is damaged. Automatic saving is paused.</string>
+    <string name="settings_unsupported">This saved data version is not supported. Automatic saving is paused.</string>
+    <string name="retry">Retry</string>
+    <string name="reset_settings">Delete saved settings and restore defaults</string>
+    <string name="sizes">Antenna dimensions</string>
+    <string name="trimming">Antenna tuning</string>
+    <string name="settings">Settings</string>
+    <string name="about">How it works</string>
+    <string name="menu">Menu</string>
+    <string name="back">Back</string>
+    <string name="frequency">Frequency</string>
+    <string name="measured_frequency">Measured frequency</string>
+    <string name="target_frequency">Target frequency</string>
+    <string name="actual_length">Actual monopole length</string>
+    <string name="dipole_actual_length">Total length of both arms</string>
+    <string name="factor">Shortening factor k</string>
+    <string name="custom_factor">Custom factor</string>
+    <string name="factor_note">A model factor for the monopole and dipole arms. It depends on the construction and surroundings, not just the material.</string>
+    <string name="factor_low_note">A low k does not account for coils or loading: this model is intended for straight conductors.</string>
+    <string name="input_data">Input values</string>
+    <string name="result_units">Result unit</string>
+    <string name="frequency_units">Frequency unit</string>
+    <string name="length_units">Actual length unit</string>
+    <string name="khz">kHz</string>
+    <string name="mhz">MHz</string>
+    <string name="ghz">GHz</string>
+    <string name="mm">mm</string>
+    <string name="cm">cm</string>
+    <string name="m">m</string>
+    <string name="antenna_type">Antenna type</string>
+    <string name="monopole">Monopole</string>
+    <string name="dipole">Symmetric dipole</string>
+    <string name="physical_sizes">Estimated physical dimensions</string>
+    <string name="ideal_sizes">Ideal wavelength geometry</string>
+    <string name="radiator_length">Quarter-wave monopole</string>
+    <string name="dipole_total">Total dipole length</string>
+    <string name="dipole_arm">Each arm</string>
+    <string name="wavelength">Wavelength λ</string>
+    <string name="ideal_quarter">Ideal λ/4 — monopole and each arm</string>
+    <string name="ideal_half">Ideal λ/2 — complete dipole</string>
+    <string name="ideal_five_eighths">5/8-wavelength reference</string>
+    <string name="five_eighths_note">This is the geometric length of 5/8 of a wavelength. The ground system and matching network must be designed separately.</string>
+    <string name="conductor_note">The dipole has two equal arms. Their combined length excludes the feed-point gap. The monopole length covers the radiator only; radials are not included. The radials or a conductive ground plane form the other part of the antenna and provide a return path for radio-frequency current. Their dimensions and arrangement affect tuning and must be chosen separately.</string>
+    <string name="approximate">Approximate calculation</string>
+    <string name="sizing_note">Use these dimensions as a starting point. Conductor diameter, insulation, mounting and nearby objects all affect the resonant length. Measure the antenna and adjust its length as needed.</string>
+    <string name="trimming_note">Make small adjustments and measure the resonant frequency again after each step. Keep the antenna in the same position and surroundings as during the initial measurement.</string>
+    <string name="dipole_note">Adjust both arms by the same amount. The calculator shows the total length change and the change to each arm separately.</string>
+    <string name="large_change_note">Large adjustment: the simple ratio may be inaccurate. Check the construction and measure again.</string>
+    <string name="outside_length_note">The result is outside the supported input length range; check whether the model applies. The result has not been clamped.</string>
+    <string name="result_pending">Enter valid values to see the result.</string>
+    <string name="measured_length_required">Enter the actual length of the antenna you built. A theoretical length is not substituted here.</string>
+    <string name="adjustment">Action</string>
+    <string name="new_length">New monopole length</string>
+    <string name="new_total">New total dipole length</string>
+    <string name="new_arm">New length of each arm</string>
+    <string name="arm_adjustment">Change to each arm</string>
+    <string name="total_adjustment">Change to total length</string>
+    <string name="shorten">Shorten by %1$s</string>
+    <string name="lengthen">Lengthen by %1$s</string>
+    <string name="shorten_less">Shorten by less than %1$s</string>
+    <string name="lengthen_less">Lengthen by less than %1$s</string>
+    <string name="unchanged">No adjustment needed</string>
+    <string name="less_than">less than %1$s</string>
+    <string name="value_unit">%1$s %2$s</string>
+    <string name="label_value">%1$s: %2$s</string>
+    <string name="copy_result">Copy calculation</string>
+    <string name="copied">Calculation copied</string>
+    <string name="language">Interface language</string>
+    <string name="language_russian" translatable="false">Русский</string>
+    <string name="language_english" translatable="false">English</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="error_empty">Enter a value</string>
+    <string name="error_incomplete">Complete the number</string>
+    <string name="error_number">Enter a positive number with a decimal point or comma, without signs or spaces within the number</string>
+    <string name="error_positive">The value must be greater than zero</string>
+    <string name="error_too_long">No more than 32 characters</string>
+    <string name="error_frequency_range">Frequency from 0.1 to 6000 MHz</string>
+    <string name="error_length_range">Length from 1 mm to 10000 m</string>
+    <string name="error_factor_range">The factor must be greater than 0 and no greater than 1</string>
+    <string name="error_frequency_step">Minimum frequency step: 1 Hz</string>
+    <string name="error_length_step">Minimum length step: 1 nm</string>
+    <string name="error_factor_step">No more than four significant decimal places</string>
+    <string name="diagram_monopole">Monopole diagram with a base and radials. The dimension applies only to the vertical conductor.</string>
+    <string name="diagram_dipole">Diagram of two equal dipole arms with a feed gap. Total length is the sum of both conductors.</string>
+    <string name="about_summary">Use frequency f in hertz (Hz) to obtain wavelength λ in metres (m). The speed of light in vacuum is c = 299 792 458 m/s.</string>
+    <string name="about_trimming">L₀ is the actual antenna length and L₁ is the proposed length after tuning. fₘ is the measured resonant frequency; fₜ is the target frequency. No shortening factor is needed here because the measurement already reflects the antenna design.</string>
+    <string name="app_version">Version %1$s</string>
+    <string name="formula_wavelength_alt">Wavelength equals the speed of light divided by frequency.</string>
+    <string name="formula_monopole_alt">The monopole length is one quarter of the wavelength multiplied by the shortening factor k.</string>
+    <string name="formula_dipole_alt">The total dipole length is half the wavelength multiplied by k. Each arm is half the total dipole length.</string>
+    <string name="formula_five_eighths_alt">The length is five eighths of the wavelength.</string>
+    <string name="formula_trimming_alt">The new length equals the actual length multiplied by the measured resonant frequency and divided by the target frequency.</string>
+    <string name="formula_delta_alt">The length change is the new length minus the actual length.</string>
+    <string name="formula_arm_alt">Each new arm length is half the new total dipole length. The adjustment to each arm is half the total length change.</string>
+    <string name="formula_lengths_key">Lₛ is the monopole length, Ld the total dipole length and La the length of one arm. The shortening factor k applies to the conductor length, not the wavelength. Choose k to suit the antenna design.</string>
+    <string name="formula_delta_note">A negative ΔL means the antenna needs to be shortened; a positive value means it needs to be lengthened. If the measured and target frequencies match, no length adjustment is needed.</string>
+    <string name="materials_title">Online resources</string>
+    <string name="materials_note">These articles and the guide are in English. Tap a card to open it in your browser. You will need an internet connection.</string>
+    <string name="browser_unavailable">No app is available to open this link. Install a browser.</string>
+    <string name="link_open_failed">The link could not be opened. Check your browser settings or try another browser.</string>
+    <string name="source_nist">NIST — speed of light</string>
+    <string name="source_nist_description">The exact value of the speed of light in vacuum used in the wavelength calculation.</string>
+    <string name="source_nist_url" translatable="false">https://physics.nist.gov/cuu/Constants/Value/c.html</string>
+    <string name="source_rsgb">RSGB — the half-wave dipole</string>
+    <string name="source_rsgb_description">A practical introduction to calculating, building and tuning a half-wave dipole.</string>
+    <string name="source_rsgb_url" translatable="false">https://rsgb.org/main/get-started-in-amateur-radio/antennas/your-first-antenna-the-half-wave-dipole/</string>
+    <string name="source_arrl">ARRL — single-band dipoles</string>
+    <string name="source_arrl_description">Estimate the total dipole length, then trim the wire to tune it. Lengths in this article are given in feet.</string>
+    <string name="source_arrl_url" translatable="false">https://www.arrl.org/single-band-dipoles</string>
+    <string name="source_ti">Texas Instruments — antenna selection guide</string>
+    <string name="source_ti_description">AN058 (PDF): antenna fundamentals, dipoles and monopoles, impedance matching and practical measurements.</string>
+    <string name="source_ti_url" translatable="false">https://www.ti.com/lit/an/swra161b/swra161b.pdf</string>
+    <string name="source_nashua">Nashua Area Radio Society — dipole tuning</string>
+    <string name="source_nashua_description">Methods for adjusting a dipole to the target resonant frequency.</string>
+    <string name="source_nashua_url" translatable="false">https://www.n1fd.org/2022/08/18/dipole-antenna/</string>
+    <string name="copyright" translatable="false">© 2026 Sergey Sotnikov</string>
+    <string name="author_website_label" translatable="false">ssotnikov.pro</string>
+    <string name="author_website_url" translatable="false">https://ssotnikov.pro</string>
+</resources>
