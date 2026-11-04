@@ -75,6 +75,7 @@ The script builds in a neutral temporary directory, runs JVM tests and lint,
 verifies the signature and exports `artifacts/antcalc.apk`. The second command
 also runs UI tests on a dedicated connected emulator.
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+Release build and signature instructions: [BUILDING.md](BUILDING.md).
 
 ### Contact
 

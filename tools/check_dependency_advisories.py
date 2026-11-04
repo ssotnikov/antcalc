@@ -10,6 +10,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--inventory", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--scope", default="resolved debugRuntimeClasspath Maven artifacts")
     args = parser.parse_args()
     packages = json.loads(args.inventory.read_text(encoding="utf-8-sig"))
     findings = []
@@ -28,7 +29,7 @@ def main():
             if result.get("vulns"):
                 findings.append({"package": package, "advisories": result["vulns"]})
     report = {"checked_at_utc": datetime.now(timezone.utc).isoformat(), "source": "https://osv.dev/",
-              "scope": "resolved debugRuntimeClasspath Maven artifacts", "packages": packages,
+              "scope": args.scope, "packages": packages,
               "package_count": len(packages), "findings": findings, "incomplete": incomplete}
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

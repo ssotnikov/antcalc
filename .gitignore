@@ -14,4 +14,13 @@ artifacts/
 /SEMVER.md
 /docs/
 
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.dpapi
+__pycache__/
+*.py[cod]
+.venv/
+
 

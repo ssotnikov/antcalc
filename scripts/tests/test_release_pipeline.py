@@ -1,0 +1,91 @@
+import argparse
+import importlib.util
+import json
+import os
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+SCRIPTS = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(SCRIPTS))
+import build_release as release
+import validate_store_metadata as metadata
+
+
+class ReleasePipelineTest(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory(prefix="antcalc-release-test-")
+        self.root = Path(self.directory.name).resolve()
+        assert self.root.is_relative_to(Path(tempfile.gettempdir()).resolve())
+        (self.root / "app").mkdir()
+        (self.root / "app/build.gradle.kts").write_text('versionName = "0.14.0"\nversionCode = 16\n')
+        (self.root / "distribution").mkdir()
+        (self.root / "distribution/signing.json").write_bytes((SCRIPTS.parent / "distribution/signing.json").read_bytes())
+
+    def tearDown(self):
+        self.directory.cleanup()
+
+    def test_static_version_and_dynamic_version_rejection(self):
+        self.assertEqual(("0.14.0", 16), release.version(self.root))
+        (self.root / "app/build.gradle.kts").write_text('versionName = gitDescribe()\nversionCode = 16\n')
+        with self.assertRaises(ValueError):
+            release.version(self.root)
+
+    def test_missing_key_fails_without_writing_apk_or_running_signer(self):
+        args = argparse.Namespace(project=self.root, sdk=self.root, unsigned=self.root / "unsigned.apk", output=self.root / "signed")
+        env = {k: v for k, v in os.environ.items() if k not in ("ANTCALC_RELEASE_KEYSTORE", "ANTCALC_STORE_PASSWORD")}
+        with patch.dict(os.environ, env, clear=True), patch.object(release, "run") as runner:
+            with self.assertRaisesRegex(ValueError, "debug signing is never a fallback"):
+                release.sign(args)
+            runner.assert_not_called()
+            self.assertFalse(args.output.exists())
+
+    def inspect(self, xml, permissions=""):
+        apk = self.root / "test.apk"
+        apk.write_bytes(b"fixture only")
+        badging = "package: name='local.antenna.calculator' versionCode='16' versionName='0.14.0'\n" + permissions
+        with patch.object(release, "sdk_tools", return_value=(Path("java"), Path("aapt"), Path("apksigner.jar"))), patch.object(release, "run", side_effect=[badging, xml]):
+            return release.inspect_apk(apk, self.root, self.root, signed=False)
+
+    def test_manifest_protections_and_unexpected_permissions(self):
+        xml = "A: android:allowBackup=(type 0x12)0x0\nA: android:usesCleartextTraffic=(type 0x12)0x0\n"
+        self.assertFalse(self.inspect(xml)["debuggable"])
+        with self.assertRaisesRegex(ValueError, "debuggable"):
+            self.inspect(xml + "A: android:debuggable=(type 0x12)0xffffffff\n")
+        with self.assertRaisesRegex(ValueError, "Unexpected release permission"):
+            self.inspect(xml, "uses-permission: name='android.permission.INTERNET'\n")
+        with self.assertRaisesRegex(ValueError, "manifest protection"):
+            self.inspect("")
+
+    def prepare_metadata(self):
+        for locale, title in (("ru", "Антенный калькулятор"), ("en-US", "Antenna Calculator")):
+            folder = self.root / "fastlane/metadata/android" / locale
+            (folder / "changelogs").mkdir(parents=True)
+            for name, content in (("title.txt", title), ("short_description.txt", "A useful calculator"), ("full_description.txt", "Offline antenna calculations"), ("changelogs/16.txt", "First production build")):
+                (folder / name).write_text(content, encoding="utf-8")
+
+    def test_metadata_limits_missing_locale_and_missing_changelog(self):
+        self.prepare_metadata()
+        self.assertEqual(["en-US", "ru"], metadata.validate(self.root, 16, require_media=False))
+        summary = self.root / "fastlane/metadata/android/ru/short_description.txt"
+        summary.write_text("x" * 80)
+        with self.assertRaises(ValueError):
+            metadata.validate(self.root, 16, require_media=False)
+        summary.write_text("No final punctuation.")
+        with self.assertRaises(ValueError):
+            metadata.validate(self.root, 16, require_media=False)
+        summary.write_text("Valid summary")
+        (self.root / "fastlane/metadata/android/ru/changelogs/16.txt").unlink()
+        with self.assertRaises(FileNotFoundError):
+            metadata.validate(self.root, 16, require_media=False)
+
+    def test_missing_media_is_not_treated_as_complete(self):
+        self.prepare_metadata()
+        with self.assertRaises(FileNotFoundError):
+            metadata.validate(self.root, 16)
+
+
+if __name__ == "__main__":
+    unittest.main()

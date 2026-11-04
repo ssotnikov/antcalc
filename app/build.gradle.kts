@@ -14,14 +14,25 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 15
-        versionName = "0.13.0"
+        versionCode = 16
+        versionName = "0.14.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+
+    buildTypes {
+        release {
+            isDebuggable = false
+            isMinifyEnabled = false
+            isShrinkResources = false
+            // The public build stays unsigned; the shared release tool signs it outside Gradle.
+            signingConfig = null
+            vcsInfo { include = false }
+        }
     }
 
     bundle {
@@ -31,6 +42,18 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+tasks.register("writeReleaseDependencyInventory") {
+    val output = layout.buildDirectory.file("reports/release-dependencies.txt")
+    outputs.file(output)
+    outputs.upToDateWhen { false }
+    doLast {
+        val modules = configurations.getByName("releaseRuntimeClasspath").incoming.resolutionResult.allComponents
+            .mapNotNull { it.id as? org.gradle.api.artifacts.component.ModuleComponentIdentifier }
+            .map { "${it.group}:${it.module}:${it.version}" }.sorted()
+        output.get().asFile.apply { parentFile.mkdirs(); writeText(modules.joinToString("\n", postfix = "\n")) }
     }
 }
 
