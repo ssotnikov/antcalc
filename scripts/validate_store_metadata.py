@@ -75,7 +75,7 @@ def validate(root, code, *, require_media=True, rustore=None):
             if not listing.get(name) or len(listing[name]) > limit:
                 raise ValueError("Invalid RuStore field: " + name)
         width, height, kind, size = png(rustore / "media/icon.png")
-        if (width, height) != (512, 512) or kind != 2 or size > 3_000_000:
+        if (width, height) != (512, 512) or kind != 2 or size > 1_000_000:
             raise ValueError("RuStore icon must be an opaque RGB 512x512 PNG")
         screens = list((rustore / "media").glob("screenshot-*.png"))
         if not 3 <= len(screens) <= 10:
@@ -84,6 +84,8 @@ def validate(root, code, *, require_media=True, rustore=None):
             width, height, _, size = png(path)
             if not (320 <= width <= 2160 and 320 <= height <= 3840 and size <= 3_000_000):
                 raise ValueError("Invalid RuStore screenshot: " + str(path))
+            if width * 16 != height * 9 and width * 9 != height * 16:
+                raise ValueError("RuStore screenshot must be 9:16 or 16:9: " + str(path))
     return checked
 
 

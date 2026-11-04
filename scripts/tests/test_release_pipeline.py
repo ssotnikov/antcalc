@@ -16,6 +16,14 @@ import build_release as release
 import validate_store_metadata as metadata
 
 
+def png(width, height):
+    def chunk(kind, data):
+        value = kind + data
+        return struct.pack(">I", len(data)) + value + struct.pack(">I", zlib.crc32(value))
+    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+            + chunk(b"IDAT", zlib.compress((b"\0" * (width * 3 + 1)) * height)) + chunk(b"IEND", b""))
+
+
 class ReleasePipelineTest(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory(prefix="antcalc-release-test-")
@@ -88,20 +96,17 @@ class ReleasePipelineTest(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             metadata.validate(self.root, 16)
 
-    def test_media_validation_rejects_bad_dimensions_and_corrupt_png(self):
+    def prepare_media(self):
         self.prepare_metadata()
-        def png(width, height):
-            def chunk(kind, data):
-                value = kind + data
-                return struct.pack(">I", len(data)) + value + struct.pack(">I", zlib.crc32(value))
-            return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
-                    + chunk(b"IDAT", zlib.compress((b"\0" * (width * 3 + 1)) * height)) + chunk(b"IEND", b""))
         for locale in ("ru", "en-US"):
             images = self.root / "fastlane/metadata/android" / locale / "images"
             (images / "phoneScreenshots").mkdir(parents=True)
             (images / "icon.png").write_bytes(png(512, 512))
             for index in range(3):
                 (images / "phoneScreenshots" / f"{index}.png").write_bytes(png(640, 1080))
+
+    def test_media_validation_rejects_bad_dimensions_and_corrupt_png(self):
+        self.prepare_media()
         self.assertEqual(["en-US", "ru"], metadata.validate(self.root, 16))
         icon = self.root / "fastlane/metadata/android/ru/images/icon.png"
         icon.write_bytes(png(511, 512))
@@ -111,6 +116,26 @@ class ReleasePipelineTest(unittest.TestCase):
         icon.write_bytes(broken)
         with self.assertRaisesRegex(ValueError, "checksum mismatch"):
             metadata.validate(self.root, 16)
+
+    def test_rustore_media_matches_actual_console_limits(self):
+        self.prepare_media()
+        store = self.root / "rustore"
+        (store / "media").mkdir(parents=True)
+        (store / "listing.json").write_text(json.dumps(dict(title="Calculator", short_description="Offline", full_description="Offline calculations")))
+        icon = store / "media/icon.png"
+        icon.write_bytes(png(512, 512))
+        for index in range(3):
+            (store / "media" / f"screenshot-{index}.png").write_bytes(png(540, 960))
+        metadata.validate(self.root, 16, rustore=store)
+        screenshot = store / "media/screenshot-0.png"
+        screenshot.write_bytes(png(640, 1080))
+        with self.assertRaisesRegex(ValueError, "9:16 or 16:9"):
+            metadata.validate(self.root, 16, rustore=store)
+        screenshot.write_bytes(png(540, 960))
+        png_info = metadata.png
+        with patch.object(metadata, "png", side_effect=lambda path: (512, 512, 2, 1_000_001) if path == icon else png_info(path)):
+            with self.assertRaisesRegex(ValueError, "RuStore icon"):
+                metadata.validate(self.root, 16, rustore=store)
 
 
 if __name__ == "__main__":
