@@ -7,8 +7,6 @@
 
 [Русский](#русский) · [English](#english)
 
-<img src="docs/antcalc.png" width="320" alt="Antenna Calculator — расчёт размеров / antenna dimensions">
-
 ## Русский
 
 Автономный калькулятор начальных размеров штыревой и дипольной антенн и их
@@ -87,8 +85,7 @@ adb install -r artifacts/antcalc.apk
 Скрипт собирает проект в нейтральном временном каталоге, выполняет JVM-тесты
 и lint, проверяет подпись и сохраняет `artifacts/antcalc.apk`. Вторая команда
 также запускает UI-тесты на выделенном подключённом эмуляторе.
-Подробности: [сборка](docs/build.md), [приёмка](docs/acceptance.md),
-[версии](docs/releases.md), [правила SemVer](SEMVER.md).
+Для работы с исходниками следуйте [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ### Обратная связь
 
@@ -174,10 +171,8 @@ and `-SdkHome` to override them.
 
 The script builds in a neutral temporary directory, runs JVM tests and lint,
 verifies the signature and exports `artifacts/antcalc.apk`. The second command
-also runs UI tests on a dedicated connected emulator. See the current
-[build notes](docs/build.md), [acceptance results](docs/acceptance.md),
-[release history](docs/releases.md) and [SemVer rules](SEMVER.md).
-These development documents are in Russian.
+also runs UI tests on a dedicated connected emulator.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Contact
 
@@ -194,8 +189,6 @@ These development documents are in Russian.
 | Persistence / Хранение | `app/src/main/kotlin/local/antenna/calculator/data/` |
 | Screens and gestures / Экраны и жесты | `app/src/main/kotlin/local/antenna/calculator/ui/` |
 | Text / Тексты | `app/src/main/res/values/strings.xml`, `values-ru/strings.xml` |
-| Secure coding / Безопасная разработка | [SECURITY.md](SECURITY.md) |
-| Refactoring / Рефакторинг | [Implementation notes](docs/refactoring-implementation.md) |
 
 ## License / Лицензия
 

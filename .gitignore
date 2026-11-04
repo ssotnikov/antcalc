@@ -9,4 +9,9 @@ local.properties
 *.iml
 artifacts/
 
+/SECURITY.md
+/AGENTS.md
+/SEMVER.md
+/docs/
+
 
