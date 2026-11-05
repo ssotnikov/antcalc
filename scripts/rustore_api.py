@@ -16,16 +16,27 @@ APP_PATH = "/public/v1/application/" + release.PACKAGE + "/version"
 
 class ApiError(Exception):
     """Never includes response bodies, credentials or signed authentication payloads."""
-    def __init__(self, message, *, definitive=False):
+    def __init__(self, message, *, definitive=False, phase="api", http_status=None, reason=None):
         super().__init__(message)
         self.definitive = definitive
+        self.phase = phase if phase in {"authentication", "metadata", "upload"} else "api"
+        self.http_status = http_status if type(http_status) is int and 100 <= http_status <= 599 else None
+        self.reason = reason if reason in {"http-error", "transport-error", "invalid-response", "server-rejected", "redirect-blocked"} else None
+
+    def diagnostic(self):
+        """Expose only fixed context fields, never an exception or server message."""
+        details = ([f"HTTP {self.http_status}"] if self.http_status is not None else [])
+        if self.reason:
+            details.append(self.reason)
+        suffix = " (" + "; ".join(details) + ")" if details else ""
+        return f"RuStore {self.phase} request failed{suffix}."
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         if fp is not None:
             fp.close()
-        raise ApiError("RuStore redirects are forbidden")
+        raise ApiError("RuStore redirects are forbidden", http_status=code, reason="redirect-blocked")
 
 
 def rsa_sign(key_bytes, message):
@@ -61,6 +72,7 @@ class Client:
     def request(self, method, path, *, payload=None, multipart=None, upload=False, auth=False):
         if not path.startswith("/public/") or ".." in path or method not in ("GET", "POST"):
             raise ValueError("Unsupported RuStore request")
+        phase = "authentication" if auth else "upload" if upload else "metadata"
         headers = {"Accept": "application/json"}
         if not auth:
             if not self._token:
@@ -74,29 +86,35 @@ class Client:
             body, headers["Content-Type"] = multipart
         request = urllib.request.Request((UPLOAD_HOST if upload else META_HOST) + path,
                                          data=body, headers=headers, method=method)
+        status = None
         try:
             with self._opener.open(request, timeout=90) as response:
+                status = getattr(response, "status", None)
                 raw = response.read(2 * 1024 * 1024 + 1)
             if len(raw) > 2 * 1024 * 1024:
-                raise ApiError("RuStore response exceeded limit")
+                raise ApiError("RuStore response exceeded limit", phase=phase, http_status=status, reason="invalid-response")
             data = json.loads(raw)
             if not isinstance(data, dict) or data.get("code") != "OK":
                 raise ApiError("RuStore rejected the request",
+                               phase=phase, http_status=status, reason="server-rejected",
                                definitive=isinstance(data, dict) and str(data.get("code")).lower() == "error")
             return data.get("body")
         except urllib.error.HTTPError as error:
             code = error.code
             error.close()
             raise ApiError("RuStore HTTP request failed",
+                           phase=phase, http_status=code, reason="http-error",
                            definitive=code in (400, 401, 403, 404, 405, 413, 415, 422)) from None
-        except (OSError, ValueError, KeyError, TypeError):
-            raise ApiError("RuStore request failed or its result is uncertain") from None
+        except OSError:
+            raise ApiError("RuStore request failed or its result is uncertain", phase=phase, reason="transport-error") from None
+        except (ValueError, KeyError, TypeError):
+            raise ApiError("RuStore response could not be read", phase=phase, http_status=status, reason="invalid-response") from None
 
     def authenticate(self, key_id, private_base64):
         body = self.request("POST", "/public/auth/", payload=auth_payload(key_id, private_base64), auth=True)
         if (not isinstance(body, dict) or not isinstance(body.get("jwe"), str)
                 or not re.fullmatch(r"[A-Za-z0-9_.-]{1,16384}", body["jwe"])):
-            raise ApiError("Invalid RuStore authentication response")
+            raise ApiError("Invalid RuStore authentication response", phase="authentication", reason="invalid-response")
         self._token = body["jwe"]
 
     def versions(self):

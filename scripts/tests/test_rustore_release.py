@@ -312,6 +312,63 @@ class RuStoreDeliveryTest(unittest.TestCase):
 
 
 class RuStoreApiTest(unittest.TestCase):
+    def test_auth_http_failure_reports_phase_and_status_without_private_details(self):
+        client = api.Client()
+        body = io.BytesIO(b"private response body")
+        error = urllib.error.HTTPError("https://example.invalid/private-url", 403,
+                                       "private response", None, body)
+        with patch.object(client._opener, "open", side_effect=error) as request:
+            with self.assertRaises(api.ApiError) as raised:
+                client.request("POST", "/public/auth/", payload={"signature": "private signature"}, auth=True)
+        diagnostic = raised.exception.diagnostic()
+        self.assertIn("authentication", diagnostic)
+        self.assertIn("HTTP 403", diagnostic)
+        self.assertNotIn("private", diagnostic)
+        self.assertTrue(raised.exception.definitive)
+        self.assertTrue(body.closed)
+        self.assertEqual(1, request.call_count)
+
+    def test_network_failure_reports_upload_phase_without_transport_details_or_retry(self):
+        client = api.Client(); client._token = "private token"
+        with patch.object(client._opener, "open", side_effect=urllib.error.URLError("private transport detail")) as request:
+            with self.assertRaises(api.ApiError) as raised:
+                client.request("POST", api.APP_PATH, upload=True, payload={})
+        diagnostic = raised.exception.diagnostic()
+        self.assertIn("upload", diagnostic)
+        self.assertIn("transport-error", diagnostic)
+        self.assertNotIn("private", diagnostic)
+        self.assertFalse(raised.exception.definitive)
+        self.assertEqual(1, request.call_count)
+
+    def test_cli_prints_only_allowlisted_error_context(self):
+        error = api.ApiError("private server body", phase="authentication", http_status=401, reason="http-error")
+        with patch.object(store, "main", side_effect=error), patch("sys.stderr", new_callable=io.StringIO) as output:
+            self.assertEqual(1, store.cli())
+        self.assertIn("authentication", output.getvalue())
+        self.assertIn("HTTP 401", output.getvalue())
+        self.assertNotIn("private", output.getvalue())
+        unsafe = api.ApiError("private message", phase="private phase", http_status="private status", reason="private reason")
+        self.assertNotIn("private", unsafe.diagnostic())
+
+    def test_cli_preserves_redaction_for_non_api_errors(self):
+        with patch.object(store, "main", side_effect=ValueError("private value")), patch("sys.stderr", new_callable=io.StringIO) as output:
+            self.assertEqual(1, store.cli())
+        self.assertNotIn("private", output.getvalue())
+
+    def test_server_rejection_reports_status_without_response_body(self):
+        client = api.Client()
+        response = io.BytesIO(json.dumps({"code": "ERROR", "body": "private response"}).encode())
+        response.status = 200
+        with patch.object(client._opener, "open", return_value=response):
+            with self.assertRaises(api.ApiError) as raised:
+                client.request("POST", "/public/auth/", auth=True, payload={})
+        diagnostic = raised.exception.diagnostic()
+        self.assertIn("authentication", diagnostic)
+        self.assertIn("HTTP 200", diagnostic)
+        self.assertIn("server-rejected", diagnostic)
+        self.assertNotIn("private", diagnostic)
+        self.assertTrue(raised.exception.definitive)
+
     def test_auth_payload_signs_key_id_plus_timestamp_without_printing(self):
         timestamp = "2026-11-05T00:00:00.000+00:00"
         with patch.object(api, "rsa_sign", return_value=b"synthetic signature") as sign, patch("sys.stdout", new_callable=io.StringIO) as output:
@@ -331,9 +388,11 @@ class RuStoreApiTest(unittest.TestCase):
 
     def test_redirects_are_blocked_before_forwarding_token(self):
         body = io.BytesIO(b"redirect body")
-        with self.assertRaises(api.ApiError):
+        with self.assertRaises(api.ApiError) as raised:
             api.NoRedirect().redirect_request(None, body, 302, "redirect", {}, "https://example.invalid")
         self.assertTrue(body.closed)
+        self.assertIn("HTTP 302", raised.exception.diagnostic())
+        self.assertIn("redirect-blocked", raised.exception.diagnostic())
 
     def test_transport_errors_are_sanitized_and_not_retried(self):
         client = api.Client(); client._token = "synthetic-token"

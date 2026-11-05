@@ -293,9 +293,17 @@ def main():
     print(json.dumps(result))
 
 
-if __name__ == "__main__":
+def cli():
     try:
         main()
-    except (ValueError, OSError, KeyError, TypeError, api.ApiError):
+    except api.ApiError as error:
+        print(error.diagnostic(), file=sys.stderr)
+        return 1
+    except (ValueError, OSError, KeyError, TypeError):
         print("RuStore operation stopped. Inspect checkpoint and server status; no blind write retry was performed.", file=sys.stderr)
-        sys.exit(1)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(cli())

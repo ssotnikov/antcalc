@@ -7,9 +7,14 @@
 JDK 21, Android SDK platform 37 and Build Tools 36.0.0 are required. Set
 `JAVA_HOME` and `ANDROID_HOME`. The wrapper pins Gradle 9.6.0 and its SHA-256.
 
+Имя SDK-пакета для установки через sdkmanager — `platforms;android-37.0`
+(не `platforms;android-37`). Настройка compileSdk в проекте остаётся 37.
+The sdkmanager package is `platforms;android-37.0`; the project's compileSdk
+remains 37.
+
 ## CI / Непрерывная проверка
 
-`.github/workflows/ci.yml` подготовлен для push любой ветки и ручного запуска.
+`.github/workflows/ci.yml` работает для push любой ветки и ручного запуска.
 Он проверяет workflows и достижимую Git-историю на секреты, выполняет Python/JVM
 тесты, проверяет fastlane-метаданные текущего versionCode, собирает unsigned
 release и запускает Android Lint. Среда — Ubuntu 24.04, Python 3.13 и JDK 21;
@@ -23,8 +28,38 @@ Lint. It uses Ubuntu 24.04, Python 3.13 and JDK 21 with explicit SDK installatio
 It needs no private documents, production signing key or store credentials.
 CI does not publish the app.
 
-После отправки workflow в default branch ручной запуск доступен через GitHub CLI:
-After the workflow reaches the default branch, run it manually with GitHub CLI:
+Проверено 5 ноября 2026 года на commit `1c78984`:
+[push CI, attempt 2](https://github.com/ssotnikov/antcalc/actions/runs/41968308986/attempts/2)
+и [ручной CI](https://github.com/ssotnikov/antcalc/actions/runs/41968336525)
+завершились успешно. Прошли 71 Python-тест и 172 JVM-теста; Android Lint:
+0 ошибок, 12 предупреждений. Скачанные unsigned APK обоих запусков совпали
+по SHA-256 с manifest и независимой локальной сборкой. Linux apksigcopier
+подтвердил воспроизводимость опубликованного APK 0.14.0 из CI-сборки.
+Это не подтверждение официальной сборки или включения в F-Droid.
+
+Verified on 5 November 2026 at commit `1c78984`: both runs linked above passed,
+including 71 Python tests and 172 JVM tests. Android Lint reported 0 errors and
+12 warnings. Downloaded unsigned APKs matched their manifests and the independent
+local build. Linux apksigcopier reproduced the published 0.14.0 APK from the CI
+build. This does not establish an official F-Droid build or catalog inclusion.
+
+Дополнительно 5 ноября 2026 года рецепт `v0.14.0` успешно выполнен локально
+в файловой системе официального CI-образа F-Droid `buildserver-trixie`, digest
+`sha256:1ea8bef1820bff06c2974e31b4fc4c79c364cd24231b86e71fa4b926797e0dac`.
+Изолированный WSL-запуск `fdroid build --on-server` с очищенным окружением
+прошёл source/APK scan, проверку воспроизводимости и разрешённого сертификата
+без изменения исходников или рецепта. Production VM через `--server` и pipeline
+сопровождающих ещё не проверены; включение в каталог и установка остаются открытыми.
+
+On 5 November 2026, the v0.14.0 recipe also passed locally using the filesystem
+of the official F-Droid `buildserver-trixie` CI image at the digest above.
+The isolated WSL run used `fdroid build --on-server` with a clean environment.
+Source/APK scanning, reproducibility and the allowed certificate check passed
+without source or recipe changes. The production VM via `--server`, maintainer
+pipeline, catalog inclusion and installation remain unverified.
+
+Ручной запуск из default branch доступен через GitHub CLI:
+Run it manually from the default branch with GitHub CLI:
 
 ```shell
 gh workflow run ci.yml --repo ssotnikov/antcalc --ref main
@@ -50,11 +85,15 @@ Gitleaks скрывает найденные значения; `.gitleaks.toml` 
 публичный fingerprint сертификата. При обновлении инструментов перепроверьте
 официальные SHA/контрольные суммы и запустите actionlint. Значения секретов
 нельзя добавлять в исключения ради прохождения проверки.
+Проверку shell-команд выполняйте с доступным ShellCheck: actionlint в Windows
+без этого инструмента не повторяет все проверки Linux CI.
 
 Actions use full commit SHA pins; gitleaks/actionlint archives use version and
 SHA-256 pins. Gitleaks redacts findings; its config permits only the exact public
 certificate fingerprint. Check upstream pins and run actionlint when updating
 tools. Do not allowlist actual secrets to make a scan pass.
+Use actionlint with ShellCheck available. A Windows run without ShellCheck does
+not cover every shell check performed by Linux CI.
 
 ## Подготовка выпуска / Release preparation
 
@@ -88,6 +127,29 @@ Do not send either value in chat or commit it. A Windows DPAPI password file is
 not portable to a Linux runner. Preserve the independent encrypted key backup.
 Environment protection and real access restrictions must be verified during
 activation; workflow files alone do not configure repository settings.
+
+Состояние активации на 5 ноября 2026 года: `production-signing` настроен
+с единственным deployment-правилом `main` (branch); оба секрета переданы
+по разрешению владельца после успешного CI. Сертификат существующего ключа
+сверен с `distribution/signing.json`. Окружение `rustore` также ограничено
+веткой `main`; API-секреты нового ключа переданы после отзыва прежнего.
+Локальная авторизация и чтение статуса `MODERATION` проверены. Облачный RuStore
+status пока не принят: два запуска остановились с общим сообщением об ошибке;
+для следующей проверки подготовлена безопасная диагностика этапа и HTTP-кода.
+Обычный CI не подключает эти окружения; repository-level секреты отсутствуют.
+Облачные prepare/publish и реальная доставка обновления в RuStore ещё не приняты.
+
+Activation status on 5 November 2026: `production-signing` is restricted to the
+`main` branch, and both existing signing credentials were uploaded with owner
+authorization after CI passed. The certificate matches `distribution/signing.json`.
+The `rustore` environment is also restricted to `main`; the new API credentials
+were uploaded after the previous key was revoked. Local authentication and
+reading the `MODERATION` status passed. Cloud RuStore status checks have not
+passed acceptance: two attempts stopped with a generic error. Redacted phase
+and HTTP-status diagnostics have been prepared for the next check.
+Ordinary CI uses neither environment, and there are no
+repository-level secrets. Cloud prepare/publish and real RuStore update delivery
+have not yet passed acceptance.
 
 Сборка и подпись выполняются на разных временных runners. Сборка не получает
 секретов. Подпись скачивает artifact по ID из задачи сборки текущего run,
@@ -255,21 +317,46 @@ verifies identity/signature and freezes the listing before exposing API secrets.
 It never rebuilds the APK. API updates require an active free production version;
 complete initial publication in the Console first.
 
-Перед активацией владелец создаёт API-ключ: Console → Разработчик → API RuStore
-(для физлица), только для antcalc и методов чтения версий/деталей, создания
-черновика, загрузки APK, отправки на модерацию и ручной публикации. Доступ к
-удалению, платежам, другим приложениям и управлению пользователями не требуется.
+Владелец создаёт API-ключ: Console → приложение antcalc → API RuStore →
+«Создать ключ»; альтернативный путь — Разработчик → API RuStore для физлица.
+Область доступа — только antcalc. В интерфейсе, проверенном 5 ноября 2026 года,
+нужны пять групп методов: «Загрузка APK/AAB файлов», «Получение статуса версий
+приложений», «Отправка на модерацию черновика версии приложения», «Создание
+и редактирование черновика версии», «Ручная публикация и архивирование».
+Последняя группа объединяет публикацию с архивированием; отдельно выбрать
+только публикацию интерфейс не позволяет. Workflow архивирование не вызывает.
+Не выбирайте «Все методы», удаление черновика, платежи, управление пользователями,
+другие приложения или ненужные методы работы с медиа.
 В Environment `rustore`, ограниченном main, нужны `RUSTORE_KEY_ID` и
 `RUSTORE_API_PRIVATE_KEY_BASE64`. Это отдельный API-ключ, не Android PKCS#12.
-Не передавайте значения в чат и не добавляйте их в Git. В этой задаче они не создавались.
+Не передавайте значения в чат и не добавляйте их в Git. Приватный ключ показывается
+один раз: сохраните его и ID вне проекта в каталоге с доступом только владельца.
+Транспортное Base64-кодирование не заменяет шифрование или ограничение доступа.
 
-For an individual account, create the API key under Developer → RuStore API,
-scoped only to antcalc and the methods listed above. Deletion, payments, user
-management and other apps need no access. Store its ID and Base64 private RSA key
-as the two environment secrets above, restricted to main. This is a separate
-RuStore API key, not the Android signing keystore. No credentials were configured
-during local preparation. Authentication follows SHA512withRSA using keyId plus
-the current timestamp; generated tokens remain in memory and are not logged.
+Create the key under the antcalc app → RuStore API → Create key, or Developer →
+RuStore API for an individual account. Scope it only to antcalc and the five
+method groups listed above. The Console combines manual publication and archiving
+in one permission; the workflow never calls archiving. Do not grant all methods,
+draft deletion, payments, user management, other apps or unused media methods.
+Save the one-time private key and its ID outside the project in an owner-only
+directory. Store the ID and Base64 private RSA key as the two environment secrets
+above, restricted to main. Base64 is encoding, not encryption. This is a separate
+RuStore API key, not the Android signing keystore. Authentication follows
+SHA512withRSA using keyId plus the current timestamp; generated tokens remain
+in memory and are not logged.
+
+При ошибке API CLI сообщает только фиксированный этап authentication/metadata/upload,
+HTTP-код, если он известен, и разрешённый тип сбоя. Тело ответа, URL, подпись,
+ключ, токен и исходное сообщение исключения не выводятся. Блокировка redirect
+и правила повторов остаются прежними. Наличие HTTP-кода помогает различать
+отказ авторизации, ограничение доступа и сетевой сбой; конкретную причину
+нельзя приписывать неуспешному запуску без этих данных.
+
+On API failure, the CLI reports only an allowlisted phase, the HTTP status when
+available, and a fixed failure category. Response bodies, URLs, signatures, keys,
+tokens and original exception messages remain hidden. Redirect blocking and
+retry rules are unchanged. Diagnose the actual cloud response before assigning
+a cause to a failed run.
 
 Первая команда `draft` создаёт принадлежащий workflow черновик и загружает APK:
 The draft operation creates an owned draft and uploads the verified APK:
