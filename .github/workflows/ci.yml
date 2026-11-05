@@ -1,0 +1,125 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  checks:
+    name: Tests, lint and unsigned APK
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out the event commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install pinned validation tools
+        run: |
+          mkdir -p "$RUNNER_TEMP/ci-tools"
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+            --output "$RUNNER_TEMP/gitleaks.tar.gz"
+          echo "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb  $RUNNER_TEMP/gitleaks.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/gitleaks.tar.gz" -C "$RUNNER_TEMP/ci-tools" gitleaks
+          curl --fail --silent --show-error --location --retry 3 \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output "$RUNNER_TEMP/actionlint.tar.gz"
+          echo "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  $RUNNER_TEMP/actionlint.tar.gz" | sha256sum --check --strict
+          tar -xzf "$RUNNER_TEMP/actionlint.tar.gz" -C "$RUNNER_TEMP/ci-tools" actionlint
+
+      - name: Check workflows and scan reachable history
+        run: |
+          "$RUNNER_TEMP/ci-tools/actionlint"
+          "$RUNNER_TEMP/ci-tools/gitleaks" git --config .gitleaks.toml --redact=100 --no-banner --log-opts=--all
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+
+      - name: Test release tools
+        run: python -m unittest discover -s scripts/tests -p 'test_*.py' -v
+
+      - name: Validate store metadata for the source version
+        run: |
+          python - <<'PY'
+          import json
+          import sys
+          sys.path.insert(0, 'scripts')
+          from build_release import ROOT, version
+          from validate_store_metadata import validate
+          name, code = version(ROOT)
+          print(json.dumps({'versionName': name, 'versionCode': code,
+                            'locales': validate(ROOT, code), 'passed': True}))
+          PY
+
+      - name: Set up JDK
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Install the project Android SDK packages
+        run: |
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;36.0.0"
+
+      - name: Run JVM tests, release lint and unsigned build
+        run: python scripts/build_release.py build --output artifacts/ci/unsigned
+
+      - name: Upload checked unsigned APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unsigned-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            artifacts/ci/unsigned/antcalc.apk
+            artifacts/ci/unsigned/unsigned-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload available test and lint reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: reports-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            calculator-core/build/test-results/test/*.xml
+            calculator-core/build/reports/tests/test/
+            app/build/test-results/testDebugUnitTest/*.xml
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-release.html
+            app/build/reports/lint-results-release.xml
+            app/build/reports/release-dependencies.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Summarize the run
+        if: ${{ always() }}
+        env:
+          CHECKED_SHA: ${{ github.sha }}
+          CHECK_STATUS: ${{ job.status }}
+        run: |
+          {
+            echo '## CI checks'
+            printf 'Commit: `%s`\n\n' "$CHECKED_SHA"
+            printf 'Status: %s\n\n' "$CHECK_STATUS"
+            echo 'A successful run provides an **unsigned** antcalc.apk for inspection.'
+            echo 'It cannot be installed. CI does not sign or publish the app.'
+          } >> "$GITHUB_STEP_SUMMARY"

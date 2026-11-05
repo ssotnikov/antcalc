@@ -1,0 +1,103 @@
+name: RuStore delivery
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Explicit RuStore operation
+        type: choice
+        required: true
+        default: status
+        options: [draft, submit, publish, status]
+      version_name:
+        description: Published GitHub version (MAJOR.MINOR.PATCH)
+        type: string
+        required: true
+      apk_sha256:
+        description: Expected signed APK SHA-256 from GitHub Release
+        type: string
+        required: true
+      version_id:
+        description: Explicit RuStore version ID (required for submit and publish)
+        type: string
+      resume_run_id:
+        description: Previous RuStore workflow run containing the owned checkpoint
+        type: string
+      resume_attempt:
+        description: Previous RuStore run attempt
+        type: string
+        default: '1'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: rustore-antcalc
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  deliver:
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'ssotnikov/antcalc' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: rustore
+    steps:
+      - name: Check out trusted delivery tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tooling
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check out published source for inspection
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ format('v{0}', inputs.version_name) }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned API crypto and APK inspection tools
+        run: |
+          python -m venv "$RUNNER_TEMP/rustore-venv"
+          "$RUNNER_TEMP/rustore-venv/bin/python" -m pip install --require-hashes --only-binary=:all: -r tooling/scripts/rustore-requirements.txt
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.0.0"
+      - name: Verify public release, freeze listing and restore an owned checkpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OBSERVED_VERSION: ${{ inputs.version_name }}
+          EXPECTED_APK_SHA256: ${{ inputs.apk_sha256 }}
+          RESUME_RUN_ID: ${{ inputs.resume_run_id }}
+          RESUME_ATTEMPT: ${{ inputs.resume_attempt }}
+        run: python tooling/scripts/rustore_release.py verify --project source --folder delivery --version "$OBSERVED_VERSION" --sha256 "$EXPECTED_APK_SHA256" --checkpoint observation/checkpoint.json
+      - name: Execute the explicitly requested operation
+        env:
+          REQUESTED_OPERATION: ${{ inputs.operation }}
+          OBSERVED_VERSION: ${{ inputs.version_name }}
+          EXPECTED_APK_SHA256: ${{ inputs.apk_sha256 }}
+          EXPECTED_VERSION_ID: ${{ inputs.version_id }}
+          RUSTORE_KEY_ID: ${{ secrets.RUSTORE_KEY_ID }}
+          RUSTORE_API_PRIVATE_KEY_BASE64: ${{ secrets.RUSTORE_API_PRIVATE_KEY_BASE64 }}
+        run: '"$RUNNER_TEMP/rustore-venv/bin/python" tooling/scripts/rustore_release.py "$REQUESTED_OPERATION" --project source --folder delivery --version "$OBSERVED_VERSION" --sha256 "$EXPECTED_APK_SHA256" --version-id "$EXPECTED_VERSION_ID" --checkpoint observation/checkpoint.json'
+      - name: Preserve only non-secret checkpoint and status
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: rustore-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            observation/checkpoint.json
+            observation/report.json
+          if-no-files-found: warn
+          retention-days: 90

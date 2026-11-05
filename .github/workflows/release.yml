@@ -1,0 +1,297 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Full commit SHA from main
+        required: true
+        type: string
+      expected_version:
+        description: Version already committed in the source (MAJOR.MINOR.PATCH)
+        required: true
+        type: string
+      mode:
+        description: Prepare a new candidate or publish an existing verified artifact
+        required: true
+        type: choice
+        default: prepare
+        options: [prepare, publish]
+      prepared_run_id:
+        description: Completed preparation run ID (publish only)
+        type: string
+      prepared_run_attempt:
+        description: Preparation run attempt (publish only)
+        type: string
+        default: '1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  preflight:
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'ssotnikov/antcalc' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      plan: ${{ steps.gate.outputs.plan }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Validate the source and published version history
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          EXPECTED_VERSION: ${{ inputs.expected_version }}
+          RELEASE_MODE: ${{ inputs.mode }}
+          PREPARED_RUN_ID: ${{ inputs.prepared_run_id }}
+          PREPARED_RUN_ATTEMPT: ${{ inputs.prepared_run_attempt }}
+        run: |
+          if [ "$RELEASE_MODE" = prepare ]; then
+            python scripts/prepare_release.py preflight --project .
+          elif [ "$RELEASE_MODE" = publish ]; then
+            python scripts/publish_release.py resolve --project .
+          else
+            exit 1
+          fi
+
+  build:
+    needs: preflight
+    if: ${{ inputs.mode == 'prepare' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    outputs:
+      artifact_id: ${{ steps.unsigned.outputs.artifact-id }}
+    steps:
+      - name: Check out trusted release tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tooling
+          persist-credentials: false
+      - name: Check out approved source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ fromJSON(needs.preflight.outputs.plan).source_commit }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Test trusted release tools
+        run: python -m unittest discover -s tooling/scripts/tests -p 'test_*.py' -v
+      - name: Validate candidate store metadata
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, 'tooling/scripts')
+          from build_release import version
+          from validate_store_metadata import validate
+          validate(Path('source'), version(Path('source'))[1])
+          PY
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install project SDK packages
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;36.0.0"'
+      - name: Build the unsigned candidate
+        run: python tooling/scripts/build_release.py build --project source --output unsigned
+      - name: Bind unsigned artifact to this run
+        env:
+          RELEASE_PLAN: ${{ needs.preflight.outputs.plan }}
+        run: python tooling/scripts/prepare_release.py bind --project source --unsigned unsigned/antcalc.apk
+      - name: Upload this run's unsigned candidate
+        id: unsigned
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-unsigned-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            unsigned/antcalc.apk
+            unsigned/unsigned-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload available reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-reports-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            source/calculator-core/build/test-results/test/*.xml
+            source/app/build/test-results/testDebugUnitTest/*.xml
+            source/app/build/reports/lint-results-release.html
+            source/app/build/reports/lint-results-release.xml
+            source/app/build/reports/release-dependencies.txt
+          if-no-files-found: warn
+          retention-days: 14
+
+  sign:
+    needs: [preflight, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    outputs:
+      artifact_id: ${{ steps.signed.outputs.artifact-id }}
+    environment: production-signing
+    steps:
+      - name: Check out trusted signing tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tooling
+          persist-credentials: false
+      - name: Check out approved source for inspection only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ fromJSON(needs.preflight.outputs.plan).source_commit }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install inspection and signing tools before exposing secrets
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;36.0.0"'
+      - name: Download the exact artifact from the build job in this run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: unsigned
+          merge-multiple: true
+      - name: Validate and sign with the existing production identity
+        env:
+          RELEASE_PLAN: ${{ needs.preflight.outputs.plan }}
+          ANTCALC_KEYSTORE_BASE64: ${{ secrets.ANTCALC_KEYSTORE_BASE64 }}
+          ANTCALC_STORE_PASSWORD: ${{ secrets.ANTCALC_STORE_PASSWORD }}
+        run: python tooling/scripts/prepare_release.py sign --project source --unsigned unsigned/antcalc.apk --output signed
+      - name: Upload the signed preparation candidate
+        id: signed
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-prepared-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            signed/antcalc.apk
+            signed/release-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Summarize preparation
+        run: |
+          echo '## Signed candidate prepared' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Not published. Independent reproduction follows in a separate runner.' >> "$GITHUB_STEP_SUMMARY"
+
+  reproduce:
+    needs: [preflight, sign]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out trusted verification tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tooling
+          persist-credentials: false
+      - name: Independently check out the approved source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ fromJSON(needs.preflight.outputs.plan).source_commit }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned comparison tools and SDK
+        run: |
+          python -m venv "$RUNNER_TEMP/reproduction-venv"
+          "$RUNNER_TEMP/reproduction-venv/bin/python" -m pip install --require-hashes --only-binary=:all: -r tooling/scripts/reproduction-requirements.txt
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;36.0.0"
+          echo "$ANDROID_HOME/build-tools/36.0.0" >> "$GITHUB_PATH"
+      - name: Rebuild without caches in a fresh runner
+        run: python tooling/scripts/build_release.py build --project source --output independent
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.sign.outputs.artifact_id }}
+          path: signed
+          merge-multiple: true
+      - name: Verify signature reproduction and package release assets
+        env:
+          RELEASE_PLAN: ${{ needs.preflight.outputs.plan }}
+        run: '"$RUNNER_TEMP/reproduction-venv/bin/python" tooling/scripts/reproduce_release.py --project source --independent independent/antcalc.apk --signed signed --output ready'
+      - name: Upload the verified immutable bundle
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-ready-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ready/antcalc.apk
+            ready/release-manifest.json
+            ready/reproducibility.json
+            ready/release-notes.md
+            ready/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: preflight
+    if: ${{ inputs.mode == 'publish' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tooling
+          persist-credentials: false
+      - name: Check out source for inspection only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ fromJSON(needs.preflight.outputs.plan).source_commit }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install APK inspection tools
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;36.0.0"'
+      - name: Download verified artifact from the approved preparation run
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ fromJSON(needs.preflight.outputs.plan).artifact_id }}
+          run-id: ${{ fromJSON(needs.preflight.outputs.plan).prepared_run_id }}
+          github-token: ${{ github.token }}
+          path: ready
+          merge-multiple: true
+      - name: Verify and publish or safely resume the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_MODE: publish
+          RELEASE_PLAN: ${{ needs.preflight.outputs.plan }}
+        run: python tooling/scripts/publish_release.py publish --project source --bundle ready

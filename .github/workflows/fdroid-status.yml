@@ -1,0 +1,55 @@
+name: F-Droid observation
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: Published GitHub version to check (MAJOR.MINOR.PATCH)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Check out trusted observation tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tooling
+          persist-credentials: false
+      - name: Check out the published source tag for inspection
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ format('v{0}', inputs.version_name) }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install APK inspection tools
+        run: '"$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.0.0"'
+      - name: Verify public APK and observe F-Droid
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OBSERVED_VERSION: ${{ inputs.version_name }}
+        run: python tooling/scripts/fdroid_status.py --project source --version "$OBSERVED_VERSION" --output observation/fdroid-status.json
+      - name: Upload observation, including unknown or blocked states
+        if: ${{ always() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: fdroid-observation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: observation/fdroid-status.json
+          if-no-files-found: warn
+          retention-days: 14
