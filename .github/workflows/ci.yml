@@ -79,7 +79,7 @@ jobs:
 
       - name: Install the project Android SDK packages
         run: |
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "build-tools;36.0.0"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;36.0.0"
 
       - name: Run JVM tests, release lint and unsigned build
         run: python scripts/build_release.py build --output artifacts/ci/unsigned
