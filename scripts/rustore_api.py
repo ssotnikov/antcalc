@@ -1,8 +1,10 @@
 """Minimal RuStore API transport with fixed hosts, redacted errors and no retries."""
 import base64
 from datetime import datetime, timezone
+import hashlib
 import json
 import re
+import ssl
 import urllib.error
 import urllib.request
 import uuid
@@ -12,6 +14,21 @@ import build_release as release
 META_HOST = "https://public-api-m.rustore.ru"
 UPLOAD_HOST = "https://public-api.rustore.ru"
 APP_PATH = "/public/v1/application/" + release.PACKAGE + "/version"
+ROOT_CA_FILE = release.ROOT / "distribution/certificates/russian_trusted_root_ca.pem"
+ROOT_CA_SHA256 = "d26d2d0231b7c39f92cc738512ba54103519e4405d68b5bd703e9788ca8ecf31"
+
+
+def tls_context():
+    """Add the pinned official CA to this client only; retain normal TLS checks."""
+    pem = ROOT_CA_FILE.read_text(encoding="ascii")
+    if pem.count("-----BEGIN CERTIFICATE-----") != 1 or pem.count("-----END CERTIFICATE-----") != 1:
+        raise ValueError("RuStore CA fingerprint validation requires one certificate")
+    der = ssl.PEM_cert_to_DER_cert(pem)
+    if hashlib.sha256(der).hexdigest() != ROOT_CA_SHA256:
+        raise ValueError("RuStore CA fingerprint does not match the trusted certificate")
+    context = ssl.create_default_context()
+    context.load_verify_locations(cadata=der)
+    return context
 
 
 class ApiError(Exception):
@@ -21,7 +38,7 @@ class ApiError(Exception):
         self.definitive = definitive
         self.phase = phase if phase in {"authentication", "metadata", "upload"} else "api"
         self.http_status = http_status if type(http_status) is int and 100 <= http_status <= 599 else None
-        self.reason = reason if reason in {"http-error", "transport-error", "invalid-response", "server-rejected", "redirect-blocked"} else None
+        self.reason = reason if reason in {"http-error", "transport-error", "tls-verification", "invalid-response", "server-rejected", "redirect-blocked"} else None
 
     def diagnostic(self):
         """Expose only fixed context fields, never an exception or server message."""
@@ -66,7 +83,7 @@ def version_path(version_id):
 
 class Client:
     def __init__(self):
-        self._opener = urllib.request.build_opener(NoRedirect())
+        self._opener = urllib.request.build_opener(NoRedirect(), urllib.request.HTTPSHandler(context=tls_context()))
         self._token = None
 
     def request(self, method, path, *, payload=None, multipart=None, upload=False, auth=False):
@@ -105,8 +122,9 @@ class Client:
             raise ApiError("RuStore HTTP request failed",
                            phase=phase, http_status=code, reason="http-error",
                            definitive=code in (400, 401, 403, 404, 405, 413, 415, 422)) from None
-        except OSError:
-            raise ApiError("RuStore request failed or its result is uncertain", phase=phase, reason="transport-error") from None
+        except OSError as error:
+            reason = "tls-verification" if isinstance(getattr(error, "reason", error), ssl.SSLCertVerificationError) else "transport-error"
+            raise ApiError("RuStore request failed or its result is uncertain", phase=phase, reason=reason) from None
         except (ValueError, KeyError, TypeError):
             raise ApiError("RuStore response could not be read", phase=phase, http_status=status, reason="invalid-response") from None
 

@@ -1,7 +1,9 @@
 import base64
 import copy
+import hashlib
 import io
 import json
+import ssl
 from pathlib import Path
 import sys
 import tempfile
@@ -312,6 +314,49 @@ class RuStoreDeliveryTest(unittest.TestCase):
 
 
 class RuStoreApiTest(unittest.TestCase):
+    def test_auth_and_status_use_the_documented_rustore_endpoint(self):
+        client = api.Client()
+        responses = [dict(code="OK", body=dict(jwe="token.fixture")),
+                     dict(code="OK", body=dict(content=[], pageNumber=0, totalPages=0))]
+        streams = [io.BytesIO(json.dumps(response).encode()) for response in responses]
+        with patch.object(api, "auth_payload", return_value={}), patch.object(client._opener, "open", side_effect=streams) as request:
+            client.authenticate("123", "synthetic key")
+            self.assertEqual([], client.versions())
+        self.assertEqual("https://public-api-m.rustore.ru/public/auth/", request.call_args_list[0].args[0].full_url)
+        self.assertEqual("https://public-api-m.rustore.ru" + api.APP_PATH + "?page=0&size=100&filterTestingType=ALL",
+                         request.call_args_list[1].args[0].full_url)
+
+    def test_pinned_ca_context_preserves_tls_checks_and_global_trust(self):
+        default_factory = ssl._create_default_https_context
+        context = api.tls_context()
+        self.assertEqual(ssl.CERT_REQUIRED, context.verify_mode)
+        self.assertTrue(context.check_hostname)
+        self.assertIs(default_factory, ssl._create_default_https_context)
+        self.assertTrue(any(hashlib.sha256(cert).hexdigest() == api.ROOT_CA_SHA256
+                            for cert in context.get_ca_certs(binary_form=True)))
+
+    def test_changed_ca_is_rejected_before_creating_an_http_opener(self):
+        with tempfile.TemporaryDirectory() as folder:
+            ca_file = Path(folder) / 'changed.pem'
+            unknown = ssl.DER_cert_to_PEM_cert(b'untrusted certificate')
+            for content in (unknown, api.ROOT_CA_FILE.read_text() + unknown):
+                ca_file.write_text(content)
+                with self.subTest(extra_anchor=content != unknown):
+                    with patch.object(api, 'ROOT_CA_FILE', ca_file), patch.object(api.urllib.request, 'build_opener') as opener:
+                        with self.assertRaisesRegex(ValueError, 'fingerprint'):
+                            api.Client()
+                    opener.assert_not_called()
+
+    def test_tls_verification_failure_is_distinct_without_printing_certificate_details(self):
+        client = api.Client()
+        error = urllib.error.URLError(ssl.SSLCertVerificationError(1, 'private certificate details'))
+        with patch.object(client._opener, 'open', side_effect=error):
+            with self.assertRaises(api.ApiError) as raised:
+                client.request('POST', '/public/auth/', payload={}, auth=True)
+        self.assertIn('tls-verification', raised.exception.diagnostic())
+        self.assertIn('authentication', raised.exception.diagnostic())
+        self.assertNotIn('private', raised.exception.diagnostic())
+
     def test_auth_http_failure_reports_phase_and_status_without_private_details(self):
         client = api.Client()
         body = io.BytesIO(b"private response body")

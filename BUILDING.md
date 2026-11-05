@@ -133,9 +133,14 @@ activation; workflow files alone do not configure repository settings.
 по разрешению владельца после успешного CI. Сертификат существующего ключа
 сверен с `distribution/signing.json`. Окружение `rustore` также ограничено
 веткой `main`; API-секреты нового ключа переданы после отзыва прежнего.
-Локальная авторизация и чтение статуса `MODERATION` проверены. Облачный RuStore
-status пока не принят: два запуска остановились с общим сообщением об ошибке;
-для следующей проверки подготовлена безопасная диагностика этапа и HTTP-кода.
+Локальная авторизация и чтение статуса `MODERATION` проверены. Диагностика
+облачного отказа выявила проблему доверия TLS к public-api-m.rustore.ru:
+цепочка Russian Trusted Sub CA не принимается обычным набором корневых CA.
+Клиент сохраняет документированный public-api-m.rustore.ru и добавляет
+официальный Russian Trusted Root CA в собственный TLS-контекст после проверки
+DER SHA-256. Проверка с Mozilla CA bundle и этим корнем прошла; системные
+хранилища и Android не меняются. Для облачной приёмки используется отдельный
+workflow `operation=status`.
 Обычный CI не подключает эти окружения; repository-level секреты отсутствуют.
 Облачные prepare/publish и реальная доставка обновления в RuStore ещё не приняты.
 
@@ -144,9 +149,13 @@ Activation status on 5 November 2026: `production-signing` is restricted to the
 authorization after CI passed. The certificate matches `distribution/signing.json`.
 The `rustore` environment is also restricted to `main`; the new API credentials
 were uploaded after the previous key was revoked. Local authentication and
-reading the `MODERATION` status passed. Cloud RuStore status checks have not
-passed acceptance: two attempts stopped with a generic error. Redacted phase
-and HTTP-status diagnostics have been prepared for the next check.
+reading the `MODERATION` status passed. A TLS trust difference was reproduced:
+public-api-m.rustore.ru serves a Russian Trusted Sub CA chain that a standard
+Mozilla root bundle rejects. The client retains that documented endpoint and
+loads the official Russian Trusted Root CA into its own TLS context after
+checking the DER SHA-256. A Mozilla-plus-root check passed; system trust stores
+and Android are unchanged. Cloud acceptance uses the separate read-only
+`operation=status` workflow.
 Ordinary CI uses neither environment, and there are no
 repository-level secrets. Cloud prepare/publish and real RuStore update delivery
 have not yet passed acceptance.
@@ -357,6 +366,30 @@ available, and a fixed failure category. Response bodies, URLs, signatures, keys
 tokens and original exception messages remain hidden. Redirect blocking and
 retry rules are unchanged. Diagnose the actual cloud response before assigning
 a cause to a failed run.
+
+Для metadata/auth сохраняется фиксированный `https://public-api-m.rustore.ru`
+из [документации RuStore](https://www.rustore.ru/help/work-with-rustore-api/api-authorization-token).
+Корневой сертификат Минцифры получен из официального источника Госуслуг и
+сохранён в `distribution/certificates/russian_trusted_root_ca.pem`;
+[происхождение и DER SHA-256](distribution/certificates/README.md) проверяются
+до создания HTTP-клиента. Изменённый/неизвестный сертификат блокирует запросы.
+Промежуточный Russian Trusted Sub CA передаёт сервер; отдельным доверенным
+корнем он не устанавливается. Дополнительное доверие действует только в
+SSLContext этого клиента. Системные корни, глобальный HTTPS-контекст Python
+и Android-приложение не изменяются. Проверка hostname, срока и цепочки остаётся
+включённой; insecure TLS и fallback на другой host не применяются.
+Запись в магазин проверяется отдельно.
+
+Metadata/auth keep the fixed `https://public-api-m.rustore.ru` endpoint documented
+by RuStore. The official Ministry root certificate from Gosuslugi is bundled at
+`distribution/certificates/russian_trusted_root_ca.pem`; its provenance and DER
+SHA-256 are recorded in the linked certificate README. A changed or unknown
+certificate blocks requests before the HTTP client is created. The server
+supplies Russian Trusted Sub CA; it is not installed as a trust anchor. Added
+trust is limited to this client's SSLContext. System roots, Python's global
+HTTPS context and the Android app are unchanged. Certificate-chain, expiry and
+hostname checks remain enabled, without insecure TLS or alternate-host fallback.
+Store writes still require separate acceptance checks.
 
 Первая команда `draft` создаёт принадлежащий workflow черновик и загружает APK:
 The draft operation creates an owned draft and uploads the verified APK:
