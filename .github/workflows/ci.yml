@@ -118,7 +118,7 @@ jobs:
         run: |
           {
             echo '## CI checks'
-            printf 'Commit: `%s`\n\n' "$CHECKED_SHA"
+            printf 'Commit: %s\n\n' "$CHECKED_SHA"
             printf 'Status: %s\n\n' "$CHECK_STATUS"
             echo 'A successful run provides an **unsigned** antcalc.apk for inspection.'
             echo 'It cannot be installed. CI does not sign or publish the app.'
