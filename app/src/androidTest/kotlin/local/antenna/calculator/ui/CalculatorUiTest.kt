@@ -458,6 +458,29 @@ class CalculatorUiTest {
         back()
         checkFormulaImages()
     }
+    @Test fun cableEnglishDarkLargeTextKeepsActionsReachable() {
+        val draft = CalculatorDraft.defaults()
+        start(draft.copy(settings = draft.settings.copy(language = AppLanguage.ENGLISH, theme = AppTheme.DARK)), fontScale = 2f)
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-cable").performScrollTo().performClick()
+        compose.onNodeWithTag("cable-copy").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("cable-details").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Propagation speed equals cable velocity factor times the speed of light in vacuum.").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("back").performClick()
+        compose.onNodeWithTag("open-matching").performScrollTo().assertExists()
+    }
+
+    @Test fun cableRussianLightLargeTextKeepsInputsReachable() {
+        val draft = CalculatorDraft.defaults()
+        start(draft.copy(settings = draft.settings.copy(language = AppLanguage.RUSSIAN, theme = AppTheme.LIGHT)), fontScale = 2f)
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-cable").performScrollTo().performClick()
+        compose.onNodeWithText("Длина кабеля").assertIsDisplayed()
+        compose.onNodeWithTag("cable-VELOCITY").performScrollTo().assertTextContains("0,66")
+        compose.onNodeWithTag("cable-copy").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("cable-diagram").performScrollTo().assertIsDisplayed()
+    }
+
     @Test fun matchingToolsKeepCalculatorDraftAndRejectStaleResults() {
         start()
         compose.onNodeWithTag("field-SIZING_FREQUENCY").performTextReplacement("146,")

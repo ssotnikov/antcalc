@@ -19,7 +19,8 @@ class CalculatorViewModel(
     private val persistenceScope: CoroutineScope,
 ) : ViewModel() {
     private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])?.copy(
-        matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft())
+        matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft(),
+        cable = CableDraftCodec.decode(savedState[CableDraftCodec.KEY]) ?: CableDraft())
     private val mutableState = MutableStateFlow(CalculatorUiState(draft = restoredDraft ?: CalculatorDraft.defaults()))
     val state: StateFlow<CalculatorUiState> = mutableState.asStateFlow()
     private var canonical = PersistedCalculatorState.defaults()
@@ -33,6 +34,7 @@ class CalculatorViewModel(
         restoredDraft?.let {
             savedState[DraftCodec.KEY] = DraftCodec.encode(it)
             savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(it.matching)
+            savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(it.cable)
         }
         load(initial = true)
     }
@@ -60,6 +62,7 @@ class CalculatorViewModel(
             })
             is CalculatorEvent.Settings -> draft.copy(settings = event.value)
             is CalculatorEvent.Matching -> draft.copy(matching = event.value)
+            is CalculatorEvent.Cable -> draft.copy(cable = event.value)
             else -> return
         }
         publish(updated)
@@ -71,6 +74,7 @@ class CalculatorViewModel(
         canonical = canonical.advance(current)
         savedState[DraftCodec.KEY] = DraftCodec.encode(current)
         savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(current.matching)
+        savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(current.cable)
         mutableState.value = state.value.copy(draft = current)
     }
 
@@ -146,6 +150,7 @@ class CalculatorViewModel(
                     mutableState.value = CalculatorUiState(defaults.toDraft(), loading = false)
                     savedState[DraftCodec.KEY] = DraftCodec.encode(state.value.draft)
                     savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(state.value.draft.matching)
+                    savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(state.value.draft.cable)
                 } catch (error: Exception) {
                     if (error is CancellationException) throw error
                     storageReadable = false

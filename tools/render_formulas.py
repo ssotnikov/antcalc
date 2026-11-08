@@ -10,6 +10,9 @@ from PIL import Image
 
 
 FORMULAS = {
+    "formula_cable_speed": r"$v = \mathrm{VF}\,c$",
+    "formula_cable_phase": r"$\varphi = \frac{360 fL}{v},\quad t=\frac{L}{v}$",
+    "formula_cable_length": r"$L = \frac{\varphi v}{360f}$",
     "formula_reflection": r"$\Gamma = \frac{Z-Z_0}{Z+Z_0}$",
     "formula_swr": r"$\mathrm{SWR}=\frac{1+|\Gamma|}{1-|\Gamma|}$",
     "formula_return_loss": r"$\mathrm{RL}=-20\log_{10}|\Gamma|$",

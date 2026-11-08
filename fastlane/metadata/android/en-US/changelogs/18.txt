@@ -1,0 +1,1 @@
+Added cable electrical length, phase and propagation delay calculations with a manual velocity factor.

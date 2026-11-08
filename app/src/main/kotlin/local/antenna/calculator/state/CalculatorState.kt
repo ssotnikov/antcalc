@@ -70,7 +70,7 @@ data class CalculatorSettings(
     val language: AppLanguage = AppLanguage.initial(),
 )
 
-data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings(), val matching: MatchingDraft = MatchingDraft()) {
+data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings(), val matching: MatchingDraft = MatchingDraft(), val cable: CableDraft = CableDraft()) {
     operator fun get(key: FieldKey): NumericDraft = fields.getValue(key)
     fun update(key: FieldKey, field: NumericDraft) = copy(fields = fields + (key to field))
     companion object {
@@ -121,6 +121,7 @@ data class CalculatorUiState(
 }
 
 sealed interface CalculatorEvent {
+    data class Cable(val value: CableDraft) : CalculatorEvent
     data class Matching(val value: MatchingDraft) : CalculatorEvent
     data class Edit(val key: FieldKey, val text: String) : CalculatorEvent
     data class ChangeUnit(val key: FieldKey, val unit: String) : CalculatorEvent

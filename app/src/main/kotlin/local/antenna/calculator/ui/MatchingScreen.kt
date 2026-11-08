@@ -83,18 +83,6 @@ internal fun matchingCopy(context: Context, draft: MatchingDraft): String? {
 }
 
 @Composable
-internal fun ToolsScreen(onOpenMatching: () -> Unit) {
-    Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().padding(20.dp)) {
-        OutlinedCard(onClick = onOpenMatching, modifier = Modifier.fillMaxWidth().testTag("open-matching")) {
-            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(stringResource(R.string.matching_title), style = MaterialTheme.typography.titleLarge)
-                Text(stringResource(R.string.matching_description), style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-    }
-}
-
-@Composable
 internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, currentState: () -> CalculatorUiState, onCopied: () -> Unit) {
     val draft = state.draft.matching
     val result = draft.result()

@@ -46,6 +46,29 @@ class CalculatorViewModelTest {
         assertNotNull(cold.state.value.draft.matching.result())
     }
 
+    @Test fun cableRestoresIncompleteSystemDraftAndValidColdUnits() = runTest {
+        val repo = FakeRepository()
+        val handle = SavedStateHandle()
+        val vm = model(repo, handle); runCurrent()
+        val initial = CableDraft().copy(mode = local.antenna.calculator.core.feedline.CableMode.LENGTH_TO_ANGLE)
+            .edit(local.antenna.calculator.core.feedline.CableField.LENGTH, "1000").changeLengthUnit(LengthUnit.METERS)
+        vm.onEvent(CalculatorEvent.Cable(initial)); vm.onEvent(CalculatorEvent.Background); runCurrent()
+        vm.onEvent(CalculatorEvent.Cable(initial.edit(local.antenna.calculator.core.feedline.CableField.LENGTH, "1,")))
+        vm.onEvent(CalculatorEvent.Background); runCurrent()
+        val recreated = model(repo, SavedStateHandle(mapOf(
+            DraftCodec.KEY to handle.get<ArrayList<String>>(DraftCodec.KEY),
+            MatchingDraftCodec.KEY to handle.get<ArrayList<String>>(MatchingDraftCodec.KEY),
+            CableDraftCodec.KEY to handle.get<ArrayList<String>>(CableDraftCodec.KEY))))
+        runCurrent()
+        assertEquals("1,", recreated.state.value.draft.cable.fields[local.antenna.calculator.core.feedline.CableField.LENGTH])
+        assertNull(recreated.state.value.draft.cable.result())
+        val cold = model(repo); runCurrent()
+        assertEquals(LengthUnit.METERS, cold.state.value.draft.cable.lengthUnit)
+        assertEquals("1", cold.state.value.draft.cable.fields[local.antenna.calculator.core.feedline.CableField.LENGTH])
+        assertNotNull(cold.state.value.draft.cable.result())
+        assertEquals(MatchingDraft(), cold.state.value.draft.matching)
+    }
+
     @Test fun defaultsAndImmediateSizing() = runTest {
         val vm = model(); runCurrent()
         assertFalse(vm.state.value.loading)

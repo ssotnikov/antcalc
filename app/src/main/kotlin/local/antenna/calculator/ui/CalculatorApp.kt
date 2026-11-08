@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import local.antenna.calculator.R
 import local.antenna.calculator.state.*
 
-private enum class Page { CALCULATOR, MATCHING, SETTINGS, ABOUT }
+private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,6 +67,7 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
             Page.MATCHING -> R.string.matching_title
+            Page.CABLE -> R.string.cable_screen_title
             Page.CALCULATOR -> when (settings.section) {
                 Section.SIZING -> R.string.sizes
                 Section.TRIMMING -> R.string.trimming
@@ -94,7 +95,7 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.CABLE) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding())) {
                     for (section in Section.entries) {
@@ -118,9 +119,10 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
                     Page.ABOUT -> AboutScreen()
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CALCULATOR -> {
                         if (settings.section == Section.TOOLS) {
-                            ToolsScreen { leaveInput(); page = Page.MATCHING }
+                            ToolsScreen(onOpenMatching = { leaveInput(); page = Page.MATCHING }, onOpenCable = { leaveInput(); page = Page.CABLE })
                         } else {
                             val presentation = remember(state, configuration, context) { presentResults(context, state) }
                             CalculatorScreen(state, presentation, onEvent) {
