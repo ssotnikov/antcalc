@@ -120,7 +120,7 @@ fun inputErrorResource(key: FieldKey, field: NumericDraft): Int? {
 fun <T> ChoicePicker(label: String, options: List<T>, selected: T, text: @Composable (T) -> String, onSelect: (T) -> Unit, tag: String) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(label, style = MaterialTheme.typography.labelLarge)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             options.forEach { value ->
                 val option = text(value)
                 FilterChip(selected = selected == value, onClick = { onSelect(value) }, label = { Text(option) },

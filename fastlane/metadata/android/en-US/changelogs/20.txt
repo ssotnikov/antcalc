@@ -1,0 +1,1 @@
+Added spacing between wrapped rows of selection buttons, including the known-quantity selector on the SWR screen.
