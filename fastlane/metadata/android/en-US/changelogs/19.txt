@@ -1,0 +1,1 @@
+Tools now responds to vertical drags with a gentle spring-back when all cards fit on the screen. Scrolling remains available when the content is taller than the screen.
