@@ -458,4 +458,46 @@ class CalculatorUiTest {
         back()
         checkFormulaImages()
     }
+    @Test fun matchingToolsKeepCalculatorDraftAndRejectStaleResults() {
+        start()
+        compose.onNodeWithTag("field-SIZING_FREQUENCY").performTextReplacement("146,")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-matching").performClick()
+        compose.onNodeWithTag("matching-SWR").assertTextContains("2")
+        compose.onNodeWithTag("matching-SWR").performTextReplacement("0")
+        compose.onNodeWithTag("matching-copy").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithTag("matching-SWR").performScrollTo().performTextReplacement("2")
+        compose.onNodeWithTag("matching-copy").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("nav-SIZING").performClick()
+        compose.onNodeWithTag("field-SIZING_FREQUENCY").assertTextContains("146,")
+    }
+
+    @Test fun matchingImpedanceAndMagnitudeHaveIndependentInputs() {
+        start()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-matching").performClick()
+        compose.onNodeWithTag("matching-SWR").performTextReplacement("3,")
+        compose.onNodeWithTag("matching-mode-IMPEDANCE").performClick()
+        compose.onNodeWithTag("matching-REACTANCE").performTextReplacement("-50")
+        compose.onNodeWithTag("matching-copy").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("matching-mode-SWR").performScrollTo().performClick()
+        compose.onNodeWithTag("matching-SWR").assertTextContains("3,")
+        compose.onNodeWithTag("matching-copy").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithTag("matching-mode-GAMMA").performScrollTo().performClick()
+        compose.onNodeWithTag("matching-GAMMA").performTextReplacement("1")
+        compose.onNodeWithText("∞ : 1").assertExists()
+    }
+
+    @Test fun matchingLargeFontEnglishAndDetailsRemainReachable() {
+        val draft = CalculatorDraft.defaults()
+        start(draft.copy(settings = draft.settings.copy(language = AppLanguage.ENGLISH)), fontScale = 2f)
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-matching").performClick()
+        compose.onNodeWithTag("matching-copy").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("matching-details").performScrollTo().performClick()
+        compose.onNodeWithText("Mismatch loss").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("back").performClick()
+        compose.onNodeWithTag("open-matching").assertExists()
+    }
+
 }

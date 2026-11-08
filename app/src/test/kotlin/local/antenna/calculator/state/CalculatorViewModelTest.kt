@@ -25,6 +25,27 @@ class CalculatorViewModelTest {
         CalculatorViewModel(repository, handle, backgroundScope).also { models += it }
     private fun CalculatorViewModel.edit(key: FieldKey, text: String) = onEvent(CalculatorEvent.Edit(key, text))
 
+    @Test fun matchingRestoresIncompleteSystemDraftAndLastValidColdState() = runTest {
+        val repo = FakeRepository()
+        val handle = SavedStateHandle()
+        val vm = model(repo, handle); runCurrent()
+        vm.onEvent(CalculatorEvent.Matching(vm.state.value.draft.matching.edit(
+            local.antenna.calculator.core.matching.MatchingField.SWR, "3")))
+        vm.onEvent(CalculatorEvent.Background); runCurrent()
+        vm.onEvent(CalculatorEvent.Matching(vm.state.value.draft.matching.edit(
+            local.antenna.calculator.core.matching.MatchingField.SWR, "3,")))
+        vm.onEvent(CalculatorEvent.Background); runCurrent()
+        val recreated = model(repo, SavedStateHandle(mapOf(
+            DraftCodec.KEY to handle.get<ArrayList<String>>(DraftCodec.KEY),
+            MatchingDraftCodec.KEY to handle.get<ArrayList<String>>(MatchingDraftCodec.KEY))))
+        runCurrent()
+        assertEquals("3,", recreated.state.value.draft.matching.fields[local.antenna.calculator.core.matching.MatchingField.SWR])
+        assertNull(recreated.state.value.draft.matching.result())
+        val cold = model(repo); runCurrent()
+        assertEquals("3", cold.state.value.draft.matching.fields[local.antenna.calculator.core.matching.MatchingField.SWR])
+        assertNotNull(cold.state.value.draft.matching.result())
+    }
+
     @Test fun defaultsAndImmediateSizing() = runTest {
         val vm = model(); runCurrent()
         assertFalse(vm.state.value.loading)

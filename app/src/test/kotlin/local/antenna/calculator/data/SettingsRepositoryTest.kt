@@ -52,7 +52,9 @@ class SettingsRepositoryTest {
         assertEquals(expected, PreferencesStateCodec.decode(encoded))
         assertEquals(433_000_001L, expected.values[FieldKey.SIZING_FREQUENCY])
         assertEquals(1_000_000_001L, expected.values[FieldKey.ACTUAL_LENGTH])
-        assertEquals(26, encoded.asMap().size) // Frozen schema 1 includes nine retired wire entries.
+        // The frozen calculator domain still has its 26 entries; matching is additive.
+        assertEquals(26, encoded.asMap().keys.count { !it.name.startsWith("matching.") })
+        assertEquals(8, encoded.asMap().keys.count { it.name.startsWith("matching.") })
     }
 
     @Test fun initiallyAbsentActualLengthRemainsAbsentNotZero() {

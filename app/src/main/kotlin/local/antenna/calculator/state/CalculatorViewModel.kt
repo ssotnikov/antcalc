@@ -18,7 +18,8 @@ class CalculatorViewModel(
     private val savedState: SavedStateHandle,
     private val persistenceScope: CoroutineScope,
 ) : ViewModel() {
-    private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])
+    private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])?.copy(
+        matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft())
     private val mutableState = MutableStateFlow(CalculatorUiState(draft = restoredDraft ?: CalculatorDraft.defaults()))
     val state: StateFlow<CalculatorUiState> = mutableState.asStateFlow()
     private var canonical = PersistedCalculatorState.defaults()
@@ -29,7 +30,10 @@ class CalculatorViewModel(
     private var storageReadable = false
 
     init {
-        restoredDraft?.let { savedState[DraftCodec.KEY] = DraftCodec.encode(it) }
+        restoredDraft?.let {
+            savedState[DraftCodec.KEY] = DraftCodec.encode(it)
+            savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(it.matching)
+        }
         load(initial = true)
     }
 
@@ -55,6 +59,7 @@ class CalculatorViewModel(
                 if (key in event.keys) field.copy(checked = true) else field
             })
             is CalculatorEvent.Settings -> draft.copy(settings = event.value)
+            is CalculatorEvent.Matching -> draft.copy(matching = event.value)
             else -> return
         }
         publish(updated)
@@ -65,6 +70,7 @@ class CalculatorViewModel(
         val current = draft
         canonical = canonical.advance(current)
         savedState[DraftCodec.KEY] = DraftCodec.encode(current)
+        savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(current.matching)
         mutableState.value = state.value.copy(draft = current)
     }
 
@@ -139,6 +145,7 @@ class CalculatorViewModel(
                     lastWritten = defaults
                     mutableState.value = CalculatorUiState(defaults.toDraft(), loading = false)
                     savedState[DraftCodec.KEY] = DraftCodec.encode(state.value.draft)
+                    savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(state.value.draft.matching)
                 } catch (error: Exception) {
                     if (error is CancellationException) throw error
                     storageReadable = false

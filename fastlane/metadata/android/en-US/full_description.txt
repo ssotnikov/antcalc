@@ -3,6 +3,7 @@ Antenna Calculator helps you estimate the initial dimensions of a quarter-wave m
 Enter a frequency and shortening factor to see the wavelength, ideal dimensions and practical length estimates. For tuning, enter the actual antenna length, measured resonance and target frequency. For a dipole, the app shows the total length and the length of each arm.
 
 Features:
+• SWR, reflection and return loss, including calculations from R + jX
 • Frequency units: kHz, MHz and GHz, with 1 Hz resolution
 • Length units: mm, cm and m
 • Separate inputs for sizing and tuning

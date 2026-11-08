@@ -7,7 +7,7 @@ import local.antenna.calculator.core.units.*
 import java.math.BigDecimal
 import java.util.Locale
 
-enum class Section { SIZING, TRIMMING }
+enum class Section { SIZING, TRIMMING, TOOLS }
 enum class AppTheme { SYSTEM, LIGHT, DARK }
 enum class AppLanguage(val tag: String) {
     RUSSIAN("ru"), ENGLISH("en");
@@ -70,7 +70,7 @@ data class CalculatorSettings(
     val language: AppLanguage = AppLanguage.initial(),
 )
 
-data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings()) {
+data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings(), val matching: MatchingDraft = MatchingDraft()) {
     operator fun get(key: FieldKey): NumericDraft = fields.getValue(key)
     fun update(key: FieldKey, field: NumericDraft) = copy(fields = fields + (key to field))
     companion object {
@@ -121,6 +121,7 @@ data class CalculatorUiState(
 }
 
 sealed interface CalculatorEvent {
+    data class Matching(val value: MatchingDraft) : CalculatorEvent
     data class Edit(val key: FieldKey, val text: String) : CalculatorEvent
     data class ChangeUnit(val key: FieldKey, val unit: String) : CalculatorEvent
     data class Focus(val key: FieldKey, val focused: Boolean) : CalculatorEvent

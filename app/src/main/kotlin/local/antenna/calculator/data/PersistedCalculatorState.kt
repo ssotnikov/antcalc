@@ -5,11 +5,12 @@ import local.antenna.calculator.core.units.*
 import local.antenna.calculator.state.*
 import java.math.BigDecimal
 
-/** Last valid canonical inputs only: hertz, nanometers and ten-thousandths, never calculated results. */
+/** Last valid inputs: canonical quantities and bounded matching decimals, never calculated results. */
 data class PersistedCalculatorState(
     val values: Map<FieldKey, Long>,
     val units: Map<FieldKey, String>,
     val settings: CalculatorSettings,
+    val matching: MatchingDraft = MatchingDraft(),
 ) {
     fun advance(draft: CalculatorDraft): PersistedCalculatorState = copy(
         values = values + draft.fields.mapNotNull { (key, field) ->
@@ -21,6 +22,7 @@ data class PersistedCalculatorState(
             }
         },
         units = draft.fields.mapValues { it.value.unit }, settings = draft.settings,
+        matching = draft.matching.canonical(matching),
     )
 
     fun toDraft(): CalculatorDraft = CalculatorDraft(FieldKey.entries.associateWith { key ->
@@ -32,7 +34,7 @@ data class PersistedCalculatorState(
             else -> Frequency.ofHertz(value).inUnit(FrequencyUnit.valueOf(unit)).inputText()
         }
         NumericDraft(text, unit)
-    }, settings)
+    }, settings, matching)
 
     companion object {
         fun defaults(): PersistedCalculatorState {

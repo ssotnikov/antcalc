@@ -17,6 +17,8 @@
 - Длина волны, четвертьволновой штырь и полуволновой диполь.
 - Коэффициент укорочения, идеальные и практические размеры.
 - Подстройка по фактической длине, измеренной и желаемой частотам.
+- КСВ, коэффициент отражения, возвратные потери и доля отражённой мощности.
+- Расчёт согласования по R + jX и опорному сопротивлению; отдельный раздел «Инструменты».
 - Частота в кГц/МГц/ГГц с точностью до 1 Гц, длина в мм/см/м.
 - Независимые вводы двух разделов 
 -    Русский и английский интерфейсы; светлая, тёмная и системная темы.
@@ -55,6 +57,8 @@ an antenna using its measured resonant frequency. Requires Android 8.0 or later.
 - Wavelength, quarter-wave monopole and half-wave dipole calculations.
 - A shortening factor, with ideal and practical dimensions shown separately.
 - Tuning from the actual length, measured resonance and target frequency.
+- SWR, reflection coefficient, return loss and reflected power fraction.
+- Matching calculations from R + jX and reference impedance, available in Tools.
 - Frequency units: kHz, MHz and GHz, with 1 Hz resolution. Length units: mm, cm and m.
 - English and Russian interfaces; light, dark and system themes.
 - Copy results together with their inputs and units.

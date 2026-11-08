@@ -1,0 +1,37 @@
+<resources>
+    <string name="tools">Tools</string>
+    <string name="matching_title">SWR and reflection</string>
+    <string name="matching_description">Convert SWR, reflection coefficient and return loss, or calculate them from impedance.</string>
+    <string name="matching_source">Known quantity</string>
+    <string name="matching_swr">SWR</string>
+    <string name="matching_gamma">Reflection coefficient |Γ|</string>
+    <string name="matching_rl">Return loss</string>
+    <string name="matching_impedance">Impedance R + jX</string>
+    <string name="matching_r">Resistance R, Ω</string>
+    <string name="matching_x">Reactance X, Ω</string>
+    <string name="matching_z0">Reference impedance Z₀, Ω</string>
+    <string name="matching_rl_input">Return loss, dB</string>
+    <string name="matching_reflected">Reflected power</string>
+    <string name="matching_fraction">Share of incident power</string>
+    <string name="matching_ml">Mismatch loss</string>
+    <string name="matching_complex">Complex reflection coefficient</string>
+    <string name="matching_phase">Reflection phase</string>
+    <string name="matching_undefined">Undefined at perfect match</string>
+    <string name="matching_db">%1$s dB</string>
+    <string name="matching_ratio">%1$s : 1</string>
+    <string name="matching_percent">%1$s %%</string>
+    <string name="matching_degrees">%1$s°</string>
+    <string name="matching_details">Details and formulas</string>
+    <string name="matching_more">Show details</string>
+    <string name="matching_less">Hide details</string>
+    <string name="matching_note">SWR describes impedance matching, not antenna efficiency. Reflected power is a share of the incident power at the same measurement plane. Mismatch loss excludes cable attenuation.</string>
+    <string name="matching_impedance_note">Use R and X measured at the same point. Positive X is inductive; negative X is capacitive. An SWR value alone cannot determine impedance or reflection phase.</string>
+    <string name="matching_error_number">Enter a complete number using a decimal point or comma, up to 32 characters. Scientific notation is not supported.</string>
+    <string name="matching_error_range">Allowed range: %1$s to %2$s.</string>
+    <string name="matching_pending">Complete the selected inputs to see the result.</string>
+    <string name="matching_model">Model: passive load with a positive real reference impedance.</string>
+    <string name="matching_formula_gamma_alt">Gamma equals load impedance minus reference impedance, divided by their sum.</string>
+    <string name="matching_formula_swr_alt">SWR equals one plus the magnitude of gamma, divided by one minus its magnitude.</string>
+    <string name="matching_formula_rl_alt">Return loss equals minus twenty times the base-ten logarithm of the magnitude of gamma.</string>
+    <string name="matching_formula_power_alt">Reflected power fraction equals the squared magnitude of gamma. Mismatch loss equals minus ten times the base-ten logarithm of one minus that fraction.</string>
+</resources>

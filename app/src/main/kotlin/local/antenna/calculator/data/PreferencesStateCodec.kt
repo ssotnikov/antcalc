@@ -30,6 +30,7 @@ object PreferencesStateCodec {
             this[stringPreferencesKey("antenna")] = s.antennaType.name
             this[stringPreferencesKey("sizingLengthUnit")] = s.sizingLengthUnit.name
             this[stringPreferencesKey("trimmingLengthUnit")] = s.trimmingLengthUnit.name
+            MatchingPreferences.write(this, state.matching)
         }.toPreferences()
     }
 
@@ -52,7 +53,7 @@ object PreferencesStateCodec {
                 sizingLengthUnit = LengthUnit.valueOf(string("sizingLengthUnit")),
                 trimmingLengthUnit = LengthUnit.valueOf(string("trimmingLengthUnit")),
                 language = preferences[stringPreferencesKey("language")]?.let(AppLanguage::valueOf) ?: AppLanguage.initial())
-            val state = PersistedCalculatorState(values, units, settings)
+            val state = PersistedCalculatorState(values, units, settings, MatchingPreferences.read(preferences))
             val draft = state.toDraft()
             for (key in FieldKey.entries) {
                 if (key == FieldKey.FACTOR) require(units[key] == "FACTOR")

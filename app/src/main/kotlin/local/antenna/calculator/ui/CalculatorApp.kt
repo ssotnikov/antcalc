@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 import local.antenna.calculator.R
 import local.antenna.calculator.state.*
 
-private enum class Page { CALCULATOR, SETTINGS, ABOUT }
+private enum class Page { CALCULATOR, MATCHING, SETTINGS, ABOUT }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +66,12 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
         val title = when (page) {
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
-            Page.CALCULATOR -> if (settings.section == Section.SIZING) R.string.sizes else R.string.trimming
+            Page.MATCHING -> R.string.matching_title
+            Page.CALCULATOR -> when (settings.section) {
+                Section.SIZING -> R.string.sizes
+                Section.TRIMMING -> R.string.trimming
+                Section.TOOLS -> R.string.tools
+            }
         }
         Scaffold(
             modifier = Modifier.fillMaxSize().imePadding(),
@@ -89,21 +94,21 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding())) {
                     for (section in Section.entries) {
-                        val label = if (section == Section.SIZING) R.string.sizes else R.string.trimming
+                        val label = when (section) { Section.SIZING -> R.string.sizes; Section.TRIMMING -> R.string.trimming; Section.TOOLS -> R.string.tools }
                         NavigationBarItem(selected = settings.section == section, onClick = {
-                            leaveInput(); onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
-                        }, icon = { Text(if (section == Section.SIZING) "λ" else "Δ", style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics {}) },
+                            leaveInput(); page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
+                        }, icon = { Text(when (section) { Section.SIZING -> "λ"; Section.TRIMMING -> "Δ"; Section.TOOLS -> "Γ" }, style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics {}) },
                             label = { Text(stringResource(label)) }, modifier = Modifier.testTag("nav-${section.name}"))
                     }
                 }
             },
             snackbarHost = { SnackbarHost(snackbar) },
         ) { padding ->
-            val gestures = if (page == Page.CALCULATOR) Modifier.calculatorSwipes(settings.section) { section ->
+            val gestures = if (page == Page.CALCULATOR && settings.section != Section.TOOLS) Modifier.calculatorSwipes(settings.section) { section ->
                 leaveInput()
                 onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
             } else Modifier
@@ -112,15 +117,20 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                 when (page) {
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
                     Page.ABOUT -> AboutScreen()
+                    Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CALCULATOR -> {
-                        val presentation = remember(state, configuration, context) { presentResults(context, state) }
-                        CalculatorScreen(state, presentation, onEvent) {
-                            leaveInput()
-                            // Re-check the live state even if a click arrives before the next rendered frame.
-                            val text = presentResults(context, currentState()).copyText ?: return@CalculatorScreen
-                            (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-                                .setPrimaryClip(ClipData.newPlainText(appName, text))
-                            scope.launch { snackbar.showSnackbar(copiedMessage) }
+                        if (settings.section == Section.TOOLS) {
+                            ToolsScreen { leaveInput(); page = Page.MATCHING }
+                        } else {
+                            val presentation = remember(state, configuration, context) { presentResults(context, state) }
+                            CalculatorScreen(state, presentation, onEvent) {
+                                leaveInput()
+                                // Re-check the live state even if a click arrives before the next rendered frame.
+                                val text = presentResults(context, currentState()).copyText ?: return@CalculatorScreen
+                                (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
+                                    .setPrimaryClip(ClipData.newPlainText(appName, text))
+                                scope.launch { snackbar.showSnackbar(copiedMessage) }
+                            }
                         }
                     }
                 }
