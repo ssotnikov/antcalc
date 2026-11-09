@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -104,14 +103,16 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                         NavigationBarItem(selected = settings.section == section, onClick = {
                             leaveInput(); page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
                         }, icon = {
-                            when (section) {
-                                Section.SIZING, Section.TRIMMING -> Text(
-                                    if (section == Section.SIZING) "λ" else "Δ",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    modifier = Modifier.clearAndSetSemantics {},
-                                )
-                                Section.TOOLS -> Icon(painterResource(R.drawable.ic_menu), contentDescription = null, modifier = Modifier.rotate(90f))
+                            val icon = when (section) {
+                                Section.SIZING -> R.drawable.ic_wavelength
+                                Section.TRIMMING -> R.drawable.ic_delta
+                                Section.TOOLS -> R.drawable.ic_menu
                             }
+                            Icon(
+                                painterResource(icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp).rotate(if (section == Section.TOOLS) 90f else 0f),
+                            )
                         },
                             label = { Text(stringResource(label)) }, modifier = Modifier.testTag("nav-${section.name}"))
                     }
