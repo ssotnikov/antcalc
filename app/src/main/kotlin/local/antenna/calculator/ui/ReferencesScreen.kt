@@ -69,13 +69,18 @@ internal fun ReferencesScreen(language: AppLanguage) {
     ) {
         HelpText(R.string.materials_note)
         referenceGroups.forEach { group ->
+            val materials = when (language) {
+                AppLanguage.ENGLISH -> group.materials.filter { it.language == AppLanguage.ENGLISH }
+                AppLanguage.RUSSIAN -> group.materials.sortedBy { it.language != AppLanguage.RUSSIAN }
+            }
+            if (materials.isEmpty()) return@forEach
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
                     stringResource(group.title),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.semantics { heading() },
                 )
-                group.materials.sortedBy { it.language != language }.forEach { MaterialLink(it) }
+                materials.forEach { MaterialLink(it) }
             }
         }
     }

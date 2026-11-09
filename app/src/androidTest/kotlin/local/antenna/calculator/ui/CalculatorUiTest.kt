@@ -298,7 +298,14 @@ class CalculatorUiTest {
         compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
         back()
         checkSizes(".", "cm")
-        checkOrder("nist", "itu", "English")
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-references").assertTextContains("References").performClick()
+        compose.onNodeWithTag("source-nist").performScrollTo().assertIsDisplayed()
+            .assertTextContains("English", substring = true)
+        for (id in listOf("itu", "rig-tuning", "kadamm", "rig-cable")) {
+            compose.onNodeWithTag("source-$id").assertDoesNotExist()
+        }
+        compose.onNodeWithTag("source-cable-delay").performScrollTo().assertIsDisplayed()
     }
 
     @Test fun englishFallbackKeepsLeftToRightLayoutOnRtlSystem() {
