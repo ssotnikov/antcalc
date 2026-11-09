@@ -44,6 +44,8 @@
 
 ### Обратная связь
 
+Чтобы сообщить об ошибке, откройте «Настройки» → «Сообщить об ошибке».
+
 [GitHub Issues](https://github.com/ssotnikov/antcalc/issues) ·
 [ssotnikov.pro](https://ssotnikov.pro) ·
 [ssotnikov@gmail.com](mailto:ssotnikov@gmail.com)
@@ -84,6 +86,8 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 Release build and signature instructions: [BUILDING.md](BUILDING.md).
 
 ### Contact
+
+To report a bug, go to Settings → Report a bug.
 
 [GitHub Issues](https://github.com/ssotnikov/antcalc/issues) ·
 [ssotnikov.pro](https://ssotnikov.pro) ·

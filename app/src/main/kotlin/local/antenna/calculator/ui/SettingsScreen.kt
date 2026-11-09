@@ -38,6 +38,9 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             TextButton(onClick = { openSourceWithFeedback(context, website) }, modifier = Modifier.testTag("source-author")) {
                 Text(stringResource(R.string.author_website_label))
             }
+            TextButton(onClick = { openSourceWithFeedback(context, BUG_REPORT_URL) }, modifier = Modifier.testTag("report-bug")) {
+                Text(stringResource(R.string.report_bug))
+            }
         }
     }
 }

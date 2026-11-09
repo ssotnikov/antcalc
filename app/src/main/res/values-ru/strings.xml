@@ -11,6 +11,7 @@
     <string name="trimming">Подстройка антенны</string>
     <string name="settings">Настройки</string>
     <string name="about">О расчётах</string>
+    <string name="report_bug">Сообщить об ошибке</string>
     <string name="menu">Меню</string>
     <string name="back">Назад</string>
     <string name="frequency">Частота</string>

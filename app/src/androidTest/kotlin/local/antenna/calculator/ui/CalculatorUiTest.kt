@@ -233,13 +233,15 @@ class CalculatorUiTest {
             compose.onNodeWithTag("source-author").assertDoesNotExist()
             back(); settings()
             compose.onNodeWithTag("source-author").performScrollTo().performClick()
+            compose.onNodeWithTag("report-bug").performScrollTo().assertTextContains("Сообщить об ошибке").performClick()
             compose.runOnIdle {
-                val expected = sources + ("author" to "ssotnikov.pro")
+                val expected = sources + listOf("author" to "ssotnikov.pro", "report-bug" to "github.com")
                 assertEquals(expected.size, requests.size)
                 requests.zip(expected).forEach { (intent, source) ->
                     assertEquals("https", intent.data!!.scheme)
                     assertEquals(source.second, intent.data!!.host)
                 }
+                assertEquals("https://github.com/ssotnikov/antcalc/issues/new", requests.last().dataString)
             }
         } finally { instrumentation.removeMonitor(monitor) }
     }

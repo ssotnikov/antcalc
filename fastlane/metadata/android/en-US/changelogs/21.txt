@@ -1,0 +1,1 @@
+Added a Report a bug link below the website in Settings. The Tools tab now uses a three-dot icon.

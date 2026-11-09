@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
@@ -102,7 +103,16 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                         val label = when (section) { Section.SIZING -> R.string.sizes; Section.TRIMMING -> R.string.trimming; Section.TOOLS -> R.string.tools }
                         NavigationBarItem(selected = settings.section == section, onClick = {
                             leaveInput(); page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
-                        }, icon = { Text(when (section) { Section.SIZING -> "λ"; Section.TRIMMING -> "Δ"; Section.TOOLS -> "Γ" }, style = MaterialTheme.typography.titleLarge, modifier = Modifier.clearAndSetSemantics {}) },
+                        }, icon = {
+                            when (section) {
+                                Section.SIZING, Section.TRIMMING -> Text(
+                                    if (section == Section.SIZING) "λ" else "Δ",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier.clearAndSetSemantics {},
+                                )
+                                Section.TOOLS -> Icon(painterResource(R.drawable.ic_menu), contentDescription = null, modifier = Modifier.rotate(90f))
+                            }
+                        },
                             label = { Text(stringResource(label)) }, modifier = Modifier.testTag("nav-${section.name}"))
                     }
                 }

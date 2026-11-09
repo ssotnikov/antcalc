@@ -12,6 +12,8 @@ import java.util.Locale
 
 enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
+internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
+
 internal fun openSourceWithFeedback(context: Context, url: String) {
     val message = when (openWebSource(context, url)) {
         SourceOpenResult.OPENED -> null
@@ -27,8 +29,9 @@ internal fun validatedSourceAddress(address: String): String? {
     val uri = try { URI(address) } catch (_: URISyntaxException) { return null }
     val allowedHosts = setOf("physics.nist.gov", "rsgb.org", "www.arrl.org", "www.ti.com", "www.n1fd.org", "ssotnikov.pro")
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
-        uri.port !in setOf(-1, 443) || uri.host?.lowercase(Locale.ROOT) !in allowedHosts) return null
-    return uri.toASCIIString()
+        uri.port !in setOf(-1, 443)) return null
+    val url = uri.toASCIIString()
+    return url.takeIf { it == BUG_REPORT_URL || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
 }
 
 internal fun openWebSource(context: Context, address: String): SourceOpenResult {
