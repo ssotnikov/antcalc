@@ -5,13 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.core.net.toUri
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.stringResource
 import local.antenna.calculator.R
 import java.net.URI
 import java.net.URISyntaxException
@@ -20,15 +13,6 @@ import java.util.Locale
 enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
-
-@Composable
-internal fun ReferenceLink(title: Int, address: Int) {
-    val context = LocalContext.current
-    val url = stringResource(address)
-    TextButton(onClick = { openSourceWithFeedback(context, url) }, modifier = Modifier.testTag("reference-link")) {
-        Text(stringResource(title))
-    }
-}
 
 internal fun openSourceWithFeedback(context: Context, url: String) {
     val message = when (openWebSource(context, url)) {

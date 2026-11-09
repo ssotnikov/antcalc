@@ -20,7 +20,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.trimming.AdjustmentDirection
 
 @Composable
-fun AboutScreen(onOpenReferences: () -> Unit) {
+fun AboutScreen() {
     Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)) {
         AboutHeading(R.string.about_dimensions_heading)
@@ -46,9 +46,6 @@ fun AboutScreen(onOpenReferences: () -> Unit) {
         HelpText(R.string.resonance_note)
         HelpText(R.string.about_measurement_note)
         HelpText(R.string.trimming_note)
-        TextButton(onClick = onOpenReferences, modifier = Modifier.testTag("help-references")) {
-            Text(stringResource(R.string.references_title))
-        }
         Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME))
     }
 }

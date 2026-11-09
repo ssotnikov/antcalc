@@ -145,7 +145,7 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                 .testTag("page-content"), contentAlignment = Alignment.TopCenter) {
                 when (page) {
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
-                    Page.ABOUT -> AboutScreen(onOpenReferences = ::openReferences)
+                    Page.ABOUT -> AboutScreen()
                     Page.REFERENCES -> ReferencesScreen(settings.language)
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
@@ -193,11 +193,6 @@ private fun CalculatorScreen(state: CalculatorUiState, presentation: ResultPrese
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = inputs)
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp), content = results)
-            }
-            if (settings.section == Section.SIZING) {
-                ReferenceLink(R.string.reference_sizing, R.string.reference_sizing_url)
-            } else {
-                ReferenceLink(R.string.reference_trimming, R.string.reference_trimming_url)
             }
         }
     }

@@ -152,7 +152,6 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), modifier = Modifier.fillMaxWidth().height(100.dp))
             }
         }
-        ReferenceLink(R.string.reference_matching, R.string.reference_matching_url)
     }
 }
 

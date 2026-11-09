@@ -163,7 +163,6 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             HelpText(R.string.cable_model)
             HelpText(R.string.cable_vf_note)
         }
-        ReferenceLink(R.string.reference_cable, R.string.reference_cable_url)
     }
 }
 

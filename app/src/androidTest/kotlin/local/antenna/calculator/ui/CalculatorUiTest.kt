@@ -205,7 +205,9 @@ class CalculatorUiTest {
         compose.onNodeWithText("Calculation copied").assertDoesNotExist()
         compose.onNodeWithTag("formula-wavelength").assertContentDescriptionEquals("Wavelength equals the speed of light divided by frequency.")
         compose.onNodeWithTag("source-nist").assertDoesNotExist()
-        compose.onNodeWithTag("help-references").performScrollTo().performClick()
+        compose.onNodeWithTag("help-references").assertDoesNotExist()
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-references").assertTextContains("References").performClick()
         compose.onNodeWithTag("source-nist").performScrollTo().assertTextContains("Speed of light in vacuum")
         back()
         compose.onNodeWithTag("formula-wavelength").assertExists()
@@ -252,40 +254,18 @@ class CalculatorUiTest {
                 }
                 assertEquals("https://github.com/ssotnikov/antcalc/issues/new", requests.last().dataString)
             }
-            fun checkReferences(titles: List<String>) {
-                val link = compose.onNodeWithTag("reference-link")
-                fun open(index: Int) { link.performScrollTo().assertTextEquals(titles[index]).performClick() }
-
-                compose.onNodeWithTag("nav-SIZING").performClick()
-                open(0)
-                trimming()
-                open(1)
-                compose.onNodeWithTag("nav-TOOLS").performClick()
-                open(2)
-                compose.onNodeWithTag("open-matching").performScrollTo().performClick()
-                open(3)
-                back()
-                compose.onNodeWithTag("open-cable").performScrollTo().performClick()
-                open(4)
-                back()
-            }
-
             back()
-            checkReferences(listOf("Применяемые антенны", "Настройка антенны", "Применение анализатора",
-                "КСВН, потери и развязка: как читать характеристики ВЧ-узла", "Изготовление отрезков кабеля заданной электрической длины"))
-            settings()
-            compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
+            val footer = compose.onNodeWithTag("reference-link")
+            footer.assertDoesNotExist()
+            trimming()
+            footer.assertDoesNotExist()
+            compose.onNodeWithTag("nav-TOOLS").performClick()
+            footer.assertDoesNotExist()
+            compose.onNodeWithTag("open-matching").performScrollTo().performClick()
+            footer.assertDoesNotExist()
             back()
-            checkReferences(listOf("Types of Antennas", "How to Prune A Dipole Antenna to Length",
-                "Transmission Lines", "VSWR Converter", "Transmission Line Theory"))
-            compose.runOnIdle {
-                val references = requests.drop(sources.size + 2).map { it.data!! }
-                assertEquals(listOf("www.itu.int", "www.rigexpert.com", "www.rigexpert.com", "www.kadamm.com",
-                    "www.rigexpert.com", "www.arrl.org", "www.n1fd.org", "www.arrl.org",
-                    "scdn.rohde-schwarz.com", "eng.libretexts.org"), references.map { it.host })
-                assertEquals(listOf("page=115", "page=16", "page=15", null, "page=19", "page=12",
-                    null, null, "page=22", null), references.map { it.fragment })
-            }
+            compose.onNodeWithTag("open-cable").performScrollTo().performClick()
+            footer.assertDoesNotExist()
         } finally { instrumentation.removeMonitor(monitor) }
     }
 
