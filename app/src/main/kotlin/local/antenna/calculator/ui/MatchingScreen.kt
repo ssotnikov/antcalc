@@ -151,8 +151,8 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                 Image(painterResource(image), contentDescription = stringResource(alt), contentScale = ContentScale.Fit,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), modifier = Modifier.fillMaxWidth().height(100.dp))
             }
-            TextButton(onClick = { openSourceWithFeedback(context, "https://www.arrl.org/files/file/On%20the%20Air%20Email/Analyzing%20Antenna.pdf") }) { Text(stringResource(R.string.source_arrl)) }
         }
+        ReferenceLink(R.string.reference_matching, R.string.reference_matching_url)
     }
 }
 

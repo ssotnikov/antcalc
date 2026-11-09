@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reference_sizing">Антенно-фидерные устройства</string>
+    <string name="reference_sizing_url">https://edu.tusur.ru/publications/6032/download#page=66</string>
+    <string name="reference_trimming">Настройка антенны</string>
+    <string name="reference_trimming_url">https://www.rigexpert.com/files/product_documentation/aa170/aa-170-manual_ru.pdf#page=16</string>
+    <string name="reference_tools">Применение анализатора</string>
+    <string name="reference_tools_url">https://www.rigexpert.com/files/product_documentation/aa170/aa-170-manual_ru.pdf#page=15</string>
+    <string name="reference_matching">КСВН, потери и развязка: как читать характеристики ВЧ-узла</string>
+    <string name="reference_matching_url">https://www.kadamm.com/ru/blog/ksvn-poteri-i-razvyazka-kak-chitat-kharakteristiki/</string>
+    <string name="reference_cable">Изготовление отрезков кабеля заданной электрической длины</string>
+    <string name="reference_cable_url">https://www.rigexpert.com/files/product_documentation/aa170/aa-170-manual_ru.pdf#page=19</string>
+</resources>

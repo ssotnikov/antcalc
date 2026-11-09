@@ -49,6 +49,7 @@ internal fun ToolsScreen(onOpenMatching: () -> Unit, onOpenCable: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
             ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
+            ReferenceLink(R.string.reference_tools, R.string.reference_tools_url)
         }
     }
 }

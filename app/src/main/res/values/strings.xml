@@ -10,7 +10,7 @@
     <string name="sizes">Antenna dimensions</string>
     <string name="trimming">Antenna tuning</string>
     <string name="settings">Settings</string>
-    <string name="about">How it works</string>
+    <string name="about">Help</string>
     <string name="report_bug">Report a bug</string>
     <string name="menu">Menu</string>
     <string name="back">Back</string>
@@ -104,7 +104,7 @@
     <string name="formula_lengths_key">Lₛ is the monopole length, Ld the total dipole length and La the length of one arm. The shortening factor k applies to the conductor length, not the wavelength. Choose k to suit the antenna design.</string>
     <string name="formula_delta_note">A negative ΔL predicts a decrease in length and a positive ΔL predicts an increase. Equal frequencies give zero change.</string>
     <string name="materials_title">Online resources</string>
-    <string name="materials_note">These articles and the guide are in English. Tap a card to open it in your browser. You will need an internet connection.</string>
+    <string name="materials_note">Tap a card to open the material in your browser. Reading it requires an internet connection.</string>
     <string name="browser_unavailable">No app is available to open this link. Install a browser.</string>
     <string name="link_open_failed">The link could not be opened. Check your browser settings or try another browser.</string>
     <string name="source_nist">NIST — speed of light</string>
@@ -113,15 +113,21 @@
     <string name="source_rsgb">RSGB — the half-wave dipole</string>
     <string name="source_rsgb_description">A practical introduction to calculating, building and tuning a half-wave dipole.</string>
     <string name="source_rsgb_url" translatable="false">https://rsgb.org/main/get-started-in-amateur-radio/antennas/your-first-antenna-the-half-wave-dipole/</string>
-    <string name="source_arrl">ARRL — single-band dipoles</string>
-    <string name="source_arrl_description">Estimate the total dipole length, then trim the wire to tune it. Lengths in this article are given in feet.</string>
-    <string name="source_arrl_url" translatable="false">https://www.arrl.org/single-band-dipoles</string>
-    <string name="source_ti">Texas Instruments — antenna selection guide</string>
-    <string name="source_ti_description">AN058 (PDF): antenna fundamentals, dipoles and monopoles, impedance matching and practical measurements.</string>
-    <string name="source_ti_url" translatable="false">https://www.ti.com/lit/an/swra161b/swra161b.pdf</string>
+    <string name="source_analyzer" translatable="false">Analyzing Your Antenna System</string>
+    <string name="source_analyzer_description">An ARRL article on using a frequency sweep and an antenna analyzer to guide tuning.</string>
+    <string name="source_analyzer_url" translatable="false">https://www.arrl.org/files/file/On%20the%20Air%20Email/Analyzing%20Antenna.pdf</string>
+    <string name="source_antenna_geometry" translatable="false">Types of Antennas</string>
+    <string name="source_antenna_geometry_description">The ARRL Radio Lab Handbook explains the two arms of a half-wave dipole and the radials of a quarter-wave vertical.</string>
+    <string name="source_antenna_geometry_url" translatable="false">https://www.arrl.org/files/file/LabHandbook/RLH%20Unit%204.pdf#page=12</string>
     <string name="source_nashua">Nashua Area Radio Society — dipole tuning</string>
-    <string name="source_nashua_description">Methods for adjusting a dipole to the target resonant frequency.</string>
+    <string name="source_nashua_description">Method II estimates the new dipole length from its measured and target resonant frequencies.</string>
     <string name="source_nashua_url" translatable="false">https://www.n1fd.org/2022/08/18/dipole-antenna/</string>
+    <string name="source_reflection" translatable="false">RF Demystified—Understanding Wave Reflections</string>
+    <string name="source_reflection_description">Analog Devices explains how complex load impedance relates to reflection, return loss and SWR.</string>
+    <string name="source_reflection_url" translatable="false">https://www.analog.com/en/resources/analog-dialogue/raqs/2021/12/16/16/41/raq-issue-197.html</string>
+    <string name="source_cable_delay" translatable="false">Open/Short Compensation and Port Extension</string>
+    <string name="source_cable_delay_description">Keysight shows how to express a measured delay as an equivalent length in free space.</string>
+    <string name="source_cable_delay_url" translatable="false">https://helpfiles.keysight.com/csg/e5061b/measurement_with_options/option_005_impedance_analysis/setting_up_measurement/eliminating_error_factor_of_fixture/open_short_compensation_and_port_extension.htm</string>
     <string name="copyright" translatable="false">© 2026 Sergey Sotnikov</string>
     <string name="author_website_label" translatable="false">ssotnikov.pro</string>
     <string name="author_website_url" translatable="false">https://ssotnikov.pro</string>

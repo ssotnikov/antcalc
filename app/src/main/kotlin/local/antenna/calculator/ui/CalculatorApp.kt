@@ -175,6 +175,11 @@ private fun CalculatorScreen(state: CalculatorUiState, presentation: ResultPrese
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = inputs)
                 Column(verticalArrangement = Arrangement.spacedBy(20.dp), content = results)
             }
+            if (settings.section == Section.SIZING) {
+                ReferenceLink(R.string.reference_sizing, R.string.reference_sizing_url)
+            } else {
+                ReferenceLink(R.string.reference_trimming, R.string.reference_trimming_url)
+            }
         }
     }
 }

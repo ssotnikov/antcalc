@@ -162,8 +162,8 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             Text(stringResource(R.string.cable_limits), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             HelpText(R.string.cable_model)
             HelpText(R.string.cable_vf_note)
-            TextButton(onClick = { openSourceWithFeedback(context, "https://www.arrl.org/files/file/Technology/tis/info/pdf/8411019.pdf") }) { Text(stringResource(R.string.cable_source)) }
         }
+        ReferenceLink(R.string.reference_cable, R.string.reference_cable_url)
     }
 }
 

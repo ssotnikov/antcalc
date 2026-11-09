@@ -45,5 +45,4 @@
     <string name="cable_speed_alt">Phase velocity equals cable velocity factor times the speed of light in vacuum.</string>
     <string name="cable_phase_alt">Electrical length in degrees equals 360 times frequency times physical length divided by phase velocity. Phase delay from A to B equals physical length divided by phase velocity.</string>
     <string name="cable_length_alt">Physical length equals electrical length in degrees times phase velocity, divided by the product of 360 and frequency.</string>
-    <string name="cable_source">ARRL · Coaxial cables</string>
 </resources>

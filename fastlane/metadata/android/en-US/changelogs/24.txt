@@ -1,0 +1,1 @@
+Renamed the calculations guide to Help, updated the reference materials and added a topic-specific link at the end of each calculator and the Tools screen.

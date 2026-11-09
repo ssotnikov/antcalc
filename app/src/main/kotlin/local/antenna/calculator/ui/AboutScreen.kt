@@ -52,9 +52,11 @@ fun AboutScreen() {
         HelpText(R.string.materials_note)
         MaterialLink(R.string.source_nist, R.string.source_nist_description, R.string.source_nist_url, "source-nist")
         MaterialLink(R.string.source_rsgb, R.string.source_rsgb_description, R.string.source_rsgb_url, "source-rsgb")
-        MaterialLink(R.string.source_arrl, R.string.source_arrl_description, R.string.source_arrl_url, "source-arrl")
-        MaterialLink(R.string.source_ti, R.string.source_ti_description, R.string.source_ti_url, "source-ti")
+        MaterialLink(R.string.source_analyzer, R.string.source_analyzer_description, R.string.source_analyzer_url, "source-analyzer")
+        MaterialLink(R.string.source_antenna_geometry, R.string.source_antenna_geometry_description, R.string.source_antenna_geometry_url, "source-antenna-geometry")
         MaterialLink(R.string.source_nashua, R.string.source_nashua_description, R.string.source_nashua_url, "source-nashua")
+        MaterialLink(R.string.source_reflection, R.string.source_reflection_description, R.string.source_reflection_url, "source-reflection")
+        MaterialLink(R.string.source_cable_delay, R.string.source_cable_delay_description, R.string.source_cable_delay_url, "source-cable-delay")
         Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME))
     }
 }

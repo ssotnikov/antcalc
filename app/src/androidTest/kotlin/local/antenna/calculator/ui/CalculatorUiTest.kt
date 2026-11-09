@@ -124,7 +124,7 @@ class CalculatorUiTest {
         compose.onNodeWithTag("back").performClick()
         compose.onNodeWithTag("nav-SIZING").assertIsSelected()
         compose.onNodeWithTag("menu").performClick()
-        compose.onNodeWithTag("open-about").performClick()
+        compose.onNodeWithTag("open-about").assertTextContains("Справка").performClick()
         swipeCalculation(right = false)
         compose.onNodeWithTag("back").assertExists()
         compose.onNodeWithTag("nav-SIZING").assertDoesNotExist()
@@ -201,7 +201,7 @@ class CalculatorUiTest {
         edit(FieldKey.ACTUAL_LENGTH, "500")
         compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Decrease of 32.3 mm")
         compose.onNodeWithTag("menu").performClick()
-        compose.onNodeWithTag("open-about").performClick()
+        compose.onNodeWithTag("open-about").assertTextContains("Help").performClick()
         compose.onNodeWithTag("formula-wavelength").assertContentDescriptionEquals("Wavelength equals the speed of light divided by frequency.")
         compose.onNodeWithTag("source-nist").performScrollTo().assertTextContains("NIST — speed of light")
         back()
@@ -227,8 +227,9 @@ class CalculatorUiTest {
         try {
             compose.onNodeWithTag("menu").performClick()
             compose.onNodeWithTag("open-about").performClick()
-            val sources = listOf("nist" to "physics.nist.gov", "rsgb" to "rsgb.org", "arrl" to "www.arrl.org",
-                "ti" to "www.ti.com", "nashua" to "www.n1fd.org")
+            val sources = listOf("nist" to "physics.nist.gov", "rsgb" to "rsgb.org",
+                "analyzer" to "www.arrl.org", "antenna-geometry" to "www.arrl.org", "nashua" to "www.n1fd.org",
+                "reflection" to "www.analog.com", "cable-delay" to "helpfiles.keysight.com")
             for ((name, _) in sources) compose.onNodeWithTag("source-$name").performScrollTo().performClick()
             compose.onNodeWithTag("source-author").assertDoesNotExist()
             back(); settings()
@@ -242,6 +243,40 @@ class CalculatorUiTest {
                     assertEquals(source.second, intent.data!!.host)
                 }
                 assertEquals("https://github.com/ssotnikov/antcalc/issues/new", requests.last().dataString)
+            }
+            fun checkReferences(titles: List<String>) {
+                val link = compose.onNodeWithTag("reference-link")
+                fun open(index: Int) { link.performScrollTo().assertTextEquals(titles[index]).performClick() }
+
+                compose.onNodeWithTag("nav-SIZING").performClick()
+                open(0)
+                trimming()
+                open(1)
+                compose.onNodeWithTag("nav-TOOLS").performClick()
+                open(2)
+                compose.onNodeWithTag("open-matching").performScrollTo().performClick()
+                open(3)
+                back()
+                compose.onNodeWithTag("open-cable").performScrollTo().performClick()
+                open(4)
+                back()
+            }
+
+            back()
+            checkReferences(listOf("Антенно-фидерные устройства", "Настройка антенны", "Применение анализатора",
+                "КСВН, потери и развязка: как читать характеристики ВЧ-узла", "Изготовление отрезков кабеля заданной электрической длины"))
+            settings()
+            compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
+            back()
+            checkReferences(listOf("Types of Antennas", "How to Prune A Dipole Antenna to Length",
+                "Transmission Lines", "VSWR Converter", "Transmission Line Theory"))
+            compose.runOnIdle {
+                val references = requests.drop(sources.size + 2).map { it.data!! }
+                assertEquals(listOf("edu.tusur.ru", "www.rigexpert.com", "www.rigexpert.com", "www.kadamm.com",
+                    "www.rigexpert.com", "www.arrl.org", "www.n1fd.org", "www.arrl.org",
+                    "scdn.rohde-schwarz.com", "eng.libretexts.org"), references.map { it.host })
+                assertEquals(listOf("page=66", "page=16", "page=15", null, "page=19", "page=12",
+                    null, null, "page=22", null), references.map { it.fragment })
             }
         } finally { instrumentation.removeMonitor(monitor) }
     }
