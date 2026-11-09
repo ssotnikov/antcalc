@@ -9,38 +9,24 @@
 
 ## Русский
 
-Калькулятор начальных размеров штыревой и дипольной антенн и их
-подстройки по измеренной резонансной частоте. Работает на Android 8.0 и новее.
+Антенный калькулятор помогает подобрать начальные размеры антенны, подстроить её по измеренной резонансной частоте и рассчитать параметры согласования и кабеля. Работает на Android 8.0 и новее.
+
+[Скачать antcalc.apk](https://github.com/ssotnikov/antcalc/releases/latest/download/antcalc.apk) · [История версий](https://github.com/ssotnikov/antcalc/releases)
 
 ### Возможности
 
-- Длина волны, четвертьволновой штырь и полуволновой диполь.
-- Коэффициент укорочения, идеальные и практические размеры.
-- Подстройка по фактической длине, измеренной и желаемой частотам.
-- КСВ, коэффициент отражения, возвратные потери и доля отражённой мощности.
-- Электрическая длина кабеля, полный угол, фаза по модулю 360° и задержка; пресеты λ/4, λ/2 и λ.
-- Расчёт согласования по R + jX и опорному сопротивлению; отдельный раздел «Инструменты».
-- Частота в кГц/МГц/ГГц с точностью до 1 Гц, длина в мм/см/м.
-- Независимые вводы двух разделов 
--    Русский и английский интерфейсы; светлая, тёмная и системная темы.
-- Копирование результата с исходными величинами и единицами.
-- Встроенные схемы, формулы и справка со ссылками на материалы.
+- **Расчёт размеров.** Введите частоту и коэффициент укорочения k. Приложение покажет длину волны, идеальные размеры и оценку длины четвертьволнового штыря, полуволнового диполя и каждого его плеча. Размер 5/8 λ приведён как геометрический ориентир.
+- **Подстройка антенны.** По фактической длине, измеренной резонансной и целевой частотам приложение оценивает, насколько удлинить или укоротить антенну. Для симметричного диполя выводится изменение полной длины и каждого плеча.
+- **КСВ и отражение.** Пересчёт КСВ, модуля коэффициента отражения |Γ| и возвратных потерь. Приложение также показывает долю отражённой мощности, а в подробностях — потери рассогласования. Поддерживается расчёт по импедансу нагрузки R + jX и волновому сопротивлению линии Z₀.
+- **Электрическая длина кабеля.** По частоте и коэффициенту скорости VF можно перевести физическую длину в электрическую и обратно. Результат включает электрическую длину в градусах и по модулю 360°, а также одностороннюю фазовую задержку от A к B. Для расчёта от угла есть варианты λ/4, λ/2 и λ.
 
+КСВ и расчёт кабеля находятся во вкладке **«Инструменты»**. Между расчётом размеров и подстройкой можно переключаться в нижней панели или горизонтальным свайпом. Частота вводится в кГц, МГц или ГГц с разрешением 1 Гц, длина — в мм, см или м. Ввод для расчёта размеров и подстройки сохраняется раздельно. Результаты можно скопировать вместе с исходными данными и единицами.
 
-### Сборка и проверки
+Язык интерфейса и светлую, тёмную или системную тему можно выбрать в настройках. При первом запуске с русским языком системы включается русский интерфейс, во всех остальных случаях — английский.
 
-Нужны JDK 21, Android SDK с платформой API 37 и Build Tools 36.0.0.
-В Windows скрипт ищет стандартные каталоги; можно передать `-JdkHome` и `-SdkHome`.
+Расчёты, формулы и схемы доступны без интернета. В меню есть **«Справка»** и отдельный каталог **«Материалы и источники»**. В русском интерфейсе каталог показывает материалы на обоих языках, в английском — только англоязычные. Ссылки открываются во внешнем браузере по нажатию. В приложении нет рекламы, аналитики и аккаунтов.
 
-```powershell
-.\build.ps1
-.\build.ps1 -ConnectedTests
-```
-
-Скрипт собирает проект в нейтральном временном каталоге, выполняет JVM-тесты
-и lint, проверяет подпись и сохраняет `artifacts/antcalc.apk`. Вторая команда
-также запускает UI-тесты на выделенном подключённом эмуляторе.
-Для работы с исходниками следуйте [CONTRIBUTING.md](CONTRIBUTING.md).
+Результаты расчёта размеров и подстройки служат отправной точкой для изготовления и проверки антенны. Реальные параметры зависят от конструкции и окружения, поэтому после сборки стоит измерить резонанс и согласование.
 
 ### Обратная связь
 
@@ -52,38 +38,24 @@
 
 ## English
 
-A calculator for initial monopole and dipole dimensions and for tuning
-an antenna using its measured resonant frequency. Requires Android 8.0 or later.
+Antenna Calculator helps you estimate antenna dimensions, adjust an antenna using its measured resonant frequency, and calculate matching and cable parameters. It runs on Android 8.0 or later.
+
+[Download antcalc.apk](https://github.com/ssotnikov/antcalc/releases/latest/download/antcalc.apk) · [Release history](https://github.com/ssotnikov/antcalc/releases)
 
 ### Features
 
-- Wavelength, quarter-wave monopole and half-wave dipole calculations.
-- A shortening factor, with ideal and practical dimensions shown separately.
-- Tuning from the actual length, measured resonance and target frequency.
-- SWR, reflection coefficient, return loss and reflected power fraction.
-- Cable electrical length, full phase, phase modulo 360° and delay, with λ/4, λ/2 and λ presets.
-- Matching calculations from R + jX and reference impedance, available in Tools.
-- Frequency units: kHz, MHz and GHz, with 1 Hz resolution. Length units: mm, cm and m.
-- English and Russian interfaces; light, dark and system themes.
-- Copy results together with their inputs and units.
-- Built-in antenna diagrams, formulas and reference material.
+- **Antenna dimensions.** Enter a frequency and shortening factor k to see the wavelength, ideal dimensions, and estimated lengths for a quarter-wave monopole, a half-wave dipole, and each dipole arm. The 5/8 λ value is a geometric reference.
+- **Antenna tuning.** Enter the actual length, measured resonant frequency, and target frequency to estimate how much to shorten or lengthen the antenna. For a symmetric dipole, the app shows the adjustment for the total length and for each arm.
+- **SWR and reflection.** Convert between SWR, reflection coefficient magnitude |Γ|, and return loss. The app also shows the reflected power fraction, with mismatch loss in the detailed results. It can calculate these values from the load impedance R + jX and the characteristic impedance of the line, Z₀.
+- **Cable electrical length.** Convert between physical and electrical length using the frequency and cable velocity factor VF. Results include electrical length in degrees and modulo 360°, plus the one-way phase delay from A to B. The angle-to-length mode offers λ/4, λ/2, and λ presets.
 
-### Build and test
+Open **Tools** for the SWR and cable calculators. Switch between antenna sizing and tuning with the bottom navigation or a horizontal swipe. Frequency input supports kHz, MHz, and GHz with 1 Hz resolution. Length units are mm, cm, and m. Sizing and tuning keep separate inputs. You can copy results together with their inputs and units.
 
-Requires JDK 21, Android SDK platform API 37 and Build Tools 36.0.0.
-On Windows, the script detects standard installation paths; use `-JdkHome`
-and `-SdkHome` to override them.
+Choose English or Russian and a light, dark, or system theme in Settings. On first launch, the app uses Russian when the system language is Russian and English otherwise.
 
-```powershell
-.\build.ps1
-.\build.ps1 -ConnectedTests
-```
+Calculations, formulas, and diagrams work offline. The menu includes **Help** and a separate **References** catalog. The English interface lists English-language materials. The Russian interface lists materials in both languages. Links open in your browser when tapped. The app has no ads, analytics, or user accounts.
 
-The script builds in a neutral temporary directory, runs JVM tests and lint,
-verifies the signature and exports `artifacts/antcalc.apk`. The second command
-also runs UI tests on a dedicated connected emulator.
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
-Release build and signature instructions: [BUILDING.md](BUILDING.md).
+Use the sizing and tuning results as a starting point. Construction and surroundings affect how the finished antenna behaves. Measure resonance and matching after assembly.
 
 ### Contact
 
@@ -93,6 +65,11 @@ To report a bug, go to Settings → Report a bug.
 [ssotnikov.pro](https://ssotnikov.pro) ·
 [ssotnikov@gmail.com](mailto:ssotnikov@gmail.com)
 
+## Разработка / Development
+
+[Сборка, тестирование и подпись APK](BUILDING.md) · [Правила участия](CONTRIBUTING.md)
+
+[Build, test, and APK signing](BUILDING.md) · [Contribution guide](CONTRIBUTING.md)
 
 ## Project map / Карта проекта
 
@@ -102,7 +79,7 @@ To report a bug, go to Settings → Report a bug.
 | State / Состояние | `app/src/main/kotlin/local/antenna/calculator/state/` |
 | Persistence / Хранение | `app/src/main/kotlin/local/antenna/calculator/data/` |
 | Screens and gestures / Экраны и жесты | `app/src/main/kotlin/local/antenna/calculator/ui/` |
-| Text / Тексты | `app/src/main/res/values/strings.xml`, `values-ru/strings.xml` |
+| Text / Тексты | `app/src/main/res/values/`, `app/src/main/res/values-ru/` |
 
 ## License / Лицензия
 
