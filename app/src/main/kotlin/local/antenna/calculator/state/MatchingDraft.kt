@@ -10,7 +10,14 @@ private fun boundedMatchingText(text: String): String {
 
 data class MatchingDraft(
     val mode: MatchingMode = MatchingMode.SWR,
-    val fields: Map<MatchingField, String> = MatchingField.entries.zip(listOf("2", "0,333", "9,54", "100", "0", "50")).toMap(),
+    val fields: Map<MatchingField, String> = mapOf(
+        MatchingField.SWR to "2",
+        MatchingField.GAMMA to "0,333",
+        MatchingField.RETURN_LOSS to "9,54",
+        MatchingField.RESISTANCE to "100",
+        MatchingField.REACTANCE to "0",
+        MatchingField.REFERENCE to "50",
+    ),
     val checked: Set<MatchingField> = emptySet(),
 ) {
     val active: List<MatchingField> get() = when (mode) {
@@ -26,13 +33,16 @@ data class MatchingDraft(
         checked = emptySet(),
     )
     fun result(): MatchingResult? {
-        if (active.any { number(it).value == null }) return null
-        fun value(key: MatchingField) = number(key).value!!
         return when (mode) {
-            MatchingMode.SWR -> matchingFromSwr(value(MatchingField.SWR))
-            MatchingMode.GAMMA -> matchingFromMagnitude(value(MatchingField.GAMMA))
-            MatchingMode.RETURN_LOSS -> matchingFromReturnLoss(value(MatchingField.RETURN_LOSS))
-            MatchingMode.IMPEDANCE -> matchingFromImpedance(value(MatchingField.RESISTANCE), value(MatchingField.REACTANCE), value(MatchingField.REFERENCE))
+            MatchingMode.SWR -> number(MatchingField.SWR).value?.let(::matchingFromSwr)
+            MatchingMode.GAMMA -> number(MatchingField.GAMMA).value?.let(::matchingFromMagnitude)
+            MatchingMode.RETURN_LOSS -> number(MatchingField.RETURN_LOSS).value?.let(::matchingFromReturnLoss)
+            MatchingMode.IMPEDANCE -> {
+                val resistance = number(MatchingField.RESISTANCE).value ?: return null
+                val reactance = number(MatchingField.REACTANCE).value ?: return null
+                val reference = number(MatchingField.REFERENCE).value ?: return null
+                matchingFromImpedance(resistance, reactance, reference)
+            }
         }
     }
 }
@@ -40,7 +50,7 @@ data class MatchingDraft(
 /** Small, explicit wire layout, independent of enum ordering. */
 object MatchingDraftCodec {
     const val KEY = "matching.draft.v1"
-    val fields = listOf(MatchingField.SWR, MatchingField.GAMMA, MatchingField.RETURN_LOSS,
+    private val fields = listOf(MatchingField.SWR, MatchingField.GAMMA, MatchingField.RETURN_LOSS,
         MatchingField.RESISTANCE, MatchingField.REACTANCE, MatchingField.REFERENCE)
     fun encode(draft: MatchingDraft): ArrayList<String> = arrayListOf(draft.mode.name).apply {
         fields.forEach { add(boundedMatchingText(draft.fields.getValue(it))); add((it in draft.checked).toString()) }

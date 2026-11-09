@@ -12,6 +12,22 @@ JDK 21, Android SDK platform 37 and Build Tools 36.0.0 are required. Set
 The sdkmanager package is `platforms;android-37.0`; the project's compileSdk
 remains 37.
 
+## Маршруты сборки и выпуска / Build and release paths
+
+| Цель / Goal | Команда и артефакты / Entry point and artifacts | Проверки / Checks |
+| --- | --- | --- |
+| Локальная установка / Local testing | `./build.ps1` → `artifacts/antcalc.apk` и / and `apk-metadata.json` | JVM, lint, debug signature. Android UI tests with `-ConnectedTests`. |
+| Выпуск в GitHub / GitHub release | `gh workflow run release.yml` с / with `mode=prepare`, затем / then `mode=publish` → подписанный APK и материалы выпуска / signed APK and release evidence | CI для того же SHA, подпись, версия, контрольные суммы и отчёт независимой пересборки / CI for the same SHA, signature, version, hashes and independent rebuild report. |
+| Поставка в магазины / Store delivery | F-Droid использует исходники и тот же подписанный upstream APK. Для RuStore см. `gh workflow run rustore.yml` и порядок ниже. / F-Droid uses the source and the same signed upstream APK. For RuStore, see `gh workflow run rustore.yml` and the procedure below. | Для общей подписи F-Droid нужна независимая воспроизводимая сборка. Статусы модерации и публикации RuStore проверяются отдельно. / Shared signing requires an independent reproducible F-Droid build. Check RuStore moderation and publication separately. |
+
+Для выпуска, опубликованного из локальной production-сборки, фиксируйте
+контрольную сумму, подпись и SHA исходников. Воспроизводимость указывайте
+по отдельному отчёту независимой пересборки именно этого APK.
+
+For a release published from a local production build, record the hash,
+signature and source SHA. Record reproducibility separately, based on an
+independent rebuild report for that exact APK.
+
 ## CI / Непрерывная проверка
 
 `.github/workflows/ci.yml` работает для push любой ветки и ручного запуска.

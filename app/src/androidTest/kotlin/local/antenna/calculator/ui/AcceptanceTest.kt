@@ -42,6 +42,7 @@ class AcceptanceTest {
     @Test fun incompleteDraftSurvivesRotationAndActivityRecreation() {
         prepare()
         compose.onNodeWithTag("field-SIZING_FREQUENCY").performTextReplacement("145,")
+        compose.onNodeWithTag("field-SIZING_FREQUENCY").assertTextContains("145,")
         compose.runOnUiThread { compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
         compose.waitUntil(15000) { compose.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
         compose.onNodeWithTag("field-SIZING_FREQUENCY").assertTextContains("145,")
@@ -52,6 +53,18 @@ class AcceptanceTest {
         compose.onNodeWithTag("monopole-result").assertDoesNotExist()
         compose.runOnUiThread { compose.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
         compose.waitUntil(15000) { compose.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+    }
+
+    @Test fun restoringReferencesReturnsToHelp() {
+        prepare()
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-about").performClick()
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-references").performClick()
+        compose.activityRule.scenario.recreate()
+        compose.onNodeWithTag("references-screen").assertExists()
+        compose.onNodeWithTag("back").performClick()
+        compose.onNodeWithTag("formula-wavelength").assertExists()
     }
 
     @Test fun sizingRecalculationP95() = measure("sizing", Section.SIZING)

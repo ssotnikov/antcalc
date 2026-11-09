@@ -12,7 +12,6 @@
     <string name="matching_z0">Опорное сопротивление Z₀, Ом</string>
     <string name="matching_rl_input">Возвратные потери, дБ</string>
     <string name="matching_reflected">Доля отражённой мощности</string>
-    <string name="matching_fraction">Доля падающей мощности</string>
     <string name="matching_ml">Потери рассогласования (ML)</string>
     <string name="matching_complex">Комплексный коэффициент отражения</string>
     <string name="matching_phase">Фаза отражения</string>

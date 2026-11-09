@@ -43,17 +43,21 @@ data class CableDraft(
         frequencyValidationUnit = frequencyUnit, lengthValidationUnit = lengthUnit, checked = emptySet(),
     )
     fun result(): CableResult? {
-        if (active.any { value(it) == null }) return null
-        val frequency = Frequency.ofHertz(value(CableField.FREQUENCY)!!)
-        val vf = VelocityFactor.ofTenThousandths(value(CableField.VELOCITY)!!.toInt())
-        return if (mode == CableMode.ANGLE_TO_LENGTH) cableFromAngle(frequency, vf, value(CableField.ANGLE)!!)
-            else cableFromLength(frequency, vf, CableLength.ofNanometers(value(CableField.LENGTH)!!))
+        val frequency = Frequency.ofHertz(value(CableField.FREQUENCY) ?: return null)
+        val vf = VelocityFactor.ofTenThousandths((value(CableField.VELOCITY) ?: return null).toInt())
+        return when (mode) {
+            CableMode.ANGLE_TO_LENGTH -> cableFromAngle(frequency, vf, value(CableField.ANGLE) ?: return null)
+            CableMode.LENGTH_TO_ANGLE -> {
+                val length = value(CableField.LENGTH) ?: return null
+                cableFromLength(frequency, vf, CableLength.ofNanometers(length))
+            }
+        }
     }
 }
 
 object CableDraftCodec {
     const val KEY = "cable.draft.v1"
-    val fields = listOf(CableField.FREQUENCY, CableField.VELOCITY, CableField.LENGTH, CableField.ANGLE)
+    private val fields = listOf(CableField.FREQUENCY, CableField.VELOCITY, CableField.LENGTH, CableField.ANGLE)
     fun encode(draft: CableDraft): ArrayList<String> = arrayListOf(draft.mode.name, draft.frequencyUnit.name, draft.lengthUnit.name,
         draft.frequencyValidationUnit.name, draft.lengthValidationUnit.name).apply {
         fields.forEach { add(boundedCableText(draft.fields.getValue(it))); add((it in draft.checked).toString()) }

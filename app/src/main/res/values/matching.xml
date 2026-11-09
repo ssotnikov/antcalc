@@ -12,7 +12,6 @@
     <string name="matching_z0">Reference impedance Z₀, Ω</string>
     <string name="matching_rl_input">Return loss, dB</string>
     <string name="matching_reflected">Reflected power fraction</string>
-    <string name="matching_fraction">Share of incident power</string>
     <string name="matching_ml">Mismatch loss (ML)</string>
     <string name="matching_complex">Complex reflection coefficient</string>
     <string name="matching_phase">Reflection phase</string>

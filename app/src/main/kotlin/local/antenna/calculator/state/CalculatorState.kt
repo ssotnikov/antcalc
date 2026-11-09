@@ -85,12 +85,8 @@ data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings
     }
 }
 
-data class SizingUiState(val frequency: NumericDraft, val factor: NumericDraft, val ideal: IdealSizingResult?, val result: SizingResult?) {
-    val canCopy: Boolean get() = result != null
-}
-data class TrimmingUiState(val actualLength: NumericDraft, val measured: NumericDraft, val target: NumericDraft, val result: TrimmingResult?) {
-    val canCopy: Boolean get() = result != null
-}
+data class SizingUiState(val frequency: NumericDraft, val factor: NumericDraft, val ideal: IdealSizingResult?, val result: SizingResult?)
+data class TrimmingUiState(val actualLength: NumericDraft, val measured: NumericDraft, val target: NumericDraft, val result: TrimmingResult?)
 enum class StorageIssue { READ_FAILED, WRITE_FAILED, CORRUPT, UNSUPPORTED_SCHEMA }
 
 data class CalculatorUiState(

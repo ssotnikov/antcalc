@@ -55,12 +55,18 @@ class PrepareReleaseTest(unittest.TestCase):
         arguments = dict(project=self.project, sha=self.plan["source_commit"], expected_version="0.15.0",
                          mode="prepare", environ=self.env)
         arguments.update(overrides)
-        with patch.object(prepare, "checked", side_effect=["", (self.project / "app/build.gradle.kts").read_text()]), \
+        with patch.object(prepare, "checked", side_effect=["", (self.project / "app/build.gradle.kts").read_text(encoding="utf-8")]), \
                 patch.object(prepare, "published_history", return_value=[self.baseline]):
             return prepare.preflight(**arguments)
 
     def test_preflight_returns_approved_commit_version_and_run(self):
         self.assertEqual(self.plan, self.preflight())
+
+    def test_version_parser_handles_bom_from_git_and_worktree(self):
+        gradle = self.project / "app/build.gradle.kts"
+        gradle.write_text(gradle.read_text(encoding="utf-8"), encoding="utf-8-sig")
+        self.assertEqual(self.plan, self.preflight())
+        self.assertEqual(("0.15.0", 17), release.version(self.project))
 
     def test_context_rejects_branch_fork_and_automatic_event_before_git(self):
         for key, value in (("GITHUB_REF", "refs/heads/other"), ("GITHUB_REPOSITORY", "other/antcalc"),

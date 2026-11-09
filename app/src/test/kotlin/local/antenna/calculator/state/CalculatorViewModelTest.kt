@@ -5,6 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.core.units.*
 import local.antenna.calculator.data.*
@@ -21,7 +23,7 @@ class CalculatorViewModelTest {
     @Before fun setUp() { Dispatchers.setMain(dispatcher) }
     @After fun tearDown() { models.forEach { it.viewModelScope.cancel() }; Dispatchers.resetMain() }
 
-    private fun TestScope.model(repository: FakeRepository = FakeRepository(), handle: SavedStateHandle = SavedStateHandle()) =
+    private fun TestScope.model(repository: SettingsRepository = FakeRepository(), handle: SavedStateHandle = SavedStateHandle()) =
         CalculatorViewModel(repository, handle, backgroundScope).also { models += it }
     private fun CalculatorViewModel.edit(key: FieldKey, text: String) = onEvent(CalculatorEvent.Edit(key, text))
 
@@ -104,14 +106,12 @@ class CalculatorViewModelTest {
         assertNull(vm.state.value.sizing.result)
     }
 
-    @Test fun invalidTargetHidesOldTrimAndCopyImmediately() = runTest {
+    @Test fun invalidTargetHidesOldTrimImmediately() = runTest {
         val vm = model(); runCurrent()
         vm.edit(FieldKey.ACTUAL_LENGTH, "500")
         assertEquals(0.467741935483871, vm.state.value.trimming.result!!.newLengthMeters, 1e-12)
-        assertTrue(vm.state.value.trimming.canCopy)
         vm.edit(FieldKey.TARGET, "")
         assertNull(vm.state.value.trimming.result)
-        assertFalse(vm.state.value.trimming.canCopy)
         assertFalse(vm.state.value.draft[FieldKey.TARGET].hasVisibleError(FieldKey.TARGET))
         vm.onEvent(CalculatorEvent.Focus(FieldKey.TARGET, false))
         assertTrue(vm.state.value.draft[FieldKey.TARGET].hasVisibleError(FieldKey.TARGET))
@@ -122,7 +122,6 @@ class CalculatorViewModelTest {
         vm.edit(FieldKey.FACTOR, "1,01")
         assertNotNull(vm.state.value.sizing.ideal)
         assertNull(vm.state.value.sizing.result)
-        assertFalse(vm.state.value.sizing.canCopy)
         assertTrue(vm.state.value.draft[FieldKey.FACTOR].hasVisibleError(FieldKey.FACTOR))
     }
 
@@ -236,6 +235,37 @@ class CalculatorViewModelTest {
         repo.writeGate!!.complete(Unit); runCurrent()
         assertEquals(433_000_000L, repo.stored.values[FieldKey.SIZING_FREQUENCY])
         assertEquals(2, repo.writes)
+    }
+
+    @Test fun recreatedModelKeepsLatestDraftWhilePreviousFlushFinishes() = runTest {
+        val disk = FakeRepository().apply { writeGate = CompletableDeferred() }
+        // Model the single operation queue used by DataStoreSettingsRepository.
+        val operations = Mutex()
+        val repository = object : SettingsRepository by disk {
+            override suspend fun read() = operations.withLock { disk.read() }
+            override suspend fun write(state: PersistedCalculatorState) =
+                operations.withLock { disk.write(state) }
+        }
+        val handle = SavedStateHandle()
+        val previous = model(repository, handle); runCurrent()
+        previous.edit(FieldKey.SIZING_FREQUENCY, "146")
+        previous.onEvent(CalculatorEvent.Background); runCurrent()
+        assertEquals(1, disk.writes)
+
+        previous.edit(FieldKey.SIZING_FREQUENCY, "433")
+        previous.onEvent(CalculatorEvent.Background); runCurrent()
+        val restoredHandle = SavedStateHandle(mapOf(
+            DraftCodec.KEY to handle.get<ArrayList<String>>(DraftCodec.KEY),
+        ))
+        previous.viewModelScope.cancel()
+        val recreated = model(repository, restoredHandle); runCurrent()
+        assertTrue(recreated.state.value.loading)
+        disk.writeGate!!.complete(Unit); runCurrent()
+        assertEquals("433", recreated.state.value.sizing.frequency.text)
+
+        recreated.edit(FieldKey.SIZING_FREQUENCY, "500")
+        advanceTimeBy(250); runCurrent()
+        assertEquals(500_000_000L, disk.stored.values[FieldKey.SIZING_FREQUENCY])
     }
 
     @Test fun unfinishedWriteRestoresLastSuccessfullyWrittenSnapshot() = runTest {

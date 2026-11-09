@@ -100,13 +100,12 @@ def preflight(project, sha, expected_version, mode, environ):
     semver(expected_version)
     checked(["git", "merge-base", "--is-ancestor", sha, "origin/main"], cwd=project)
     text = checked(["git", "show", sha + ":app/build.gradle.kts"], cwd=project)
-    name = re.search(r'^\s*versionName\s*=\s*"([^"]+)"\s*$', text, re.M)
-    code = re.search(r'^\s*versionCode\s*=\s*(\d+)\s*$', text, re.M)
-    if not name or not code or name[1] != expected_version or int(code[1]) <= 0:
+    name, code = release.parse_gradle_version(text)
+    if name != expected_version or code <= 0:
         raise ValueError("Source version differs from the requested release")
     certificate = release.signing_policy(project)["certificate_sha256"]
-    validate_history(name[1], int(code[1]), published_history(), certificate)
-    return dict(identity, source_commit=sha, versionName=name[1], versionCode=int(code[1]),
+    validate_history(name, code, published_history(), certificate)
+    return dict(identity, source_commit=sha, versionName=name, versionCode=code,
                 package=release.PACKAGE, certificate_sha256=certificate)
 
 

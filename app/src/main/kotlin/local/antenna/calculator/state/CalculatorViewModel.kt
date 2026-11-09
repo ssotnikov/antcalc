@@ -31,11 +31,7 @@ class CalculatorViewModel(
     private var storageReadable = false
 
     init {
-        restoredDraft?.let {
-            savedState[DraftCodec.KEY] = DraftCodec.encode(it)
-            savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(it.matching)
-            savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(it.cable)
-        }
+        restoredDraft?.let(::saveDraftSnapshot)
         load(initial = true)
     }
 
@@ -70,12 +66,15 @@ class CalculatorViewModel(
     }
 
     private fun publish(draft: CalculatorDraft) {
-        val current = draft
-        canonical = canonical.advance(current)
-        savedState[DraftCodec.KEY] = DraftCodec.encode(current)
-        savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(current.matching)
-        savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(current.cable)
-        mutableState.value = state.value.copy(draft = current)
+        canonical = canonical.advance(draft)
+        saveDraftSnapshot(draft)
+        mutableState.value = state.value.copy(draft = draft)
+    }
+
+    private fun saveDraftSnapshot(draft: CalculatorDraft) {
+        savedState[DraftCodec.KEY] = DraftCodec.encode(draft)
+        savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(draft.matching)
+        savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(draft.cable)
     }
 
     private fun load(initial: Boolean) {
@@ -148,9 +147,7 @@ class CalculatorViewModel(
                     canonical = defaults
                     lastWritten = defaults
                     mutableState.value = CalculatorUiState(defaults.toDraft(), loading = false)
-                    savedState[DraftCodec.KEY] = DraftCodec.encode(state.value.draft)
-                    savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(state.value.draft.matching)
-                    savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(state.value.draft.cable)
+                    saveDraftSnapshot(state.value.draft)
                 } catch (error: Exception) {
                     if (error is CancellationException) throw error
                     storageReadable = false

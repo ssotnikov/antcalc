@@ -1,14 +1,8 @@
 package local.antenna.calculator.ui
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -16,21 +10,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
 import local.antenna.calculator.state.*
 
+// Keep ABOUT as the persisted route identifier for Help.
 private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT, REFERENCES }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,9 +45,6 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
-    val context = LocalContext.current
-    val configuration = LocalConfiguration.current
-    val appName = stringResource(R.string.app_name)
     val copiedMessage = stringResource(R.string.copied)
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -145,7 +133,7 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                 .testTag("page-content"), contentAlignment = Alignment.TopCenter) {
                 when (page) {
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
-                    Page.ABOUT -> AboutScreen()
+                    Page.ABOUT -> HelpScreen()
                     Page.REFERENCES -> ReferencesScreen(settings.language)
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
@@ -153,13 +141,7 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                         if (settings.section == Section.TOOLS) {
                             ToolsScreen(onOpenMatching = { leaveInput(); page = Page.MATCHING }, onOpenCable = { leaveInput(); page = Page.CABLE })
                         } else {
-                            val presentation = remember(state, configuration, context) { presentResults(context, state) }
-                            CalculatorScreen(state, presentation, onEvent) {
-                                leaveInput()
-                                // Re-check the live state even if a click arrives before the next rendered frame.
-                                val text = presentResults(context, currentState()).copyText ?: return@CalculatorScreen
-                                (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager)
-                                    .setPrimaryClip(ClipData.newPlainText(appName, text))
+                            CalculationScreen(state, onEvent, currentState, ::leaveInput) {
                                 scope.launch { snackbar.showSnackbar(copiedMessage) }
                             }
                         }
@@ -169,57 +151,3 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
         }
     }
 }
-
-@Composable
-private fun CalculatorScreen(state: CalculatorUiState, presentation: ResultPresentation, onEvent: (CalculatorEvent) -> Unit, onCopy: () -> Unit) {
-    val settings = state.draft.settings
-    val scroll = rememberSaveable(settings.section, saver = ScrollState.Saver) { ScrollState(0) }
-    BoxWithConstraints(Modifier.widthIn(max = 1100.dp).fillMaxSize()) {
-        val wide = maxWidth >= 840.dp
-        Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(20.dp).testTag("calculator-scroll"), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            StorageNotice(state, onEvent)
-            val inputs: @Composable ColumnScope.() -> Unit = { CalculatorInputs(state, onEvent) }
-            val results: @Composable ColumnScope.() -> Unit = {
-                if (presentation.groups.isEmpty()) HelpText(R.string.result_pending)
-                presentation.groups.forEach { ResultPanel(it) }
-                Button(onClick = onCopy, enabled = presentation.copyText != null,
-                    modifier = Modifier.fillMaxWidth().testTag("copy-result")) { Text(stringResource(R.string.copy_result)) }
-            }
-            if (wide) {
-                Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {
-                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp), content = inputs)
-                    Column(Modifier.weight(1.15f), verticalArrangement = Arrangement.spacedBy(20.dp), content = results)
-                }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp), content = inputs)
-                Column(verticalArrangement = Arrangement.spacedBy(20.dp), content = results)
-            }
-        }
-    }
-}
-
-@Composable
-private fun ResultPanel(group: ResultGroup) {
-    Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow,
-        modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(stringResource(group.title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-            group.warning?.let {
-                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
-            }
-            group.rows.forEachIndexed { index, row ->
-                if (group.diagrams && index == 0) AntennaDiagram(dipole = false)
-                if (group.diagrams && index == 1) AntennaDiagram(dipole = true)
-                Column(Modifier.fillMaxWidth().testTag(row.tag).semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(row.label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(row.value, style = if (index == 0) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary)
-                }
-                if (index != group.rows.lastIndex) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            }
-            group.notes.forEach { HelpText(it) }
-            group.tuningDirection?.let { TuningDiagram(it) }
-        }
-    }
-}
-

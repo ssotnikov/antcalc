@@ -9,7 +9,7 @@ internal object MatchingPreferences {
     fun write(target: MutablePreferences, draft: MatchingDraft) {
         target[intPreferencesKey("matching.schema")] = 1
         target[stringPreferencesKey("matching.mode")] = draft.mode.name
-        MatchingDraftCodec.fields.forEach { target[stringPreferencesKey("matching.${it.name}")] = draft.fields.getValue(it) }
+        MatchingField.entries.forEach { target[stringPreferencesKey("matching.${it.name}")] = draft.fields.getValue(it) }
     }
     fun read(source: Preferences): MatchingDraft {
         val version = source[intPreferencesKey("matching.schema")]
@@ -19,7 +19,7 @@ internal object MatchingPreferences {
         }
         if (version != 1) throw UnsupportedSchemaException(version)
         val mode = MatchingMode.valueOf(requireNotNull(source[stringPreferencesKey("matching.mode")]))
-        val values = MatchingDraftCodec.fields.associateWith { key ->
+        val values = MatchingField.entries.associateWith { key ->
             val text = requireNotNull(source[stringPreferencesKey("matching.${key.name}")])
             require(text.length <= 32 && parseMatchingNumber(text, key).value != null)
             text

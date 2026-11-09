@@ -20,10 +20,10 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.trimming.AdjustmentDirection
 
 @Composable
-fun AboutScreen() {
+fun HelpScreen() {
     Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        AboutHeading(R.string.about_dimensions_heading)
+        HelpHeading(R.string.about_dimensions_heading)
         FormulaPlate(R.string.wavelength, R.drawable.formula_wavelength, R.string.formula_wavelength_alt, "formula-wavelength")
         HelpText(R.string.about_summary)
         FormulaPlate(R.string.radiator_length, R.drawable.formula_monopole, R.string.formula_monopole_alt, "formula-monopole")
@@ -42,7 +42,7 @@ fun AboutScreen() {
         HelpText(R.string.formula_delta_note)
         HelpText(R.string.dipole_note)
         TuningDiagram(AdjustmentDirection.SHORTEN)
-        AboutHeading(R.string.about_measurement_heading)
+        HelpHeading(R.string.about_measurement_heading)
         HelpText(R.string.resonance_note)
         HelpText(R.string.about_measurement_note)
         HelpText(R.string.trimming_note)
@@ -51,7 +51,7 @@ fun AboutScreen() {
 }
 
 @Composable
-private fun AboutHeading(label: Int) {
+private fun HelpHeading(label: Int) {
     Text(stringResource(label), style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
 }
 

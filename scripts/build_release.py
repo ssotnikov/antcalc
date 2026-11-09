@@ -36,7 +36,11 @@ def sha256(path):
 
 
 def version(project):
-    text = (project / "app/build.gradle.kts").read_text(encoding="utf-8-sig")
+    return parse_gradle_version((project / "app/build.gradle.kts").read_text(encoding="utf-8"))
+
+
+def parse_gradle_version(text):
+    text = text.removeprefix("\ufeff")
     name = re.search(r'^\s*versionName\s*=\s*"(\d+\.\d+\.\d+)"\s*$', text, re.M)
     code = re.search(r'^\s*versionCode\s*=\s*(\d+)\s*$', text, re.M)
     if not name or not code:

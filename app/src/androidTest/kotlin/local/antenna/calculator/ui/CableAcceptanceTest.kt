@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.SystemClock
 import android.util.Log
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.lifecycle.ViewModelProvider
@@ -45,7 +46,7 @@ class CableAcceptanceTest {
     @Test fun zeroLengthInvalidInputAndIndependentDirections() {
         prepare()
         compose.onNodeWithTag("cable-ANGLE").performScrollTo().performTextReplacement("450")
-        compose.onNodeWithTag("cable-mode-LENGTH_TO_ANGLE").performScrollTo().performClick()
+        selectMode(CableMode.LENGTH_TO_ANGLE)
         compose.onNodeWithTag("cable-LENGTH").performScrollTo().performTextReplacement("0")
         compose.onNodeWithTag("cable-result-3").performScrollTo().assertTextContains("0 нс")
         compose.onNodeWithTag("cable-LENGTH").performScrollTo().performTextReplacement("0,25")
@@ -53,11 +54,17 @@ class CableAcceptanceTest {
         compose.onNodeWithTag("cable-LENGTH").performScrollTo().performTextReplacement("")
         compose.onNodeWithTag("cable-result-0").assertDoesNotExist()
         compose.onNodeWithTag("cable-copy").performScrollTo().assertIsNotEnabled()
-        compose.onNodeWithTag("cable-mode-ANGLE_TO_LENGTH").performScrollTo().performClick()
+        selectMode(CableMode.ANGLE_TO_LENGTH)
         compose.onNodeWithTag("cable-ANGLE").performScrollTo().assertTextContains("450")
         compose.onNodeWithTag("cable-result-1").performScrollTo().assertTextContains("450°")
         compose.onNodeWithTag("cable-result-2").performScrollTo().assertTextContains("90°")
     }
+    private fun selectMode(mode: CableMode) {
+        val chip = compose.onNodeWithTag("cable-mode-${mode.name}")
+        chip.performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+        chip.assertIsSelected()
+    }
+
     @Test fun coefficientIsolationAndClipboardContext() {
         prepare()
         compose.onNodeWithTag("cable-VELOCITY").performScrollTo().performTextReplacement("0,84")
