@@ -2,12 +2,12 @@
 <resources>
     <string name="reference_sizing">@string/source_antenna_geometry</string>
     <string name="reference_sizing_url">@string/source_antenna_geometry_url</string>
-    <string name="reference_trimming">How to Prune A Dipole Antenna to Length</string>
+    <string name="reference_trimming">@string/source_nashua</string>
     <string name="reference_trimming_url">@string/source_nashua_url</string>
     <string name="reference_tools">Transmission Lines</string>
     <string name="reference_tools_url">https://www.arrl.org/transmission-lines</string>
-    <string name="reference_matching">VSWR Converter</string>
-    <string name="reference_matching_url">https://scdn.rohde-schwarz.com/ur/pws/dl_downloads/dl_application/application_notes/1gp77/1GP77_8e_dB_Calculator.pdf#page=22</string>
-    <string name="reference_cable">Transmission Line Theory</string>
-    <string name="reference_cable_url" formatted="false">https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Microwave_and_RF_Design_II_-_Transmission_Lines_%28Steer%29/02%253A_Transmission_Lines/2.02%253A_Transmission_Line_Theory</string>
+    <string name="reference_matching">@string/source_rohde</string>
+    <string name="reference_matching_url">@string/source_rohde_url</string>
+    <string name="reference_cable">@string/source_steer</string>
+    <string name="reference_cable_url">@string/source_steer_url</string>
 </resources>

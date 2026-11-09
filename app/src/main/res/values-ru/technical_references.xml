@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="references_title">Материалы и источники</string>
+    <string name="references_language_en">Английский</string>
+    <string name="references_language_ru">Русский</string>
+    <string name="references_fundamentals">Длина волны и начальные размеры</string>
+    <string name="references_construction">Конструкция диполя и штыря</string>
+    <string name="references_five_eighths">Вертикальные антенны 5/8 λ</string>
+    <string name="references_tuning">Подстройка и измерения</string>
+    <string name="references_matching">КСВ и отражение</string>
+    <string name="references_cable">Электрическая длина кабеля</string>
+    <string name="source_itu_description">Начальные размеры в метрах и схемы полуволнового диполя и четвертьволнового штыря.</string>
+    <string name="source_nasa_description">Руководство проекта Radio JOVE объясняет концевой эффект и показывает устройство проволочного диполя.</string>
+    <string name="source_verticals_description">Введение в устройство вертикальных антенн и роль противовесов при наземной установке.</string>
+    <string name="source_five_eighths_description">Сравнение расчётных диаграмм направленности при разных свойствах земли и высоте установки.</string>
+    <string name="source_rig_tuning_description">Практическая подстройка антенны с анализатором по измеренной частоте.</string>
+    <string name="source_kadamm_description">Пересчёт КСВ, возвратных потерь и доли отражённой мощности с числовыми примерами.</string>
+    <string name="source_rohde_description">Раздел руководства R&amp;S dB Calculator с прямыми и обратными формулами пересчёта КСВ и связанных величин.</string>
+    <string name="source_rig_cable_description">Пример расчёта и подгонки четвертьволнового отрезка коаксиального кабеля.</string>
+    <string name="source_steer_description">Связь физической длины, фазовой скорости и длины волны с электрической длиной в градусах.</string>
+</resources>

@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 import local.antenna.calculator.R
 import local.antenna.calculator.state.*
 
-private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT }
+private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT, REFERENCES }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -49,6 +49,7 @@ fun CalculatorApp(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, 
 @Composable
 private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, currentState: () -> CalculatorUiState) {
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
+    var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menu by remember { mutableStateOf(false) }
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
@@ -60,11 +61,20 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     fun leaveInput() { focus.clearFocus(); keyboard?.hide() }
-    BackHandler(page != Page.CALCULATOR) { leaveInput(); page = Page.CALCULATOR }
+    fun goBack() {
+        leaveInput()
+        page = if (page == Page.REFERENCES) referencesBackPage else Page.CALCULATOR
+    }
+    fun openReferences() {
+        referencesBackPage = page
+        page = Page.REFERENCES
+    }
+    BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
         val title = when (page) {
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
+            Page.REFERENCES -> R.string.references_title
             Page.MATCHING -> R.string.matching_title
             Page.CABLE -> R.string.cable_screen_title
             Page.CALCULATOR -> when (settings.section) {
@@ -80,15 +90,23 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                 TopAppBar(title = { Text(stringResource(title), style = MaterialTheme.typography.titleLarge) },
                     expandedHeight = 64.dp * LocalDensity.current.fontScale,
                     navigationIcon = {
-                        if (page != Page.CALCULATOR) IconButton(onClick = { leaveInput(); page = Page.CALCULATOR },
+                        if (page != Page.CALCULATOR) IconButton(onClick = ::goBack,
                             modifier = Modifier.testTag("back")) { Icon(painterResource(R.drawable.ic_back), stringResource(R.string.back)) }
                     },
                     actions = {
                         Box {
-                            IconButton(onClick = { leaveInput(); menu = true }, modifier = Modifier.testTag("menu")) { Icon(painterResource(R.drawable.ic_menu), stringResource(R.string.menu)) }
+                            IconButton(onClick = {
+                                leaveInput()
+                                snackbar.currentSnackbarData?.dismiss()
+                                menu = true
+                            }, modifier = Modifier.testTag("menu")) { Icon(painterResource(R.drawable.ic_menu), stringResource(R.string.menu)) }
                             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                 DropdownMenuItem(text = { Text(stringResource(R.string.settings)) }, onClick = { menu = false; page = Page.SETTINGS }, modifier = Modifier.testTag("open-settings"))
                                 DropdownMenuItem(text = { Text(stringResource(R.string.about)) }, onClick = { menu = false; page = Page.ABOUT }, modifier = Modifier.testTag("open-about"))
+                                DropdownMenuItem(text = { Text(stringResource(R.string.references_title)) }, onClick = {
+                                    menu = false
+                                    if (page != Page.REFERENCES) openReferences()
+                                }, modifier = Modifier.testTag("open-references"))
                             }
                         }
                     })
@@ -127,7 +145,8 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                 .testTag("page-content"), contentAlignment = Alignment.TopCenter) {
                 when (page) {
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
-                    Page.ABOUT -> AboutScreen()
+                    Page.ABOUT -> AboutScreen(onOpenReferences = ::openReferences)
+                    Page.REFERENCES -> ReferencesScreen(settings.language)
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CALCULATOR -> {

@@ -45,8 +45,9 @@ internal fun validatedSourceAddress(address: String): String? {
     val uri = try { URI(address) } catch (_: URISyntaxException) { return null }
     val allowedHosts = setOf(
         "physics.nist.gov", "rsgb.org", "www.arrl.org", "www.n1fd.org", "ssotnikov.pro",
-        "edu.tusur.ru", "www.rigexpert.com", "www.kadamm.com", "scdn.rohde-schwarz.com",
+        "www.itu.int", "www.rigexpert.com", "www.kadamm.com", "scdn.rohde-schwarz.com",
         "eng.libretexts.org", "www.analog.com", "helpfiles.keysight.com",
+        "radiojove.gsfc.nasa.gov", "practicalantennas.com",
     )
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
         uri.port !in setOf(-1, 443)) return null

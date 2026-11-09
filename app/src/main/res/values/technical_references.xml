@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="references_title">References</string>
+    <string name="references_language_en">English</string>
+    <string name="references_language_ru">Russian</string>
+    <string name="references_fundamentals">Wavelength and starting dimensions</string>
+    <string name="references_construction">Dipole and monopole construction</string>
+    <string name="references_five_eighths">5/8-wave verticals</string>
+    <string name="references_tuning">Tuning and measurements</string>
+    <string name="references_matching">SWR and reflection</string>
+    <string name="references_cable">Cable electrical length</string>
+    <string name="source_itu" translatable="false">Применяемые антенны</string>
+    <string name="source_itu_url" translatable="false">https://www.itu.int/dms_pub/itu-d/opb/hdb/D-HDB-WET-2007-PDF-R.pdf#page=115</string>
+    <string name="source_itu_description">Metric starting estimates and construction diagrams for half-wave dipoles and quarter-wave verticals.</string>
+    <string name="source_nasa" translatable="false">The Dipole Antenna</string>
+    <string name="source_nasa_url" translatable="false">https://radiojove.gsfc.nasa.gov/radio_telescope/manuals/RJ_ant_manual_2.0.pdf#page=8</string>
+    <string name="source_nasa_description">The Radio JOVE Antenna Manual explains end effects and shows how a wire dipole is built.</string>
+    <string name="source_verticals" translatable="false">Verticals</string>
+    <string name="source_verticals_url" translatable="false">https://www.arrl.org/verticals</string>
+    <string name="source_verticals_description">An introduction to vertical antennas and the role of radials in a ground-mounted installation.</string>
+    <string name="source_five_eighths" translatable="false">Understanding the 5/8 wave antenna</string>
+    <string name="source_five_eighths_url" translatable="false">https://practicalantennas.com/designs/verticals/5eights/</string>
+    <string name="source_five_eighths_description">Compares modeled radiation patterns for different ground conditions and mounting heights.</string>
+    <string name="source_rig_tuning" translatable="false">Настройка антенны</string>
+    <string name="source_rig_tuning_url" translatable="false">https://www.rigexpert.com/files/product_documentation/aa170/aa-170-manual_ru.pdf#page=16</string>
+    <string name="source_rig_tuning_description">Practical antenna tuning with an analyzer and measured frequency.</string>
+    <string name="source_kadamm" translatable="false">КСВН, потери и развязка: как читать характеристики ВЧ-узла</string>
+    <string name="source_kadamm_url" translatable="false">https://www.kadamm.com/ru/blog/ksvn-poteri-i-razvyazka-kak-chitat-kharakteristiki/</string>
+    <string name="source_kadamm_description">An illustrated explanation of SWR, return loss, reflected power and mismatch loss.</string>
+    <string name="source_rohde" translatable="false">VSWR Converter</string>
+    <string name="source_rohde_url" translatable="false">https://scdn.rohde-schwarz.com/ur/pws/dl_downloads/dl_application/application_notes/1gp77/1GP77_8e_dB_Calculator.pdf#page=22</string>
+    <string name="source_rohde_description">The R&amp;S dB Calculator note gives forward and inverse conversions for the quantities on the SWR screen.</string>
+    <string name="source_rig_cable" translatable="false">Изготовление отрезков кабеля заданной электрической длины</string>
+    <string name="source_rig_cable_url" translatable="false">https://www.rigexpert.com/files/product_documentation/aa170/aa-170-manual_ru.pdf#page=19</string>
+    <string name="source_rig_cable_description">A worked example of calculating and trimming a quarter-wave coaxial cable section.</string>
+    <string name="source_steer" translatable="false">Transmission Line Theory</string>
+    <string name="source_steer_url" translatable="false" formatted="false">https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Microwave_and_RF_Design_II_-_Transmission_Lines_%28Steer%29/02%253A_Transmission_Lines/2.02%253A_Transmission_Line_Theory</string>
+    <string name="source_steer_description">Relates physical length, phase velocity and wavelength to electrical length in degrees.</string>
+</resources>

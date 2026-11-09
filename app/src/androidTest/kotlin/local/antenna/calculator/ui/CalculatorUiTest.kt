@@ -149,7 +149,7 @@ class CalculatorUiTest {
         }
         compose.setContent {
             CompositionLocalProvider(LocalContext provides blocked) {
-                CalculatorTheme(AppTheme.LIGHT) { AboutScreen() }
+                CalculatorTheme(AppTheme.LIGHT) { ReferencesScreen(AppLanguage.ENGLISH) }
             }
         }
         compose.waitUntil(timeoutMillis = 10000) { compose.activity.hasWindowFocus() }
@@ -202,8 +202,13 @@ class CalculatorUiTest {
         compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Decrease of 32.3 mm")
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-about").assertTextContains("Help").performClick()
+        compose.onNodeWithText("Calculation copied").assertDoesNotExist()
         compose.onNodeWithTag("formula-wavelength").assertContentDescriptionEquals("Wavelength equals the speed of light divided by frequency.")
-        compose.onNodeWithTag("source-nist").performScrollTo().assertTextContains("NIST — speed of light")
+        compose.onNodeWithTag("source-nist").assertDoesNotExist()
+        compose.onNodeWithTag("help-references").performScrollTo().performClick()
+        compose.onNodeWithTag("source-nist").performScrollTo().assertTextContains("Speed of light in vacuum")
+        back()
+        compose.onNodeWithTag("formula-wavelength").assertExists()
         back()
         settings()
         compose.onNodeWithTag("language-RUSSIAN").performScrollTo().performClick()
@@ -226,10 +231,13 @@ class CalculatorUiTest {
         instrumentation.addMonitor(monitor)
         try {
             compose.onNodeWithTag("menu").performClick()
-            compose.onNodeWithTag("open-about").performClick()
-            val sources = listOf("nist" to "physics.nist.gov", "rsgb" to "rsgb.org",
+            compose.onNodeWithTag("open-references").assertTextContains("Материалы и источники").performClick()
+            val sources = listOf("itu" to "www.itu.int", "nist" to "physics.nist.gov", "rsgb" to "rsgb.org",
                 "analyzer" to "www.arrl.org", "antenna-geometry" to "www.arrl.org", "nashua" to "www.n1fd.org",
-                "reflection" to "www.analog.com", "cable-delay" to "helpfiles.keysight.com")
+                "reflection" to "www.analog.com", "cable-delay" to "helpfiles.keysight.com",
+                "nasa" to "radiojove.gsfc.nasa.gov", "verticals" to "www.arrl.org", "five-eighths" to "practicalantennas.com",
+                "rig-tuning" to "www.rigexpert.com", "kadamm" to "www.kadamm.com", "rohde" to "scdn.rohde-schwarz.com",
+                "rig-cable" to "www.rigexpert.com", "steer" to "eng.libretexts.org")
             for ((name, _) in sources) compose.onNodeWithTag("source-$name").performScrollTo().performClick()
             compose.onNodeWithTag("source-author").assertDoesNotExist()
             back(); settings()
@@ -263,7 +271,7 @@ class CalculatorUiTest {
             }
 
             back()
-            checkReferences(listOf("Антенно-фидерные устройства", "Настройка антенны", "Применение анализатора",
+            checkReferences(listOf("Применяемые антенны", "Настройка антенны", "Применение анализатора",
                 "КСВН, потери и развязка: как читать характеристики ВЧ-узла", "Изготовление отрезков кабеля заданной электрической длины"))
             settings()
             compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
@@ -272,13 +280,45 @@ class CalculatorUiTest {
                 "Transmission Lines", "VSWR Converter", "Transmission Line Theory"))
             compose.runOnIdle {
                 val references = requests.drop(sources.size + 2).map { it.data!! }
-                assertEquals(listOf("edu.tusur.ru", "www.rigexpert.com", "www.rigexpert.com", "www.kadamm.com",
+                assertEquals(listOf("www.itu.int", "www.rigexpert.com", "www.rigexpert.com", "www.kadamm.com",
                     "www.rigexpert.com", "www.arrl.org", "www.n1fd.org", "www.arrl.org",
                     "scdn.rohde-schwarz.com", "eng.libretexts.org"), references.map { it.host })
-                assertEquals(listOf("page=66", "page=16", "page=15", null, "page=19", "page=12",
+                assertEquals(listOf("page=115", "page=16", "page=15", null, "page=19", "page=12",
                     null, null, "page=22", null), references.map { it.fragment })
             }
         } finally { instrumentation.removeMonitor(monitor) }
+    }
+
+    @Test fun sizingAndReferenceOrderingFollowTheInterfaceLanguageAtLargeFont() {
+        start(fontScale = 2f)
+        compose.onNodeWithTag("output-unit-CENTIMETERS").performScrollTo().performClick()
+
+        fun checkSizes(separator: String, unit: String) {
+            val expected = listOf("wavelength" to "206.75", "monopole-result" to "49.10", "dipole-arm" to "49.10",
+                "dipole-total" to "98.21", "ideal-five-eighths" to "129.22")
+            for ((tag, value) in expected) {
+                compose.onNodeWithTag(tag).performScrollTo().assertTextContains("${value.replace(".", separator)} $unit")
+            }
+        }
+
+        fun checkOrder(first: String, second: String, languageLabel: String) {
+            compose.onNodeWithTag("menu").performClick()
+            compose.onNodeWithTag("open-references").performClick()
+            val firstCard = compose.onNodeWithTag("source-$first")
+            firstCard.performScrollTo().assertIsDisplayed().assertTextContains(languageLabel, substring = true)
+            val secondCard = compose.onNodeWithTag("source-$second")
+            assertTrue(firstCard.getUnclippedBoundsInRoot().top < secondCard.getUnclippedBoundsInRoot().top)
+            back()
+        }
+
+        checkSizes(",", "см")
+        checkOrder("itu", "nist", "Русский")
+        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145")
+        settings()
+        compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
+        back()
+        checkSizes(".", "cm")
+        checkOrder("nist", "itu", "English")
     }
 
     @Test fun englishFallbackKeepsLeftToRightLayoutOnRtlSystem() {

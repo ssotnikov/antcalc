@@ -1,6 +1,5 @@
 package local.antenna.calculator.ui
 
-import androidx.core.net.toUri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -22,7 +20,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.trimming.AdjustmentDirection
 
 @Composable
-fun AboutScreen() {
+fun AboutScreen(onOpenReferences: () -> Unit) {
     Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)) {
         AboutHeading(R.string.about_dimensions_heading)
@@ -48,15 +46,9 @@ fun AboutScreen() {
         HelpText(R.string.resonance_note)
         HelpText(R.string.about_measurement_note)
         HelpText(R.string.trimming_note)
-        Text(stringResource(R.string.materials_title), style = MaterialTheme.typography.titleLarge)
-        HelpText(R.string.materials_note)
-        MaterialLink(R.string.source_nist, R.string.source_nist_description, R.string.source_nist_url, "source-nist")
-        MaterialLink(R.string.source_rsgb, R.string.source_rsgb_description, R.string.source_rsgb_url, "source-rsgb")
-        MaterialLink(R.string.source_analyzer, R.string.source_analyzer_description, R.string.source_analyzer_url, "source-analyzer")
-        MaterialLink(R.string.source_antenna_geometry, R.string.source_antenna_geometry_description, R.string.source_antenna_geometry_url, "source-antenna-geometry")
-        MaterialLink(R.string.source_nashua, R.string.source_nashua_description, R.string.source_nashua_url, "source-nashua")
-        MaterialLink(R.string.source_reflection, R.string.source_reflection_description, R.string.source_reflection_url, "source-reflection")
-        MaterialLink(R.string.source_cable_delay, R.string.source_cable_delay_description, R.string.source_cable_delay_url, "source-cable-delay")
+        TextButton(onClick = onOpenReferences, modifier = Modifier.testTag("help-references")) {
+            Text(stringResource(R.string.references_title))
+        }
         Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME))
     }
 }
@@ -64,21 +56,6 @@ fun AboutScreen() {
 @Composable
 private fun AboutHeading(label: Int) {
     Text(stringResource(label), style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
-}
-
-@Composable
-private fun MaterialLink(title: Int, description: Int, address: Int, tag: String) {
-    val context = LocalContext.current
-    val url = stringResource(address)
-    OutlinedCard(onClick = {
-        openSourceWithFeedback(context, url)
-    }, modifier = Modifier.fillMaxWidth().testTag(tag)) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(stringResource(title), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-            Text(stringResource(description), style = MaterialTheme.typography.bodyMedium)
-            Text(url.toUri().host.orEmpty(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        }
-    }
 }
 
 @Composable

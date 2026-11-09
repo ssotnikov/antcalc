@@ -21,7 +21,7 @@
     <string name="dipole_actual_length">Total length of both arms</string>
     <string name="factor">Shortening factor k</string>
     <string name="custom_factor">Custom factor</string>
-    <string name="factor_note">The shortening factor k is an empirical adjustment to the radiator length. Use 0.95 as a starting point. The actual length depends on the design, conductor diameter and insulation, radials and installation. Set k and the cable velocity factor VF independently.</string>
+    <string name="factor_note">The same empirical shortening factor k is used for the monopole and both dipole arms. Use 0.95 as a starting point and measure the antenna after installation. Choose k and the cable velocity factor VF independently.</string>
     <string name="factor_low_note">A low k does not account for coils or loading: this model is intended for straight conductors.</string>
     <string name="input_data">Input values</string>
     <string name="result_units">Result unit</string>
@@ -37,15 +37,15 @@
     <string name="monopole">Monopole</string>
     <string name="dipole">Symmetric dipole</string>
     <string name="physical_sizes">Estimated starting dimensions</string>
-    <string name="ideal_sizes">Theoretical dimensions without correction</string>
+    <string name="ideal_sizes">Ideal geometric dimensions</string>
     <string name="radiator_length">Quarter-wave monopole</string>
     <string name="dipole_total">Total dipole length</string>
     <string name="dipole_arm">Length of one arm</string>
     <string name="wavelength">Wavelength λ</string>
     <string name="ideal_quarter">Ideal λ/4 — monopole and each arm</string>
     <string name="ideal_half">Ideal λ/2 — complete dipole</string>
-    <string name="ideal_five_eighths">Theoretical 5/8λ length</string>
-    <string name="five_eighths_note">This is the theoretical free-space length of 5/8λ. A practical vertical antenna usually needs a matching network and radials.</string>
+    <string name="ideal_five_eighths">Theoretical 5/8 λ radiator length</string>
+    <string name="five_eighths_note">This is five eighths of the free-space wavelength. A practical 5/8-wave vertical typically needs a matching network and a suitable conductive ground plane or radials.</string>
     <string name="conductor_note">The dipole has two equal arms. Their combined length excludes the feed-point gap. The monopole length covers the radiator only; radials are not included. The radials or a conductive ground plane form the other part of the antenna and provide a return path for radio-frequency current. Their dimensions and arrangement affect tuning and must be chosen separately.</string>
     <string name="approximate">Approximate calculation</string>
     <string name="sizing_note">Use these dimensions as a starting point. Conductor diameter, insulation, mounting and nearby objects all affect the resonant length. Measure the antenna and adjust its length as needed.</string>
@@ -103,14 +103,13 @@
     <string name="formula_arm_alt">Each new arm length is half the new total dipole length. The adjustment to each arm is half the total length change.</string>
     <string name="formula_lengths_key">Lₛ is the monopole length, Ld the total dipole length and La the length of one arm. The shortening factor k applies to the conductor length, not the wavelength. Choose k to suit the antenna design.</string>
     <string name="formula_delta_note">A negative ΔL predicts a decrease in length and a positive ΔL predicts an increase. Equal frequencies give zero change.</string>
-    <string name="materials_title">Online resources</string>
     <string name="materials_note">Tap a card to open the material in your browser. Reading it requires an internet connection.</string>
     <string name="browser_unavailable">No app is available to open this link. Install a browser.</string>
     <string name="link_open_failed">The link could not be opened. Check your browser settings or try another browser.</string>
-    <string name="source_nist">NIST — speed of light</string>
+    <string name="source_nist" translatable="false">Speed of light in vacuum</string>
     <string name="source_nist_description">The exact value of the speed of light in vacuum used in the wavelength calculation.</string>
     <string name="source_nist_url" translatable="false">https://physics.nist.gov/cuu/Constants/Value/c.html</string>
-    <string name="source_rsgb">RSGB — the half-wave dipole</string>
+    <string name="source_rsgb" translatable="false">Your first antenna – the half-wave dipole</string>
     <string name="source_rsgb_description">A practical introduction to calculating, building and tuning a half-wave dipole.</string>
     <string name="source_rsgb_url" translatable="false">https://rsgb.org/main/get-started-in-amateur-radio/antennas/your-first-antenna-the-half-wave-dipole/</string>
     <string name="source_analyzer" translatable="false">Analyzing Your Antenna System</string>
@@ -119,7 +118,7 @@
     <string name="source_antenna_geometry" translatable="false">Types of Antennas</string>
     <string name="source_antenna_geometry_description">The ARRL Radio Lab Handbook explains the two arms of a half-wave dipole and the radials of a quarter-wave vertical.</string>
     <string name="source_antenna_geometry_url" translatable="false">https://www.arrl.org/files/file/LabHandbook/RLH%20Unit%204.pdf#page=12</string>
-    <string name="source_nashua">Nashua Area Radio Society — dipole tuning</string>
+    <string name="source_nashua" translatable="false">How to Prune A Dipole Antenna to Length</string>
     <string name="source_nashua_description">Method II estimates the new dipole length from its measured and target resonant frequencies.</string>
     <string name="source_nashua_url" translatable="false">https://www.n1fd.org/2022/08/18/dipole-antenna/</string>
     <string name="source_reflection" translatable="false">RF Demystified—Understanding Wave Reflections</string>

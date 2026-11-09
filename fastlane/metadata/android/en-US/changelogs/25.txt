@@ -1,0 +1,1 @@
+Added a References screen organized by topic. Clarified the shortening factor and the theoretical 5/8-wave radiator length.
