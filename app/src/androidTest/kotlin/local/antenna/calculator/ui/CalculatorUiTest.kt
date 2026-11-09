@@ -199,7 +199,7 @@ class CalculatorUiTest {
         trimming()
         field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertTextContains("Actual monopole length")
         edit(FieldKey.ACTUAL_LENGTH, "500")
-        compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Shorten by 32.3 mm")
+        compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Decrease of 32.3 mm")
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-about").performClick()
         compose.onNodeWithTag("formula-wavelength").assertContentDescriptionEquals("Wavelength equals the speed of light divided by frequency.")
@@ -259,9 +259,9 @@ class CalculatorUiTest {
         start()
         compose.onNodeWithTag("monopole-result").assertTextContains("491,0 мм")
         compose.onNodeWithTag("dipole-total").assertTextContains("Полная длина диполя").assertTextContains("982,1 мм")
-        compose.onNodeWithTag("dipole-arm").assertTextContains("Каждое плечо").assertTextContains("491,0 мм")
+        compose.onNodeWithTag("dipole-arm").assertTextContains("Длина одного плеча").assertTextContains("491,0 мм")
         compose.onNodeWithTag("wavelength").assertTextContains("2067,5 мм")
-        compose.onNodeWithContentDescription("Схема двух равных плеч диполя с зазором питания. Полная длина — сумма двух проводников.").assertExists()
+        compose.onNodeWithContentDescription("Lₐ — длина каждого из двух равных плеч. Полная длина Lᵈ равна 2Lₐ и исключает зазор питания.").assertExists()
     }
 
     @Test fun frequencyAndLengthUnitsPreservePhysicalSize() {
@@ -316,10 +316,10 @@ class CalculatorUiTest {
     @Test fun practicalTrimCoversShortenLengthenAndEqualFrequencies() {
         start(); trimming()
         edit(FieldKey.ACTUAL_LENGTH, "500")
-        compose.onNodeWithTag("adjustment").assertTextContains("Укоротить на 32,3 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение на 32,3 мм")
         compose.onNodeWithTag("new-length").assertTextContains("467,7 мм")
         edit(FieldKey.MEASURED, "155"); edit(FieldKey.TARGET, "145")
-        compose.onNodeWithTag("adjustment").assertTextContains("Удлинить на 34,5 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Увеличение на 34,5 мм")
         edit(FieldKey.MEASURED, "145")
         compose.onNodeWithTag("adjustment").assertTextContains("Изменение не требуется")
     }
@@ -328,19 +328,28 @@ class CalculatorUiTest {
         start(); trimming()
         compose.onNodeWithTag("antenna-SYMMETRIC_DIPOLE").performScrollTo().performClick()
         edit(FieldKey.ACTUAL_LENGTH, "1000")
-        compose.onNodeWithTag("adjustment").assertTextContains("Укоротить на 64,5 мм")
-        compose.onNodeWithTag("arm-adjustment").assertTextContains("Укоротить на 32,3 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение на 64,5 мм")
+        compose.onNodeWithTag("arm-adjustment").assertTextContains("Уменьшение на 32,3 мм")
         compose.onNodeWithTag("new-length").assertTextContains("935,5 мм")
         compose.onNodeWithTag("new-arm").assertTextContains("467,7 мм")
         val text = copy()
-        listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная частота: 145 МГц",
-            "Желаемая частота: 155 МГц", "Новая полная длина диполя: 935,5 мм", "Изменение каждого плеча: Укоротить на 32,3 мм",
-            "Новая длина каждого плеча: 467,7 мм", "Приближённый расчёт").forEach { assertTrue(text, text.contains(it)) }
+        listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная резонансная частота: 145 МГц",
+            "Целевая частота: 155 МГц", "Оценка полной длины диполя: 935,5 мм", "Изменение каждого плеча: Уменьшение на 32,3 мм",
+            "Оценка длины каждого плеча: 467,7 мм", "Приближённый расчёт").forEach { assertTrue(text, text.contains(it)) }
+    }
+
+    @Test fun unusualAntennaLengthShowsWarningWithTheEstimate() {
+        start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "1900")
+        val warning = "Введённая длина отличается более чем на 25 %"
+        compose.onNodeWithText(warning, substring = true).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("new-length").performScrollTo().assertTextContains("1777,4 мм")
+        val text = copy()
+        assertTrue(text, text.contains(warning))
     }
 
     @Test fun smallNonzeroTrimRetainsDirection() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500"); edit(FieldKey.TARGET, "145,000001")
-        compose.onNodeWithTag("adjustment").assertTextContains("Укоротить менее чем на 0,1 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение менее чем на 0,1 мм")
         compose.onNodeWithTag("new-length").assertTextContains("500,0 мм")
     }
 
@@ -365,14 +374,14 @@ class CalculatorUiTest {
         start()
         val text = copy()
         listOf("Частота: 145 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491,0 мм",
-            "Полная длина диполя: 982,1 мм", "Каждое плечо: 491,0 мм", "Длина волны λ: 2067,5 мм", "Приближённый расчёт")
+            "Полная длина диполя: 982,1 мм", "Длина одного плеча: 491,0 мм", "Длина волны λ: 2067,5 мм", "Приближённый расчёт")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 
     @Test fun doubledFontKeepsLabelsResultsAndCopyReachable() {
         start(fontScale = 2f)
         compose.onNodeWithTag("dipole-total").performScrollTo().assertIsDisplayed().assertTextContains("Полная длина диполя")
-        compose.onNodeWithTag("dipole-arm").performScrollTo().assertIsDisplayed().assertTextContains("Каждое плечо")
+        compose.onNodeWithTag("dipole-arm").performScrollTo().assertIsDisplayed().assertTextContains("Длина одного плеча")
         compose.onNodeWithTag("copy-result").performScrollTo().assertIsDisplayed().assertIsEnabled()
         trimming(); field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertIsDisplayed()
     }
@@ -412,8 +421,8 @@ class CalculatorUiTest {
     @Test fun monopoleClipboardContainsActualLengthBothFrequenciesAndNewLength() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500")
         val text = copy()
-        listOf("Фактическая длина штыря: 500 мм", "Измеренная частота: 145 МГц", "Желаемая частота: 155 МГц",
-            "Укоротить на 32,3 мм", "Новая длина штыря: 467,7 мм", "Приближённый расчёт")
+        listOf("Фактическая длина штыря: 500 мм", "Измеренная резонансная частота: 145 МГц", "Целевая частота: 155 МГц",
+            "Уменьшение на 32,3 мм", "Оценка новой длины штыря: 467,7 мм", "Приближённый расчёт")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 
@@ -467,7 +476,8 @@ class CalculatorUiTest {
         compose.onNodeWithTag("open-cable").performScrollTo().performClick()
         compose.onNodeWithTag("cable-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("cable-details").performScrollTo().performClick()
-        compose.onNodeWithContentDescription("Propagation speed equals cable velocity factor times the speed of light in vacuum.").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("One wavelength").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithContentDescription("Phase velocity equals cable velocity factor times the speed of light in vacuum.").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("back").performClick()
         compose.onNodeWithTag("open-matching").performScrollTo().assertExists()
     }
@@ -520,7 +530,8 @@ class CalculatorUiTest {
         compose.onNodeWithTag("open-matching").performClick()
         compose.onNodeWithTag("matching-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("matching-details").performScrollTo().performClick()
-        compose.onNodeWithText("Mismatch loss").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Mismatch loss (ML)").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Power balance at an SWR of 2:1").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("back").performClick()
         compose.onNodeWithTag("open-matching").assertExists()
     }

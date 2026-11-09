@@ -26,7 +26,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
@@ -186,17 +185,21 @@ private fun ResultPanel(group: ResultGroup) {
         modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(stringResource(group.title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            group.warning?.let {
+                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+            }
             group.rows.forEachIndexed { index, row ->
                 if (group.diagrams && index == 0) AntennaDiagram(dipole = false)
                 if (group.diagrams && index == 1) AntennaDiagram(dipole = true)
                 Column(Modifier.fillMaxWidth().testTag(row.tag).semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(stringResource(row.label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(row.value, style = if (index == 0) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
-                        fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)
+                        color = MaterialTheme.colorScheme.primary)
                 }
                 if (index != group.rows.lastIndex) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
             group.notes.forEach { HelpText(it) }
+            group.tuningDirection?.let { TuningDiagram(it) }
         }
     }
 }

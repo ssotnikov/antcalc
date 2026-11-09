@@ -1,0 +1,1 @@
+Clarified antenna sizing, tuning, SWR and cable electrical length. Added explanatory diagrams and a warning when the measured antenna length differs substantially from the selected model.

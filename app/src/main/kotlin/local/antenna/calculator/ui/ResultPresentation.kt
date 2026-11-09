@@ -10,7 +10,10 @@ import kotlin.math.abs
 import java.math.BigDecimal
 
 data class ResultRow(val label: Int, val value: String, val tag: String)
-data class ResultGroup(val title: Int, val rows: List<ResultRow>, val notes: List<Int> = emptyList(), val diagrams: Boolean = false)
+data class ResultGroup(
+    val title: Int, val rows: List<ResultRow>, val notes: List<Int> = emptyList(),
+    val diagrams: Boolean = false, val warning: Int? = null, val tuningDirection: AdjustmentDirection? = null,
+)
 data class ResultPresentation(val groups: List<ResultGroup>, val copyText: String?)
 
 internal fun coefficientText(percent: Int): String = BigDecimal.valueOf(percent.toLong(), 2).toPlainString().replace('.', ',')
@@ -85,7 +88,9 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
             if (dipole) notes += listOf(R.string.dipole_note, R.string.conductor_note)
             if (TrimmingWarning.LARGE_FREQUENCY_CHANGE in result.warnings) notes += R.string.large_change_note
             if (TrimmingWarning.RESULT_OUTSIDE_INPUT_LENGTH_RANGE in result.warnings) notes += R.string.outside_length_note
-            groups += ResultGroup(R.string.trimming, rows, notes)
+            val warning = if (TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL in result.warnings) R.string.trimming_model_warning else null
+            groups += ResultGroup(R.string.trimming, rows, notes, warning = warning,
+                tuningDirection = result.direction.takeUnless { it == AdjustmentDirection.UNCHANGED || warning != null })
         }
     }
     val copy = if (complete && state.editingEnabled) buildList {
@@ -93,6 +98,7 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
         for (group in groups) {
             add("")
             add(context.getString(group.title))
+            group.warning?.let { add(context.getString(it)) }
             addAll(group.rows.map { line(it.label, it.value) })
             addAll(group.notes.map(context::getString))
         }

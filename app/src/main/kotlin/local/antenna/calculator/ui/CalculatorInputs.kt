@@ -34,11 +34,15 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
         NumericInput(FieldKey.SIZING_FREQUENCY, R.string.frequency, state, onEvent)
         NumericInput(FieldKey.FACTOR, R.string.factor, state, onEvent)
         val factor = draft[FieldKey.FACTOR].factor().validValue()
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             ShorteningFactor.PRESETS.forEach { preset ->
                 val value = java.math.BigDecimal.valueOf(preset.tenThousandths.toLong(), 4).inputText()
+                val number = localizedNumber(context, coefficientText(preset.tenThousandths / 100))
+                val correction = 100 - preset.tenThousandths / 100
                 FilterChip(selected = factor == preset, onClick = { onEvent(CalculatorEvent.Edit(FieldKey.FACTOR, value)) },
-                    label = { Text(localizedNumber(context, coefficientText(preset.tenThousandths / 100))) }, modifier = Modifier.testTag("factor-${preset.tenThousandths}"))
+                    label = { Text(if (correction == 0) stringResource(R.string.factor_ideal_preset, number)
+                        else stringResource(R.string.factor_correction_preset, number, correction)) },
+                    modifier = Modifier.testTag("factor-${preset.tenThousandths}"))
             }
         }
         if (factor != null && factor !in ShorteningFactor.PRESETS) Text(stringResource(R.string.custom_factor), style = MaterialTheme.typography.labelLarge)
@@ -51,6 +55,7 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
         AntennaDiagram(dipole = settings.antennaType == AntennaType.SYMMETRIC_DIPOLE)
         NumericInput(FieldKey.ACTUAL_LENGTH, if (settings.antennaType == AntennaType.MONOPOLE) R.string.actual_length else R.string.dipole_actual_length, state, onEvent)
         NumericInput(FieldKey.MEASURED, R.string.measured_frequency, state, onEvent)
+        HelpText(R.string.resonance_note)
         NumericInput(FieldKey.TARGET, R.string.target_frequency, state, onEvent)
         if (draft[FieldKey.ACTUAL_LENGTH].text.isEmpty()) HelpText(R.string.measured_length_required)
     }

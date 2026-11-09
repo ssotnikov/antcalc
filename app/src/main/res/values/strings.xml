@@ -15,13 +15,13 @@
     <string name="menu">Menu</string>
     <string name="back">Back</string>
     <string name="frequency">Frequency</string>
-    <string name="measured_frequency">Measured frequency</string>
+    <string name="measured_frequency">Measured resonant frequency</string>
     <string name="target_frequency">Target frequency</string>
     <string name="actual_length">Actual monopole length</string>
     <string name="dipole_actual_length">Total length of both arms</string>
     <string name="factor">Shortening factor k</string>
     <string name="custom_factor">Custom factor</string>
-    <string name="factor_note">A model factor for the monopole and dipole arms. It depends on the construction and surroundings, not just the material.</string>
+    <string name="factor_note">The shortening factor k is an empirical adjustment to the radiator length. Use 0.95 as a starting point. The actual length depends on the design, conductor diameter and insulation, radials and installation. Set k and the cable velocity factor VF independently.</string>
     <string name="factor_low_note">A low k does not account for coils or loading: this model is intended for straight conductors.</string>
     <string name="input_data">Input values</string>
     <string name="result_units">Result unit</string>
@@ -36,35 +36,35 @@
     <string name="antenna_type">Antenna type</string>
     <string name="monopole">Monopole</string>
     <string name="dipole">Symmetric dipole</string>
-    <string name="physical_sizes">Estimated physical dimensions</string>
-    <string name="ideal_sizes">Ideal wavelength geometry</string>
+    <string name="physical_sizes">Estimated starting dimensions</string>
+    <string name="ideal_sizes">Theoretical dimensions without correction</string>
     <string name="radiator_length">Quarter-wave monopole</string>
     <string name="dipole_total">Total dipole length</string>
-    <string name="dipole_arm">Each arm</string>
+    <string name="dipole_arm">Length of one arm</string>
     <string name="wavelength">Wavelength λ</string>
     <string name="ideal_quarter">Ideal λ/4 — monopole and each arm</string>
     <string name="ideal_half">Ideal λ/2 — complete dipole</string>
-    <string name="ideal_five_eighths">5/8-wavelength reference</string>
-    <string name="five_eighths_note">This is the geometric length of 5/8 of a wavelength. The ground system and matching network must be designed separately.</string>
+    <string name="ideal_five_eighths">Theoretical 5/8λ length</string>
+    <string name="five_eighths_note">This is the theoretical free-space length of 5/8λ. A practical vertical antenna usually needs a matching network and radials.</string>
     <string name="conductor_note">The dipole has two equal arms. Their combined length excludes the feed-point gap. The monopole length covers the radiator only; radials are not included. The radials or a conductive ground plane form the other part of the antenna and provide a return path for radio-frequency current. Their dimensions and arrangement affect tuning and must be chosen separately.</string>
     <string name="approximate">Approximate calculation</string>
     <string name="sizing_note">Use these dimensions as a starting point. Conductor diameter, insulation, mounting and nearby objects all affect the resonant length. Measure the antenna and adjust its length as needed.</string>
-    <string name="trimming_note">Make small adjustments and measure the resonant frequency again after each step. Keep the antenna in the same position and surroundings as during the initial measurement.</string>
+    <string name="trimming_note">Treat the result as an estimate. Change the length in small steps in the final installation and measure again after each step. When trimming, start by removing only part of the estimated length change.</string>
     <string name="dipole_note">Adjust both arms by the same amount. The calculator shows the total length change and the change to each arm separately.</string>
     <string name="large_change_note">Large adjustment: the simple ratio may be inaccurate. Check the construction and measure again.</string>
     <string name="outside_length_note">The result is outside the supported input length range; check whether the model applies. The result has not been clamped.</string>
     <string name="result_pending">Enter valid values to see the result.</string>
     <string name="measured_length_required">Enter the actual length of the antenna you built. A theoretical length is not substituted here.</string>
-    <string name="adjustment">Action</string>
-    <string name="new_length">New monopole length</string>
-    <string name="new_total">New total dipole length</string>
-    <string name="new_arm">New length of each arm</string>
+    <string name="adjustment">Estimated length change</string>
+    <string name="new_length">Estimated new monopole length</string>
+    <string name="new_total">Estimated total dipole length</string>
+    <string name="new_arm">Estimated length of each arm</string>
     <string name="arm_adjustment">Change to each arm</string>
     <string name="total_adjustment">Change to total length</string>
-    <string name="shorten">Shorten by %1$s</string>
-    <string name="lengthen">Lengthen by %1$s</string>
-    <string name="shorten_less">Shorten by less than %1$s</string>
-    <string name="lengthen_less">Lengthen by less than %1$s</string>
+    <string name="shorten">Decrease of %1$s</string>
+    <string name="lengthen">Increase of %1$s</string>
+    <string name="shorten_less">Decrease of less than %1$s</string>
+    <string name="lengthen_less">Increase of less than %1$s</string>
     <string name="unchanged">No adjustment needed</string>
     <string name="less_than">less than %1$s</string>
     <string name="value_unit">%1$s %2$s</string>
@@ -89,10 +89,10 @@
     <string name="error_frequency_step">Minimum frequency step: 1 Hz</string>
     <string name="error_length_step">Minimum length step: 1 nm</string>
     <string name="error_factor_step">No more than four significant decimal places</string>
-    <string name="diagram_monopole">Monopole diagram with a base and radials. The dimension applies only to the vertical conductor.</string>
-    <string name="diagram_dipole">Diagram of two equal dipole arms with a feed gap. Total length is the sum of both conductors.</string>
+    <string name="diagram_monopole">Lₛ is the vertical radiator length from the feed point to the tip. Choose the radials separately.</string>
+    <string name="diagram_dipole">Lₐ is the length of each equal dipole arm. Total length Lᵈ equals 2Lₐ and excludes the feed gap.</string>
     <string name="about_summary">Use frequency f in hertz (Hz) to obtain wavelength λ in metres (m). The speed of light in vacuum is c = 299 792 458 m/s.</string>
-    <string name="about_trimming">L₀ is the actual antenna length and L₁ is the proposed length after tuning. fₘ is the measured resonant frequency; fₜ is the target frequency. No shortening factor is needed here because the measurement already reflects the antenna design.</string>
+    <string name="about_trimming">L₀ is the actual length and L₁ is the estimated length after tuning. fₘ is the measured resonant frequency and fₜ is the target. The estimate assumes the same resonant mode and essentially the same construction. It is less accurate for antennas with loading coils, traps or complex geometry.</string>
     <string name="app_version">Version %1$s</string>
     <string name="formula_wavelength_alt">Wavelength equals the speed of light divided by frequency.</string>
     <string name="formula_monopole_alt">The monopole length is one quarter of the wavelength multiplied by the shortening factor k.</string>
@@ -102,7 +102,7 @@
     <string name="formula_delta_alt">The length change is the new length minus the actual length.</string>
     <string name="formula_arm_alt">Each new arm length is half the new total dipole length. The adjustment to each arm is half the total length change.</string>
     <string name="formula_lengths_key">Lₛ is the monopole length, Ld the total dipole length and La the length of one arm. The shortening factor k applies to the conductor length, not the wavelength. Choose k to suit the antenna design.</string>
-    <string name="formula_delta_note">A negative ΔL means the antenna needs to be shortened; a positive value means it needs to be lengthened. If the measured and target frequencies match, no length adjustment is needed.</string>
+    <string name="formula_delta_note">A negative ΔL predicts a decrease in length and a positive ΔL predicts an increase. Equal frequencies give zero change.</string>
     <string name="materials_title">Online resources</string>
     <string name="materials_note">These articles and the guide are in English. Tap a card to open it in your browser. You will need an internet connection.</string>
     <string name="browser_unavailable">No app is available to open this link. Install a browser.</string>
@@ -125,4 +125,15 @@
     <string name="copyright" translatable="false">© 2026 Sergey Sotnikov</string>
     <string name="author_website_label" translatable="false">ssotnikov.pro</string>
     <string name="author_website_url" translatable="false">https://ssotnikov.pro</string>
+    <string name="factor_ideal_preset">%1$s unadjusted</string>
+    <string name="factor_correction_preset">%1$s (−%2$d %%)</string>
+    <string name="resonance_note">Enter the frequency where input reactance X is close to zero. If you only measure SWR, use the frequency of its minimum as an approximation.</string>
+    <string name="trimming_model_warning" formatted="false">The entered length differs by more than 25% from the starting estimate for this antenna type at the measured frequency and k = 0.95. Check the antenna type, length units and resonant mode before changing the length. This is a guide for checking the model.</string>
+    <string name="about_dimensions_heading">Wavelength and antenna dimensions</string>
+    <string name="about_measurement_heading">Measurement and tuning</string>
+    <string name="about_measurement_note">Measure impedance in the final installation. With a VNA, set the reference plane at the feed point or compensate for the measurement cable.</string>
+    <string name="tuning_diagram_title">Tuning direction</string>
+    <string name="tuning_diagram_shorten">When the measured resonant frequency fₘ is below the target fₜ, reducing the length usually moves resonance up.</string>
+    <string name="tuning_diagram_lengthen">When the measured resonant frequency fₘ is above the target fₜ, increasing the length usually moves resonance down.</string>
+    <string name="tuning_diagram_note">Illustrative SWR curve without a numerical scale. The example places the minimum near fₘ. In a real antenna, the SWR minimum can occur at a different frequency from the point where X is close to zero.</string>
 </resources>

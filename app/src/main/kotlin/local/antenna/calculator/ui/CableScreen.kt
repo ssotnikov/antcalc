@@ -147,16 +147,21 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             val text = cableCopy(context, currentState().draft.cable) ?: return@Button
             (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText(appName, text)); onCopied()
         }, enabled = result != null, modifier = Modifier.fillMaxWidth().testTag("cable-copy")) { Text(stringResource(R.string.copy_result)) }
-        HelpText(R.string.cable_vf_note)
         TextButton(onClick = { details = !details }, modifier = Modifier.testTag("cable-details")) { Text(stringResource(if (details) R.string.matching_less else R.string.cable_details)) }
         if (details) {
-            HelpText(R.string.cable_model)
+            Text(stringResource(R.string.cable_principle), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            HelpText(R.string.cable_electrical_length_help)
+            CableIllustrations()
+            HelpText(R.string.cable_delay_help)
             listOf(R.drawable.formula_cable_speed to R.string.cable_speed_alt,
                 R.drawable.formula_cable_phase to R.string.cable_phase_alt,
                 R.drawable.formula_cable_length to R.string.cable_length_alt).forEach { (image, alt) ->
                 Image(painterResource(image), stringResource(alt), contentScale = ContentScale.Fit,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), modifier = Modifier.fillMaxWidth().height(100.dp))
             }
+            Text(stringResource(R.string.cable_limits), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            HelpText(R.string.cable_model)
+            HelpText(R.string.cable_vf_note)
             TextButton(onClick = { openSourceWithFeedback(context, "https://www.arrl.org/files/file/Technology/tis/info/pdf/8411019.pdf") }) { Text(stringResource(R.string.cable_source)) }
         }
     }

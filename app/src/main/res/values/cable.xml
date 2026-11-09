@@ -1,39 +1,49 @@
 <resources>
     <string name="cable_title">Cable electrical length</string>
     <string name="cable_screen_title">Cable length</string>
-    <string name="cable_description">Calculate cable length, electrical phase and delay using its velocity factor.</string>
+    <string name="cable_description">Calculate physical length, electrical length and phase delay using the cable velocity factor.</string>
     <string name="cable_direction">Calculate from</string>
     <string name="cable_from_angle">Electrical angle → length</string>
     <string name="cable_from_length">Length → electrical angle</string>
     <string name="cable_frequency">Frequency</string>
     <string name="cable_velocity">Velocity factor VF</string>
     <string name="cable_length">Physical cable length</string>
-    <string name="cable_angle">Electrical angle, °</string>
-    <string name="cable_full_angle">Full electrical angle</string>
-    <string name="cable_wrapped_angle">Phase within one turn</string>
-    <string name="cable_delay">Propagation delay</string>
+    <string name="cable_angle">Electrical length, °</string>
+    <string name="cable_full_angle">Electrical length, °</string>
+    <string name="cable_wrapped_angle">Electrical length modulo 360°</string>
+    <string name="cable_delay">Phase delay A → B</string>
     <string name="cable_ns">%1$s ns</string>
     <string name="cable_degrees">%1$s°</string>
     <string name="cable_value_unit">%1$s %2$s</string>
     <string name="cable_vf_source">VF is entered manually. The initial value 0.66 is an example, not a specification for your cable. Use the manufacturer’s data or a measurement.</string>
-    <string name="cable_vf_note">Cable velocity factor and antenna shortening factor are different quantities. Changing one does not change the other.</string>
+    <string name="cable_vf_note">Cable velocity factor and antenna shortening factor describe different physical quantities. Set them independently.</string>
     <string name="cable_preset">Cable section</string>
     <string name="cable_quarter">λ/4 · 90°</string>
     <string name="cable_half">λ/2 · 180°</string>
     <string name="cable_wave">λ · 360°</string>
-    <string name="cable_custom">Custom electrical angle</string>
-    <string name="cable_model">Model: a uniform cable with constant VF at the selected frequency. Length is measured between reference planes A and B. Connectors and end effects are excluded; verify the finished assembly by measurement. This calculation does not guarantee impedance matching.</string>
+    <string name="cable_custom">Custom electrical length</string>
+    <string name="cable_principle">Calculation principle</string>
+    <string name="cable_limits">Limitations</string>
+    <string name="cable_wave_title">One wavelength</string>
+    <string name="cable_wave_help">Phase changes by 360° over one wavelength in the cable. A quarter wavelength gives 90° and a half wavelength gives 180°. The horizontal axis shows positive phase lag along the line.</string>
+    <string name="cable_turns_title">Example with a 10 m cable</string>
+    <string name="cable_turns_whole">7 complete wavelengths</string>
+    <string name="cable_turns_remainder">0.3283 wavelength (118.189°)</string>
+    <string name="cable_turns_help">At 145 MHz and VF = 0.66, the electrical length is 7.3283 wavelengths or 2638.189°. The scale spans eight periods. Seven complete periods and the remainder of 118.189° are filled. With the usual phase convention, the transmission phase of a matched line in this example is −118.189° modulo 360°.</string>
+    <string name="cable_model">The model describes a uniform cable between reference planes A and B and uses VF at the selected frequency. The delay covers a single pass from A to B without reflections.\n\nThe model omits connector effects, line discontinuities, loss and frequency dispersion. A constant VF is suitable for estimates over a band where it varies little. Check load matching separately.\n\nFor precise cable assembly trimming, verify the electrical length by measurement, for example with a vector network analyzer (VNA).</string>
+    <string name="cable_electrical_length_help">Electrical length describes the phase lag a wave accumulates as it travels through the cable at a given frequency. The velocity factor VF is the ratio of the phase velocity in the cable to the speed of light in vacuum.\n\nAt the same frequency, a lower VF gives a shorter wavelength in the cable. A shorter physical section therefore gives the same electrical length.\n\nElectrical length can be expressed in degrees, radians, fractions of a wavelength or equivalent meters in vacuum. In wavelengths it is φ/360° = L/λc, where φ is the phase lag in degrees, L is the physical length, and λc = VF·c/f is the wavelength in the cable. The equivalent length L/VF gives the same phase lag in vacuum at frequency f.\n\nThe value modulo 360° is the remainder of the calculated lag after removing complete turns. For example, 450° leaves 90°. When comparing with measured S₂₁ transmission phase, account for its sign and reference planes.</string>
+    <string name="cable_delay_help">Phase delay is the time equivalent of the phase lag of a sinusoid at the selected frequency. It equals φ/(360°·f) = L/(VF·c). Group delay describes the delay of a narrowband envelope and follows from the slope of the unwrapped transmission phase versus frequency. Both delays coincide in the constant-VF model. With significant dispersion, group delay can differ. Estimating it requires transmission phase as a function of frequency, for example an S₂₁ measurement across the band.</string>
     <string name="cable_planes">Reference planes</string>
     <string name="cable_start">A · Start</string>
     <string name="cable_end">B · End</string>
-    <string name="cable_diagram_alt">A cable between reference planes A and B. Physical length and propagation delay refer to these planes; connectors are not included.</string>
+    <string name="cable_diagram_alt">A cable between reference planes A and B. Phase delay refers to one pass from A to B, without reflections or connectors.</string>
     <string name="cable_error_number">Enter a complete nonnegative decimal number, up to 32 characters. Signs and scientific notation are not supported.</string>
     <string name="cable_error_range">Allowed range: %1$s to %2$s.</string>
     <string name="cable_error_step">Smallest input step: %1$s.</string>
     <string name="cable_pending">Complete the selected inputs to see the result.</string>
     <string name="cable_details">Formulas and model limits</string>
-    <string name="cable_speed_alt">Propagation speed equals cable velocity factor times the speed of light in vacuum.</string>
-    <string name="cable_phase_alt">Electrical angle in degrees equals 360 times frequency times length divided by propagation speed. Delay equals length divided by speed.</string>
-    <string name="cable_length_alt">Length equals electrical angle in degrees times propagation speed, divided by 360 times frequency.</string>
+    <string name="cable_speed_alt">Phase velocity equals cable velocity factor times the speed of light in vacuum.</string>
+    <string name="cable_phase_alt">Electrical length in degrees equals 360 times frequency times physical length divided by phase velocity. Phase delay from A to B equals physical length divided by phase velocity.</string>
+    <string name="cable_length_alt">Physical length equals electrical length in degrees times phase velocity, divided by the product of 360 and frequency.</string>
     <string name="cable_source">ARRL · Coaxial cables</string>
 </resources>

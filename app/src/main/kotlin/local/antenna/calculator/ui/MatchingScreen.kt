@@ -143,6 +143,7 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             }
             HelpText(R.string.matching_impedance_note)
             HelpText(R.string.matching_model)
+            ReflectionIllustrations()
             listOf(R.drawable.formula_reflection to R.string.matching_formula_gamma_alt,
                 R.drawable.formula_swr to R.string.matching_formula_swr_alt,
                 R.drawable.formula_return_loss to R.string.matching_formula_rl_alt,

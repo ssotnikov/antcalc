@@ -2,6 +2,8 @@ package local.antenna.calculator.core.trimming
 
 import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.PhysicalLength
+import local.antenna.calculator.core.units.ShorteningFactor
+import local.antenna.calculator.core.sizing.calculateIdealSizing
 
 /** The supported straight-conductor antenna geometry. */
 enum class AntennaType {
@@ -20,6 +22,8 @@ enum class TrimmingWarning {
     LARGE_FREQUENCY_CHANGE,
     /** The calculated total conductor length is outside the measured-length input range. */
     RESULT_OUTSIDE_INPUT_LENGTH_RANGE,
+    /** The measured length differs by more than 25% from the default fundamental-mode estimate. */
+    LENGTH_DIFFERS_FROM_MODEL,
 }
 
 /**
@@ -103,4 +107,12 @@ private fun calculateWarnings(input: TrimmingInput): Set<TrimmingWarning> = buil
     val lower = PhysicalLength.MIN_NANOMETERS.toBigInteger() * target.toBigInteger()
     val upper = PhysicalLength.MAX_NANOMETERS.toBigInteger() * target.toBigInteger()
     if (numerator < lower || numerator > upper) add(TrimmingWarning.RESULT_OUTSIDE_INPUT_LENGTH_RANGE)
+
+    val ideal = calculateIdealSizing(input.measuredFrequency)
+    val reference = when (input.antennaType) {
+        AntennaType.MONOPOLE -> ideal.monopoleMeters
+        AntennaType.SYMMETRIC_DIPOLE -> ideal.dipoleTotalMeters
+    } * (ShorteningFactor.DEFAULT.tenThousandths / 10_000.0)
+    val ratio = input.actualLength.nanometers / 1_000_000_000.0 / reference
+    if (ratio < .75 || ratio > 1.25) add(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL)
 }

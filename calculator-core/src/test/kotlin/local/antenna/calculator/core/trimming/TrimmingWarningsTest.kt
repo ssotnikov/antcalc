@@ -12,9 +12,21 @@ class TrimmingWarningsTest {
         calculateTrimming(TrimmingInput(PhysicalLength.ofNanometers(nanometers), Frequency.ofHertz(measured), Frequency.ofHertz(target), type))
 
     @Test
+    fun `model notice distinguishes plausible fundamental lengths from the audit example`() {
+        val warning = TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL
+        for ((type, length) in listOf(AntennaType.MONOPOLE to 491_000_000L, AntennaType.SYMMETRIC_DIPOLE to 982_000_000L)) {
+            assertFalse(warning in tune(length, 145_000_000, 155_000_000, type).warnings)
+            val longAntenna = tune(1_900_000_000, 145_000_000, 155_000_000, type)
+            assertTrue(warning in longAntenna.warnings)
+            assertEquals(1.9 * 145 / 155, longAntenna.newLengthMeters, 1e-12)
+        }
+        assertTrue(warning in tune(491_000_000, 145_000_000, 155_000_000, AntennaType.SYMMETRIC_DIPOLE).warnings)
+    }
+
+    @Test
     fun `exact ratio boundaries do not trigger the large change notice`() {
         for (measured in listOf(400_000_000L, 600_000_000L)) {
-            assertTrue(tune(500_000_000, measured, 500_000_000).warnings.isEmpty())
+            assertTrue(tune(500_000_000, measured, 500_000_000).warnings.minus(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL).isEmpty())
         }
     }
 
@@ -31,7 +43,7 @@ class TrimmingWarningsTest {
         assertEquals(600_000_000.0, result.newLengthMeters, 1e-6)
         assertEquals(599_990_000.0, result.deltaMeters, 1e-6)
         assertEquals(AdjustmentDirection.LENGTHEN, result.direction)
-        assertEquals(setOf(TrimmingWarning.LARGE_FREQUENCY_CHANGE, TrimmingWarning.RESULT_OUTSIDE_INPUT_LENGTH_RANGE), result.warnings)
+        assertEquals(setOf(TrimmingWarning.LARGE_FREQUENCY_CHANGE, TrimmingWarning.RESULT_OUTSIDE_INPUT_LENGTH_RANGE, TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL), result.warnings)
     }
 
     @Test
@@ -39,14 +51,14 @@ class TrimmingWarningsTest {
         val result = tune(1_000_000, 100_000, 6_000_000_000)
         assertEquals(1.666666666666667e-8, result.newLengthMeters, 1e-20)
         assertTrue(result.deltaMeters < 0)
-        assertEquals(setOf(TrimmingWarning.LARGE_FREQUENCY_CHANGE, TrimmingWarning.RESULT_OUTSIDE_INPUT_LENGTH_RANGE), result.warnings)
+        assertEquals(setOf(TrimmingWarning.LARGE_FREQUENCY_CHANGE, TrimmingWarning.RESULT_OUTSIDE_INPUT_LENGTH_RANGE, TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL), result.warnings)
     }
 
     @Test
     fun `exact one millimeter result remains in range`() {
         val result = tune(1_250_000, 400_000_000, 500_000_000)
         assertEquals(0.001, result.newLengthMeters, 1e-15)
-        assertTrue(result.warnings.isEmpty())
+        assertTrue(result.warnings.minus(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL).isEmpty())
     }
 
     @Test
@@ -69,7 +81,7 @@ class TrimmingWarningsTest {
         for (length in listOf(PhysicalLength.MIN_NANOMETERS, PhysicalLength.MAX_NANOMETERS)) {
             for (type in AntennaType.entries) {
                 val result = tune(length, 6_000_000_000, 6_000_000_000, type)
-                assertTrue(result.warnings.isEmpty())
+                assertTrue(result.warnings.minus(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL).isEmpty())
                 assertEquals(AdjustmentDirection.UNCHANGED, result.direction)
             }
         }
@@ -79,6 +91,6 @@ class TrimmingWarningsTest {
     fun `dipole notices apply to total length rather than either individual arm`() {
         val result = tune(1_000_000, 145_000_000, 145_000_000, AntennaType.SYMMETRIC_DIPOLE)
         assertEquals(0.0005, requireNotNull(result.dipoleArmAdjustment).newLengthMeters, 0.0)
-        assertTrue(result.warnings.isEmpty())
+        assertTrue(result.warnings.minus(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL).isEmpty())
     }
 }
