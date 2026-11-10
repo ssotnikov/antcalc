@@ -85,7 +85,7 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
 
     @Test fun loadingUsesStartupBackgroundBeforeSettingsAreRestored() {
         val loading = CalculatorUiState(loading = true)
-        compose.setContent { CalculatorApp(loading, {}, { loading }) }
+        compose.setContent { CalculatorApp(loading, {}) { loading } }
         compose.waitUntil(timeoutMillis = 10000) { compose.activity.hasWindowFocus() }
         val pixels = compose.onRoot().captureToImage().toPixelMap()
         assertEquals("Loading must not draw a light frame before the saved theme is known",

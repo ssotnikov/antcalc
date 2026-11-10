@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.graphics.drawable.ColorDrawable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.SystemBarStyle
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.SideEffect
@@ -15,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.state.*
 import local.antenna.calculator.ui.CalculatorApp
 
@@ -27,6 +31,9 @@ class MainActivity : ComponentActivity() {
         calculator = ViewModelProvider(this, viewModelFactory {
             initializer { CalculatorViewModel(container.settingsRepository, createSavedStateHandle(), container.persistenceScope) }
         })[CalculatorViewModel::class.java]
+        val journal = ViewModelProvider(this, viewModelFactory {
+            initializer { JournalViewModel(container.projectsRepository) }
+        })[JournalViewModel::class.java]
         splash.setKeepOnScreenCondition { calculator.state.value.loading }
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
@@ -46,7 +53,12 @@ class MainActivity : ComponentActivity() {
                     navigationBarStyle = SystemBarStyle.auto(0xE6FFFFFF.toInt(), 0x80101D26.toInt()) { dark },
                 )
             }
-            CalculatorApp(state, calculator::onEvent) { calculator.state.value }
+            CompositionLocalProvider(
+                LocalActivity provides this@MainActivity,
+                LocalActivityResultRegistryOwner provides this@MainActivity,
+            ) {
+                CalculatorApp(state, calculator::onEvent, journal) { calculator.state.value }
+            }
         }
     }
 

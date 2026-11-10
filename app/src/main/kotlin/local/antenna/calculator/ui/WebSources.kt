@@ -13,6 +13,14 @@ import java.util.Locale
 enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
+private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
+internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"
+
+internal fun openAuthorContact(context: Context) {
+    if (dispatchExternal(context, AUTHOR_TELEGRAM) != SourceOpenResult.OPENED) {
+        openSourceWithFeedback(context, AUTHOR_TELEGRAM_WEB)
+    }
+}
 
 internal fun openSourceWithFeedback(context: Context, url: String) {
     val message = when (openWebSource(context, url)) {
@@ -36,12 +44,16 @@ internal fun validatedSourceAddress(address: String): String? {
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
-    return url.takeIf { it == BUG_REPORT_URL || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
+    return url.takeIf { it == BUG_REPORT_URL || it == AUTHOR_TELEGRAM_WEB || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
 }
 
 internal fun openWebSource(context: Context, address: String): SourceOpenResult {
     val validated = validatedSourceAddress(address) ?: return SourceOpenResult.BLOCKED
-    val intent = Intent(Intent.ACTION_VIEW, validated.toUri())
+    return dispatchExternal(context, validated)
+}
+
+private fun dispatchExternal(context: Context, address: String): SourceOpenResult {
+    val intent = Intent(Intent.ACTION_VIEW, address.toUri())
         .addCategory(Intent.CATEGORY_BROWSABLE)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     return try {

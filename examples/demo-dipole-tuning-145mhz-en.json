@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "0a6140ee-7414-4aa0-8075-f7a860f2e34a",
+    "title": "Demo: tuning a 145.5 MHz dipole",
+    "antennaType": "SYMMETRIC_DIPOLE",
+    "targetHz": 145500000,
+    "initialLengthNm": 1010000000,
+    "note": "Simulated measurements for demonstration. The recorded length is the combined length of both arms, excluding the feed gap. Resonance was identified at the reactance zero crossing. SWR and R+jX are recorded at 145.5 MHz with a 50-ohm reference impedance.",
+    "installation": "Horizontal dipole made from two 6 mm diameter copper tubes. The center is 3 m above ground on a fiberglass mast, with a 12 mm feed gap.",
+    "feedline": "5 m of 50-ohm RG-58 coax. A 1:1 current choke is fitted at the feed point. The VNA was calibrated at the end of the test cable, at the feed point.",
+    "records": [
+      {
+        "id": "d20f18ae-f600-41a3-b898-9e0255f8e2f1",
+        "title": "01. Initial measurement",
+        "time": "2026-11-10T09:10:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Both arms are 505 mm long. An initial VNA sweep shows the reactance crossing zero below the target frequency.",
+        "installation": "Horizontal dipole made from two 6 mm diameter copper tubes. The center is 3 m above ground on a fiberglass mast, with a 12 mm feed gap.",
+        "feedline": "5 m of 50-ohm RG-58 coax. A 1:1 current choke is fitted at the feed point. The VNA was calibrated at the end of the test cable, at the feed point.",
+        "measurement": {
+          "lengthNm": 1010000000,
+          "resonanceHz": 141600000,
+          "testFrequencyHz": 145500000,
+          "swr": 2.18,
+          "resistanceOhms": 65,
+          "reactanceOhms": 43,
+          "point": "FEED_POINT"
+        }
+      },
+      {
+        "id": "4fa89592-a43e-4ea4-9e01-809eaf3954f9",
+        "title": "02. Trimmed 6 mm per arm",
+        "time": "2026-11-10T09:35:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Removed 6 mm from the outer end of each arm, leaving each arm 499 mm long. The mounting height and feedline routing stayed the same.",
+        "installation": "Horizontal dipole made from two 6 mm diameter copper tubes. The center is 3 m above ground on a fiberglass mast, with a 12 mm feed gap.",
+        "feedline": "5 m of 50-ohm RG-58 coax. A 1:1 current choke is fitted at the feed point. The VNA was calibrated at the end of the test cable, at the feed point.",
+        "measurement": {
+          "lengthNm": 998000000,
+          "resonanceHz": 143300000,
+          "testFrequencyHz": 145500000,
+          "swr": 1.67,
+          "resistanceOhms": 63,
+          "reactanceOhms": 26,
+          "point": "FEED_POINT"
+        }
+      },
+      {
+        "id": "3493ce2d-6f8f-43e8-92dc-1bc43f5c2f2e",
+        "title": "03. Trimmed another 4.5 mm per arm",
+        "time": "2026-11-10T09:58:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Removed another 4.5 mm from each arm. Resonance is still about 0.9 MHz below the target.",
+        "installation": "Horizontal dipole made from two 6 mm diameter copper tubes. The center is 3 m above ground on a fiberglass mast, with a 12 mm feed gap.",
+        "feedline": "5 m of 50-ohm RG-58 coax. A 1:1 current choke is fitted at the feed point. The VNA was calibrated at the end of the test cable, at the feed point.",
+        "measurement": {
+          "lengthNm": 989000000,
+          "resonanceHz": 144600000,
+          "testFrequencyHz": 145500000,
+          "swr": 1.34,
+          "resistanceOhms": 61,
+          "reactanceOhms": 12,
+          "point": "FEED_POINT"
+        }
+      },
+      {
+        "id": "e6981de3-59f8-488b-a633-715c25d77315",
+        "title": "04. Final check",
+        "time": "2026-11-10T10:20:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Removed another 3 mm from each arm, leaving each arm 491.5 mm long. After tightening the mounts, repeated the VNA sweep with the same setup.",
+        "installation": "Horizontal dipole made from two 6 mm diameter copper tubes. The center is 3 m above ground on a fiberglass mast, with a 12 mm feed gap.",
+        "feedline": "5 m of 50-ohm RG-58 coax. A 1:1 current choke is fitted at the feed point. The VNA was calibrated at the end of the test cable, at the feed point.",
+        "measurement": {
+          "lengthNm": 983000000,
+          "resonanceHz": 145500000,
+          "testFrequencyHz": 145500000,
+          "swr": 1.2,
+          "resistanceOhms": 60,
+          "reactanceOhms": 0,
+          "point": "FEED_POINT"
+        }
+      }
+    ]
+  }
+}

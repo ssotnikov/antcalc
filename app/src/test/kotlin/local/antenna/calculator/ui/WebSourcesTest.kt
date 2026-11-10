@@ -21,6 +21,7 @@ class WebSourcesTest {
             "https://www.n1fd.org/2022/08/18/dipole-antenna/",
             "https://ssotnikov.pro",
             "https://github.com/ssotnikov/antcalc/issues/new",
+            "https://t.me/ssotnikov",
         )) assertEquals(url, validatedSourceAddress(url))
     }
 
@@ -30,7 +31,8 @@ class WebSourcesTest {
             "https://www.arrl.org@evil.example/", "https://evil.example@www.arrl.org/",
             "https://www.arrl.org:8443/", "https://www.arrl.org\\@evil.example/", "https://www.arrl.org /",
             "https://ssotnikov.pro.evil.example/", "https://ssotnikov.pro@evil.example/", "http://ssotnikov.pro",
-            "https://github.com/ssotnikov/other/issues/new", "https://github.com/ssotnikov/antcalc/issues/new?body=data",
+            "https://t.me/other", "https://t.me/ssotnikov?text=unexpected",
+            "tg://resolve?domain=ssotnikov", "https://github.com/ssotnikov/other/issues/new", "https://github.com/ssotnikov/antcalc/issues/new?body=data",
             "https://www.arrl.org%2eevil.example/", "https://www.arrl.org/\n", "https://www.arrl.org/" + "a".repeat(3000))) {
             assertNull(url.take(80), validatedSourceAddress(url))
         }

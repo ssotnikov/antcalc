@@ -6,10 +6,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalFocusManager
@@ -19,29 +21,45 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
+import local.antenna.calculator.journal.JournalPage
+import local.antenna.calculator.journal.JournalScreen
+import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.state.*
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT, REFERENCES }
+private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT, REFERENCES, JOURNAL }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalculatorApp(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, currentState: () -> CalculatorUiState) {
+internal fun CalculatorApp(
+    state: CalculatorUiState,
+    onEvent: (CalculatorEvent) -> Unit,
+    journal: JournalViewModel? = null,
+    currentState: () -> CalculatorUiState,
+) {
     if (state.loading) {
         Box(Modifier.fillMaxSize().background(Color(0xFF101D26)))
         return
     }
     LocalizedContent(state.draft.settings.language) {
-        LocalizedCalculatorApp(state, onEvent, currentState)
+        LocalizedCalculatorApp(state, onEvent, journal, currentState)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, currentState: () -> CalculatorUiState) {
+private fun LocalizedCalculatorApp(
+    state: CalculatorUiState,
+    onEvent: (CalculatorEvent) -> Unit,
+    journal: JournalViewModel?,
+    currentState: () -> CalculatorUiState,
+) {
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menu by remember { mutableStateOf(false) }
+    var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
+    val journalStateHolder = rememberSaveableStateHolder()
+    val context = LocalContext.current
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
@@ -51,7 +69,11 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
     fun leaveInput() { focus.clearFocus(); keyboard?.hide() }
     fun goBack() {
         leaveInput()
-        page = if (page == Page.REFERENCES) referencesBackPage else Page.CALCULATOR
+        when (page) {
+            Page.REFERENCES -> page = referencesBackPage
+            Page.JOURNAL -> journalPage.parent()?.let { journalPage = it } ?: run { page = Page.CALCULATOR }
+            else -> page = Page.CALCULATOR
+        }
     }
     fun openReferences() {
         referencesBackPage = page
@@ -65,6 +87,7 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
             Page.REFERENCES -> R.string.references_title
             Page.MATCHING -> R.string.matching_title
             Page.CABLE -> R.string.cable_screen_title
+            Page.JOURNAL -> journalPage.title
             Page.CALCULATOR -> when (settings.section) {
                 Section.SIZING -> R.string.sizes
                 Section.TRIMMING -> R.string.trimming
@@ -95,12 +118,22 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                                     menu = false
                                     if (page != Page.REFERENCES) openReferences()
                                 }, modifier = Modifier.testTag("open-references"))
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.contact_author)) },
+                                    onClick = { menu = false; openAuthorContact(context) },
+                                    modifier = Modifier.testTag("contact-author"),
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.report_bug)) },
+                                    onClick = { menu = false; openSourceWithFeedback(context, BUG_REPORT_URL) },
+                                    modifier = Modifier.testTag("menu-report-bug"),
+                                )
                             }
                         }
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.CABLE) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.CABLE || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding())) {
                     for (section in Section.entries) {
@@ -137,9 +170,20 @@ private fun LocalizedCalculatorApp(state: CalculatorUiState, onEvent: (Calculato
                     Page.REFERENCES -> ReferencesScreen(settings.language)
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    Page.JOURNAL -> if (journal != null) {
+                        journalStateHolder.SaveableStateProvider("journal") {
+                            JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next }, state, currentState) { message ->
+                                scope.launch { snackbar.showSnackbar(message) }
+                            }
+                        }
+                    }
                     Page.CALCULATOR -> {
                         if (settings.section == Section.TOOLS) {
-                            ToolsScreen(onOpenMatching = { leaveInput(); page = Page.MATCHING }, onOpenCable = { leaveInput(); page = Page.CABLE })
+                            ToolsScreen(
+                                onOpenMatching = { leaveInput(); page = Page.MATCHING },
+                                onOpenCable = { leaveInput(); page = Page.CABLE },
+                                onOpenJournal = journal?.let { { leaveInput(); journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
+                            )
                         } else {
                             CalculationScreen(state, onEvent, currentState, ::leaveInput) {
                                 scope.launch { snackbar.showSnackbar(copiedMessage) }

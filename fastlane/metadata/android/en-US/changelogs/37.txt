@@ -1,0 +1,1 @@
+Create antenna projects, keep a tuning journal, compare records, and transfer projects as JSON. Long-press a project for actions. The journal highlights measurement differences and lets you copy the comparison as text. Contact the author on Telegram or report a bug from the app menu.

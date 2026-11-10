@@ -46,20 +46,34 @@ fun HelpScreen() {
         HelpText(R.string.resonance_note)
         HelpText(R.string.about_measurement_note)
         HelpText(R.string.trimming_note)
+        HelpHeading(R.string.journal_title)
+        HelpText(R.string.journal_help_workflow)
+        HelpText(R.string.journal_help_comparison)
+        HelpText(R.string.journal_scope)
         Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME))
     }
 }
 
 @Composable
 private fun HelpHeading(label: Int) {
-    Text(stringResource(label), style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+    Text(
+        stringResource(label),
+        color = MaterialTheme.colorScheme.secondary,
+        style = MaterialTheme.typography.titleLarge,
+        modifier = Modifier.semantics { heading() },
+    )
 }
 
 @Composable
 private fun FormulaPlate(title: Int, image: Int, description: Int, tag: String) {
     Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(stringResource(title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            Text(
+                stringResource(title),
+                color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.semantics { heading() },
+            )
             Image(painter = painterResource(image), contentDescription = stringResource(description),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxWidth().height(100.dp).testTag(tag))

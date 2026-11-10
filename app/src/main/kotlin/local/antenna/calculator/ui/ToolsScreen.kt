@@ -22,7 +22,7 @@ import kotlin.math.roundToInt
 import local.antenna.calculator.R
 
 @Composable
-internal fun ToolsScreen(onOpenMatching: () -> Unit, onOpenCable: () -> Unit) {
+internal fun ToolsScreen(onOpenMatching: () -> Unit, onOpenCable: () -> Unit, onOpenJournal: (() -> Unit)? = null) {
     val scroll = rememberScrollState()
     val fits = scroll.maxValue == 0
     val limit = with(LocalDensity.current) { 32.dp.toPx() }
@@ -49,6 +49,7 @@ internal fun ToolsScreen(onOpenMatching: () -> Unit, onOpenCable: () -> Unit) {
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
             ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
+            if (onOpenJournal != null) ToolCard(R.string.journal_title, R.string.journal_tools_hint, "open-journal", onOpenJournal)
         }
     }
 }
@@ -57,7 +58,8 @@ internal fun ToolsScreen(onOpenMatching: () -> Unit, onOpenCable: () -> Unit) {
 private fun ToolCard(title: Int, description: Int, tag: String, onClick: () -> Unit) {
     OutlinedCard(onClick = onClick, modifier = Modifier.fillMaxWidth().testTag(tag)) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(stringResource(title), style = MaterialTheme.typography.titleLarge)
+            Text(stringResource(title), style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.secondary)
             Text(stringResource(description), style = MaterialTheme.typography.bodyMedium)
         }
     }

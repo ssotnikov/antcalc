@@ -19,8 +19,9 @@
 - **Подстройка антенны.** По фактической длине, измеренной резонансной и целевой частотам приложение оценивает, насколько удлинить или укоротить антенну. Для симметричного диполя выводится изменение полной длины и каждого плеча.
 - **КСВ и отражение.** Пересчёт КСВ, модуля коэффициента отражения |Γ| и возвратных потерь. Приложение также показывает долю отражённой мощности, а в подробностях — потери рассогласования. Поддерживается расчёт по импедансу нагрузки R + jX и волновому сопротивлению линии Z₀.
 - **Электрическая длина кабеля.** По частоте и коэффициенту скорости VF можно перевести физическую длину в электрическую и обратно. Результат включает электрическую длину в градусах и по модулю 360°, а также одностороннюю фазовую задержку от A к B. Для расчёта от угла есть варианты λ/4, λ/2 и λ.
+- **Проекты и журнал подстройки.** Сохраняйте расчёты, измерения и условия установки отдельно для каждой антенны. Сравнивайте две записи и переносите проекты через JSON.
 
-КСВ и расчёт кабеля находятся во вкладке **«Инструменты»**. Между расчётом размеров и подстройкой можно переключаться в нижней панели или горизонтальным свайпом. Частота вводится в кГц, МГц или ГГц с разрешением 1 Гц, длина — в мм, см или м. Ввод для расчёта размеров и подстройки сохраняется раздельно. Результаты можно скопировать вместе с исходными данными и единицами.
+КСВ, расчёт кабеля и журнал находятся во вкладке **«Инструменты»**. Между расчётом размеров и подстройкой можно переключаться в нижней панели или горизонтальным свайпом. Частота вводится в кГц, МГц или ГГц с разрешением 1 Гц, длина — в мм, см или м. Ввод для расчёта размеров и подстройки сохраняется раздельно. Результаты можно скопировать вместе с исходными данными и единицами.
 
 Язык интерфейса и светлую, тёмную или системную тему можно выбрать в настройках. При первом запуске с русским языком системы включается русский интерфейс, во всех остальных случаях — английский.
 
@@ -30,7 +31,7 @@
 
 ### Обратная связь
 
-Чтобы сообщить об ошибке, откройте «Настройки» → «Сообщить об ошибке».
+Чтобы сообщить об ошибке, выберите «Сообщить об ошибке» в меню или настройках. Для связи в Telegram выберите «Связаться с автором» в меню.
 
 [GitHub Issues](https://github.com/ssotnikov/antcalc/issues) ·
 [ssotnikov.pro](https://ssotnikov.pro) ·
@@ -48,8 +49,9 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 - **Antenna tuning.** Enter the actual length, measured resonant frequency, and target frequency to estimate how much to shorten or lengthen the antenna. For a symmetric dipole, the app shows the adjustment for the total length and for each arm.
 - **SWR and reflection.** Convert between SWR, reflection coefficient magnitude |Γ|, and return loss. The app also shows the reflected power fraction, with mismatch loss in the detailed results. It can calculate these values from the load impedance R + jX and the characteristic impedance of the line, Z₀.
 - **Cable electrical length.** Convert between physical and electrical length using the frequency and cable velocity factor VF. Results include electrical length in degrees and modulo 360°, plus the one-way phase delay from A to B. The angle-to-length mode offers λ/4, λ/2, and λ presets.
+- **Projects and tuning journal.** Keep calculations, measurements and installation notes for each antenna. Compare two records and transfer projects as JSON.
 
-Open **Tools** for the SWR and cable calculators. Switch between antenna sizing and tuning with the bottom navigation or a horizontal swipe. Frequency input supports kHz, MHz, and GHz with 1 Hz resolution. Length units are mm, cm, and m. Sizing and tuning keep separate inputs. You can copy results together with their inputs and units.
+Open **Tools** for the SWR and cable calculators and the tuning journal. Switch between antenna sizing and tuning with the bottom navigation or a horizontal swipe. Frequency input supports kHz, MHz, and GHz with 1 Hz resolution. Length units are mm, cm, and m. Sizing and tuning keep separate inputs. You can copy results together with their inputs and units.
 
 Choose English or Russian and a light, dark, or system theme in Settings. On first launch, the app uses Russian when the system language is Russian and English otherwise.
 
@@ -59,7 +61,7 @@ Use the sizing and tuning results as a starting point. Construction and surround
 
 ### Contact
 
-To report a bug, go to Settings → Report a bug.
+To report a bug, choose Report a bug from the menu or Settings. To reach the author on Telegram, choose Contact the author from the menu.
 
 [GitHub Issues](https://github.com/ssotnikov/antcalc/issues) ·
 [ssotnikov.pro](https://ssotnikov.pro) ·
