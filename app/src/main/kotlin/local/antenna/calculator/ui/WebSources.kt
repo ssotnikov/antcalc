@@ -12,6 +12,7 @@ import java.util.Locale
 
 enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
+internal const val INVERTED_V_SOURCE_RU = "https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/"
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
 private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
 internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"
@@ -44,7 +45,7 @@ internal fun validatedSourceAddress(address: String): String? {
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
-    return url.takeIf { it == BUG_REPORT_URL || it == AUTHOR_TELEGRAM_WEB || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
+    return url.takeIf { it == BUG_REPORT_URL || it == AUTHOR_TELEGRAM_WEB || it == INVERTED_V_SOURCE_RU || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
 }
 
 internal fun openWebSource(context: Context, address: String): SourceOpenResult {

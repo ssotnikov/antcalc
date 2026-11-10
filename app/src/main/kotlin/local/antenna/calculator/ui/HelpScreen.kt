@@ -65,7 +65,7 @@ private fun HelpHeading(label: Int) {
 }
 
 @Composable
-private fun FormulaPlate(title: Int, image: Int, description: Int, tag: String) {
+internal fun FormulaPlate(title: Int, image: Int, description: Int, tag: String) {
     Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(

@@ -34,6 +34,14 @@ object QuantityInput {
         create = { ShorteningFactor.ofTenThousandths(it.toInt()) },
     )
 
+    fun supportHeightNanometers(text: String, unit: LengthUnit): FieldState<Long> = parseScaled(
+        text, unit.nanometersPerUnit, 0, PhysicalLength.MAX_NANOMETERS, create = { it },
+    )
+
+    fun includedAngleTenths(text: String): FieldState<Long> = parseScaled(
+        text, 10, 300, 1800, create = { it },
+    )
+
     private fun <T> parseScaled(
         text: String,
         multiplier: Long,
@@ -41,7 +49,7 @@ object QuantityInput {
         maximum: Long,
         step: Long = 1,
         create: (Long) -> T,
-    ): FieldState<T> = when (val parsed = PositiveDecimalParser.parse(text)) {
+    ): FieldState<T> = when (val parsed = PositiveDecimalParser.parse(text, allowZero = minimum == 0L)) {
         FieldState.Empty -> FieldState.Empty
         FieldState.Incomplete -> FieldState.Incomplete
         is FieldState.Invalid -> parsed

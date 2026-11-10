@@ -13,7 +13,11 @@ internal data class TechnicalReference(
     val section: String? = null,
 )
 
-internal data class ReferenceGroup(val title: Int, val materials: List<TechnicalReference>)
+internal data class ReferenceGroup(
+    val title: Int,
+    val materials: List<TechnicalReference>,
+    val interfaceLanguageOnly: Boolean = false,
+)
 
 internal val referenceGroups = listOf(
     ReferenceGroup(R.string.references_fundamentals, listOf(
@@ -26,6 +30,10 @@ internal val referenceGroups = listOf(
         TechnicalReference("nasa", R.string.source_nasa, R.string.source_nasa_description, R.string.source_nasa_url, "NASA Radio JOVE", AppLanguage.ENGLISH, "§ 3.1"),
         TechnicalReference("verticals", R.string.source_verticals, R.string.source_verticals_description, R.string.source_verticals_url, "ARRL", AppLanguage.ENGLISH),
     )),
+    ReferenceGroup(R.string.references_inverted_v, listOf(
+        TechnicalReference("inverted-v-ru", R.string.source_inverted_v_ru_title, R.string.source_inverted_v_ru_description, R.string.source_inverted_v_ru_url, "RUQRZ", AppLanguage.RUSSIAN),
+        TechnicalReference("inverted-v-en", R.string.source_inverted_v_en_title, R.string.source_inverted_v_en_description, R.string.source_inverted_v_en_url, "ARRL", AppLanguage.ENGLISH, "Fig. 2A"),
+    ), interfaceLanguageOnly = true),
     ReferenceGroup(R.string.references_five_eighths, listOf(
         TechnicalReference("five-eighths", R.string.source_five_eighths, R.string.source_five_eighths_description, R.string.source_five_eighths_url, "Dale Hunt, WB6BYU", AppLanguage.ENGLISH),
     )),

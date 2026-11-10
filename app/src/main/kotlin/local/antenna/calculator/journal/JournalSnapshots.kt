@@ -6,6 +6,8 @@ import local.antenna.calculator.core.journal.SnapshotUnit.*
 import local.antenna.calculator.core.journal.SnapshotValue
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.state.CalculatorUiState
+import local.antenna.calculator.state.InvertedVDraft
+import local.antenna.calculator.state.InvertedVMode
 import local.antenna.calculator.state.Section
 
 internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, section: Section): CalculationSnapshot? {
@@ -41,6 +43,26 @@ internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, sectio
         }
         Section.TOOLS -> null
     }
+}
+
+internal fun InvertedVDraft.invertedVSnapshot(): CalculationSnapshot? {
+    val result = result()?.takeIf { it.endHeightMeters >= 0 } ?: return null
+    return CalculationSnapshot("inverted_v", 1, buildList {
+        add(snapshot("apex_height", result.apexMeters, METERS))
+        add(snapshot("included_angle", result.angleTenths / 10.0, DEGREES))
+        if (mode == InvertedVMode.MEASURED) {
+            add(snapshot("dipole_arm", result.armMeters, METERS))
+        } else {
+            val estimate = checkNotNull(estimateInput())
+            add(snapshot("frequency", estimate.frequency.hertz, HERTZ))
+            add(snapshot("factor", estimate.factor.tenThousandths / 10_000.0, FACTOR))
+        }
+    }, listOf(
+        snapshot("dipole_arm", result.armMeters, METERS),
+        snapshot("dipole_total", result.wireMeters, METERS),
+        snapshot("end_span", result.spanMeters, METERS),
+        snapshot("end_height", result.endHeightMeters, METERS),
+    ), if (result.endHeightMeters == 0.0) listOf("ENDS_TOUCH_GROUND") else emptyList())
 }
 
 private fun snapshot(key: String, value: Number, unit: SnapshotUnit) = SnapshotValue(key, value.toDouble(), unit)

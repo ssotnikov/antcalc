@@ -95,6 +95,48 @@ class JournalAcceptanceTest {
         compose.onNodeWithTag("open-journal").assertExists()
     }
 
+    @Test fun invertedVSnapshotPreservesTheGeometryAndProjectConditions() {
+        val project = "Layout " + UUID.randomUUID().toString().take(6)
+        val installation = "Central pole, level field"
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-journal")
+        waitFor("journal-new-project")
+        compose.onNodeWithTag("journal-new-project").performClick()
+        edit("journal-name", project)
+        click("journal-type-SYMMETRIC_DIPOLE")
+        edit("journal-installation", installation)
+        click("journal-save")
+        waitFor("journal-history")
+        repeat(2) { compose.onNodeWithTag("back").performClick() }
+
+        click("open-inverted-v")
+        edit("inverted-v-ARM", "5")
+        edit("inverted-v-ANGLE", "120")
+        edit("inverted-v-HEIGHT", "1")
+        compose.onNodeWithTag("inverted-v-save").performScrollTo().assertIsNotEnabled()
+        edit("inverted-v-HEIGHT", "8")
+        click("inverted-v-save")
+        compose.onNode(hasTestTag("inverted-v-project") and hasText(project)).performScrollTo().performClick()
+        compose.waitUntil(15_000) { compose.onAllNodesWithTag("inverted-v-project").fetchSemanticsNodes().isEmpty() }
+        edit("inverted-v-ANGLE", "90")
+        compose.activityRule.scenario.recreate()
+        waitFor("inverted-v-ANGLE")
+        compose.onNodeWithTag("back").performClick()
+
+        click("open-journal")
+        val projectCard = hasTestTag("journal-project") and hasText(project)
+        compose.onNodeWithTag("journal-projects").performScrollToNode(projectCard)
+        compose.onNode(projectCard).performClick()
+        waitFor("journal-history")
+        val title = hasText("Inverted-V dipole") or hasText("Диполь «Перевёрнутая V»")
+        compose.onNodeWithTag("journal-history").performScrollToNode(title)
+        compose.onNode(title and hasClickAction()).performClick()
+        waitFor("journal-record-details")
+        compose.onNodeWithText(installation, substring = true).assertExists()
+        compose.onNodeWithText("120°", substring = true).assertExists()
+    }
+
     @Test fun feedbackMenuOpensTelegramAndGitHub() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val requests = mutableListOf<String?>()

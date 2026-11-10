@@ -53,9 +53,11 @@ class SettingsRepositoryTest {
         assertEquals(433_000_001L, expected.values[FieldKey.SIZING_FREQUENCY])
         assertEquals(1_000_000_001L, expected.values[FieldKey.ACTUAL_LENGTH])
         // Tool domains are additive; the original calculator still owns 26 entries.
-        assertEquals(26, encoded.asMap().keys.count { !it.name.startsWith("matching.") && !it.name.startsWith("cable.") })
-        assertEquals(8, encoded.asMap().keys.count { it.name.startsWith("matching.") })
-        assertEquals(8, encoded.asMap().keys.count { it.name.startsWith("cable.") })
+        val domainKeys = encoded.asMap().keys.groupingBy { it.name.substringBefore('.') }.eachCount()
+        assertEquals(8, domainKeys["matching"])
+        assertEquals(8, domainKeys["cable"])
+        assertEquals(2, domainKeys["invertedV"])
+        assertEquals(26, domainKeys.filterKeys { it !in setOf("matching", "cable", "invertedV") }.values.sum())
     }
 
     @Test fun initiallyAbsentActualLengthRemainsAbsentNotZero() {

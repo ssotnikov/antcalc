@@ -35,6 +35,8 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(stringResource(R.string.copyright), style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(stringResource(R.string.license_mit), style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
             TextButton(onClick = { openSourceWithFeedback(context, website) }, modifier = Modifier.testTag("source-author")) {
                 Text(stringResource(R.string.author_website_label))
             }

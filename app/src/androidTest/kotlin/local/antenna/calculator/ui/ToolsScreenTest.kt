@@ -22,7 +22,7 @@ class ToolsScreenTest {
     private fun start(height: Int = 500, onOpen: () -> Unit = {}) {
         compose.setContent {
             MaterialTheme {
-                Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen) }
+                Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen) }
             }
         }
         compose.waitForIdle()

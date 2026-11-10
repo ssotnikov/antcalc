@@ -12,6 +12,7 @@ data class PersistedCalculatorState(
     val settings: CalculatorSettings,
     val matching: MatchingDraft = MatchingDraft(),
     val cable: CableDraft = CableDraft(),
+    val invertedV: InvertedVDraft = InvertedVDraft(),
 ) {
     fun advance(draft: CalculatorDraft): PersistedCalculatorState = copy(
         values = values + draft.fields.mapNotNull { (key, field) ->
@@ -25,6 +26,7 @@ data class PersistedCalculatorState(
         units = draft.fields.mapValues { it.value.unit }, settings = draft.settings,
         matching = draft.matching.canonical(matching),
         cable = draft.cable.canonical(cable),
+        invertedV = draft.invertedV.canonical(invertedV),
     )
 
     fun toDraft(): CalculatorDraft = CalculatorDraft(FieldKey.entries.associateWith { key ->
@@ -36,7 +38,7 @@ data class PersistedCalculatorState(
             else -> Frequency.ofHertz(value).inUnit(FrequencyUnit.valueOf(unit)).inputText()
         }
         NumericDraft(text, unit)
-    }, settings, matching, cable)
+    }, settings, matching, cable, invertedV)
 
     companion object {
         fun defaults(): PersistedCalculatorState {

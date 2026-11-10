@@ -128,6 +128,7 @@
     <string name="source_cable_delay_description">Keysight shows how to express a measured delay as an equivalent length in free space.</string>
     <string name="source_cable_delay_url" translatable="false">https://helpfiles.keysight.com/csg/e5061b/measurement_with_options/option_005_impedance_analysis/setting_up_measurement/eliminating_error_factor_of_fixture/open_short_compensation_and_port_extension.htm</string>
     <string name="copyright" translatable="false">© 2026 Sergey Sotnikov</string>
+    <string name="license_mit" translatable="false">MIT License</string>
     <string name="author_website_label" translatable="false">ssotnikov.pro</string>
     <string name="author_website_url" translatable="false">https://ssotnikov.pro</string>
     <string name="factor_ideal_preset">%1$s unadjusted</string>
@@ -141,4 +142,43 @@
     <string name="tuning_diagram_shorten">When the measured resonant frequency fₘ is below the target fₜ, reducing the length usually moves resonance up.</string>
     <string name="tuning_diagram_lengthen">When the measured resonant frequency fₘ is above the target fₜ, increasing the length usually moves resonance down.</string>
     <string name="tuning_diagram_note">Illustrative SWR curve without a numerical scale. The example places the minimum near fₘ. In a real antenna, the SWR minimum can occur at a different frequency from the point where X is close to zero.</string>
+
+    <string name="inverted_v_title">Inverted-V dipole</string>
+    <string name="inverted_v_intro">Check whether a symmetrical dipole will fit on your site at the height of your centre support.</string>
+    <string name="inverted_v_inputs">Inputs</string>
+    <string name="inverted_v_mode">Arm length source</string>
+    <string name="inverted_v_measured">Measured length</string>
+    <string name="inverted_v_estimated">Estimate from frequency</string>
+    <string name="inverted_v_estimate_help">The frequency and shortening factor give an initial estimate of the arm length. The angle does not change the factor.</string>
+    <string name="inverted_v_height">Apex height H</string>
+    <string name="inverted_v_angle">Angle between arms α</string>
+    <string name="inverted_v_angle_help">The angle α is measured between the arms at the apex. A value of 180° gives a horizontal dipole.</string>
+    <string name="inverted_v_input_unit">%1$s, %2$s</string>
+    <string name="inverted_v_degrees">%1$s°</string>
+    <string name="inverted_v_height_range">Enter a height from 0 to 10,000 m in the selected unit.</string>
+    <string name="inverted_v_angle_range">Enter an angle from 30° to 180°.</string>
+    <string name="inverted_v_angle_step">Enter the angle in 0.1° increments.</string>
+    <string name="inverted_v_geometry">Installation geometry</string>
+    <string name="inverted_v_span">Horizontal span D</string>
+    <string name="inverted_v_end_height">End height h</string>
+    <string name="inverted_v_pending">Enter valid values in all active fields to see the geometry.</string>
+    <string name="inverted_v_below_ground">The ends fall below ground level. Raise the apex, increase the angle or shorten the arms.</string>
+    <string name="inverted_v_ground_contact">The ends touch the ground in this model. Allow clearance when planning the installation.</string>
+    <string name="inverted_v_limits">The model assumes two equal, straight arms above level ground. Allow extra space for end supports and guy lines. Check clearances and electrical performance separately.</string>
+    <string name="inverted_v_save">Save to project</string>
+    <string name="inverted_v_no_projects">Create a symmetrical dipole project in Projects to save this calculation.</string>
+    <string name="inverted_v_saved">Calculation saved to project</string>
+    <string name="inverted_v_details">Show formulas</string>
+    <string name="inverted_v_formula_alt">D = 2L × sin(α/2). h = H − L × cos(α/2).</string>
+    <string name="inverted_v_details_text">L is the length of one arm, H is the apex height and α is the angle between the arms. D is the horizontal distance between the ends and h is their height above ground. The estimated arm length is k × c / (4 × f).</string>
+    <string name="inverted_v_diagram_alt">Two equal arms, %1$s each. Apex height %2$s, end height %3$s, horizontal span %4$s, angle at the apex %5$s degrees.</string>
+    <string name="references_inverted_v">Inverted-V dipole</string>
+    <string name="source_inverted_v_ru_title" translatable="false">Петлевой вибратор в антенне Inverted V</string>
+    <string name="source_inverted_v_ru_description">The opening paragraphs describe the inverted-V layout. The rest of the article discusses a folded-dipole variant.</string>
+    <string name="source_inverted_v_en_title" translatable="false">Here Is a Dipole</string>
+    <string name="source_inverted_v_en_description">Figure 2A shows a centre-fed dipole with sloping arms. The author explains why it needs less horizontal space than a flat-top dipole.</string>
+    <string name="source_inverted_v_ru_url" translatable="false">https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/</string>
+    <string name="source_inverted_v_en_url" translatable="false">https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf</string>
+    <string name="inverted_v_span_alt">D = 2L × sin(α/2).</string>
+    <string name="inverted_v_height_alt">h = H − L × cos(α/2).</string>
 </resources>

@@ -44,7 +44,7 @@ data class JournalMeasurement(
     }
 }
 
-enum class SnapshotUnit { HERTZ, NANOMETERS, METERS, FACTOR }
+enum class SnapshotUnit { HERTZ, NANOMETERS, METERS, FACTOR, DEGREES }
 
 data class SnapshotValue(val key: String, val value: Double, val unit: SnapshotUnit) {
     init {

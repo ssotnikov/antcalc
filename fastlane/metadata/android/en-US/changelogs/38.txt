@@ -1,0 +1,1 @@
+Added the Inverted-V dipole layout tool. Check horizontal span and end height from a measured or estimated arm length. Save results to a dipole project and find supporting material in References.

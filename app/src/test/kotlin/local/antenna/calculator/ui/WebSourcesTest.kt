@@ -19,6 +19,8 @@ class WebSourcesTest {
             "https://www.analog.com/en/resources/analog-dialogue/raqs/2021/12/16/16/41/raq-issue-197.html",
             "https://helpfiles.keysight.com/csg/e5061b/measurement_with_options/option_005_impedance_analysis/setting_up_measurement/eliminating_error_factor_of_fixture/open_short_compensation_and_port_extension.htm",
             "https://www.n1fd.org/2022/08/18/dipole-antenna/",
+            INVERTED_V_SOURCE_RU,
+            "https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf",
             "https://ssotnikov.pro",
             "https://github.com/ssotnikov/antcalc/issues/new",
             "https://t.me/ssotnikov",
@@ -31,6 +33,7 @@ class WebSourcesTest {
             "https://www.arrl.org@evil.example/", "https://evil.example@www.arrl.org/",
             "https://www.arrl.org:8443/", "https://www.arrl.org\\@evil.example/", "https://www.arrl.org /",
             "https://ssotnikov.pro.evil.example/", "https://ssotnikov.pro@evil.example/", "http://ssotnikov.pro",
+            "https://ruqrz.com/other", INVERTED_V_SOURCE_RU + "?q=unexpected",
             "https://t.me/other", "https://t.me/ssotnikov?text=unexpected",
             "tg://resolve?domain=ssotnikov", "https://github.com/ssotnikov/other/issues/new", "https://github.com/ssotnikov/antcalc/issues/new?body=data",
             "https://www.arrl.org%2eevil.example/", "https://www.arrl.org/\n", "https://www.arrl.org/" + "a".repeat(3000))) {

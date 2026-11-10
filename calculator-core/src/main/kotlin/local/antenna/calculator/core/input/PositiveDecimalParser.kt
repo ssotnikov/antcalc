@@ -9,7 +9,7 @@ object PositiveDecimalParser {
     private val completeNumber = Regex("(?:[0-9]+(?:[.,][0-9]+)?|[.,][0-9]+)")
     private val incompleteNumber = Regex("[0-9]*[.,]")
 
-    fun parse(text: String): FieldState<BigDecimal> {
+    fun parse(text: String, allowZero: Boolean = false): FieldState<BigDecimal> {
         val value = text.trim()
         return when {
             value.isEmpty() -> FieldState.Empty
@@ -18,7 +18,7 @@ object PositiveDecimalParser {
             !completeNumber.matches(value) -> FieldState.Invalid(InputError.INVALID_NUMBER)
             else -> {
                 val number = BigDecimal(value.replace(',', '.')).stripTrailingZeros()
-                if (number.signum() == 0) FieldState.Invalid(InputError.NON_POSITIVE)
+                if (number.signum() == 0 && !allowZero) FieldState.Invalid(InputError.NON_POSITIVE)
                 else FieldState.Valid(number)
             }
         }

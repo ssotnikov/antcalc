@@ -26,9 +26,10 @@ internal fun ReferencesScreen(language: AppLanguage) {
     ) {
         HelpText(R.string.materials_note)
         referenceGroups.forEach { group ->
-            val materials = when (language) {
-                AppLanguage.ENGLISH -> group.materials.filter { it.language == AppLanguage.ENGLISH }
-                AppLanguage.RUSSIAN -> group.materials.sortedBy { it.language != AppLanguage.RUSSIAN }
+            val materials = if (group.interfaceLanguageOnly || language == AppLanguage.ENGLISH) {
+                group.materials.filter { it.language == language }
+            } else {
+                group.materials.sortedBy { it.language != AppLanguage.RUSSIAN }
             }
             if (materials.isEmpty()) return@forEach
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

@@ -78,6 +78,7 @@ internal class JournalPresentation(private val context: Context) {
             val label = when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
+                "inverted_v" -> text(R.string.inverted_v_title)
                 else -> s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
@@ -88,6 +89,7 @@ internal class JournalPresentation(private val context: Context) {
                     "LARGE_FREQUENCY_CHANGE" -> text(R.string.large_change_note)
                     "RESULT_OUTSIDE_INPUT_LENGTH_RANGE" -> text(R.string.outside_length_note)
                     "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
+                    "ENDS_TOUCH_GROUND" -> text(R.string.inverted_v_ground_contact)
                     else -> warning
                 }
                 add(text(R.string.approximate) to message)
@@ -119,6 +121,10 @@ internal class JournalPresentation(private val context: Context) {
         "new_arm" -> text(R.string.new_arm)
         "adjustment" -> text(R.string.adjustment)
         "arm_adjustment" -> text(R.string.arm_adjustment)
+        "apex_height" -> text(R.string.inverted_v_height)
+        "included_angle" -> text(R.string.inverted_v_angle)
+        "end_span" -> text(R.string.inverted_v_span)
+        "end_height" -> text(R.string.inverted_v_end_height)
         else -> key
     }
 
@@ -127,5 +133,6 @@ internal class JournalPresentation(private val context: Context) {
         SnapshotUnit.NANOMETERS -> withUnit(metric.value / 10_000_000, R.string.cm)
         SnapshotUnit.METERS -> withUnit(metric.value, R.string.m)
         SnapshotUnit.FACTOR -> number(metric.value)
+        SnapshotUnit.DEGREES -> context.getString(R.string.inverted_v_degrees, number(metric.value))
     }
 }

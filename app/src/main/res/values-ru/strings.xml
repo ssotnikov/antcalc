@@ -122,4 +122,39 @@
     <string name="tuning_diagram_shorten">Если измеренная резонансная частота fₘ ниже целевой fₜ, уменьшение длины обычно сдвигает резонанс вверх.</string>
     <string name="tuning_diagram_lengthen">Если измеренная резонансная частота fₘ выше целевой fₜ, увеличение длины обычно сдвигает резонанс вниз.</string>
     <string name="tuning_diagram_note">Условный график КСВ без шкалы. Минимум показан рядом с fₘ для иллюстрации. На реальной антенне частота минимума КСВ может отличаться от частоты, где X близка к нулю.</string>
+
+    <string name="inverted_v_title">Диполь «Перевёрнутая V»</string>
+    <string name="inverted_v_intro">Проверьте, поместится ли симметричный диполь на участке при заданной высоте центральной опоры.</string>
+    <string name="inverted_v_inputs">Исходные данные</string>
+    <string name="inverted_v_mode">Источник длины плеча</string>
+    <string name="inverted_v_measured">Фактическая длина</string>
+    <string name="inverted_v_estimated">Оценка по частоте</string>
+    <string name="inverted_v_estimate_help">Частота и коэффициент укорочения задают начальную оценку длины плеча. Угол подвеса не меняет коэффициент.</string>
+    <string name="inverted_v_height">Высота вершины H</string>
+    <string name="inverted_v_angle">Угол между плечами α</string>
+    <string name="inverted_v_angle_help">Угол α измеряется между плечами у вершины. При 180° диполь расположен горизонтально.</string>
+    <string name="inverted_v_input_unit">%1$s, %2$s</string>
+    <string name="inverted_v_degrees">%1$s°</string>
+    <string name="inverted_v_height_range">Введите высоту от 0 до 10 000 м в выбранных единицах.</string>
+    <string name="inverted_v_angle_range">Введите угол от 30° до 180°.</string>
+    <string name="inverted_v_angle_step">Введите угол с шагом 0,1°.</string>
+    <string name="inverted_v_geometry">Геометрия установки</string>
+    <string name="inverted_v_span">Разнос концов D</string>
+    <string name="inverted_v_end_height">Высота концов h</string>
+    <string name="inverted_v_pending">Введите допустимые значения во все активные поля, чтобы увидеть геометрию.</string>
+    <string name="inverted_v_below_ground">Концы оказываются ниже уровня земли. Поднимите вершину, увеличьте угол или укоротите плечи.</string>
+    <string name="inverted_v_ground_contact">В этой модели концы касаются земли. При планировании установки предусмотрите зазор.</string>
+    <string name="inverted_v_limits">Модель предполагает два прямых равных плеча над ровной горизонтальной поверхностью. Учтите место для концевых креплений и оттяжек. Безопасные расстояния и электрические параметры проверяйте отдельно.</string>
+    <string name="inverted_v_save">Сохранить в проект</string>
+    <string name="inverted_v_no_projects">Чтобы сохранить расчёт, создайте проект симметричного диполя в разделе «Проекты».</string>
+    <string name="inverted_v_saved">Расчёт сохранён в проект</string>
+    <string name="inverted_v_details">Показать формулы</string>
+    <string name="inverted_v_formula_alt">D = 2L × sin(α/2). h = H − L × cos(α/2).</string>
+    <string name="inverted_v_details_text">L — длина одного плеча, H — высота вершины, α — угол между плечами. D — горизонтальное расстояние между концами, h — высота концов над землёй. Начальная оценка длины плеча равна k × c / (4 × f).</string>
+    <string name="inverted_v_diagram_alt">Два равных плеча длиной по %1$s. Высота вершины %2$s, высота концов %3$s, горизонтальный разнос %4$s, угол при вершине %5$s°.</string>
+    <string name="references_inverted_v">Диполь «Перевёрнутая V»</string>
+    <string name="source_inverted_v_ru_description">В начале статьи описан подвес обычного диполя «перевёрнутая V». Основная часть посвящена варианту с петлевым вибратором.</string>
+    <string name="source_inverted_v_en_description">На рис. 2A показан диполь с наклонными плечами и питанием в центре. Автор объясняет, почему такой подвес занимает меньше места по горизонтали.</string>
+    <string name="inverted_v_span_alt">D = 2L × sin(α/2).</string>
+    <string name="inverted_v_height_alt">h = H − L × cos(α/2).</string>
 </resources>

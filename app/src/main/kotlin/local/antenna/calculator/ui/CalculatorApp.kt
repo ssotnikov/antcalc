@@ -27,7 +27,7 @@ import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.state.*
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, CABLE, SETTINGS, ABOUT, REFERENCES, JOURNAL }
+private enum class Page { CALCULATOR, MATCHING, CABLE, INVERTED_V, SETTINGS, ABOUT, REFERENCES, JOURNAL }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +87,7 @@ private fun LocalizedCalculatorApp(
             Page.REFERENCES -> R.string.references_title
             Page.MATCHING -> R.string.matching_title
             Page.CABLE -> R.string.cable_screen_title
+            Page.INVERTED_V -> R.string.inverted_v_title
             Page.JOURNAL -> journalPage.title
             Page.CALCULATOR -> when (settings.section) {
                 Section.SIZING -> R.string.sizes
@@ -133,7 +134,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.CABLE || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.CABLE || page == Page.INVERTED_V || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding())) {
                     for (section in Section.entries) {
@@ -170,6 +171,9 @@ private fun LocalizedCalculatorApp(
                     Page.REFERENCES -> ReferencesScreen(settings.language)
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    Page.INVERTED_V -> InvertedVScreen(state, onEvent, currentState, journal) { message ->
+                        scope.launch { snackbar.showSnackbar(message) }
+                    }
                     Page.JOURNAL -> if (journal != null) {
                         journalStateHolder.SaveableStateProvider("journal") {
                             JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next }, state, currentState) { message ->
@@ -182,6 +186,7 @@ private fun LocalizedCalculatorApp(
                             ToolsScreen(
                                 onOpenMatching = { leaveInput(); page = Page.MATCHING },
                                 onOpenCable = { leaveInput(); page = Page.CABLE },
+                                onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
                                 onOpenJournal = journal?.let { { leaveInput(); journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
                             )
                         } else {

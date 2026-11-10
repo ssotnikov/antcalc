@@ -17,6 +17,8 @@ FORMULAS = {
     "formula_swr": r"$\mathrm{SWR}=\frac{1+|\Gamma|}{1-|\Gamma|}$",
     "formula_return_loss": r"$\mathrm{RL}=-20\log_{10}|\Gamma|$",
     "formula_reflected_power": r"$\frac{P_{\mathrm{r}}}{P_{\mathrm{i}}}=|\Gamma|^2,\quad \mathrm{ML}=-10\log_{10}(1-|\Gamma|^2)$",
+    "formula_inverted_v_span": r"$D = 2L\,\sin(\alpha/2)$",
+    "formula_inverted_v_height": r"$h = H - L\,\cos(\alpha/2)$",
     "formula_wavelength": r"$\lambda = \frac{c}{f}$",
     "formula_monopole": r"$L_{\mathrm{s}} = \frac{k\lambda}{4}$",
     "formula_dipole": r"$L_{\mathrm{d}} = \frac{k\lambda}{2},\quad L_{\mathrm{a}} = \frac{L_{\mathrm{d}}}{2}$",

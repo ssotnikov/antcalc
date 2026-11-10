@@ -18,9 +18,12 @@ class CalculatorViewModel(
     private val savedState: SavedStateHandle,
     private val persistenceScope: CoroutineScope,
 ) : ViewModel() {
+    private val restoredInvertedV = InvertedVDraftCodec.decode(savedState[InvertedVDraftCodec.KEY])
     private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])?.copy(
         matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft(),
-        cable = CableDraftCodec.decode(savedState[CableDraftCodec.KEY]) ?: CableDraft())
+        cable = CableDraftCodec.decode(savedState[CableDraftCodec.KEY]) ?: CableDraft(),
+        invertedV = restoredInvertedV ?: InvertedVDraft(),
+    )
     private val mutableState = MutableStateFlow(CalculatorUiState(draft = restoredDraft ?: CalculatorDraft.defaults()))
     val state: StateFlow<CalculatorUiState> = mutableState.asStateFlow()
     private var canonical = PersistedCalculatorState.defaults()
@@ -59,6 +62,7 @@ class CalculatorViewModel(
             is CalculatorEvent.Settings -> draft.copy(settings = event.value)
             is CalculatorEvent.Matching -> draft.copy(matching = event.value)
             is CalculatorEvent.Cable -> draft.copy(cable = event.value)
+            is CalculatorEvent.InvertedV -> draft.copy(invertedV = event.value)
             else -> return
         }
         publish(updated)
@@ -75,6 +79,7 @@ class CalculatorViewModel(
         savedState[DraftCodec.KEY] = DraftCodec.encode(draft)
         savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(draft.matching)
         savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(draft.cable)
+        savedState[InvertedVDraftCodec.KEY] = InvertedVDraftCodec.encode(draft.invertedV)
     }
 
     private fun load(initial: Boolean) {
@@ -85,7 +90,9 @@ class CalculatorViewModel(
                 lastWritten = stored
                 canonical = stored
                 storageReadable = true
-                val draft = if (initial) restoredDraft ?: stored.toDraft() else state.value.draft
+                val draft = if (initial) {
+                    restoredDraft?.copy(invertedV = restoredInvertedV ?: stored.invertedV) ?: stored.toDraft()
+                } else state.value.draft
                 mutableState.value = state.value.copy(loading = false, storageIssue = null)
                 publish(draft)
                 scheduleWrite()
