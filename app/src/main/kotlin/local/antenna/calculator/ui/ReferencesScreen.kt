@@ -19,8 +19,10 @@ import local.antenna.calculator.state.AppLanguage
 
 @Composable
 internal fun ReferencesScreen(language: AppLanguage) {
+    val scroll = rememberScrollState()
     Column(
-        Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState())
+        Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
+            .verticalScroll(scroll, overscrollEffect = null)
             .padding(20.dp).testTag("references-screen"),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
@@ -28,8 +30,10 @@ internal fun ReferencesScreen(language: AppLanguage) {
         referenceGroups.forEach { group ->
             val materials = if (group.interfaceLanguageOnly || language == AppLanguage.ENGLISH) {
                 group.materials.filter { it.language == language }
-            } else {
+            } else if (group.preferRussianSources) {
                 group.materials.sortedBy { it.language != AppLanguage.RUSSIAN }
+            } else {
+                group.materials
             }
             if (materials.isEmpty()) return@forEach
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

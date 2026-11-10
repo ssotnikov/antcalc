@@ -10,6 +10,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -33,6 +34,7 @@ import java.util.UUID
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.state.CalculatorUiState
+import local.antenna.calculator.ui.cardListBounce
 
 internal enum class JournalPage(val title: Int) {
     PROJECTS(R.string.journal_projects),
@@ -65,10 +67,11 @@ internal fun JournalScreen(
     navigate: (JournalPage) -> Unit,
     calculator: CalculatorUiState,
     currentCalculator: () -> CalculatorUiState,
+    initialProjectId: String? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
-    var projectId by rememberSaveable { mutableStateOf<String?>(null) }
+    var projectId by rememberSaveable { mutableStateOf(initialProjectId) }
     var recordId by rememberSaveable { mutableStateOf<String?>(null) }
     var picked by rememberSaveable(stateSaver = listSaver<List<String>, String>(
         save = { it }, restore = { it.toList() },
@@ -273,7 +276,10 @@ private fun ProjectList(
     onNew: () -> Unit, onOpen: (UUID) -> Unit, onImport: () -> Unit,
     onAction: (AntennaProject, ProjectAction) -> Unit,
 ) {
-    LazyColumn(Modifier.fillMaxSize().testTag("journal-projects"), contentPadding = PaddingValues(16.dp),
+    val scroll = rememberLazyListState()
+    LazyColumn(
+        Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("journal-projects"),
+        state = scroll, overscrollEffect = null, contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -337,7 +343,10 @@ private fun ProjectHistory(
     var actions by remember { mutableStateOf(false) }
     val records = remember(project.records) { project.records.sortedWith(journalChronology.reversed()) }
     val count = records.count { it.id.toString() in picked }
-    LazyColumn(Modifier.fillMaxSize().testTag("journal-history"), contentPadding = PaddingValues(16.dp),
+    val scroll = rememberLazyListState()
+    LazyColumn(
+        Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("journal-history"),
+        state = scroll, overscrollEffect = null, contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -544,7 +553,8 @@ private fun ComparisonHeading(label: String, title: String, accent: Color, modif
     Surface(modifier, shape = MaterialTheme.shapes.small, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(label, style = MaterialTheme.typography.labelLarge, color = accent)
-            JournalHeading(title)
+            Text(title, style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.semantics { heading() })
         }
     }
 }

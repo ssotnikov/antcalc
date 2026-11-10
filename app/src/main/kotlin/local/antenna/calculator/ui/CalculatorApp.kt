@@ -19,15 +19,18 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import java.util.UUID
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
+import local.antenna.calculator.core.journal.AntennaProject
+import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.journal.JournalPage
 import local.antenna.calculator.journal.JournalScreen
 import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.state.*
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, CABLE, INVERTED_V, SETTINGS, ABOUT, REFERENCES, JOURNAL }
+private enum class Page { CALCULATOR, MATCHING, CABLE, INVERTED_V, INVERTED_V_PROJECTS, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,26 +61,86 @@ private fun LocalizedCalculatorApp(
     var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menu by remember { mutableStateOf(false) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
-    val journalStateHolder = rememberSaveableStateHolder()
+    val screenStates = rememberSaveableStateHolder()
+    var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
+    var transferType by rememberSaveable { mutableStateOf(AntennaType.SYMMETRIC_DIPOLE) }
+    var linkedProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     val context = LocalContext.current
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
+    val journalStatus = journal?.state?.collectAsState()?.value
     val copiedMessage = stringResource(R.string.copied)
+    val transferSavedMessage = stringResource(R.string.project_transfer_saved)
+    val openProjectLabel = stringResource(R.string.project_transfer_open)
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     fun leaveInput() { focus.clearFocus(); keyboard?.hide() }
+    fun finishTransfer() {
+        pending?.let {
+            screenStates.removeState("transfer-picker-${it.recordId}")
+            screenStates.removeState("transfer-new-${it.recordId}")
+        }
+        pending = null
+        page = Page.CALCULATOR
+    }
     fun goBack() {
+        if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
         when (page) {
             Page.REFERENCES -> page = referencesBackPage
+            Page.INVERTED_V_PROJECTS -> page = Page.INVERTED_V
+            Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
+            Page.TRANSFER_PICKER -> if (pending?.isSizing == true) page = Page.TRANSFER_TYPE else finishTransfer()
+            Page.TRANSFER_TYPE -> finishTransfer()
             Page.JOURNAL -> journalPage.parent()?.let { journalPage = it } ?: run { page = Page.CALCULATOR }
             else -> page = Page.CALCULATOR
+        }
+    }
+    fun openTransfer() {
+        val current = currentState()
+        val section = current.draft.settings.section
+        val type = current.trimming.result?.input?.antennaType
+        if (section == Section.TRIMMING && type == null) return
+        transferType = if (section == Section.TRIMMING) checkNotNull(type) else AntennaType.SYMMETRIC_DIPOLE
+        val calculation = PendingProjectCalculation.capture(current, section, transferType) ?: return
+        snackbar.currentSnackbarData?.dismiss()
+        leaveInput()
+        pending = calculation
+        page = if (calculation.isSizing) Page.TRANSFER_TYPE else Page.TRANSFER_PICKER
+    }
+    fun transferSaved(calculation: PendingProjectCalculation, projectId: UUID) {
+        if (pending?.recordId != calculation.recordId) return
+        finishTransfer()
+        scope.launch {
+            val result = snackbar.showSnackbar(
+                transferSavedMessage,
+                actionLabel = openProjectLabel,
+                duration = SnackbarDuration.Long,
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                leaveInput()
+                screenStates.removeState("linked-journal")
+                linkedProjectId = projectId.toString()
+                journalPage = JournalPage.HISTORY
+                page = Page.JOURNAL
+            }
         }
     }
     fun openReferences() {
         referencesBackPage = page
         page = Page.REFERENCES
+    }
+    val transferring = page == Page.TRANSFER_TYPE || page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW
+    LaunchedEffect(transferring, pending) {
+        if (transferring && pending == null) finishTransfer()
+    }
+    val savedTransfer = pending?.let { draft ->
+        journalStatus?.projects?.firstOrNull { project -> project.records.any { it.id == draft.recordId } }
+    }
+    LaunchedEffect(savedTransfer?.id, pending?.recordId) {
+        val calculation = pending
+        if (calculation != null && savedTransfer != null) transferSaved(calculation, savedTransfer.id)
     }
     BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
@@ -88,6 +151,10 @@ private fun LocalizedCalculatorApp(
             Page.MATCHING -> R.string.matching_title
             Page.CABLE -> R.string.cable_screen_title
             Page.INVERTED_V -> R.string.inverted_v_title
+            Page.INVERTED_V_PROJECTS -> R.string.inverted_v_choose_project
+            Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
+            Page.TRANSFER_PICKER -> R.string.project_transfer_title
+            Page.TRANSFER_NEW -> R.string.journal_new_project
             Page.JOURNAL -> journalPage.title
             Page.CALCULATOR -> when (settings.section) {
                 Section.SIZING -> R.string.sizes
@@ -106,7 +173,7 @@ private fun LocalizedCalculatorApp(
                             modifier = Modifier.testTag("back")) { Icon(painterResource(R.drawable.ic_back), stringResource(R.string.back)) }
                     },
                     actions = {
-                        Box {
+                        if (!transferring) Box {
                             IconButton(onClick = {
                                 leaveInput()
                                 snackbar.currentSnackbarData?.dismiss()
@@ -171,12 +238,57 @@ private fun LocalizedCalculatorApp(
                     Page.REFERENCES -> ReferencesScreen(settings.language)
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
-                    Page.INVERTED_V -> InvertedVScreen(state, onEvent, currentState, journal) { message ->
-                        scope.launch { snackbar.showSnackbar(message) }
+                    Page.INVERTED_V -> screenStates.SaveableStateProvider("inverted-v") {
+                        val chooseProject = journal?.let {
+                            { leaveInput(); page = Page.INVERTED_V_PROJECTS }
+                        }
+                        InvertedVScreen(state, onEvent, currentState, chooseProject) { message ->
+                            scope.launch { snackbar.showSnackbar(message) }
+                        }
+                    }
+                    Page.INVERTED_V_PROJECTS -> if (journal != null) {
+                        InvertedVProjectPicker(journal, currentState, ::goBack) { message ->
+                            if (page == Page.INVERTED_V_PROJECTS) goBack()
+                            scope.launch { snackbar.showSnackbar(message) }
+                        }
+                    }
+                    Page.TRANSFER_TYPE -> pending?.let { calculation ->
+                        TransferAntennaType(calculation, transferType, { type ->
+                            if (transferType != type) screenStates.removeState("transfer-picker-${calculation.recordId}")
+                            transferType = type
+                        }) { page = Page.TRANSFER_PICKER }
+                    }
+                    Page.TRANSFER_PICKER -> if (journal != null) pending?.let { calculation ->
+                        screenStates.SaveableStateProvider("transfer-picker-${calculation.recordId}") {
+                            val recordTitle = stringResource(calculation.title)
+                            ProjectPicker(journal, transferType, "project-transfer",
+                                R.string.project_transfer_eligible, R.string.project_transfer_no_projects, ::goBack,
+                                onSelect = { project ->
+                                    leaveInput()
+                                    journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle))
+                                },
+                                targetHertz = calculation.target.hertz,
+                                confirmLabel = R.string.project_transfer_save_existing,
+                                onCreate = { leaveInput(); page = Page.TRANSFER_NEW },
+                                header = { TransferSummary(calculation, transferType) },
+                            )
+                        }
+                    }
+                    Page.TRANSFER_NEW -> if (journal != null) pending?.let { calculation ->
+                        screenStates.SaveableStateProvider("transfer-new-${calculation.recordId}") {
+                            val recordTitle = stringResource(calculation.title)
+                            TransferNewProject(calculation, transferType, journal) { name ->
+                                leaveInput()
+                                val project = AntennaProject(calculation.projectId, name, transferType,
+                                    calculation.target, calculation.initialLength(transferType))
+                                journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle), project)
+                            }
+                        }
                     }
                     Page.JOURNAL -> if (journal != null) {
-                        journalStateHolder.SaveableStateProvider("journal") {
-                            JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next }, state, currentState) { message ->
+                        screenStates.SaveableStateProvider(if (linkedProjectId == null) "journal" else "linked-journal") {
+                            JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next },
+                                state, currentState, initialProjectId = linkedProjectId) { message ->
                                 scope.launch { snackbar.showSnackbar(message) }
                             }
                         }
@@ -187,11 +299,14 @@ private fun LocalizedCalculatorApp(
                                 onOpenMatching = { leaveInput(); page = Page.MATCHING },
                                 onOpenCable = { leaveInput(); page = Page.CABLE },
                                 onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
-                                onOpenJournal = journal?.let { { leaveInput(); journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
+                                onOpenJournal = journal?.let { { leaveInput(); linkedProjectId = null; journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
                             )
                         } else {
-                            CalculationScreen(state, onEvent, currentState, ::leaveInput) {
-                                scope.launch { snackbar.showSnackbar(copiedMessage) }
+                            screenStates.SaveableStateProvider("calculator-results") {
+                                CalculationScreen(state, onEvent, currentState, ::leaveInput,
+                                    if (journal != null) ::openTransfer else null) {
+                                    scope.launch { snackbar.showSnackbar(copiedMessage) }
+                                }
                             }
                         }
                     }

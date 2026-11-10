@@ -28,6 +28,7 @@ internal fun CalculationScreen(
     onEvent: (CalculatorEvent) -> Unit,
     currentState: () -> CalculatorUiState,
     onLeaveInput: () -> Unit,
+    onSaveToProject: (() -> Unit)? = null,
     onCopied: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -52,8 +53,20 @@ internal fun CalculationScreen(
             val results: @Composable ColumnScope.() -> Unit = {
                 if (presentation.groups.isEmpty()) HelpText(R.string.result_pending)
                 presentation.groups.forEach { ResultPanel(it) }
-                Button(onClick = ::copyResult, enabled = presentation.copyText != null,
-                    modifier = Modifier.fillMaxWidth().testTag("copy-result")) { Text(stringResource(R.string.copy_result)) }
+                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    if (onSaveToProject != null) {
+                        Button(
+                            onClick = onSaveToProject,
+                            enabled = state.editingEnabled && presentation.copyText != null,
+                            modifier = Modifier.fillMaxWidth().testTag("copy-to-project"),
+                        ) { Text(stringResource(R.string.project_transfer_title)) }
+                    }
+                    OutlinedButton(
+                        onClick = ::copyResult,
+                        enabled = presentation.copyText != null,
+                        modifier = Modifier.fillMaxWidth().testTag("copy-result"),
+                    ) { Text(stringResource(R.string.copy_result)) }
+                }
             }
             if (wide) {
                 Row(horizontalArrangement = Arrangement.spacedBy(32.dp)) {

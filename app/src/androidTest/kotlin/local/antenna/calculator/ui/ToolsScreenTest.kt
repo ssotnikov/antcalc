@@ -2,10 +2,18 @@ package local.antenna.calculator.ui
 
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.Text
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
@@ -48,6 +56,60 @@ class ToolsScreenTest {
             assertEquals(initial, cards.fetchSemanticsNode().boundsInRoot.top, 1f)
         }
         compose.mainClock.autoAdvance = true
+    }
+
+    @Test fun shortLazyListBouncesInBothDirections() {
+        val viewport = startLazyCards(1)
+        val card = compose.onNodeWithTag("card-0")
+        assertLazyBounce(viewport, card, 1f)
+        assertLazyBounce(viewport, card, -1f)
+    }
+
+    @Test fun overflowingLazyListBouncesAtBothEdges() {
+        val viewport = startLazyCards(20)
+        assertLazyBounce(viewport, compose.onNodeWithTag("card-0"), 1f)
+        compose.onNodeWithTag("lazy-cards").performScrollToIndex(19)
+        assertLazyBounce(viewport, compose.onNodeWithTag("card-19"), -1f)
+    }
+
+    private fun startLazyCards(count: Int): SemanticsNodeInteraction {
+        compose.setContent {
+            MaterialTheme {
+                val scroll = rememberLazyListState()
+                Box(Modifier.size(320.dp, 280.dp).testTag("lazy-card-viewport")) {
+                    LazyColumn(
+                        Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("lazy-cards"),
+                        state = scroll, overscrollEffect = null,
+                    ) {
+                        items(count) { index ->
+                            OutlinedCard(Modifier.fillMaxWidth().height(64.dp).testTag("card-$index")) {
+                                Text("Card $index")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return compose.onNodeWithTag("lazy-card-viewport")
+    }
+
+    private fun assertLazyBounce(viewport: SemanticsNodeInteraction, card: SemanticsNodeInteraction, direction: Float) {
+        val initial = card.getUnclippedBoundsInRoot().top
+        compose.mainClock.autoAdvance = false
+        try {
+            viewport.performTouchInput {
+                down(center)
+                moveBy(Offset(0f, direction * 120f), 100)
+            }
+            compose.mainClock.advanceTimeBy(350)
+            val movement = card.getUnclippedBoundsInRoot().top - initial
+            assertTrue("Edge displacement should follow the drag: $movement", movement.value * direction > 1f)
+            viewport.performTouchInput { up() }
+            compose.mainClock.advanceTimeBy(1000)
+            assertEquals(initial.value, card.getUnclippedBoundsInRoot().top.value, 1f)
+        } finally {
+            compose.mainClock.autoAdvance = true
+        }
     }
 
     @Test fun dragDoesNotOpenCardAndTapStillWorks() {

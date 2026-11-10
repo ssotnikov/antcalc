@@ -21,7 +21,9 @@ import local.antenna.calculator.core.trimming.AdjustmentDirection
 
 @Composable
 fun HelpScreen() {
-    Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp),
+    val scroll = rememberScrollState()
+    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
+            .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)) {
         HelpHeading(R.string.about_dimensions_heading)
         FormulaPlate(R.string.wavelength, R.drawable.formula_wavelength, R.string.formula_wavelength_alt, "formula-wavelength")

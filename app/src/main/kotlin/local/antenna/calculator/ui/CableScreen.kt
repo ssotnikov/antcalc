@@ -22,6 +22,8 @@ import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.fromHtml
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -120,7 +122,19 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
                 keyboardActions = KeyboardActions(onDone = { focus.clearFocus() }))
             if (key == CableField.FREQUENCY) ChoicePicker(stringResource(R.string.frequency_units), FrequencyUnit.entries, draft.frequencyUnit,
                 { stringResource(it.labelResource()) }, { change(currentState().draft.cable.changeFrequencyUnit(it)) }, "cable-frequency-unit")
-            if (key == CableField.VELOCITY) HelpText(R.string.cable_vf_source)
+            if (key == CableField.VELOCITY) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    HelpText(R.string.cable_vf_source)
+                    if (state.draft.settings.language == AppLanguage.RUSSIAN) {
+                        Text(
+                            AnnotatedString.fromHtml(stringResource(R.string.cable_vf_reciprocal)),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.testTag("cable-vf-reciprocal"),
+                        )
+                    }
+                }
+            }
             if (key == CableField.ANGLE) {
                 val presets = listOf(90, 180, 360)
                 ChoicePicker(stringResource(R.string.cable_preset), presets, presets.firstOrNull { draft.value(CableField.ANGLE) == it * 1000L } ?: -1,

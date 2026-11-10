@@ -49,6 +49,22 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
             }
         }, done)
 
+    fun saveTransferredCalculation(
+        projectId: UUID, record: JournalRecord, newProject: AntennaProject? = null,
+    ) = mutate({ projects ->
+        if (newProject != null && projects.none { it.id == projectId }) {
+            projects + newProject.copy(records = listOf(record))
+        } else {
+            projects.replace(projectId) {
+                if (it.antennaType != record.antennaType) throw JournalException(JournalProblem.INVALID)
+                if (it.records.any { saved -> saved.id == record.id }) it else {
+                    if (it.records.size >= JournalLimits.RECORDS) throw JournalException(JournalProblem.LIMIT)
+                    it.copy(records = it.records + record.copy(installation = it.installation, feedline = it.feedline))
+                }
+            }
+        }
+    }, {})
+
     fun removeRecord(projectId: UUID, recordId: UUID, done: () -> Unit) =
         mutate({ projects ->
             projects.replace(projectId) { it.copy(records = it.records.filterNot { record -> record.id == recordId }) }

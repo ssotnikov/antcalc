@@ -1,0 +1,1 @@
+Project field examples are dimmed, hide on focus and return when an empty field loses focus.

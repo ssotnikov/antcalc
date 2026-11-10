@@ -36,4 +36,10 @@
     <string name="source_steer" translatable="false">Transmission Line Theory</string>
     <string name="source_steer_url" translatable="false" formatted="false">https://eng.libretexts.org/Bookshelves/Electrical_Engineering/Electronics/Microwave_and_RF_Design_II_-_Transmission_Lines_%28Steer%29/02%253A_Transmission_Lines/2.02%253A_Transmission_Line_Theory</string>
     <string name="source_steer_description">Relates physical length, phase velocity and wavelength to electrical length in degrees.</string>
+    <string name="source_radiolab" translatable="false">Паспорта «Радиолэб»</string>
+    <string name="source_radiolab_url" translatable="false">https://radiolab.ru/ru/5/1188382333/</string>
+    <string name="source_radiolab_description">Coaxial cable datasheets with specifications for individual models.</string>
+    <string name="source_rfi_dielectrics">Coaxial Cable Dielectrics – Velocity of Propagation and Attenuation</string>
+    <string name="source_rfi_dielectrics_url" translatable="false" formatted="false">https://products.rfi.com.au/hubfs/Wireless%20download%20library/Coaxial%20Cable%20Dielectrics%20%20Velocity%20of%20Propagation%20and%20Attenuation.pdf?hsLang=en</string>
+    <string name="source_rfi_dielectrics_description">Typical velocity factor ranges by dielectric material, with examples of coaxial cables.</string>
 </resources>

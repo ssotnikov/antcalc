@@ -17,6 +17,7 @@ internal data class ReferenceGroup(
     val title: Int,
     val materials: List<TechnicalReference>,
     val interfaceLanguageOnly: Boolean = false,
+    val preferRussianSources: Boolean = true,
 )
 
 internal val referenceGroups = listOf(
@@ -48,8 +49,10 @@ internal val referenceGroups = listOf(
         TechnicalReference("reflection", R.string.source_reflection, R.string.source_reflection_description, R.string.source_reflection_url, "Analog Devices", AppLanguage.ENGLISH),
     )),
     ReferenceGroup(R.string.references_cable, listOf(
+        TechnicalReference("radiolab", R.string.source_radiolab, R.string.source_radiolab_description, R.string.source_radiolab_url, "Радиолэб", AppLanguage.RUSSIAN),
+        TechnicalReference("rfi-dielectrics", R.string.source_rfi_dielectrics, R.string.source_rfi_dielectrics_description, R.string.source_rfi_dielectrics_url, "RFI", AppLanguage.ENGLISH, "PDF"),
         TechnicalReference("rig-cable", R.string.source_rig_cable, R.string.source_rig_cable_description, R.string.source_rig_cable_url, "RigExpert", AppLanguage.RUSSIAN, "§ 5.2.5"),
         TechnicalReference("steer", R.string.source_steer, R.string.source_steer_description, R.string.source_steer_url, "Michael Steer · NC State University", AppLanguage.ENGLISH, "§ 2.2"),
         TechnicalReference("cable-delay", R.string.source_cable_delay, R.string.source_cable_delay_description, R.string.source_cable_delay_url, "Keysight", AppLanguage.ENGLISH),
-    )),
+    ), preferRussianSources = false),
 )

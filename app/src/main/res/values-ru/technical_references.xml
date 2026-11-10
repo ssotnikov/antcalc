@@ -18,4 +18,7 @@
     <string name="source_rohde_description">Раздел руководства R&amp;S dB Calculator с прямыми и обратными формулами пересчёта КСВ и связанных величин.</string>
     <string name="source_rig_cable_description">Пример расчёта и подгонки четвертьволнового отрезка коаксиального кабеля.</string>
     <string name="source_steer_description">Связь физической длины, фазовой скорости и длины волны с электрической длиной в градусах.</string>
+    <string name="source_radiolab_description">Паспорта коаксиальных кабелей с характеристиками конкретных моделей. Ищите в паспорте коэффициент укорочения.</string>
+    <string name="source_rfi_dielectrics">Сводка RFI по типам диэлектрика</string>
+    <string name="source_rfi_dielectrics_description">Типичные диапазоны VF для разных диэлектриков и примеры коаксиальных кабелей.</string>
 </resources>

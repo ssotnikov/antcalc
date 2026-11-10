@@ -53,6 +53,12 @@ internal object JournalJson {
     fun decodeTransfer(input: InputStream): AntennaProject =
         decode(input, JournalLimits.TRANSFER_BYTES) { decodeProject(it.obj("project")) }
 
+    fun encodePendingSnapshot(snapshot: CalculationSnapshot): ByteArray =
+        encode(json("schemaVersion" to VERSION, "snapshot" to encodeSnapshot(snapshot)), 16_384)
+
+    fun decodePendingSnapshot(bytes: ByteArray): CalculationSnapshot =
+        decode(bytes.inputStream(), 16_384) { decodeSnapshot(it.obj("snapshot")) }
+
     private fun encode(value: JSONObject, limit: Int): ByteArray {
         val text = value.toString()
         if (text.length > limit) throw JournalException(JournalProblem.LIMIT)

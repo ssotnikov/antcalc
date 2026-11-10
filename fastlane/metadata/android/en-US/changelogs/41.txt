@@ -1,0 +1,1 @@
+Project fields keep their labels on the outline and show examples when empty. References now includes a technical note on coaxial cable dielectrics and velocity factor.

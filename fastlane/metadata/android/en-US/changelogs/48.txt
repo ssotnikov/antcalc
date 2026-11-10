@@ -1,0 +1,1 @@
+Save antenna sizing and tuning calculations to an existing project or create a project with the first journal entry.

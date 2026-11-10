@@ -13,6 +13,8 @@ import java.util.Locale
 enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
 internal const val INVERTED_V_SOURCE_RU = "https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/"
+internal const val RFI_DIELECTRICS_URL = "https://products.rfi.com.au/hubfs/Wireless%20download%20library/Coaxial%20Cable%20Dielectrics%20%20Velocity%20of%20Propagation%20and%20Attenuation.pdf?hsLang=en"
+internal const val RADIOLAB_CABLES_URL = "https://radiolab.ru/ru/5/1188382333/"
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
 private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
 internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"
@@ -45,7 +47,10 @@ internal fun validatedSourceAddress(address: String): String? {
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
-    return url.takeIf { it == BUG_REPORT_URL || it == AUTHOR_TELEGRAM_WEB || it == INVERTED_V_SOURCE_RU || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
+    return when (url) {
+        BUG_REPORT_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
+        else -> url.takeIf { uri.host?.lowercase(Locale.ROOT) in allowedHosts }
+    }
 }
 
 internal fun openWebSource(context: Context, address: String): SourceOpenResult {

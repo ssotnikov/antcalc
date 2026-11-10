@@ -1,0 +1,1 @@
+New tuning log entries now use the same input hints and suggestions as project forms.

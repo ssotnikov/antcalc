@@ -1,0 +1,1 @@
+Saving a project or journal entry now scrolls to the first field that needs attention.

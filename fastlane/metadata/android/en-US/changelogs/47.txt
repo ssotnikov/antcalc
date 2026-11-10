@@ -1,0 +1,1 @@
+Card lists now bounce at their edges. Record titles are smaller on the comparison screen.

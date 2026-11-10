@@ -29,19 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.OffsetDateTime
-import java.util.UUID
 import local.antenna.calculator.R
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.InputError
-import local.antenna.calculator.core.journal.JournalRecord
 import local.antenna.calculator.core.layout.InvertedVResult
-import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.core.units.FrequencyUnit
 import local.antenna.calculator.core.units.LengthUnit
-import local.antenna.calculator.journal.JournalViewModel
-import local.antenna.calculator.journal.invertedVSnapshot
-import local.antenna.calculator.journal.label
 import local.antenna.calculator.state.*
 import local.antenna.calculator.state.InvertedVField.*
 
@@ -50,7 +43,7 @@ internal fun InvertedVScreen(
     state: CalculatorUiState,
     onEvent: (CalculatorEvent) -> Unit,
     currentState: () -> CalculatorUiState,
-    journal: JournalViewModel?,
+    onChooseProject: (() -> Unit)?,
     notify: (String) -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,7 +54,6 @@ internal fun InvertedVScreen(
     val copied = stringResource(R.string.copied)
     val russian = state.draft.settings.language == AppLanguage.RUSSIAN
     var showDetails by rememberSaveable { mutableStateOf(false) }
-    var showProjects by rememberSaveable { mutableStateOf(false) }
     fun edit(update: (InvertedVDraft) -> InvertedVDraft) =
         onEvent(CalculatorEvent.InvertedV(update(currentState().draft.invertedV)))
 
@@ -134,15 +126,12 @@ internal fun InvertedVScreen(
                 }
             }
         }
-        if (journal != null) {
+        if (onChooseProject != null) {
             Button(
-                onClick = { focus.clearFocus(); showProjects = true },
+                onClick = onChooseProject,
                 enabled = result != null && result.endHeightMeters >= 0,
                 modifier = Modifier.fillMaxWidth().testTag("inverted-v-save"),
             ) { Text(stringResource(R.string.inverted_v_save)) }
-            if (showProjects) {
-                InvertedVProjectPicker(journal, currentState, { showProjects = false }, notify)
-            }
         }
         OutlinedButton(
             onClick = {
@@ -225,58 +214,6 @@ private fun InvertedVInput(draft: InvertedVDraft, field: InvertedVField, onEdit:
         supportingText = message?.let { { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) } },
         modifier = Modifier.fillMaxWidth().testTag("inverted-v-${field.name}").semantics {
             if (message != null) error(message)
-        },
-    )
-}
-
-@Composable
-private fun InvertedVProjectPicker(
-    journal: JournalViewModel,
-    currentState: () -> CalculatorUiState,
-    close: () -> Unit,
-    notify: (String) -> Unit,
-) {
-    val title = stringResource(R.string.inverted_v_title)
-    val savedMessage = stringResource(R.string.inverted_v_saved)
-    val status by journal.state.collectAsState()
-    val projects = status.projects.filter { it.antennaType == AntennaType.SYMMETRIC_DIPOLE }
-    AlertDialog(
-        onDismissRequest = close,
-        title = { Text(stringResource(R.string.inverted_v_save)) },
-        text = {
-            Column(Modifier.heightIn(max = 280.dp).verticalScroll(rememberScrollState())) {
-                val problem = status.problem
-                if (problem != null) HelpText(problem.label())
-                if (status.busy) {
-                    LinearProgressIndicator(Modifier.fillMaxWidth())
-                } else if (status.readable && projects.isEmpty()) {
-                    HelpText(R.string.inverted_v_no_projects)
-                }
-                if (status.readable) projects.forEach { project ->
-                    TextButton(
-                        enabled = !status.busy,
-                        onClick = {
-                            val snapshot = currentState().draft.invertedV.invertedVSnapshot() ?: return@TextButton
-                            journal.addRecord(project.id, JournalRecord(
-                                id = UUID.randomUUID(),
-                                title = title,
-                                time = OffsetDateTime.now(),
-                                antennaType = project.antennaType,
-                                installation = project.installation,
-                                feedline = project.feedline,
-                                calculation = snapshot,
-                            )) {
-                                close()
-                                notify(savedMessage)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth().testTag("inverted-v-project"),
-                    ) { Text(project.title) }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = close) { Text(stringResource(R.string.journal_cancel)) }
         },
     )
 }

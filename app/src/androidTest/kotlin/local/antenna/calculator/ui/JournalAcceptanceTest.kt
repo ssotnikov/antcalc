@@ -9,9 +9,12 @@ import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import java.util.UUID
+import kotlinx.coroutines.runBlocking
+import local.antenna.calculator.CalculatorApplication
 import local.antenna.calculator.MainActivity
 import local.antenna.calculator.R
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -103,9 +106,33 @@ class JournalAcceptanceTest {
         click("open-journal")
         waitFor("journal-new-project")
         compose.onNodeWithTag("journal-new-project").performClick()
+        val name = compose.onNodeWithTag("journal-name")
+        val examples = hasText("Portable dipole") or hasText("Диполь для выездов")
+        name.assert(examples)
+        name.assert(SemanticsMatcher.expectValue(
+            androidx.compose.ui.semantics.SemanticsProperties.EditableText,
+            androidx.compose.ui.text.AnnotatedString(""),
+        ))
         edit("journal-name", project)
+        name.assert(!examples)
         click("journal-type-SYMMETRIC_DIPOLE")
+        edit("journal-target", "145,512")
         edit("journal-installation", installation)
+        val feedline = "LMR-240, 7 m"
+        val feedField = compose.onNodeWithTag("journal-feedline")
+        feedField.performScrollTo().performClick()
+        val russian = compose.onAllNodesWithText("Симметричная линия 450 Ом").fetchSemanticsNodes().isNotEmpty()
+        val ladderLine = compose.onNodeWithText(if (russian) "Симметричная линия 450 Ом" else "450 Ω ladder line")
+        ladderLine.assertExists()
+        feedField.performTextReplacement(if (russian) "р" else "adder")
+        ladderLine.assertDoesNotExist()
+        feedField.performTextReplacement(if (russian) "  сИм" else "  450 Ω LaD")
+        ladderLine.assertExists()
+        feedField.performTextReplacement("LMR-2")
+        compose.onNodeWithText("LMR-240").performScrollTo().performClick()
+        feedField.assertTextContains("LMR-240")
+        feedField.performTextInput(", 7 m")
+        feedField.assertTextContains(feedline)
         click("journal-save")
         waitFor("journal-history")
         repeat(2) { compose.onNodeWithTag("back").performClick() }
@@ -117,8 +144,23 @@ class JournalAcceptanceTest {
         compose.onNodeWithTag("inverted-v-save").performScrollTo().assertIsNotEnabled()
         edit("inverted-v-HEIGHT", "8")
         click("inverted-v-save")
-        compose.onNode(hasTestTag("inverted-v-project") and hasText(project)).performScrollTo().performClick()
-        compose.waitUntil(15_000) { compose.onAllNodesWithTag("inverted-v-project").fetchSemanticsNodes().isEmpty() }
+        waitFor("inverted-v-project-picker")
+        val confirm = compose.onNodeWithTag("inverted-v-confirm-project")
+        confirm.assertIsNotEnabled()
+        compose.onNodeWithTag("inverted-v-project-search").performTextReplacement("145.512")
+        val projectRow = hasTestTag("inverted-v-project") and hasText(project)
+        val list = compose.onNodeWithTag("inverted-v-project-list")
+        list.performScrollToNode(projectRow)
+        compose.onNodeWithTag("inverted-v-project-search").performTextReplacement(project)
+        list.performScrollToNode(projectRow)
+        compose.onNode(projectRow).performClick().assertIsSelected()
+        confirm.assertIsEnabled()
+        compose.activityRule.scenario.recreate()
+        waitFor("inverted-v-project-picker")
+        compose.onNodeWithTag("inverted-v-project-search").assertTextContains(project)
+        compose.onNode(projectRow).assertIsSelected()
+        confirm.performClick()
+        waitFor("inverted-v-screen")
         edit("inverted-v-ANGLE", "90")
         compose.activityRule.scenario.recreate()
         waitFor("inverted-v-ANGLE")
@@ -134,7 +176,221 @@ class JournalAcceptanceTest {
         compose.onNode(title and hasClickAction()).performClick()
         waitFor("journal-record-details")
         compose.onNodeWithText(installation, substring = true).assertExists()
+        compose.onNodeWithText(feedline, substring = true).assertExists()
         compose.onNodeWithText("120°", substring = true).assertExists()
+    }
+
+    @Test fun projectExamplesHideOnFocusAndNeverBecomeSavedData() {
+        val title = "Empty fields " + UUID.randomUUID().toString().take(6)
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-journal")
+        waitFor("journal-new-project")
+        compose.onNodeWithTag("journal-new-project").performClick()
+
+        val name = compose.onNodeWithTag("journal-name")
+        val example = hasText("Portable dipole") or hasText("Диполь для выездов")
+        name.assert(example).performClick().assert(!example)
+        compose.onNodeWithTag("journal-target").performScrollTo().performClick()
+        name.assert(example)
+        click("journal-save")
+        val required = hasText("Enter a name.") or hasText("Введите название.")
+        name.assertIsDisplayed()
+        compose.onNode(required).assertIsDisplayed()
+
+        edit("journal-name", title)
+        click("journal-save")
+        waitFor("journal-history")
+        val application = compose.activity.application as CalculatorApplication
+        val saved = runBlocking { application.projectsRepository.read().single { it.title == title } }
+        assertNull(saved.target)
+        assertNull(saved.initialLength)
+        assertEquals("", saved.installation)
+        assertEquals("", saved.feedline)
+        assertEquals("", saved.note)
+    }
+
+    @Test fun recordSaveScrollsToMissingMeasurementAndImpedanceField() {
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-journal")
+        waitFor("journal-new-project")
+        compose.onNodeWithTag("journal-new-project").performClick()
+        edit("journal-name", "Scroll " + UUID.randomUUID().toString().take(6))
+        click("journal-save")
+        waitFor("journal-history")
+        click("journal-add")
+        edit("journal-record-name", "Measurement")
+        click("journal-save-record")
+        compose.onNodeWithTag("journal-length").assertIsDisplayed()
+        val measurementRequired = hasText("Enter at least one measurement.") or hasText("Введите хотя бы один замер.")
+        compose.onNode(measurementRequired).assertIsDisplayed()
+
+        edit("journal-resistance", "50")
+        click("journal-save-record")
+        compose.onNodeWithTag("journal-reactance").assertIsDisplayed()
+        val pairRequired = hasText("Enter both R and X when recording impedance.") or hasText("Для импеданса укажите и R, и X.")
+        compose.onNode(pairRequired).assertIsDisplayed()
+
+        edit("journal-reactance", "0")
+        click("journal-save-record")
+        waitFor("journal-record-details")
+    }
+
+    @Test fun measurementFormSharesExamplesAndSuggestionsInEnglishDarkTheme() {
+        val project = openNewRecord("ENGLISH", "DARK")
+        val name = compose.onNodeWithTag("journal-record-name")
+        val example = hasText("First sweep")
+        name.assert(example).performClick().assert(!example)
+        val length = compose.onNodeWithTag("journal-length")
+        length.performScrollTo().performClick().assert(!hasText("98.3"))
+        name.assert(example)
+        click("journal-save-record")
+        name.assertIsDisplayed()
+        compose.onNodeWithText("Enter a name.").assertIsDisplayed()
+
+        edit("journal-record-name", "Before adjustment")
+        edit("journal-resistance", "61")
+        edit("journal-reactance", "-12")
+        val feedline = compose.onNodeWithTag("journal-feedline")
+        feedline.performScrollTo().assertTextContains("RG-213, 10 m").performClick()
+        edit("journal-feedline", "58")
+        compose.onNodeWithTag("journal-feedline-suggestions").assertDoesNotExist()
+        edit("journal-feedline", "  rG-5")
+        compose.onNodeWithText("RG-58").performScrollTo().performClick()
+        edit("journal-feedline", "RG-58, 5 m")
+        compose.onNodeWithTag("journal-installation").performScrollTo()
+            .assertTextContains("Inherited setup").performTextClearance()
+
+        compose.activityRule.scenario.recreate()
+        feedline.performScrollTo().assertTextContains("RG-58, 5 m")
+        click("journal-save-record")
+        waitFor("journal-record-details")
+        val saved = savedProject(project).records.single()
+        assertEquals("", saved.installation)
+        assertEquals("", saved.note)
+        assertEquals("RG-58, 5 m", saved.feedline)
+        val measurement = requireNotNull(saved.measurement)
+        assertNull(measurement.length)
+        assertNull(measurement.resonance)
+        assertNull(measurement.swr)
+        assertNull(measurement.testFrequency)
+        assertEquals(-12.0, measurement.reactanceOhms)
+    }
+
+    @Test fun calculationFormKeepsClearedValuesEmptyInRussianLightTheme() {
+        val project = openNewRecord("RUSSIAN", "LIGHT")
+        click("journal-record-type-CALCULATION")
+        compose.onNodeWithTag("journal-length").assertDoesNotExist()
+        compose.onNodeWithTag("journal-record-name").assertTextContains("Расчёт перед подстройкой")
+        edit("journal-record-name", "Расчёт перед установкой")
+        compose.onNodeWithTag("journal-installation").performScrollTo().performClick()
+        edit("journal-installation", "  на МА")
+        compose.onNodeWithText("На мачте").performScrollTo().performClick()
+        compose.onNodeWithTag("journal-feedline").performScrollTo()
+            .assertTextContains("RG-213, 10 m").performTextClearance()
+        click("journal-save-record")
+        waitFor("journal-record-details")
+        val saved = savedProject(project).records.single()
+        assertEquals("На мачте", saved.installation)
+        assertEquals("", saved.feedline)
+        assertEquals("", saved.note)
+        assertNull(saved.measurement)
+        assertTrue(saved.calculation != null)
+    }
+
+    private fun openNewRecord(language: String, theme: String): String {
+        val project = "Form " + UUID.randomUUID().toString().take(6)
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-settings").performClick()
+        click("language-$language")
+        click("theme-$theme")
+        compose.onNodeWithTag("back").performClick()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-journal")
+        waitFor("journal-new-project")
+        click("journal-new-project")
+        edit("journal-name", project)
+        edit("journal-installation", "Inherited setup")
+        edit("journal-feedline", "RG-213, 10 m")
+        click("journal-save")
+        waitFor("journal-history")
+        click("journal-add")
+        return project
+    }
+
+    private fun savedProject(title: String) = runBlocking {
+        val application = compose.activity.application as CalculatorApplication
+        application.projectsRepository.read().single { it.title == title }
+    }
+
+    @Test fun calculatorTransfersTypedSnapshotsAndCreatesProjectWithFirstEntry() {
+        val name = "Sizing " + UUID.randomUUID().toString().take(6)
+        val tuningName = "Tuning " + UUID.randomUUID().toString().take(6)
+        waitFor("nav-SIZING")
+        compose.onNodeWithTag("nav-SIZING").performClick()
+        click("unit-SIZING_FREQUENCY-MEGAHERTZ")
+        edit("field-SIZING_FREQUENCY", "145.5")
+        edit("field-FACTOR", "0.95")
+        click("copy-to-project")
+        click("project-transfer-type-SYMMETRIC_DIPOLE")
+        click("project-transfer-continue")
+        waitFor("project-transfer-project-picker")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        click("project-transfer-save-new")
+        compose.onNodeWithTag("project-transfer-name").assertIsDisplayed()
+        edit("project-transfer-name", name)
+        compose.activityRule.scenario.recreate()
+        waitFor("project-transfer-name")
+        compose.onNodeWithTag("project-transfer-name").assertTextContains(name)
+        click("project-transfer-save-new")
+        waitFor("copy-to-project")
+        val sizing = savedProject(name)
+        assertEquals(145_500_000L, sizing.target?.hertz)
+        val first = requireNotNull(sizing.records.single().calculation)
+        assertEquals("sizing", first.model)
+        val dipoleMeters = first.outputs.single { it.key == "dipole_total" }.value
+        assertEquals(dipoleMeters, requireNotNull(sizing.initialLength).nanometers / 1e9, 1e-9)
+
+        compose.onNodeWithTag("nav-TRIMMING").performClick()
+        click("antenna-SYMMETRIC_DIPOLE")
+        click("unit-ACTUAL_LENGTH-CENTIMETERS")
+        click("unit-MEASURED-MEGAHERTZ")
+        click("unit-TARGET-MEGAHERTZ")
+        edit("field-ACTUAL_LENGTH", "99")
+        edit("field-MEASURED", "144.4")
+        edit("field-TARGET", "146")
+        click("copy-to-project")
+        waitFor("project-transfer-project-picker")
+        compose.onNodeWithTag("project-transfer-project-search").performTextReplacement(name)
+        val row = hasTestTag("project-transfer-project") and hasText(name)
+        compose.onNodeWithTag("project-transfer-project-list").performScrollToNode(row)
+        compose.onNode(row).performClick()
+        compose.onNodeWithTag("project-transfer-frequency-warning").assertIsDisplayed()
+        compose.activityRule.scenario.recreate()
+        waitFor("project-transfer-frequency-warning")
+        compose.onNodeWithTag("project-transfer-confirm-project").performClick()
+        waitFor("copy-to-project")
+        val updated = savedProject(name)
+        assertEquals(sizing.target, updated.target)
+        assertEquals(sizing.initialLength, updated.initialLength)
+        val tuning = requireNotNull(updated.records.last().calculation)
+        assertEquals("trimming", tuning.model)
+        assertEquals(146_000_000.0, tuning.inputs.single { it.key == "target" }.value, 0.0)
+
+        click("copy-to-project")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        edit("project-transfer-name", tuningName)
+        click("project-transfer-save-new")
+        waitFor("copy-to-project")
+        val created = savedProject(tuningName)
+        assertEquals(990_000_000L, created.initialLength?.nanometers)
+        assertEquals(146_000_000L, created.target?.hertz)
+        assertEquals(tuning, created.records.single().calculation)
+        val open = hasText("Open project") or hasText("Открыть проект")
+        compose.onNode(open and hasClickAction()).performClick()
+        waitFor("journal-history")
     }
 
     @Test fun feedbackMenuOpensTelegramAndGitHub() {

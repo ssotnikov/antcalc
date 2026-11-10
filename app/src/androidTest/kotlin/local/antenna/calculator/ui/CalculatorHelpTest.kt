@@ -170,6 +170,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
 
         checkSizes(",", "см")
         checkOrder("itu", "nist", "Русский")
+        checkOrder("radiolab", "rfi-dielectrics", "Русский")
         field(FieldKey.SIZING_FREQUENCY).assertTextContains("145")
         settings()
         compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
@@ -179,9 +180,11 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         compose.onNodeWithTag("open-references").assertTextContains("References").performClick()
         compose.onNodeWithTag("source-nist").performScrollTo().assertIsDisplayed()
             .assertTextContains("English", substring = true)
-        for (id in listOf("itu", "rig-tuning", "kadamm", "rig-cable")) {
+        for (id in listOf("itu", "rig-tuning", "kadamm", "rig-cable", "radiolab")) {
             compose.onNodeWithTag("source-$id").assertDoesNotExist()
         }
+        compose.onNodeWithTag("source-rfi-dielectrics").performScrollTo().assertIsDisplayed()
+            .assertTextContains("Coaxial Cable Dielectrics", substring = true)
         compose.onNodeWithTag("source-cable-delay").performScrollTo().assertIsDisplayed()
     }
 

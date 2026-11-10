@@ -14,6 +14,7 @@ class CalculatorToolsUiTest : CalculatorUiFixture() {
         start(draft.copy(settings = draft.settings.copy(language = AppLanguage.ENGLISH, theme = AppTheme.DARK)), fontScale = 2f)
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-cable").performScrollTo().performClick()
+        compose.onNodeWithTag("cable-vf-reciprocal").assertDoesNotExist()
         compose.onNodeWithTag("cable-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("cable-details").performScrollTo().performClick()
         compose.onNodeWithText("One wavelength").performScrollTo().assertIsDisplayed()
@@ -29,6 +30,8 @@ class CalculatorToolsUiTest : CalculatorUiFixture() {
         compose.onNodeWithTag("open-cable").performScrollTo().performClick()
         compose.onNodeWithText("Длина кабеля").assertIsDisplayed()
         compose.onNodeWithTag("cable-VELOCITY").performScrollTo().assertTextContains("0,66")
+        compose.onNodeWithTag("cable-vf-reciprocal").performScrollTo().assertIsDisplayed()
+            .assertTextContains("VF = 1/Kу", substring = true)
         compose.onNodeWithTag("cable-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("cable-diagram").performScrollTo().assertIsDisplayed()
     }

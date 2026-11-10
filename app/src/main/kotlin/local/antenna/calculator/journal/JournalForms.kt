@@ -6,7 +6,10 @@ import android.text.format.DateFormat
 import android.view.ContextThemeWrapper
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,31 +46,58 @@ private fun decimal(value: Long?, divisor: Long): String = value?.let {
 
 @Composable
 internal fun ProjectForm(initial: AntennaProject?, enabled: Boolean, onSave: (AntennaProject) -> Unit) {
-    var title by rememberSaveable { mutableStateOf(initial?.title.orEmpty()) }
+    val title = rememberTextFieldState(initial?.title.orEmpty())
     var type by rememberSaveable { mutableStateOf(initial?.antennaType ?: AntennaType.MONOPOLE) }
-    var target by rememberSaveable { mutableStateOf(decimal(initial?.target?.hertz, 1_000_000)) }
-    var initialLength by rememberSaveable { mutableStateOf(decimal(initial?.initialLength?.nanometers, 10_000_000)) }
-    var installation by rememberSaveable { mutableStateOf(initial?.installation.orEmpty()) }
-    var feedline by rememberSaveable { mutableStateOf(initial?.feedline.orEmpty()) }
-    var note by rememberSaveable { mutableStateOf(initial?.note.orEmpty()) }
+    val target = rememberTextFieldState(decimal(initial?.target?.hertz, 1_000_000))
+    val initialLength = rememberTextFieldState(decimal(initial?.initialLength?.nanometers, 10_000_000))
+    val installation = rememberTextFieldState(initial?.installation.orEmpty())
+    val feedline = rememberTextFieldState(initial?.feedline.orEmpty())
+    val note = rememberTextFieldState(initial?.note.orEmpty())
     var attempted by rememberSaveable { mutableStateOf(false) }
-    val parsedTarget = frequency(target)
-    val parsedLength = length(initialLength)
-    val targetError = target.isNotBlank() && parsedTarget == null
-    val lengthError = initialLength.isNotBlank() && parsedLength == null
+    val parsedTarget = frequency(target.text.toString())
+    val parsedLength = length(initialLength.text.toString())
+    val targetError = target.text.isNotBlank() && parsedTarget == null
+    val lengthError = initialLength.text.isNotBlank() && parsedLength == null
+    val titleLocation = remember { BringIntoViewRequester() }
+    val targetLocation = remember { BringIntoViewRequester() }
+    val lengthLocation = remember { BringIntoViewRequester() }
+    var scrollTarget by remember { mutableStateOf<BringIntoViewRequester?>(null) }
+    LaunchedEffect(scrollTarget) {
+        val target = scrollTarget ?: return@LaunchedEffect
+        try {
+            target.bringIntoView()
+        } finally {
+            if (scrollTarget === target) scrollTarget = null
+        }
+    }
     JournalColumn {
-        JournalField(title, { title = it }, R.string.journal_name, "journal-name", enabled,
-            JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.isBlank() })
+        JournalTextField(title, R.string.journal_project_name, R.string.journal_example_name, "journal-name", enabled,
+            modifier = Modifier.bringIntoViewRequester(titleLocation), limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.text.isBlank() })
         ChoicePicker(stringResource(R.string.antenna_type), AntennaType.entries, type,
             { stringResource(it.journalLabel()) }, { if (enabled) type = it }, "journal-type")
-        JournalNumberField(target, { target = it }, R.string.journal_target, "journal-target", enabled, targetError)
-        JournalNumberField(initialLength, { initialLength = it }, R.string.journal_initial_length, "journal-initial-length", enabled, lengthError)
-        JournalNotes(installation, { installation = it }, feedline, { feedline = it }, note, { note = it }, enabled)
+        JournalTextField(target, R.string.journal_target, R.string.journal_example_target, "journal-target", enabled,
+            modifier = Modifier.bringIntoViewRequester(targetLocation),
+            limit = PositiveDecimalParser.MAX_CHARACTERS, keyboard = KeyboardType.Decimal,
+            error = R.string.journal_number_invalid.takeIf { targetError })
+        JournalTextField(initialLength, R.string.journal_initial_length, R.string.journal_example_length, "journal-initial-length", enabled,
+            modifier = Modifier.bringIntoViewRequester(lengthLocation),
+            limit = PositiveDecimalParser.MAX_CHARACTERS, keyboard = KeyboardType.Decimal,
+            error = R.string.journal_number_invalid.takeIf { lengthError })
+        JournalSuggestionField(installation, JournalSuggestion.INSTALLATION, enabled)
+        JournalSuggestionField(feedline, JournalSuggestion.FEEDLINE, enabled)
+        JournalTextField(note, R.string.journal_note, R.string.journal_example_note, "journal-note", enabled, multiline = true)
         Button(onClick = {
             attempted = true
-            if (title.isNotBlank() && !targetError && !lengthError) {
-                onSave(AntennaProject(initial?.id ?: UUID.randomUUID(), title.trim(), type, parsedTarget,
-                    parsedLength, note, installation, feedline, initial?.records.orEmpty()))
+            scrollTarget = when {
+                title.text.isBlank() -> titleLocation
+                targetError -> targetLocation
+                lengthError -> lengthLocation
+                else -> null
+            }
+            if (scrollTarget == null) {
+                onSave(AntennaProject(initial?.id ?: UUID.randomUUID(), title.text.toString().trim(), type,
+                    parsedTarget, parsedLength, note.text.toString(), installation.text.toString(),
+                    feedline.text.toString(), initial?.records.orEmpty()))
             }
         }, enabled = enabled, modifier = Modifier.fillMaxWidth().testTag("journal-save")) { Text(stringResource(R.string.journal_save)) }
     }
@@ -81,35 +111,56 @@ internal fun RecordForm(
     enabled: Boolean,
     onSave: (JournalRecord) -> Unit,
 ) {
-    var title by rememberSaveable { mutableStateOf("") }
+    val title = rememberTextFieldState()
     var recordType by rememberSaveable { mutableStateOf(RecordType.MEASUREMENT) }
     var calculationSection by rememberSaveable { mutableStateOf(Section.SIZING) }
     var point by rememberSaveable { mutableStateOf(MeasurementPoint.UNSPECIFIED) }
     var timeText by rememberSaveable { mutableStateOf(OffsetDateTime.now().withNano(0).toString()) }
     val time = OffsetDateTime.parse(timeText)
-    var measuredLength by rememberSaveable { mutableStateOf("") }
-    var resonance by rememberSaveable { mutableStateOf("") }
-    var testFrequency by rememberSaveable { mutableStateOf("") }
-    var swr by rememberSaveable { mutableStateOf("") }
-    var resistance by rememberSaveable { mutableStateOf("") }
-    var reactance by rememberSaveable { mutableStateOf("") }
-    var installation by rememberSaveable { mutableStateOf(project.installation) }
-    var feedline by rememberSaveable { mutableStateOf(project.feedline) }
-    var note by rememberSaveable { mutableStateOf("") }
+    val measuredLength = rememberTextFieldState()
+    val resonance = rememberTextFieldState()
+    val testFrequency = rememberTextFieldState()
+    val swr = rememberTextFieldState()
+    val resistance = rememberTextFieldState()
+    val reactance = rememberTextFieldState()
+    val installation = rememberTextFieldState(project.installation)
+    val feedline = rememberTextFieldState(project.feedline)
+    val note = rememberTextFieldState()
     var attempted by rememberSaveable { mutableStateOf(false) }
 
-    val size = length(measuredLength)
-    val resonanceValue = frequency(resonance)
-    val testFrequencyValue = frequency(testFrequency)
-    val swrValue = parseMatchingNumber(swr, MatchingField.SWR).value
-    val resistanceValue = parseMatchingNumber(resistance, MatchingField.RESISTANCE).value
-    val reactanceValue = parseMatchingNumber(reactance, MatchingField.REACTANCE).value
-    val errors = listOf(
-        measuredLength.invalid(size), resonance.invalid(resonanceValue), testFrequency.invalid(testFrequencyValue),
-        swr.invalid(swrValue), resistance.invalid(resistanceValue), reactance.invalid(reactanceValue),
-    )
-    val hasMeasurement = (size != null || resonanceValue != null || swrValue != null || resistanceValue != null) &&
-        (resistanceValue == null) == (reactanceValue == null)
+    val size = length(measuredLength.text.toString())
+    val resonanceValue = frequency(resonance.text.toString())
+    val testFrequencyValue = frequency(testFrequency.text.toString())
+    val swrValue = parseMatchingNumber(swr.text.toString(), MatchingField.SWR).value
+    val resistanceValue = parseMatchingNumber(resistance.text.toString(), MatchingField.RESISTANCE).value
+    val reactanceValue = parseMatchingNumber(reactance.text.toString(), MatchingField.REACTANCE).value
+    val lengthError = measuredLength.text.invalid(size)
+    val resonanceError = resonance.text.invalid(resonanceValue)
+    val swrError = swr.text.invalid(swrValue)
+    val resistanceError = resistance.text.invalid(resistanceValue)
+    val reactanceError = reactance.text.invalid(reactanceValue)
+    val testFrequencyError = testFrequency.text.invalid(testFrequencyValue)
+    val missingResistance = reactanceValue != null && resistance.text.isBlank()
+    val missingReactance = resistanceValue != null && reactance.text.isBlank()
+    val missingMeasurement = size == null && resonanceValue == null && swrValue == null &&
+        resistanceValue == null && reactanceValue == null &&
+        !lengthError && !resonanceError && !swrError && !resistanceError && !reactanceError
+    val titleLocation = remember { BringIntoViewRequester() }
+    val lengthLocation = remember { BringIntoViewRequester() }
+    val resonanceLocation = remember { BringIntoViewRequester() }
+    val swrLocation = remember { BringIntoViewRequester() }
+    val resistanceLocation = remember { BringIntoViewRequester() }
+    val reactanceLocation = remember { BringIntoViewRequester() }
+    val testFrequencyLocation = remember { BringIntoViewRequester() }
+    var scrollTarget by remember { mutableStateOf<BringIntoViewRequester?>(null) }
+    LaunchedEffect(scrollTarget) {
+        val target = scrollTarget ?: return@LaunchedEffect
+        try {
+            target.bringIntoView()
+        } finally {
+            if (scrollTarget === target) scrollTarget = null
+        }
+    }
     val preview = if (recordType == RecordType.CALCULATION) {
         journalSnapshot(calculator, project.antennaType, calculationSection)
     } else null
@@ -117,19 +168,29 @@ internal fun RecordForm(
     JournalColumn {
         ChoicePicker(stringResource(R.string.journal_record), RecordType.entries, recordType,
             { stringResource(it.label) }, { if (enabled) { recordType = it; attempted = false } }, "journal-record-type")
-        JournalField(title, { title = it }, R.string.journal_name, "journal-record-name", enabled,
-            JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.isBlank() })
+        val nameExample = when (recordType) {
+            RecordType.MEASUREMENT -> R.string.journal_example_record_name
+            RecordType.CALCULATION -> R.string.journal_example_calculation_name
+        }
+        JournalTextField(title, R.string.journal_name, nameExample, "journal-record-name", enabled,
+            limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.text.isBlank() },
+            modifier = Modifier.bringIntoViewRequester(titleLocation))
         JournalDateTime(time, enabled) { timeText = it.toString() }
         if (recordType == RecordType.MEASUREMENT) {
-            JournalNumberField(measuredLength, { measuredLength = it }, R.string.journal_measure_length, "journal-length", enabled, errors[0])
-            JournalNumberField(resonance, { resonance = it }, R.string.journal_resonance, "journal-resonance", enabled, errors[1])
-            JournalNumberField(swr, { swr = it }, R.string.matching_swr, "journal-swr", enabled, errors[3])
-            JournalNumberField(resistance, { resistance = it }, R.string.journal_resistance, "journal-resistance", enabled, errors[4])
-            JournalNumberField(reactance, { reactance = it }, R.string.journal_reactance, "journal-reactance", enabled, errors[5], signed = true)
-            JournalNumberField(testFrequency, { testFrequency = it }, R.string.journal_test_frequency, "journal-test-frequency", enabled, errors[2])
+            JournalNumberField(measuredLength, R.string.journal_measure_length, R.string.journal_example_length, "journal-length", enabled,
+                lengthError, lengthLocation, requiredError = R.string.journal_measurement_required.takeIf { attempted && missingMeasurement })
+            JournalNumberField(resonance, R.string.journal_resonance, R.string.journal_example_resonance, "journal-resonance", enabled,
+                resonanceError, resonanceLocation)
+            JournalNumberField(swr, R.string.matching_swr, R.string.journal_example_swr, "journal-swr", enabled, swrError, swrLocation)
+            JournalNumberField(resistance, R.string.journal_resistance, R.string.journal_example_resistance, "journal-resistance", enabled,
+                resistanceError, resistanceLocation, requiredError = R.string.journal_impedance_pair_required.takeIf { attempted && missingResistance })
+            JournalNumberField(reactance, R.string.journal_reactance, R.string.journal_example_reactance, "journal-reactance", enabled,
+                reactanceError, reactanceLocation, requiredError = R.string.journal_impedance_pair_required.takeIf { attempted && missingReactance },
+                signed = true)
+            JournalNumberField(testFrequency, R.string.journal_test_frequency, R.string.journal_example_target, "journal-test-frequency", enabled,
+                testFrequencyError, testFrequencyLocation)
             ChoicePicker(stringResource(R.string.journal_point), MeasurementPoint.entries, point,
                 { stringResource(it.journalLabel()) }, { if (enabled) point = it }, "journal-point")
-            if (attempted && !hasMeasurement) Text(stringResource(R.string.journal_measurement_required), color = MaterialTheme.colorScheme.error)
         } else {
             ChoicePicker(stringResource(R.string.journal_choose_calc), listOf(Section.SIZING, Section.TRIMMING), calculationSection,
                 { stringResource(if (it == Section.SIZING) R.string.sizes else R.string.trimming) },
@@ -140,18 +201,32 @@ internal fun RecordForm(
                 JournalDetails(presentation.snapshotDetails(preview))
             }
         }
-        JournalNotes(installation, { installation = it }, feedline, { feedline = it }, note, { note = it }, enabled)
+        JournalSuggestionField(installation, JournalSuggestion.INSTALLATION, enabled)
+        JournalSuggestionField(feedline, JournalSuggestion.FEEDLINE, enabled)
+        JournalTextField(note, R.string.journal_note, R.string.journal_example_note, "journal-note", enabled, multiline = true)
         Button(onClick = {
             attempted = true
-            if (title.isBlank()) return@Button
+            scrollTarget = when {
+                title.text.isBlank() -> titleLocation
+                recordType != RecordType.MEASUREMENT -> null
+                lengthError -> lengthLocation
+                resonanceError -> resonanceLocation
+                swrError -> swrLocation
+                resistanceError || missingResistance -> resistanceLocation
+                reactanceError || missingReactance -> reactanceLocation
+                missingMeasurement -> lengthLocation
+                testFrequencyError -> testFrequencyLocation
+                else -> null
+            }
+            if (scrollTarget != null) return@Button
             val measurement = if (recordType == RecordType.MEASUREMENT) {
-                if (!hasMeasurement || errors.any { it }) return@Button
                 JournalMeasurement(size, resonanceValue, testFrequencyValue, swrValue, resistanceValue, reactanceValue, point)
             } else null
             val snapshot = if (recordType == RecordType.CALCULATION) {
                 journalSnapshot(currentCalculator(), project.antennaType, calculationSection) ?: return@Button
             } else null
-            onSave(JournalRecord(UUID.randomUUID(), title.trim(), time, project.antennaType, note, installation, feedline, measurement, snapshot))
+            onSave(JournalRecord(UUID.randomUUID(), title.text.toString().trim(), time, project.antennaType,
+                note.text.toString(), installation.text.toString(), feedline.text.toString(), measurement, snapshot))
         }, enabled = enabled && (recordType == RecordType.MEASUREMENT || preview != null),
             modifier = Modifier.fillMaxWidth().testTag("journal-save-record")) { Text(stringResource(R.string.journal_save)) }
     }
@@ -161,7 +236,7 @@ private enum class RecordType(val label: Int) {
     MEASUREMENT(R.string.journal_measurement), CALCULATION(R.string.journal_calculation),
 }
 
-private fun String.invalid(value: Any?) = isNotBlank() && value == null
+private fun CharSequence.invalid(value: Any?) = isNotBlank() && value == null
 
 @Composable
 private fun JournalDateTime(time: OffsetDateTime, enabled: Boolean, onChange: (OffsetDateTime) -> Unit) {
@@ -191,35 +266,16 @@ private fun JournalDateTime(time: OffsetDateTime, enabled: Boolean, onChange: (O
 }
 
 @Composable
-private fun JournalNotes(
-    installation: String, onInstallation: (String) -> Unit,
-    feedline: String, onFeedline: (String) -> Unit,
-    note: String, onNote: (String) -> Unit, enabled: Boolean,
-) {
-    JournalField(installation, onInstallation, R.string.journal_installation, "journal-installation", enabled, JournalLimits.NOTE, multiline = true)
-    JournalField(feedline, onFeedline, R.string.journal_feedline, "journal-feedline", enabled, JournalLimits.NOTE, multiline = true)
-    JournalField(note, onNote, R.string.journal_note, "journal-note", enabled, JournalLimits.NOTE, multiline = true)
-}
-
-@Composable
 private fun JournalNumberField(
-    value: String, onChange: (String) -> Unit, label: Int, tag: String, enabled: Boolean, invalid: Boolean, signed: Boolean = false,
+    state: TextFieldState, label: Int, example: Int, tag: String, enabled: Boolean, invalid: Boolean,
+    location: BringIntoViewRequester, requiredError: Int? = null, signed: Boolean = false,
 ) {
-    val limit = PositiveDecimalParser.MAX_CHARACTERS
-    JournalField(value, { input -> onChange(if (input.length <= limit) input else input.take(limit) + "!") },
-        label, tag, enabled, Int.MAX_VALUE,
-        error = R.string.journal_number_invalid.takeIf { invalid },
-        keyboard = if (signed) KeyboardType.Text else KeyboardType.Decimal)
-}
-
-@Composable
-private fun JournalField(
-    value: String, onChange: (String) -> Unit, label: Int, tag: String, enabled: Boolean, limit: Int,
-    multiline: Boolean = false, error: Int? = null, keyboard: KeyboardType = KeyboardType.Text,
-) {
-    OutlinedTextField(value, { input -> if (input.length <= limit) onChange(input) },
-        label = { Text(stringResource(label)) }, enabled = enabled, singleLine = !multiline,
-        maxLines = if (multiline) 4 else 1, isError = error != null,
-        supportingText = error?.let { id -> { Text(stringResource(id)) } },
-        keyboardOptions = KeyboardOptions(keyboardType = keyboard), modifier = Modifier.fillMaxWidth().testTag(tag))
+    JournalTextField(
+        state, label, example, tag, enabled,
+        modifier = Modifier.bringIntoViewRequester(location),
+        limit = PositiveDecimalParser.MAX_CHARACTERS,
+        keyboard = if (signed) KeyboardType.Text else KeyboardType.Decimal,
+        error = if (invalid) R.string.journal_number_invalid else requiredError,
+        numeric = true,
+    )
 }

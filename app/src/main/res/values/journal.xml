@@ -76,7 +76,8 @@
     <string name="journal_problem_missing">This item or file picker is unavailable. Open the project and try again.</string>
     <string name="journal_required">Enter a name.</string>
     <string name="journal_number_invalid">Check the number and its range.</string>
-    <string name="journal_measurement_required">Enter at least one measurement. Enter both R and X when recording impedance.</string>
+    <string name="journal_measurement_required">Enter at least one measurement.</string>
+    <string name="journal_impedance_pair_required">Enter both R and X when recording impedance.</string>
     <string name="journal_close">Close</string>
     <string name="contact_author">Contact the author</string>
     <string name="journal_ohms">Ω</string>
@@ -92,4 +93,51 @@
     <string name="journal_comparison_missing">No value</string>
     <string name="journal_report_project">Project</string>
     <string name="journal_project_actions">Project actions</string>
+    <string name="journal_feed_ladder">450 Ω ladder line</string>
+    <string name="journal_setup_mast">On a mast</string>
+    <string name="journal_setup_roof">On a roof</string>
+    <string name="journal_setup_balcony">On a balcony</string>
+    <string name="journal_setup_attic">In an attic</string>
+    <string name="journal_setup_field">Temporary field setup</string>
+    <string name="journal_setup_trees">Between trees</string>
+    <string name="journal_project_suggestions_hint">Choose from the list or enter your own text</string>
+    <string name="inverted_v_choose_project">Choose a project</string>
+    <string name="inverted_v_project_search">Project name or frequency</string>
+    <string name="inverted_v_project_eligible">Projects for symmetrical dipoles</string>
+    <string name="inverted_v_project_no_match">No projects match your search.</string>
+    <string name="inverted_v_project_no_frequency">Frequency not set</string>
+    <string name="journal_feed_rg58" translatable="false">RG-58</string>
+    <string name="journal_feed_rg8x" translatable="false">RG-8X</string>
+    <string name="journal_feed_rg213" translatable="false">RG-213</string>
+    <string name="journal_feed_lmr240" translatable="false">LMR-240</string>
+    <string name="journal_feed_lmr400" translatable="false">LMR-400</string>
+    <string name="journal_project_name">Project name</string>
+    <string name="journal_example_name">Portable dipole</string>
+    <string name="journal_example_target">145.5</string>
+    <string name="journal_example_length">98.3</string>
+    <string name="journal_example_installation">On a mast, 8 m high</string>
+    <string name="journal_example_feedline">RG-58, 12 m, choke at the feed point</string>
+    <string name="journal_example_note">Check after installation</string>
+    <string name="journal_example_record_name">First sweep</string>
+    <string name="journal_example_resonance">144.6</string>
+    <string name="journal_example_swr">1.34</string>
+    <string name="journal_example_resistance">61</string>
+    <string name="journal_example_reactance">-12</string>
+    <string name="journal_example_calculation_name">Calculation before tuning</string>
+    <string name="project_transfer_title">Copy to project</string>
+    <string name="project_transfer_choose_type">Choose antenna type</string>
+    <string name="project_transfer_type_hint">Choose which antenna to save the dimensions for.</string>
+    <string name="project_transfer_show_projects">Show projects</string>
+    <string name="project_transfer_eligible">Projects matching the selected antenna type.</string>
+    <string name="project_transfer_no_projects">There are no projects for this antenna type.</string>
+    <string name="project_transfer_frequency_mismatch">The project has a different target frequency. This entry will keep the calculation frequency of %1$s.</string>
+    <string name="project_transfer_create">+ Create a new project</string>
+    <string name="project_transfer_save_existing">Save to selected project</string>
+    <string name="project_transfer_save_new">Create and save</string>
+    <string name="project_transfer_saved">Calculation saved to project</string>
+    <string name="project_transfer_open">Open project</string>
+    <string name="project_transfer_initial_length">Initial length</string>
+    <string name="project_transfer_first_entry">First journal entry</string>
+    <string name="project_transfer_length_outside_range">This length is outside the range for the project field. The exact result remains in the journal entry.</string>
+    <string name="project_transfer_recommended_length">Recommended length</string>
 </resources>
