@@ -129,7 +129,7 @@ internal fun InvertedVScreen(
         if (onChooseProject != null) {
             Button(
                 onClick = onChooseProject,
-                enabled = result != null && result.endHeightMeters >= 0,
+                enabled = state.editingEnabled && result != null && result.endHeightMeters >= 0,
                 modifier = Modifier.fillMaxWidth().testTag("inverted-v-save"),
             ) { Text(stringResource(R.string.inverted_v_save)) }
         }

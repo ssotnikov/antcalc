@@ -34,20 +34,15 @@ import local.antenna.calculator.journal.label
 internal fun ProjectPicker(
     journal: JournalViewModel,
     antennaType: AntennaType,
-    tag: String,
-    eligibleLabel: Int,
-    emptyLabel: Int,
-    onCancel: () -> Unit,
     onSelect: (AntennaProject) -> Unit,
-    targetHertz: Long? = null,
-    confirmLabel: Int = R.string.journal_save,
-    onCreate: (() -> Unit)? = null,
-    header: @Composable () -> Unit = {},
+    targetHertz: Long?,
+    onCreate: () -> Unit,
+    header: @Composable () -> Unit,
 ) {
     val status by journal.state.collectAsState()
     val context = LocalContext.current
     val focus = LocalFocusManager.current
-    val unspecified = stringResource(R.string.inverted_v_project_no_frequency)
+    val unspecified = stringResource(R.string.project_transfer_no_frequency)
     val presentation = remember(context) { JournalPresentation(context) }
     var query by rememberSaveable(antennaType) { mutableStateOf("") }
     var selectedId by rememberSaveable(antennaType) { mutableStateOf<UUID?>(null) }
@@ -63,7 +58,7 @@ internal fun ProjectPicker(
 
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().padding(horizontal = 20.dp)
-            .testTag("$tag-project-picker"),
+            .testTag("project-transfer-project-picker"),
     ) {
         header()
         OutlinedTextField(
@@ -73,7 +68,7 @@ internal fun ProjectPicker(
                     selectedId = null
                 }
             },
-            label = { Text(stringResource(R.string.inverted_v_project_search)) },
+            label = { Text(stringResource(R.string.project_transfer_search)) },
             leadingIcon = {
                 Icon(
                     painterResource(R.drawable.ic_search),
@@ -85,10 +80,10 @@ internal fun ProjectPicker(
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
-            modifier = Modifier.fillMaxWidth().testTag("$tag-project-search"),
+            modifier = Modifier.fillMaxWidth().testTag("project-transfer-project-search"),
         )
         Text(
-            stringResource(eligibleLabel),
+            stringResource(R.string.project_transfer_eligible),
             Modifier.padding(vertical = 8.dp),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -97,7 +92,7 @@ internal fun ProjectPicker(
         val scroll = rememberLazyListState()
         LazyColumn(
             Modifier.weight(1f).fillMaxWidth().cardListBounce(scroll.isScrollInProgress)
-                .selectableGroup().testTag("$tag-project-list"),
+                .selectableGroup().testTag("project-transfer-project-list"),
             state = scroll, overscrollEffect = null,
             contentPadding = PaddingValues(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -114,7 +109,7 @@ internal fun ProjectPicker(
             }
             if (status.readable && !status.busy && matches.isEmpty()) {
                 item {
-                    HelpText(if (projects.isEmpty()) emptyLabel else R.string.inverted_v_project_no_match)
+                    HelpText(if (projects.isEmpty()) R.string.project_transfer_no_projects else R.string.project_transfer_no_match)
                 }
             }
             if (status.readable) items(matches, key = { it.id }) { project ->
@@ -129,7 +124,7 @@ internal fun ProjectPicker(
                                 selectedId = project.id
                                 focus.clearFocus()
                             })
-                            .testTag("$tag-project").padding(12.dp),
+                            .testTag("project-transfer-project").padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
@@ -154,17 +149,11 @@ internal fun ProjectPicker(
             Button(
                 enabled = selected != null && status.readable && !status.busy,
                 onClick = { selected?.let(onSelect) },
-                modifier = Modifier.fillMaxWidth().testTag("$tag-confirm-project"),
-            ) { Text(stringResource(confirmLabel)) }
-            if (onCreate != null) {
-                OutlinedButton(onClick = onCreate, enabled = status.readable && !status.busy,
-                    modifier = Modifier.fillMaxWidth().testTag("project-transfer-create")) {
-                    Text(stringResource(R.string.project_transfer_create))
-                }
-            } else {
-                TextButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.journal_cancel))
-                }
+                modifier = Modifier.fillMaxWidth().testTag("project-transfer-confirm-project"),
+            ) { Text(stringResource(R.string.project_transfer_save_existing)) }
+            OutlinedButton(onClick = onCreate, enabled = status.readable && !status.busy,
+                modifier = Modifier.fillMaxWidth().testTag("project-transfer-create")) {
+                Text(stringResource(R.string.project_transfer_create))
             }
         }
     }

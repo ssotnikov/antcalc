@@ -1,4 +1,6 @@
 <resources>
+    <string name="journal_ideal_quarter_monopole">Идеальная λ/4 — штырь</string>
+    <string name="journal_ideal_quarter_arm">Идеальная λ/4 — каждое плечо диполя</string>
     <string name="journal_title">Проекты и журнал подстройки</string>
     <string name="journal_tools_hint">Сохраняйте расчёты антенн и сравнивайте измерения.</string>
     <string name="journal_projects">Проекты</string>
@@ -101,11 +103,9 @@
     <string name="journal_setup_field">Временная полевая установка</string>
     <string name="journal_setup_trees">Между деревьями</string>
     <string name="journal_project_suggestions_hint">Выберите из списка или введите свой текст</string>
-    <string name="inverted_v_choose_project">Выбрать проект</string>
-    <string name="inverted_v_project_search">Название проекта или частота</string>
-    <string name="inverted_v_project_eligible">Проекты симметричных диполей</string>
-    <string name="inverted_v_project_no_match">По этому запросу проекты не найдены.</string>
-    <string name="inverted_v_project_no_frequency">Частота не задана</string>
+    <string name="project_transfer_search">Название проекта или частота</string>
+    <string name="project_transfer_no_match">По этому запросу проекты не найдены.</string>
+    <string name="project_transfer_no_frequency">Частота не задана</string>
     <string name="journal_project_name">Название проекта</string>
     <string name="journal_example_name">Диполь для выездов</string>
     <string name="journal_example_target">145,5</string>

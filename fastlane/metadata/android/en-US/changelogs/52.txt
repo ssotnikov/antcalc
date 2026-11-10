@@ -1,0 +1,1 @@
+Saved sizing calculations include only the results for the project's antenna type. Journal details and comparisons also filter older entries and use the correct label for the estimated dipole length.

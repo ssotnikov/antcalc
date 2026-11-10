@@ -13,6 +13,8 @@ import kotlinx.coroutines.runBlocking
 import local.antenna.calculator.CalculatorApplication
 import local.antenna.calculator.MainActivity
 import local.antenna.calculator.R
+import local.antenna.calculator.core.trimming.AntennaType
+import local.antenna.calculator.journal.JournalPresentation
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -138,26 +140,28 @@ class JournalAcceptanceTest {
         repeat(2) { compose.onNodeWithTag("back").performClick() }
 
         click("open-inverted-v")
+        click("inverted-v-mode-MEASURED")
+        click("inverted-v-length-unit-METERS")
         edit("inverted-v-ARM", "5")
         edit("inverted-v-ANGLE", "120")
         edit("inverted-v-HEIGHT", "1")
         compose.onNodeWithTag("inverted-v-save").performScrollTo().assertIsNotEnabled()
         edit("inverted-v-HEIGHT", "8")
         click("inverted-v-save")
-        waitFor("inverted-v-project-picker")
-        val confirm = compose.onNodeWithTag("inverted-v-confirm-project")
+        waitFor("project-transfer-project-picker")
+        val confirm = compose.onNodeWithTag("project-transfer-confirm-project")
         confirm.assertIsNotEnabled()
-        compose.onNodeWithTag("inverted-v-project-search").performTextReplacement("145.512")
-        val projectRow = hasTestTag("inverted-v-project") and hasText(project)
-        val list = compose.onNodeWithTag("inverted-v-project-list")
+        compose.onNodeWithTag("project-transfer-project-search").performTextReplacement("145.512")
+        val projectRow = hasTestTag("project-transfer-project") and hasText(project)
+        val list = compose.onNodeWithTag("project-transfer-project-list")
         list.performScrollToNode(projectRow)
-        compose.onNodeWithTag("inverted-v-project-search").performTextReplacement(project)
+        compose.onNodeWithTag("project-transfer-project-search").performTextReplacement(project)
         list.performScrollToNode(projectRow)
         compose.onNode(projectRow).performClick().assertIsSelected()
         confirm.assertIsEnabled()
         compose.activityRule.scenario.recreate()
-        waitFor("inverted-v-project-picker")
-        compose.onNodeWithTag("inverted-v-project-search").assertTextContains(project)
+        waitFor("project-transfer-project-picker")
+        compose.onNodeWithTag("project-transfer-project-search").assertTextContains(project)
         compose.onNode(projectRow).assertIsSelected()
         confirm.performClick()
         waitFor("inverted-v-screen")
@@ -178,6 +182,56 @@ class JournalAcceptanceTest {
         compose.onNodeWithText(installation, substring = true).assertExists()
         compose.onNodeWithText(feedline, substring = true).assertExists()
         compose.onNodeWithText("120°", substring = true).assertExists()
+    }
+
+    @Test fun invertedVCreatesDipoleProjectsFromBothInputModes() {
+        val suffix = UUID.randomUUID().toString().take(6)
+        val measuredName = "Measured V $suffix"
+        val estimatedName = "Estimated V $suffix"
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-inverted-v")
+        click("inverted-v-mode-MEASURED")
+        click("inverted-v-length-unit-METERS")
+        edit("inverted-v-ARM", "5")
+        edit("inverted-v-HEIGHT", "8")
+        edit("inverted-v-ANGLE", "120")
+        click("inverted-v-save")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        compose.onNodeWithTag("back").performClick()
+        waitFor("project-transfer-project-picker")
+        compose.onNodeWithTag("back").performClick()
+        waitFor("inverted-v-screen")
+        click("inverted-v-save")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        edit("project-transfer-name", measuredName)
+        click("project-transfer-save-new")
+        waitFor("inverted-v-screen")
+        val measured = savedProject(measuredName)
+        assertEquals(AntennaType.SYMMETRIC_DIPOLE, measured.antennaType)
+        assertEquals(10_000_000_000L, measured.initialLength?.nanometers)
+        assertNull(measured.target)
+        assertEquals("inverted_v", measured.records.single().calculation?.model)
+
+        click("inverted-v-mode-ESTIMATED")
+        click("inverted-v-frequency-unit-MEGAHERTZ")
+        edit("inverted-v-FREQUENCY", "14.2")
+        edit("inverted-v-FACTOR", "0.95")
+        click("inverted-v-save")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        edit("project-transfer-name", estimatedName)
+        compose.activityRule.scenario.recreate()
+        waitFor("project-transfer-name")
+        compose.onNodeWithTag("project-transfer-name").assertTextContains(estimatedName)
+        click("project-transfer-save-new")
+        waitFor("inverted-v-screen")
+        val estimated = savedProject(estimatedName)
+        assertEquals(AntennaType.SYMMETRIC_DIPOLE, estimated.antennaType)
+        assertEquals(14_200_000L, estimated.target?.hertz)
+        val snapshot = requireNotNull(estimated.records.single().calculation)
+        assertEquals("inverted_v", snapshot.model)
+        assertEquals(snapshot.outputs.single { it.key == "dipole_total" }.value,
+            requireNotNull(estimated.initialLength).nanometers / 1e9, 1e-9)
     }
 
     @Test fun projectExamplesHideOnFocusAndNeverBecomeSavedData() {
@@ -327,6 +381,7 @@ class JournalAcceptanceTest {
 
     @Test fun calculatorTransfersTypedSnapshotsAndCreatesProjectWithFirstEntry() {
         val name = "Sizing " + UUID.randomUUID().toString().take(6)
+        val monopoleName = "Monopole " + UUID.randomUUID().toString().take(6)
         val tuningName = "Tuning " + UUID.randomUUID().toString().take(6)
         waitFor("nav-SIZING")
         compose.onNodeWithTag("nav-SIZING").performClick()
@@ -350,8 +405,40 @@ class JournalAcceptanceTest {
         assertEquals(145_500_000L, sizing.target?.hertz)
         val first = requireNotNull(sizing.records.single().calculation)
         assertEquals("sizing", first.model)
+        assertEquals(listOf("frequency", "factor"), first.inputs.map { it.key })
+        assertEquals(listOf("wavelength", "ideal_quarter", "ideal_half", "dipole_total", "dipole_arm"),
+            first.outputs.map { it.key })
         val dipoleMeters = first.outputs.single { it.key == "dipole_total" }.value
         assertEquals(dipoleMeters, requireNotNull(sizing.initialLength).nanometers / 1e9, 1e-9)
+
+        click("copy-to-project")
+        click("project-transfer-type-MONOPOLE")
+        click("project-transfer-continue")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        edit("project-transfer-name", monopoleName)
+        click("project-transfer-save-new")
+        waitFor("copy-to-project")
+        val monopole = savedProject(monopoleName)
+        val monopoleSnapshot = requireNotNull(monopole.records.single().calculation)
+        assertEquals(listOf("wavelength", "ideal_quarter", "ideal_five_eighths", "monopole_length"),
+            monopoleSnapshot.outputs.map { it.key })
+        click("copy-to-project")
+        click("project-transfer-type-MONOPOLE")
+        click("project-transfer-continue")
+        compose.onNodeWithTag("project-transfer-project-search").performTextReplacement(monopoleName)
+        val monopoleRow = hasTestTag("project-transfer-project") and hasText(monopoleName)
+        compose.onNodeWithTag("project-transfer-project-list").performScrollToNode(monopoleRow)
+        compose.onNode(monopoleRow).performClick()
+        compose.onNodeWithTag("project-transfer-confirm-project").performClick()
+        waitFor("copy-to-project")
+        assertEquals(listOf(monopoleSnapshot, monopoleSnapshot), savedProject(monopoleName).records.map { it.calculation })
+
+        val legacy = first.copy(outputs = (first.outputs + monopoleSnapshot.outputs).distinctBy { it.key })
+        val presentation = JournalPresentation(compose.activity)
+        for ((record, expected) in listOf(sizing.records.single() to first, monopole.records.single() to monopoleSnapshot)) {
+            val rendered = presentation.recordDetails(record.copy(calculation = legacy)).toSet()
+            assertEquals(presentation.recordDetails(record.copy(calculation = expected)).toSet(), rendered)
+        }
 
         compose.onNodeWithTag("nav-TRIMMING").performClick()
         click("antenna-SYMMETRIC_DIPOLE")

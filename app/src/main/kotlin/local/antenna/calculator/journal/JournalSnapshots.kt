@@ -13,20 +13,7 @@ import local.antenna.calculator.state.Section
 internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, section: Section): CalculationSnapshot? {
     if (!state.editingEnabled) return null
     return when (section) {
-        Section.SIZING -> state.sizing.result?.let { result ->
-            CalculationSnapshot("sizing", 1, listOf(
-                snapshot("frequency", result.input.frequency.hertz, HERTZ),
-                snapshot("factor", result.input.factor.tenThousandths / 10_000.0, FACTOR),
-            ), listOf(
-                snapshot("wavelength", result.ideal.wavelengthMeters, METERS),
-                snapshot("ideal_quarter", result.ideal.monopoleMeters, METERS),
-                snapshot("ideal_half", result.ideal.dipoleTotalMeters, METERS),
-                snapshot("ideal_five_eighths", result.ideal.fiveEighthsMeters, METERS),
-                snapshot("monopole_length", result.monopoleMeters, METERS),
-                snapshot("dipole_total", result.dipoleTotalMeters, METERS),
-                snapshot("dipole_arm", result.dipoleArmMeters, METERS),
-            ))
-        }
+        Section.SIZING -> sizingSnapshot(state)?.let { it.copy(outputs = it.outputsForAntenna(type)) }
         Section.TRIMMING -> state.trimming.result?.takeIf { it.input.antennaType == type }?.let { result ->
             CalculationSnapshot("trimming", 1, listOf(
                 snapshot("length", result.input.actualLength.nanometers, NANOMETERS),
@@ -42,6 +29,35 @@ internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, sectio
             }, result.warnings.map { it.name })
         }
         Section.TOOLS -> null
+    }
+}
+
+// Capture both sets of sizes while the antenna choice is still pending.
+internal fun sizingSnapshot(state: CalculatorUiState): CalculationSnapshot? {
+    if (!state.editingEnabled) return null
+    val result = state.sizing.result ?: return null
+    return CalculationSnapshot("sizing", 1, listOf(
+        snapshot("frequency", result.input.frequency.hertz, HERTZ),
+        snapshot("factor", result.input.factor.tenThousandths / 10_000.0, FACTOR),
+    ), listOf(
+        snapshot("wavelength", result.ideal.wavelengthMeters, METERS),
+        snapshot("ideal_quarter", result.ideal.monopoleMeters, METERS),
+        snapshot("ideal_half", result.ideal.dipoleTotalMeters, METERS),
+        snapshot("ideal_five_eighths", result.ideal.fiveEighthsMeters, METERS),
+        snapshot("monopole_length", result.monopoleMeters, METERS),
+        snapshot("dipole_total", result.dipoleTotalMeters, METERS),
+        snapshot("dipole_arm", result.dipoleArmMeters, METERS),
+    ))
+}
+
+internal fun CalculationSnapshot.outputsForAntenna(type: AntennaType): List<SnapshotValue> {
+    if (model != "sizing" || revision != 1) return outputs
+    return outputs.filter { metric ->
+        when (metric.key) {
+            "monopole_length", "ideal_five_eighths" -> type == AntennaType.MONOPOLE
+            "ideal_half", "dipole_total", "dipole_arm" -> type == AntennaType.SYMMETRIC_DIPOLE
+            else -> true
+        }
     }
 }
 

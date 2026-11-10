@@ -146,8 +146,6 @@
     <string name="inverted_v_ground_contact">В этой модели концы касаются земли. При планировании установки предусмотрите зазор.</string>
     <string name="inverted_v_limits">Модель предполагает два прямых равных плеча над ровной горизонтальной поверхностью. Учтите место для концевых креплений и оттяжек. Безопасные расстояния и электрические параметры проверяйте отдельно.</string>
     <string name="inverted_v_save">Сохранить в проект</string>
-    <string name="inverted_v_no_projects">Чтобы сохранить расчёт, создайте проект симметричного диполя в разделе «Проекты».</string>
-    <string name="inverted_v_saved">Расчёт сохранён в проект</string>
     <string name="inverted_v_details">Показать формулы</string>
     <string name="inverted_v_formula_alt">D = 2L × sin(α/2). h = H − L × cos(α/2).</string>
     <string name="inverted_v_details_text">L — длина одного плеча, H — высота вершины, α — угол между плечами. D — горизонтальное расстояние между концами, h — высота концов над землёй. Начальная оценка длины плеча равна k × c / (4 × f).</string>

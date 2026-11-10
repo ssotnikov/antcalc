@@ -22,15 +22,15 @@ import androidx.compose.ui.unit.dp
 import java.util.UUID
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
-import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.journal.JournalPage
 import local.antenna.calculator.journal.JournalScreen
 import local.antenna.calculator.journal.JournalViewModel
+import local.antenna.calculator.journal.invertedVSnapshot
 import local.antenna.calculator.state.*
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, CABLE, INVERTED_V, INVERTED_V_PROJECTS, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL }
+private enum class Page { CALCULATOR, MATCHING, CABLE, INVERTED_V, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,37 +77,46 @@ private fun LocalizedCalculatorApp(
     val scope = rememberCoroutineScope()
     fun leaveInput() { focus.clearFocus(); keyboard?.hide() }
     fun finishTransfer() {
+        page = if (pending?.isInvertedV == true) Page.INVERTED_V else Page.CALCULATOR
         pending?.let {
             screenStates.removeState("transfer-picker-${it.recordId}")
             screenStates.removeState("transfer-new-${it.recordId}")
         }
         pending = null
-        page = Page.CALCULATOR
     }
     fun goBack() {
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
         when (page) {
             Page.REFERENCES -> page = referencesBackPage
-            Page.INVERTED_V_PROJECTS -> page = Page.INVERTED_V
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
-            Page.TRANSFER_PICKER -> if (pending?.isSizing == true) page = Page.TRANSFER_TYPE else finishTransfer()
+            Page.TRANSFER_PICKER -> if (pending?.needsAntennaChoice == true) page = Page.TRANSFER_TYPE else finishTransfer()
             Page.TRANSFER_TYPE -> finishTransfer()
             Page.JOURNAL -> journalPage.parent()?.let { journalPage = it } ?: run { page = Page.CALCULATOR }
             else -> page = Page.CALCULATOR
         }
+    }
+    fun startTransfer(calculation: PendingProjectCalculation, type: AntennaType) {
+        snackbar.currentSnackbarData?.dismiss()
+        leaveInput()
+        transferType = type
+        pending = calculation
+        page = if (calculation.needsAntennaChoice) Page.TRANSFER_TYPE else Page.TRANSFER_PICKER
     }
     fun openTransfer() {
         val current = currentState()
         val section = current.draft.settings.section
         val type = current.trimming.result?.input?.antennaType
         if (section == Section.TRIMMING && type == null) return
-        transferType = if (section == Section.TRIMMING) checkNotNull(type) else AntennaType.SYMMETRIC_DIPOLE
-        val calculation = PendingProjectCalculation.capture(current, section, transferType) ?: return
-        snackbar.currentSnackbarData?.dismiss()
-        leaveInput()
-        pending = calculation
-        page = if (calculation.isSizing) Page.TRANSFER_TYPE else Page.TRANSFER_PICKER
+        val antennaType = if (section == Section.TRIMMING) checkNotNull(type) else AntennaType.SYMMETRIC_DIPOLE
+        val calculation = PendingProjectCalculation.capture(current, section, antennaType) ?: return
+        startTransfer(calculation, antennaType)
+    }
+    fun openInvertedVTransfer() {
+        val current = currentState()
+        if (!current.editingEnabled) return
+        val snapshot = current.draft.invertedV.invertedVSnapshot() ?: return
+        startTransfer(PendingProjectCalculation(snapshot), AntennaType.SYMMETRIC_DIPOLE)
     }
     fun transferSaved(calculation: PendingProjectCalculation, projectId: UUID) {
         if (pending?.recordId != calculation.recordId) return
@@ -151,7 +160,6 @@ private fun LocalizedCalculatorApp(
             Page.MATCHING -> R.string.matching_title
             Page.CABLE -> R.string.cable_screen_title
             Page.INVERTED_V -> R.string.inverted_v_title
-            Page.INVERTED_V_PROJECTS -> R.string.inverted_v_choose_project
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
             Page.TRANSFER_PICKER -> R.string.project_transfer_title
             Page.TRANSFER_NEW -> R.string.journal_new_project
@@ -239,16 +247,8 @@ private fun LocalizedCalculatorApp(
                     Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.INVERTED_V -> screenStates.SaveableStateProvider("inverted-v") {
-                        val chooseProject = journal?.let {
-                            { leaveInput(); page = Page.INVERTED_V_PROJECTS }
-                        }
+                        val chooseProject = if (journal != null) ::openInvertedVTransfer else null
                         InvertedVScreen(state, onEvent, currentState, chooseProject) { message ->
-                            scope.launch { snackbar.showSnackbar(message) }
-                        }
-                    }
-                    Page.INVERTED_V_PROJECTS -> if (journal != null) {
-                        InvertedVProjectPicker(journal, currentState, ::goBack) { message ->
-                            if (page == Page.INVERTED_V_PROJECTS) goBack()
                             scope.launch { snackbar.showSnackbar(message) }
                         }
                     }
@@ -261,14 +261,12 @@ private fun LocalizedCalculatorApp(
                     Page.TRANSFER_PICKER -> if (journal != null) pending?.let { calculation ->
                         screenStates.SaveableStateProvider("transfer-picker-${calculation.recordId}") {
                             val recordTitle = stringResource(calculation.title)
-                            ProjectPicker(journal, transferType, "project-transfer",
-                                R.string.project_transfer_eligible, R.string.project_transfer_no_projects, ::goBack,
+                            ProjectPicker(journal, transferType,
                                 onSelect = { project ->
                                     leaveInput()
                                     journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle))
                                 },
-                                targetHertz = calculation.target.hertz,
-                                confirmLabel = R.string.project_transfer_save_existing,
+                                targetHertz = calculation.target?.hertz,
                                 onCreate = { leaveInput(); page = Page.TRANSFER_NEW },
                                 header = { TransferSummary(calculation, transferType) },
                             )
@@ -279,8 +277,7 @@ private fun LocalizedCalculatorApp(
                             val recordTitle = stringResource(calculation.title)
                             TransferNewProject(calculation, transferType, journal) { name ->
                                 leaveInput()
-                                val project = AntennaProject(calculation.projectId, name, transferType,
-                                    calculation.target, calculation.initialLength(transferType))
+                                val project = calculation.newProject(transferType, name)
                                 journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle), project)
                             }
                         }

@@ -166,8 +166,6 @@
     <string name="inverted_v_ground_contact">The ends touch the ground in this model. Allow clearance when planning the installation.</string>
     <string name="inverted_v_limits">The model assumes two equal, straight arms above level ground. Allow extra space for end supports and guy lines. Check clearances and electrical performance separately.</string>
     <string name="inverted_v_save">Save to project</string>
-    <string name="inverted_v_no_projects">Create a symmetrical dipole project in Projects to save this calculation.</string>
-    <string name="inverted_v_saved">Calculation saved to project</string>
     <string name="inverted_v_details">Show formulas</string>
     <string name="inverted_v_formula_alt">D = 2L × sin(α/2). h = H − L × cos(α/2).</string>
     <string name="inverted_v_details_text">L is the length of one arm, H is the apex height and α is the angle between the arms. D is the horizontal distance between the ends and h is their height above ground. The estimated arm length is k × c / (4 × f).</string>

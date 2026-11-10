@@ -70,11 +70,11 @@ internal class JournalPresentation(private val context: Context) {
             m.resistanceOhms?.let { add(text(R.string.journal_r_label) to withUnit(it, R.string.journal_ohms)) }
             m.reactanceOhms?.let { add(text(R.string.journal_x_label) to withUnit(it, R.string.journal_ohms)) }
         }
-        r.calculation?.let { addAll(snapshotDetails(it)) }
+        r.calculation?.let { addAll(snapshotDetails(it, r.antennaType)) }
         if (r.note.isNotBlank()) add(text(R.string.journal_note) to r.note)
     }
 
-    fun snapshotDetails(s: CalculationSnapshot): List<Pair<String, String>> = buildList {
+    fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> = buildList {
             val label = when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
@@ -82,8 +82,10 @@ internal class JournalPresentation(private val context: Context) {
                 else -> s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
-            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key) to metricValue(metric))
-            for (metric in s.outputs) add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key) to metricValue(metric))
+            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
+            for (metric in s.outputsForAntenna(type)) {
+                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type) to metricValue(metric))
+            }
             for (warning in s.warnings) {
                 val message = when (warning) {
                     "LARGE_FREQUENCY_CHANGE" -> text(R.string.large_change_note)
@@ -104,20 +106,20 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun signed(value: Double, formatted: String): String = if (value > 0) "+$formatted" else formatted
 
-    private fun metricLabel(key: String): String = when (key) {
+    private fun metricLabel(key: String, type: AntennaType): String = when (key) {
         "frequency" -> text(R.string.frequency)
         "factor" -> text(R.string.factor)
         "target" -> text(R.string.target_frequency)
         "resonance" -> text(R.string.measured_frequency)
         "length" -> text(R.string.journal_length)
         "wavelength" -> text(R.string.wavelength)
-        "ideal_quarter" -> text(R.string.ideal_quarter)
+        "ideal_quarter" -> text(if (type == AntennaType.MONOPOLE) R.string.journal_ideal_quarter_monopole else R.string.journal_ideal_quarter_arm)
         "ideal_half" -> text(R.string.ideal_half)
         "ideal_five_eighths" -> text(R.string.ideal_five_eighths)
         "monopole_length" -> text(R.string.radiator_length)
         "dipole_total" -> text(R.string.dipole_total)
         "dipole_arm" -> text(R.string.dipole_arm)
-        "new_length" -> text(R.string.new_length)
+        "new_length" -> text(if (type == AntennaType.MONOPOLE) R.string.new_length else R.string.new_total)
         "new_arm" -> text(R.string.new_arm)
         "adjustment" -> text(R.string.adjustment)
         "arm_adjustment" -> text(R.string.arm_adjustment)

@@ -1,0 +1,1 @@
+The Inverted-V calculator now uses the same project picker as the other antenna calculators. You can save to an existing dipole project or create a project with the layout as its first journal entry.

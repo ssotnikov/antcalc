@@ -1,4 +1,6 @@
 <resources>
+    <string name="journal_ideal_quarter_monopole">Ideal λ/4 — monopole</string>
+    <string name="journal_ideal_quarter_arm">Ideal λ/4 — each dipole arm</string>
     <string name="journal_title">Projects and tuning journal</string>
     <string name="journal_tools_hint">Keep antenna calculations and compare measurements over time.</string>
     <string name="journal_projects">Projects</string>
@@ -101,11 +103,9 @@
     <string name="journal_setup_field">Temporary field setup</string>
     <string name="journal_setup_trees">Between trees</string>
     <string name="journal_project_suggestions_hint">Choose from the list or enter your own text</string>
-    <string name="inverted_v_choose_project">Choose a project</string>
-    <string name="inverted_v_project_search">Project name or frequency</string>
-    <string name="inverted_v_project_eligible">Projects for symmetrical dipoles</string>
-    <string name="inverted_v_project_no_match">No projects match your search.</string>
-    <string name="inverted_v_project_no_frequency">Frequency not set</string>
+    <string name="project_transfer_search">Project name or frequency</string>
+    <string name="project_transfer_no_match">No projects match your search.</string>
+    <string name="project_transfer_no_frequency">Frequency not set</string>
     <string name="journal_feed_rg58" translatable="false">RG-58</string>
     <string name="journal_feed_rg8x" translatable="false">RG-8X</string>
     <string name="journal_feed_rg213" translatable="false">RG-213</string>

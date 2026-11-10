@@ -18,6 +18,7 @@ import java.time.OffsetDateTime
 import java.util.UUID
 import kotlin.math.roundToLong
 import local.antenna.calculator.R
+import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.journal.CalculationSnapshot
 import local.antenna.calculator.core.journal.JournalLimits
 import local.antenna.calculator.core.journal.JournalRecord
@@ -33,34 +34,56 @@ import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.journal.journalLabel
 import local.antenna.calculator.journal.journalSnapshot
 import local.antenna.calculator.journal.label
+import local.antenna.calculator.journal.outputsForAntenna
+import local.antenna.calculator.journal.sizingSnapshot
 import local.antenna.calculator.state.CalculatorUiState
 import local.antenna.calculator.state.Section
 
-internal data class PendingProjectCalculation(
+private enum class TransferSource(val model: String, val title: Int, val frequencyKey: String) {
+    SIZING("sizing", R.string.sizes, "frequency"),
+    TRIMMING("trimming", R.string.trimming, "target"),
+    INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
+}
+
+internal class PendingProjectCalculation(
     val snapshot: CalculationSnapshot,
-    val projectId: UUID = UUID.randomUUID(),
+    private val projectId: UUID = UUID.randomUUID(),
     val recordId: UUID = UUID.randomUUID(),
-    val time: OffsetDateTime = OffsetDateTime.now(),
+    private val time: OffsetDateTime = OffsetDateTime.now(),
 ) {
-    val isSizing get() = snapshot.model == "sizing"
-    val title get() = if (isSizing) R.string.sizes else R.string.trimming
-    val target get() = Frequency.ofHertz(snapshot.inputs.first { it.key == if (isSizing) "frequency" else "target" }.value.toLong())
+    private val source = TransferSource.entries.first { it.model == snapshot.model }
+    val needsAntennaChoice get() = source == TransferSource.SIZING
+    val isInvertedV get() = source == TransferSource.INVERTED_V
+    val title get() = source.title
+    val target = snapshot.inputs.firstOrNull { it.key == source.frequencyKey }
+        ?.let { Frequency.ofHertz(it.value.toLong()) }
+    val recommendedLengthNanometers get() = if (source == TransferSource.TRIMMING)
+        outputLengthNanometers("new_length") else null
 
     fun initialLength(type: AntennaType): PhysicalLength? {
-        val nanometers = if (isSizing) {
-            val key = if (type == AntennaType.MONOPOLE) "monopole_length" else "dipole_total"
-            (snapshot.outputs.first { it.key == key }.value * 1_000_000_000).roundToLong()
-        } else snapshot.inputs.first { it.key == "length" }.value.toLong()
+        val nanometers = when (source) {
+            TransferSource.INVERTED_V -> outputLengthNanometers("dipole_total")
+            TransferSource.SIZING -> outputLengthNanometers(if (type == AntennaType.MONOPOLE) "monopole_length" else "dipole_total")
+            TransferSource.TRIMMING -> snapshot.inputs.first { it.key == "length" }.value.toLong()
+        }
         return nanometers.takeIf { it in PhysicalLength.MIN_NANOMETERS..PhysicalLength.MAX_NANOMETERS }
             ?.let(PhysicalLength::ofNanometers)
     }
 
+    private fun outputLengthNanometers(key: String) =
+        (snapshot.outputs.first { it.key == key }.value * 1_000_000_000).roundToLong()
+
+    fun newProject(type: AntennaType, name: String) =
+        AntennaProject(projectId, name, type, target, initialLength(type))
+
     fun record(type: AntennaType, title: String) =
-        JournalRecord(recordId, title, time, type, calculation = snapshot)
+        JournalRecord(recordId, title, time, type, calculation = snapshot.copy(outputs = snapshot.outputsForAntenna(type)))
 
     companion object {
-        fun capture(state: CalculatorUiState, section: Section, type: AntennaType): PendingProjectCalculation? =
-            journalSnapshot(state, type, section)?.let { PendingProjectCalculation(it) }
+        fun capture(state: CalculatorUiState, section: Section, type: AntennaType): PendingProjectCalculation? {
+            val snapshot = if (section == Section.SIZING) sizingSnapshot(state) else journalSnapshot(state, type, section)
+            return snapshot?.let { PendingProjectCalculation(it) }
+        }
 
         val saver = Saver<PendingProjectCalculation?, Bundle>(
             save = { pending ->
@@ -109,14 +132,16 @@ internal fun TransferSummary(pending: PendingProjectCalculation, type: AntennaTy
     Surface(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(stringResource(type.journalLabel()), color = MaterialTheme.colorScheme.secondary, style = MaterialTheme.typography.titleMedium)
-            Text(stringResource(R.string.journal_property, stringResource(pending.title), presentation.frequency(pending.target.hertz)),
-                style = MaterialTheme.typography.bodyMedium)
+            val title = stringResource(pending.title)
+            val summary = pending.target?.let {
+                stringResource(R.string.journal_property, title, presentation.frequency(it.hertz))
+            } ?: title
+            Text(summary, style = MaterialTheme.typography.bodyMedium)
             baseline?.let { Text(stringResource(R.string.journal_property, stringResource(R.string.project_transfer_initial_length),
                 presentation.length(it.nanometers)), style = MaterialTheme.typography.bodyMedium) }
-            if (!pending.isSizing) {
-                val length = pending.snapshot.outputs.first { it.key == "new_length" }.value
+            pending.recommendedLengthNanometers?.let { length ->
                 Text(stringResource(R.string.journal_property, stringResource(R.string.project_transfer_recommended_length),
-                    presentation.length((length * 1_000_000_000).roundToLong())), style = MaterialTheme.typography.bodyMedium)
+                    presentation.length(length)), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -143,7 +168,7 @@ internal fun TransferNewProject(
         if (pending.initialLength(type) == null) HelpText(R.string.project_transfer_length_outside_range)
         Text(stringResource(R.string.project_transfer_first_entry), style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary)
-        JournalDetails(JournalPresentation(LocalContext.current).snapshotDetails(pending.snapshot))
+        JournalDetails(JournalPresentation(LocalContext.current).snapshotDetails(pending.snapshot, type))
         Button(
             enabled = status.readable && !status.busy,
             onClick = {

@@ -198,7 +198,7 @@ internal fun RecordForm(
             if (preview == null) {
                 Text(stringResource(R.string.journal_missing_calc), color = MaterialTheme.colorScheme.error)
             } else {
-                JournalDetails(presentation.snapshotDetails(preview))
+                JournalDetails(presentation.snapshotDetails(preview, project.antennaType))
             }
         }
         JournalSuggestionField(installation, JournalSuggestion.INSTALLATION, enabled)
