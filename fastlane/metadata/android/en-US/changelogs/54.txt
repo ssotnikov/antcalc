@@ -1,0 +1,1 @@
+The Ground Plane side view is larger and labels the element lengths, slope, heights and footprint diameter.

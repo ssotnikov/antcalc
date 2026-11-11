@@ -42,6 +42,10 @@ object QuantityInput {
         text, 10, 300, 1800, create = { it },
     )
 
+    fun radialAngleTenths(text: String): FieldState<Long> = parseScaled(
+        text, 10, 0, 900, create = { it },
+    )
+
     private fun <T> parseScaled(
         text: String,
         multiplier: Long,

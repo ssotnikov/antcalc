@@ -30,14 +30,14 @@ class ToolsScreenTest {
     private fun start(height: Int = 500, onOpen: () -> Unit = {}) {
         compose.setContent {
             MaterialTheme {
-                Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen) }
+                Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen, onOpen) }
             }
         }
         compose.waitForIdle()
     }
 
     @Test fun shortCatalogMovesBothWaysAndReturnsAfterReleaseOrCancellation() {
-        start()
+        start(height = 700)
         val viewport = compose.onNodeWithTag("tools-viewport")
         val cards = compose.onNodeWithTag("open-matching")
         val initial = cards.fetchSemanticsNode().boundsInRoot.top

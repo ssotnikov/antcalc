@@ -11,6 +11,7 @@ internal data class TechnicalReference(
     val publisher: String,
     val language: AppLanguage,
     val section: String? = null,
+    val subsection: Int? = null,
 )
 
 internal data class ReferenceGroup(
@@ -47,6 +48,21 @@ internal val referenceGroups = listOf(
         TechnicalReference("kadamm", R.string.source_kadamm, R.string.source_kadamm_description, R.string.source_kadamm_url, "КАДАММ", AppLanguage.RUSSIAN),
         TechnicalReference("rohde", R.string.source_rohde, R.string.source_rohde_description, R.string.source_rohde_url, "Rohde & Schwarz", AppLanguage.ENGLISH, "§ 8"),
         TechnicalReference("reflection", R.string.source_reflection, R.string.source_reflection_description, R.string.source_reflection_url, "Analog Devices", AppLanguage.ENGLISH),
+    )),
+    ReferenceGroup(R.string.references_smith, listOf(
+        TechnicalReference("smith-antenna-theory", R.string.source_smith_antenna_theory, R.string.source_smith_antenna_theory_description, R.string.source_smith_antenna_theory_url, "Antenna-Theory", AppLanguage.ENGLISH),
+        TechnicalReference("smith-berkeley", R.string.source_smith_berkeley, R.string.source_smith_berkeley_description, R.string.source_smith_berkeley_url, "UC Berkeley", AppLanguage.ENGLISH, "PDF"),
+        TechnicalReference("smith-rutube", R.string.source_smith_rutube, R.string.source_smith_rutube_description, R.string.source_smith_rutube_url, "RUTUBE", AppLanguage.RUSSIAN, subsection = R.string.references_smith_video),
+        TechnicalReference("smith-nanovna", R.string.source_smith_nanovna, R.string.source_smith_nanovna_description, R.string.source_smith_nanovna_url, "YouTube", AppLanguage.RUSSIAN, subsection = R.string.references_smith_video),
+        TechnicalReference("smith-radioprog", R.string.source_smith_radioprog, R.string.source_smith_radioprog_description, R.string.source_smith_radioprog_url, "RadioProg", AppLanguage.RUSSIAN, subsection = R.string.references_smith_practical),
+        TechnicalReference("smith-grigorov", R.string.source_smith_grigorov, R.string.source_smith_grigorov_description, R.string.source_smith_grigorov_url, "RA1OHX", AppLanguage.RUSSIAN, subsection = R.string.references_smith_practical),
+        TechnicalReference("smith-tz-lab", R.string.source_smith_tz_lab, R.string.source_smith_tz_lab_description, R.string.source_smith_tz_lab_url, "ТЗ Лаб", AppLanguage.RUSSIAN, subsection = R.string.references_smith_interactive),
+        TechnicalReference("smith-radioskot", R.string.source_smith_radioskot, R.string.source_smith_radioskot_description, R.string.source_smith_radioskot_url, "RadioSkot", AppLanguage.RUSSIAN, subsection = R.string.references_smith_interactive),
+    )),
+    ReferenceGroup(R.string.references_ground_plane, listOf(
+        TechnicalReference("ground-plane-rlocman", R.string.source_ground_plane_rlocman, R.string.source_ground_plane_rlocman_description, R.string.source_ground_plane_rlocman_url, "РадиоЛоцман", AppLanguage.RUSSIAN),
+        TechnicalReference("ground-plane-qrz", R.string.source_ground_plane_qrz, R.string.source_ground_plane_qrz_description, R.string.source_ground_plane_qrz_url, "QRZ.RU", AppLanguage.RUSSIAN),
+        TechnicalReference("ground-plane-m0ukd", R.string.source_ground_plane_m0ukd, R.string.source_ground_plane_m0ukd_description, R.string.source_ground_plane_m0ukd_url, "M0UKD", AppLanguage.ENGLISH),
     )),
     ReferenceGroup(R.string.references_cable, listOf(
         TechnicalReference("radiolab", R.string.source_radiolab, R.string.source_radiolab_description, R.string.source_radiolab_url, "Радиолэб", AppLanguage.RUSSIAN),

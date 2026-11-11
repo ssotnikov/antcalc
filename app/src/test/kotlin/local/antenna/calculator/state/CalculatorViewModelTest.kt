@@ -71,6 +71,27 @@ class CalculatorViewModelTest {
         assertEquals(MatchingDraft(), cold.state.value.draft.matching)
     }
 
+    @Test fun linkedFrequenciesConvertUnitsAndSurviveRestartWithoutChangingMeasurements() = runTest {
+        val repo = FakeRepository()
+        val vm = model(repo); runCurrent()
+        vm.onEvent(CalculatorEvent.ChangeUnit(FieldKey.TARGET, FrequencyUnit.KILOHERTZ.name))
+        vm.edit(FieldKey.ACTUAL_LENGTH, "420")
+        vm.edit(FieldKey.MEASURED, "140")
+        vm.edit(FieldKey.SIZING_FREQUENCY, "145,123456")
+        assertEquals("145123,456", vm.state.value.trimming.target.text)
+        vm.edit(FieldKey.SIZING_FREQUENCY, "145,")
+        assertEquals("145123,456", vm.state.value.trimming.target.text)
+        vm.edit(FieldKey.TARGET, "146234,567")
+        assertEquals("146,234567", vm.state.value.sizing.frequency.text)
+        assertEquals("140", vm.state.value.trimming.measured.text)
+        assertEquals("420", vm.state.value.trimming.actualLength.text)
+        vm.onEvent(CalculatorEvent.Background); runCurrent()
+        val cold = model(repo); runCurrent()
+        assertEquals(146_234_567L, cold.state.value.sizing.result?.input?.frequency?.hertz)
+        assertEquals(146_234_567L, cold.state.value.trimming.result?.input?.targetFrequency?.hertz)
+        assertEquals(FrequencyUnit.KILOHERTZ.name, cold.state.value.trimming.target.unit)
+    }
+
     @Test fun defaultsAndImmediateSizing() = runTest {
         val vm = model(); runCurrent()
         assertFalse(vm.state.value.loading)

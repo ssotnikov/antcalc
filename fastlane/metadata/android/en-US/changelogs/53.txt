@@ -1,0 +1,1 @@
+Calculate a quarter-wave Ground Plane with four elevated radials and save the layout to a project. Sizing and tuning now share the target frequency. The inverted-V screen has an antenna illustration, and References includes a new Smith chart section.

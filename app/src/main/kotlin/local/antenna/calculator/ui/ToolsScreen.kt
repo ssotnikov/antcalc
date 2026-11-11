@@ -19,6 +19,7 @@ internal fun ToolsScreen(
     onOpenMatching: () -> Unit,
     onOpenCable: () -> Unit,
     onOpenInvertedV: () -> Unit,
+    onOpenGroundPlane: () -> Unit,
     onOpenJournal: (() -> Unit)? = null,
 ) {
     val scroll = rememberScrollState()
@@ -30,6 +31,7 @@ internal fun ToolsScreen(
             ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
             ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
             ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV)
+            ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane)
         }
     }
 }

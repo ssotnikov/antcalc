@@ -6,6 +6,10 @@ import local.antenna.calculator.core.journal.SnapshotUnit.*
 import local.antenna.calculator.core.journal.SnapshotValue
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.state.CalculatorUiState
+import local.antenna.calculator.core.layout.GroundPlaneResult
+import local.antenna.calculator.state.GroundPlaneDraft
+import local.antenna.calculator.state.GroundPlaneField
+import local.antenna.calculator.state.GroundPlaneMode
 import local.antenna.calculator.state.InvertedVDraft
 import local.antenna.calculator.state.InvertedVMode
 import local.antenna.calculator.state.Section
@@ -79,6 +83,31 @@ internal fun InvertedVDraft.invertedVSnapshot(): CalculationSnapshot? {
         snapshot("end_span", result.spanMeters, METERS),
         snapshot("end_height", result.endHeightMeters, METERS),
     ), if (result.endHeightMeters == 0.0) listOf("ENDS_TOUCH_GROUND") else emptyList())
+}
+
+internal fun GroundPlaneDraft.groundPlaneSnapshot(): CalculationSnapshot? {
+    val layout = result() as? GroundPlaneResult.Layout ?: return null
+    return CalculationSnapshot("ground_plane", 1, buildList {
+        add(snapshot("gp_base", layout.baseMeters, METERS))
+        add(snapshot("gp_slope", layout.angleTenths / 10.0, DEGREES))
+        if (mode == GroundPlaneMode.ESTIMATED) {
+            add(snapshot("frequency", checkNotNull(value(GroundPlaneField.FREQUENCY)), HERTZ))
+            add(snapshot("gp_whip_factor", checkNotNull(value(GroundPlaneField.WHIP_FACTOR)) / 10_000.0, FACTOR))
+            add(snapshot("gp_radial_factor", checkNotNull(value(GroundPlaneField.RADIAL_FACTOR)) / 10_000.0, FACTOR))
+        } else {
+            add(snapshot("gp_whip", layout.whipMeters, METERS))
+            add(snapshot("gp_radial", layout.radialMeters, METERS))
+        }
+    }, listOf(
+        snapshot("gp_whip", layout.whipMeters, METERS),
+        snapshot("gp_radial", layout.radialMeters, METERS),
+        snapshot("gp_radius", layout.radiusMeters, METERS),
+        snapshot("gp_diameter", layout.diameterMeters, METERS),
+        snapshot("gp_drop", layout.dropMeters, METERS),
+        snapshot("gp_end_height", layout.endHeightMeters, METERS),
+        snapshot("gp_tip", layout.tipHeightMeters, METERS),
+        snapshot("gp_wire", layout.wireMeters, METERS),
+    ), if (layout.endHeightMeters == 0.0) listOf("RADIALS_TOUCH_GROUND") else emptyList())
 }
 
 private fun snapshot(key: String, value: Number, unit: SnapshotUnit) = SnapshotValue(key, value.toDouble(), unit)

@@ -144,7 +144,7 @@
     <string name="tuning_diagram_note">Illustrative SWR curve without a numerical scale. The example places the minimum near fₘ. In a real antenna, the SWR minimum can occur at a different frequency from the point where X is close to zero.</string>
 
     <string name="inverted_v_title">Inverted-V dipole</string>
-    <string name="inverted_v_intro">Check whether a symmetrical dipole will fit on your site at the height of your centre support.</string>
+    <string name="inverted_v_intro">Calculate the starting length of each dipole arm, the span between the ends, and their height above ground.</string>
     <string name="inverted_v_inputs">Inputs</string>
     <string name="inverted_v_mode">Arm length source</string>
     <string name="inverted_v_measured">Measured length</string>
@@ -179,4 +179,74 @@
     <string name="source_inverted_v_en_url" translatable="false">https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf</string>
     <string name="inverted_v_span_alt">D = 2L × sin(α/2).</string>
     <string name="inverted_v_height_alt">h = H − L × cos(α/2).</string>
+    <string name="source_ground_plane_m0ukd" translatable="false">1/4 Wave Ground Plane Antenna Calculator</string>
+    <string name="source_ground_plane_m0ukd_url" translatable="false">https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/</string>
+    <string name="source_ground_plane_rlocman" translatable="false">Расчёт вертикальной четвертьволновой антенны</string>
+    <string name="source_ground_plane_rlocman_url" translatable="false">https://www.rlocman.ru/shem/schematics.html?di=4982</string>
+    <string name="source_ground_plane_qrz" translatable="false">Техника гражданской (СИ-БИ) радиосвязи — Антенны</string>
+    <string name="source_ground_plane_qrz_url" translatable="false">https://lib.qrz.ru/book/export/html/2182</string>
+    <string name="source_smith_antenna_theory" translatable="false">The Smith Chart</string>
+    <string name="source_smith_antenna_theory_url" translatable="false">https://www.antenna-theory.com/tutorial/smith/chart.php</string>
+    <string name="source_smith_berkeley" translatable="false">Lecture 5: The Smith Chart</string>
+    <string name="source_smith_berkeley_url" translatable="false">https://rfic.eecs.berkeley.edu/courses/ee217sp05/lect5.pdf</string>
+    <string name="source_smith_rutube" translatable="false">Диаграмма Смита — это очень просто!</string>
+    <string name="source_smith_rutube_url" translatable="false">https://rutube.ru/video/fabc676744b9b80c73ed1f2c2eccad4e/</string>
+    <string name="source_smith_nanovna" translatable="false">NanoVNA: калибровка и измерения антенн</string>
+    <string name="source_smith_nanovna_url" translatable="false">https://www.youtube.com/watch?v=GDkbrUMCgKc</string>
+    <string name="source_smith_radioprog" translatable="false">Согласование импедансов и диаграмма Смита</string>
+    <string name="source_smith_radioprog_url" translatable="false">https://radioprog.ru/post/1387</string>
+    <string name="source_smith_grigorov" translatable="false">Антенны. Настройка и согласование</string>
+    <string name="source_smith_grigorov_url" translatable="false">https://ra1ohx.ru/load/biblioteka_radioljubitelja/radio_knigi/antenny_nastrojka_i_soglasovanie/8-1-0-44</string>
+    <string name="source_smith_tz_lab" translatable="false">Диаграмма Смита — конструктор согласующей цепи</string>
+    <string name="source_smith_tz_lab_url" translatable="false">https://tz-lab.ru/calculators/smith-chart</string>
+    <string name="source_smith_radioskot" translatable="false">Интерактивная диаграмма Смита</string>
+    <string name="source_smith_radioskot_url" translatable="false">https://radioskot.com/calc/interaktivnaya-diagramma-smita</string>
+    <string name="references_smith">Smith chart</string>
+    <string name="references_ground_plane">Quarter-wave ground-plane antenna</string>
+    <string name="inverted_v_illustration">Two downward-sloping dipole arms with a feed point at the top of the mast.</string>
+    <string name="inverted_v_definition">An inverted-V dipole is a half-wave dipole antenna with a central feed point above the ends of its two downward-sloping arms.</string>
+    <string name="source_ground_plane_m0ukd_description">Build photographs and a calculator for a quarter-wave vertical with sloping radials. Its radial length estimate uses a different model.</string>
+    <string name="source_ground_plane_rlocman_description">A design from Radio magazine with horizontal radials and a coaxial matching section.</string>
+    <string name="source_ground_plane_qrz_description">A chapter on CB antennas, feed arrangements and mounting height.</string>
+    <string name="source_smith_antenna_theory_description">An introduction to the chart with examples of impedance matching using transmission lines, inductors and capacitors.</string>
+    <string name="source_smith_berkeley_description">Ali Niknejad explains how impedance relates to the reflection coefficient and how the chart applies to transmission lines.</string>
+    <string name="source_smith_rutube_description">A video on dipole tuning, choosing a cable length and using a NanoVNA.</string>
+    <string name="source_smith_nanovna_description">A demonstration of NanoVNA calibration, sweep settings and the Smith chart.</string>
+    <string name="source_smith_radioprog_description">An article on reflection coefficient, impedance and admittance, with matching examples at 60 and 900 MHz.</string>
+    <string name="source_smith_grigorov_description">A description and table of contents for I. N. Grigorov’s 2008 book on antenna tuning and matching.</string>
+    <string name="source_smith_tz_lab_description">Enter R + jX and build a network from components and line sections to see how impedance, SWR and reflection change.</string>
+    <string name="source_smith_radioskot_description">An interactive chart and a worked example of compensating reactance for a 15 + j25 Ω load at 144 MHz.</string>
+    <string name="trimming_initial_estimate">Initial length estimate from sizing: %1$s</string>
+    <string name="ground_plane_title">Ground Plane Antenna</string>
+    <string name="ground_plane_intro">Calculate starting lengths for the whip and four radials. Estimate the radial span and the height of the radial ends above ground.</string>
+    <string name="ground_plane_definition">A ground-plane antenna is a quarter-wave vertical antenna with radials, also known as a grounded monopole.</string>
+    <string name="ground_plane_illustration">A vertical whip on a mast with four sloping radials at the feed point.</string>
+    <string name="ground_plane_estimated">From frequency</string>
+    <string name="ground_plane_manual">Actual lengths</string>
+    <string name="ground_plane_whip">Whip length</string>
+    <string name="ground_plane_radial">Length of one radial</string>
+    <string name="ground_plane_whip_factor">Whip shortening factor k</string>
+    <string name="ground_plane_radial_factor">Radial shortening factor k</string>
+    <string name="ground_plane_height">Feed-point height H</string>
+    <string name="ground_plane_angle">Radial slope β</string>
+    <string name="ground_plane_angle_help">The slope is measured down from the horizontal. The four radials are spaced 90° apart in plan view.</string>
+    <string name="ground_plane_angle_range">Enter a slope from 0° to 90°.</string>
+    <string name="ground_plane_overlap">At 90°, all four radials overlap. Reduce the slope.</string>
+    <string name="ground_plane_below">The radial ends are below ground level. Raise the feed point, reduce the slope or shorten the radials.</string>
+    <string name="ground_plane_contact">The radial ends reach ground level. This is the limit of the elevated-radial model.</string>
+    <string name="ground_plane_radius">Footprint radius</string>
+    <string name="ground_plane_diameter">Footprint diameter</string>
+    <string name="ground_plane_drop">Vertical drop of the radials</string>
+    <string name="ground_plane_end_height">Height of the radial ends</string>
+    <string name="ground_plane_tip">Height of the whip tip</string>
+    <string name="ground_plane_wire">Total conductor length</string>
+    <string name="ground_plane_side">Side view</string>
+    <string name="ground_plane_side_alt">Side view of the whip and one pair of radials. Whip length Lₛ: %1$s. Radial length Lᵣ: %2$s. Feed-point height H: %3$s. Radial end height h: %4$s. Footprint diameter D: %5$s. Slope β below the horizontal: %6$s degrees.</string>
+    <string name="ground_plane_limits">Frequency-based lengths are starting estimates. Conductor diameter, nearby objects and radial slope affect the antenna. Check resonance and matching on the assembled antenna with an analyzer.</string>
+    <string name="ground_plane_model_alt">In estimate mode each length is one quarter of the free-space wavelength multiplied by its own shortening factor.</string>
+    <string name="ground_plane_footprint_alt">The radius equals the radial length times cosine of beta. The diameter is twice the radius.</string>
+    <string name="ground_plane_clearance_alt">The end height equals the feed-point height minus the radial length times sine of beta.</string>
+    <string name="references_smith_video">Videos and demonstrations</string>
+    <string name="references_smith_practical">Articles and books</string>
+    <string name="references_smith_interactive">Interactive tools</string>
 </resources>

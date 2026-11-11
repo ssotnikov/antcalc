@@ -33,6 +33,7 @@ object PreferencesStateCodec {
             MatchingPreferences.write(this, state.matching)
             CablePreferences.write(this, state.cable)
             InvertedVPreferences.write(this, state.invertedV)
+            GroundPlanePreferences.write(this, state.groundPlane)
         }.toPreferences()
     }
 
@@ -57,7 +58,7 @@ object PreferencesStateCodec {
                 language = preferences[stringPreferencesKey("language")]?.let(AppLanguage::valueOf) ?: AppLanguage.initial())
             val state = PersistedCalculatorState(
                 values, units, settings, MatchingPreferences.read(preferences), CablePreferences.read(preferences),
-                InvertedVPreferences.read(preferences),
+                InvertedVPreferences.read(preferences), GroundPlanePreferences.read(preferences),
             )
             val draft = state.toDraft()
             for (key in FieldKey.entries) {

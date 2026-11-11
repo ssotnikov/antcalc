@@ -43,6 +43,7 @@ private enum class TransferSource(val model: String, val title: Int, val frequen
     SIZING("sizing", R.string.sizes, "frequency"),
     TRIMMING("trimming", R.string.trimming, "target"),
     INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
+    GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
 }
 
 internal class PendingProjectCalculation(
@@ -54,6 +55,7 @@ internal class PendingProjectCalculation(
     private val source = TransferSource.entries.first { it.model == snapshot.model }
     val needsAntennaChoice get() = source == TransferSource.SIZING
     val isInvertedV get() = source == TransferSource.INVERTED_V
+    val isGroundPlane get() = source == TransferSource.GROUND_PLANE
     val title get() = source.title
     val target = snapshot.inputs.firstOrNull { it.key == source.frequencyKey }
         ?.let { Frequency.ofHertz(it.value.toLong()) }
@@ -62,6 +64,7 @@ internal class PendingProjectCalculation(
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
+            TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.INVERTED_V -> outputLengthNanometers("dipole_total")
             TransferSource.SIZING -> outputLengthNanometers(if (type == AntennaType.MONOPOLE) "monopole_length" else "dipole_total")
             TransferSource.TRIMMING -> snapshot.inputs.first { it.key == "length" }.value.toLong()

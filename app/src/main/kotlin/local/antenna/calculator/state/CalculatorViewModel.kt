@@ -19,10 +19,12 @@ class CalculatorViewModel(
     private val persistenceScope: CoroutineScope,
 ) : ViewModel() {
     private val restoredInvertedV = InvertedVDraftCodec.decode(savedState[InvertedVDraftCodec.KEY])
+    private val restoredGroundPlane = GroundPlaneDraftCodec.decode(savedState[GroundPlaneDraftCodec.KEY])
     private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])?.copy(
         matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft(),
         cable = CableDraftCodec.decode(savedState[CableDraftCodec.KEY]) ?: CableDraft(),
         invertedV = restoredInvertedV ?: InvertedVDraft(),
+        groundPlane = restoredGroundPlane ?: GroundPlaneDraft(),
     )
     private val mutableState = MutableStateFlow(CalculatorUiState(draft = restoredDraft ?: CalculatorDraft.defaults()))
     val state: StateFlow<CalculatorUiState> = mutableState.asStateFlow()
@@ -52,7 +54,7 @@ class CalculatorViewModel(
         if (!state.value.editingEnabled) return
         val draft = state.value.draft
         val updated = when (event) {
-            is CalculatorEvent.Edit -> draft.update(event.key, draft[event.key].edit(event.text))
+            is CalculatorEvent.Edit -> draft.edit(event.key, event.text)
             is CalculatorEvent.ChangeUnit -> draft.update(event.key, draft[event.key].changeUnit(event.key, event.unit))
             is CalculatorEvent.Focus -> draft.update(event.key, draft[event.key].copy(
                 focused = event.focused, checked = draft[event.key].checked || !event.focused))
@@ -62,6 +64,7 @@ class CalculatorViewModel(
             is CalculatorEvent.Settings -> draft.copy(settings = event.value)
             is CalculatorEvent.Matching -> draft.copy(matching = event.value)
             is CalculatorEvent.Cable -> draft.copy(cable = event.value)
+            is CalculatorEvent.GroundPlane -> draft.copy(groundPlane = event.value)
             is CalculatorEvent.InvertedV -> draft.copy(invertedV = event.value)
             else -> return
         }
@@ -80,6 +83,7 @@ class CalculatorViewModel(
         savedState[MatchingDraftCodec.KEY] = MatchingDraftCodec.encode(draft.matching)
         savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(draft.cable)
         savedState[InvertedVDraftCodec.KEY] = InvertedVDraftCodec.encode(draft.invertedV)
+        savedState[GroundPlaneDraftCodec.KEY] = GroundPlaneDraftCodec.encode(draft.groundPlane)
     }
 
     private fun load(initial: Boolean) {
@@ -91,7 +95,10 @@ class CalculatorViewModel(
                 canonical = stored
                 storageReadable = true
                 val draft = if (initial) {
-                    restoredDraft?.copy(invertedV = restoredInvertedV ?: stored.invertedV) ?: stored.toDraft()
+                    restoredDraft?.copy(
+                        invertedV = restoredInvertedV ?: stored.invertedV,
+                        groundPlane = restoredGroundPlane ?: stored.groundPlane,
+                    ) ?: stored.toDraft()
                 } else state.value.draft
                 mutableState.value = state.value.copy(loading = false, storageIssue = null)
                 publish(draft)

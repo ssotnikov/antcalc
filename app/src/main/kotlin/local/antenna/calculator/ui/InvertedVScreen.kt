@@ -4,6 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -63,6 +65,9 @@ internal fun InvertedVScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         StorageNotice(state, onEvent)
+        Image(painterResource(R.drawable.inverted_v_antenna), stringResource(R.string.inverted_v_illustration),
+            modifier = Modifier.fillMaxWidth().height(185.dp))
+        HelpText(R.string.inverted_v_definition)
         HelpText(R.string.inverted_v_intro)
         InvertedVHeading(R.string.inverted_v_inputs)
         ChoicePicker(

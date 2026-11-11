@@ -111,7 +111,7 @@ private fun bounded(text: String): String {
     return if (trimmed.length > limit) trimmed.take(limit) + "!" else trimmed
 }
 
-private inline fun <T> FieldState<T>.mapValue(transform: (T) -> Long): FieldState<Long> = when (this) {
+internal inline fun <T> FieldState<T>.mapValue(transform: (T) -> Long): FieldState<Long> = when (this) {
     is FieldState.Valid -> FieldState.Valid(transform(value))
     is FieldState.Invalid -> this
     FieldState.Empty -> FieldState.Empty

@@ -43,7 +43,13 @@ internal fun ReferencesScreen(language: AppLanguage) {
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.semantics { heading() },
                 )
-                materials.forEach { ReferenceCard(it) }
+                materials.forEachIndexed { index, material ->
+                    material.subsection?.takeIf { it != materials.getOrNull(index - 1)?.subsection }?.let { subsection ->
+                        Text(stringResource(subsection), color = MaterialTheme.colorScheme.secondary,
+                            style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                    }
+                    ReferenceCard(material)
+                }
             }
         }
     }

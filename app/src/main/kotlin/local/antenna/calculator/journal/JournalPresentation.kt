@@ -78,6 +78,7 @@ internal class JournalPresentation(private val context: Context) {
             val label = when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
+                "ground_plane" -> text(R.string.ground_plane_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 else -> s.model
             }
@@ -91,6 +92,7 @@ internal class JournalPresentation(private val context: Context) {
                     "LARGE_FREQUENCY_CHANGE" -> text(R.string.large_change_note)
                     "RESULT_OUTSIDE_INPUT_LENGTH_RANGE" -> text(R.string.outside_length_note)
                     "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
+                    "RADIALS_TOUCH_GROUND" -> text(R.string.ground_plane_contact)
                     "ENDS_TOUCH_GROUND" -> text(R.string.inverted_v_ground_contact)
                     else -> warning
                 }
@@ -123,6 +125,18 @@ internal class JournalPresentation(private val context: Context) {
         "new_arm" -> text(R.string.new_arm)
         "adjustment" -> text(R.string.adjustment)
         "arm_adjustment" -> text(R.string.arm_adjustment)
+        "gp_base" -> text(R.string.ground_plane_height)
+        "gp_slope" -> text(R.string.ground_plane_angle)
+        "gp_whip_factor" -> text(R.string.ground_plane_whip_factor)
+        "gp_radial_factor" -> text(R.string.ground_plane_radial_factor)
+        "gp_whip" -> text(R.string.ground_plane_whip)
+        "gp_radial" -> text(R.string.ground_plane_radial)
+        "gp_radius" -> text(R.string.ground_plane_radius)
+        "gp_diameter" -> text(R.string.ground_plane_diameter)
+        "gp_drop" -> text(R.string.ground_plane_drop)
+        "gp_end_height" -> text(R.string.ground_plane_end_height)
+        "gp_tip" -> text(R.string.ground_plane_tip)
+        "gp_wire" -> text(R.string.ground_plane_wire)
         "apex_height" -> text(R.string.inverted_v_height)
         "included_angle" -> text(R.string.inverted_v_angle)
         "end_span" -> text(R.string.inverted_v_span)

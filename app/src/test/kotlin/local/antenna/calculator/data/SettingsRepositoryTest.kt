@@ -57,7 +57,8 @@ class SettingsRepositoryTest {
         assertEquals(8, domainKeys["matching"])
         assertEquals(8, domainKeys["cable"])
         assertEquals(2, domainKeys["invertedV"])
-        assertEquals(26, domainKeys.filterKeys { it !in setOf("matching", "cable", "invertedV") }.values.sum())
+        assertEquals(2, domainKeys["groundPlane"])
+        assertEquals(26, domainKeys.filterKeys { it !in setOf("matching", "cable", "invertedV", "groundPlane") }.values.sum())
     }
 
     @Test fun initiallyAbsentActualLengthRemainsAbsentNotZero() {

@@ -54,6 +54,16 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
             { onEvent(CalculatorEvent.Settings(settings.copy(antennaType = it))) }, "antenna")
         AntennaDiagram(dipole = settings.antennaType == AntennaType.SYMMETRIC_DIPOLE)
         NumericInput(FieldKey.ACTUAL_LENGTH, if (settings.antennaType == AntennaType.MONOPOLE) R.string.actual_length else R.string.dipole_actual_length, state, onEvent)
+        val estimate = state.sizing.result
+        val target = draft[FieldKey.TARGET].frequency()
+        if (estimate != null && target is FieldState.Valid &&
+            target.value == estimate.input.frequency) {
+            val length = if (settings.antennaType == AntennaType.MONOPOLE) estimate.monopoleMeters else estimate.dipoleTotalMeters
+            val unit = LengthUnit.valueOf(draft[FieldKey.ACTUAL_LENGTH].unit)
+            val formatted = formatLength(context, length, unit)
+            Text(stringResource(R.string.trimming_initial_estimate, formatted), style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         NumericInput(FieldKey.MEASURED, R.string.measured_frequency, state, onEvent)
         HelpText(R.string.resonance_note)
         NumericInput(FieldKey.TARGET, R.string.target_frequency, state, onEvent)

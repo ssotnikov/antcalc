@@ -70,9 +70,24 @@ data class CalculatorSettings(
     val language: AppLanguage = AppLanguage.initial(),
 )
 
-data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings(), val matching: MatchingDraft = MatchingDraft(), val cable: CableDraft = CableDraft(), val invertedV: InvertedVDraft = InvertedVDraft()) {
+data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings(), val matching: MatchingDraft = MatchingDraft(), val cable: CableDraft = CableDraft(), val invertedV: InvertedVDraft = InvertedVDraft(), val groundPlane: GroundPlaneDraft = GroundPlaneDraft()) {
     operator fun get(key: FieldKey): NumericDraft = fields.getValue(key)
     fun update(key: FieldKey, field: NumericDraft) = copy(fields = fields + (key to field))
+    fun edit(key: FieldKey, text: String): CalculatorDraft {
+        val field = get(key).edit(text)
+        val updated = update(key, field)
+        val pairedKey = when (key) {
+            FieldKey.SIZING_FREQUENCY -> FieldKey.TARGET
+            FieldKey.TARGET -> FieldKey.SIZING_FREQUENCY
+            else -> return updated
+        }
+        val frequency = field.frequency().validValue() ?: return updated
+        val pairedField = get(pairedKey)
+        return updated.update(pairedKey, pairedField.edit(
+            frequency.inUnit(FrequencyUnit.valueOf(pairedField.unit)).inputText(),
+        ))
+    }
+
     companion object {
         fun defaults() = CalculatorDraft(FieldKey.entries.associateWith { key ->
             when (key) {
@@ -118,6 +133,7 @@ data class CalculatorUiState(
 
 sealed interface CalculatorEvent {
     data class Cable(val value: CableDraft) : CalculatorEvent
+    data class GroundPlane(val value: GroundPlaneDraft) : CalculatorEvent
     data class InvertedV(val value: InvertedVDraft) : CalculatorEvent
     data class Matching(val value: MatchingDraft) : CalculatorEvent
     data class Edit(val key: FieldKey, val text: String) : CalculatorEvent

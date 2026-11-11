@@ -1,0 +1,1 @@
+The inverted-V and Ground Plane descriptions now highlight the antenna dimensions each tool calculates.

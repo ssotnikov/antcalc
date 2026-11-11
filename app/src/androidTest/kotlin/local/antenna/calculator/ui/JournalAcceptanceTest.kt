@@ -234,6 +234,32 @@ class JournalAcceptanceTest {
             requireNotNull(estimated.initialLength).nanometers / 1e9, 1e-9)
     }
 
+    @Test fun groundPlaneCreatesMonopoleProjectAndReturnsToTool() {
+        val name = "Ground Plane " + UUID.randomUUID().toString().take(6)
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-ground-plane")
+        click("ground-plane-mode-MANUAL")
+        click("ground-plane-length-unit-METERS")
+        edit("ground-plane-WHIP", "0.5")
+        edit("ground-plane-RADIAL", "0.5")
+        edit("ground-plane-HEIGHT", "2")
+        edit("ground-plane-ANGLE", "45")
+        click("ground-plane-save")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        edit("project-transfer-name", name)
+        click("project-transfer-save-new")
+        waitFor("ground-plane-screen")
+
+        val project = savedProject(name)
+        assertEquals(AntennaType.MONOPOLE, project.antennaType)
+        assertEquals(500_000_000L, project.initialLength?.nanometers)
+        assertNull(project.target)
+        val snapshot = requireNotNull(project.records.single().calculation)
+        assertEquals("ground_plane", snapshot.model)
+        assertEquals(2.5, snapshot.outputs.single { it.key == "gp_wire" }.value, 1e-9)
+    }
+
     @Test fun projectExamplesHideOnFocusAndNeverBecomeSavedData() {
         val title = "Empty fields " + UUID.randomUUID().toString().take(6)
         waitFor("nav-TOOLS")

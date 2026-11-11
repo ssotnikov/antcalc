@@ -124,7 +124,7 @@
     <string name="tuning_diagram_note">Условный график КСВ без шкалы. Минимум показан рядом с fₘ для иллюстрации. На реальной антенне частота минимума КСВ может отличаться от частоты, где X близка к нулю.</string>
 
     <string name="inverted_v_title">Диполь «Перевёрнутая V»</string>
-    <string name="inverted_v_intro">Проверьте, поместится ли симметричный диполь на участке при заданной высоте центральной опоры.</string>
+    <string name="inverted_v_intro">Расчёт начальной длины каждого плеча диполя, размаха и высоты концов над землёй.</string>
     <string name="inverted_v_inputs">Исходные данные</string>
     <string name="inverted_v_mode">Источник длины плеча</string>
     <string name="inverted_v_measured">Фактическая длина</string>
@@ -155,4 +155,52 @@
     <string name="source_inverted_v_en_description">На рис. 2A показан диполь с наклонными плечами и питанием в центре. Автор объясняет, почему такой подвес занимает меньше места по горизонтали.</string>
     <string name="inverted_v_span_alt">D = 2L × sin(α/2).</string>
     <string name="inverted_v_height_alt">h = H − L × cos(α/2).</string>
+    <string name="references_smith">Диаграмма Смита</string>
+    <string name="references_ground_plane">Четвертьволновая антенна Ground Plane</string>
+    <string name="inverted_v_illustration">Два наклонённых вниз плеча диполя с точкой питания на вершине мачты.</string>
+    <string name="inverted_v_definition">Инвертед-V диполь — полуволновая дипольная антенна с центральной точкой питания, расположенной выше концов наклонённых вниз плеч.</string>
+    <string name="source_ground_plane_m0ukd_description">Фотографии сборки и калькулятор четвертьволнового штыря с наклонными противовесами. Метод оценки длины противовесов отличается от модели приложения.</string>
+    <string name="source_ground_plane_rlocman_description">Конструкция с горизонтальными противовесами и согласующим отрезком кабеля из журнала «Радио».</string>
+    <string name="source_ground_plane_qrz_description">Глава об антеннах Си-Би, их питании и выборе высоты установки.</string>
+    <string name="source_smith_antenna_theory_description">Введение в диаграмму с примерами согласования с помощью линий передачи, катушек и конденсаторов.</string>
+    <string name="source_smith_berkeley_description">Лекция Али Никнеджада о связи импеданса с коэффициентом отражения и применении диаграммы к линиям передачи.</string>
+    <string name="source_smith_rutube_description">Видео о настройке диполя, подборе длины кабеля и измерениях с NanoVNA.</string>
+    <string name="source_smith_nanovna_description">Демонстрация калибровки NanoVNA, выбора диапазона и шага сканирования, работы с диаграммой Смита.</string>
+    <string name="source_smith_radioprog_description">Статья о коэффициенте отражения, импедансе и проводимости с примерами согласующих цепей на 60 и 900 МГц.</string>
+    <string name="source_smith_grigorov_description">И. Н. Григоров, РадиоСофт, 2008. Описание и оглавление книги о настройке антенн и согласующих устройствах.</string>
+    <string name="source_smith_tz_lab_description">Введите R + jX, соберите цепь из R, L, C и отрезков линии и проследите, как меняются импеданс, КСВ и коэффициент отражения.</string>
+    <string name="source_smith_radioskot_description">Интерактивная диаграмма и учебный пример компенсации реактивности для нагрузки 15 + j25 Ом на 144 МГц.</string>
+    <string name="trimming_initial_estimate">Начальная оценка длины из расчёта размеров: %1$s</string>
+    <string name="ground_plane_title">Ground Plane (GP) Антенна</string>
+    <string name="ground_plane_intro">Расчёт начальных длин штыря и четырёх противовесов. Оценка размаха противовесов и высоты их концов над землёй.</string>
+    <string name="ground_plane_definition">Четвертьволновая вертикальная антенна с противовесами (граундплейн), или несимметричный заземлённый вибратор.</string>
+    <string name="ground_plane_illustration">Вертикальный штырь на мачте с четырьмя наклонными противовесами у точки питания.</string>
+    <string name="ground_plane_estimated">По частоте</string>
+    <string name="ground_plane_manual">Фактические длины</string>
+    <string name="ground_plane_whip">Длина штыря</string>
+    <string name="ground_plane_radial">Длина одного противовеса</string>
+    <string name="ground_plane_whip_factor">Коэффициент укорочения штыря k</string>
+    <string name="ground_plane_radial_factor">Коэффициент укорочения противовеса k</string>
+    <string name="ground_plane_height">Высота точки питания H</string>
+    <string name="ground_plane_angle">Наклон противовесов β</string>
+    <string name="ground_plane_angle_help">Наклон отсчитывается вниз от горизонтали. Если смотреть сверху, противовесы разнесены на 90°.</string>
+    <string name="ground_plane_angle_range">Введите наклон от 0° до 90°.</string>
+    <string name="ground_plane_overlap">При 90° все четыре противовеса накладываются друг на друга. Уменьшите наклон.</string>
+    <string name="ground_plane_below">Концы противовесов уходят ниже уровня земли. Поднимите точку питания, уменьшите наклон или укоротите противовесы.</string>
+    <string name="ground_plane_contact">Концы противовесов касаются земли. Это граница применимости модели с приподнятыми противовесами.</string>
+    <string name="ground_plane_radius">Радиус установки</string>
+    <string name="ground_plane_diameter">Диаметр установки</string>
+    <string name="ground_plane_drop">Перепад высоты противовесов</string>
+    <string name="ground_plane_end_height">Высота концов противовесов</string>
+    <string name="ground_plane_tip">Высота вершины штыря</string>
+    <string name="ground_plane_wire">Общая длина проводников</string>
+    <string name="ground_plane_side">Вид сбоку</string>
+    <string name="ground_plane_side_alt">Вид сбоку на штырь и одну пару противовесов. Длина штыря Lₛ: %1$s. Длина противовеса Lᵣ: %2$s. Высота точки питания H: %3$s. Высота концов h: %4$s. Диаметр установки D: %5$s. Наклон β вниз от горизонтали: %6$s°.</string>
+    <string name="ground_plane_limits">Длины по частоте — начальная оценка. На антенну влияют диаметр проводников, окружающие предметы и наклон противовесов. Проверьте резонанс и согласование собранной антенны анализатором.</string>
+    <string name="ground_plane_model_alt">При расчёте по частоте длина каждого элемента равна четверти длины волны в вакууме, умноженной на свой коэффициент укорочения.</string>
+    <string name="ground_plane_footprint_alt">Радиус равен длине противовеса, умноженной на косинус бета. Диаметр вдвое больше радиуса.</string>
+    <string name="ground_plane_clearance_alt">Высота концов равна высоте точки питания за вычетом длины противовеса, умноженной на синус бета.</string>
+    <string name="references_smith_video">Видеолекции и практические демонстрации</string>
+    <string name="references_smith_practical">Практические статьи и разборы</string>
+    <string name="references_smith_interactive">Интерактивные тренажёры</string>
 </resources>
