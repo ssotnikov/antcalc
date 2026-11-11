@@ -1,0 +1,1 @@
+Create antenna projects, log measurements and calculations, compare records, and import or export projects as JSON. Long-press a project card for actions. The journal has clearer headings, notes and highlighted differences. Tool and reference headings use a steel-blue accent. The app menu includes a Telegram contact for the author.

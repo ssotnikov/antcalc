@@ -1,0 +1,2 @@
+Create antenna projects, keep a tuning journal, compare measurements, and transfer projects as JSON. The menu now includes a Telegram contact for the author.
+Project cards now show antenna type and frequency together. The tuning journal separates notes and highlights changed values and measurement warnings.

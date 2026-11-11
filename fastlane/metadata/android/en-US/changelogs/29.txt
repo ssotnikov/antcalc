@@ -1,0 +1,1 @@
+Create antenna projects, keep a tuning journal, compare measurements, and transfer projects as JSON. The menu now includes a Telegram contact for the author.
