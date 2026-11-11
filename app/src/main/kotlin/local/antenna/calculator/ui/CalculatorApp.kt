@@ -235,7 +235,7 @@ private fun LocalizedCalculatorApp(
             bottomBar = {
                 if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
-                        NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding())) {
+                        NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
                         val label = when (section) { Section.SIZING -> R.string.sizes; Section.TRIMMING -> R.string.trimming; Section.TOOLS -> R.string.tools }
                         NavigationBarItem(selected = settings.section == section, onClick = {

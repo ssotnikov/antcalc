@@ -33,7 +33,7 @@ import org.junit.Test
 class UpdateMenuTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
     private val language = mutableStateOf(AppLanguage.RUSSIAN)
-    private val installedUpdate = UpdateRelease("1.7.4", 64, 26, 512, "a".repeat(64))
+    private val installedUpdate = UpdateRelease("1.7.5", 65, 26, 512, "a".repeat(64))
 
     @Test fun menuChecksManuallyInBothLanguagesWhileCalculationsStayAvailable() {
         val checks = AtomicInteger()
@@ -54,6 +54,7 @@ class UpdateMenuTest {
         result.complete(UpdateCheck.Current)
         val text = compose.onNodeWithText("No updates available", useUnmergedTree = true)
         text.assertIsDisplayed()
+        assertGapAboveNavigation("compact-update-notice")
         val panel = compose.onNodeWithTag("compact-update-notice", useUnmergedTree = true).getUnclippedBoundsInRoot()
         val label = text.getUnclippedBoundsInRoot()
         val screen = compose.onRoot().getUnclippedBoundsInRoot()
@@ -91,6 +92,7 @@ class UpdateMenuTest {
         compose.onNodeWithTag("check-for-updates").performClick()
         compose.onNodeWithText("GitHub ограничил запросы — повторите проверку позже").assertIsDisplayed()
         compose.onNodeWithTag("compact-update-notice").assertDoesNotExist()
+        assertGapAboveNavigation("multiline-update-notice")
     }
 
     @Test fun cancellationPersistsAndManualCheckOffersTheSameReleaseAgain() {
@@ -122,7 +124,7 @@ class UpdateMenuTest {
         compose.onNodeWithTag("update-cancel").performClick()
         compose.waitUntil(5000) { reopened.state.value == UpdateUiState.Idle }
 
-        val newer = installedUpdate.copy(versionName = "1.7.5", versionCode = 65)
+        val newer = installedUpdate.copy(versionName = "1.7.6", versionCode = 66)
         val newerModel = model(prefs) { UpdateCheck.Available(newer) }
         compose.runOnIdle { active.value = newerModel }
         waitForOffer()
@@ -228,6 +230,12 @@ class UpdateMenuTest {
         waitForOffer()
         compose.onNodeWithTag("update-offer").assertIsDisplayed()
         assertEquals(1, calls.get())
+    }
+
+    private fun assertGapAboveNavigation(noticeTag: String) {
+        val navigation = compose.onNodeWithTag("bottom-navigation", useUnmergedTree = true).fetchSemanticsNode()
+        val notice = compose.onNodeWithTag(noticeTag, useUnmergedTree = true).fetchSemanticsNode()
+        assertEquals(5f, navigation.boundsInRoot.top - notice.boundsInRoot.bottom, 1f)
     }
 
     private fun waitForOffer() = compose.waitUntil(5000) {

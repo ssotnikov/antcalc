@@ -35,7 +35,11 @@ internal fun AppSnackbarHost(state: SnackbarHostState) {
     SnackbarHost(state) { data ->
         val visuals = data.visuals
         if (visuals is UpdateSnackbarVisuals) {
-            BoxWithConstraints(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            val navigationGap = with(LocalDensity.current) { 5.toDp() }
+            BoxWithConstraints(
+                Modifier.fillMaxWidth().padding(bottom = navigationGap),
+                contentAlignment = Alignment.Center,
+            ) {
                 val style = MaterialTheme.typography.bodyMedium
                 val measurer = rememberTextMeasurer()
                 val density = LocalDensity.current
@@ -56,7 +60,7 @@ internal fun AppSnackbarHost(state: SnackbarHostState) {
                         }
                     }
                 } else {
-                    Snackbar(data)
+                    Snackbar(data, modifier = Modifier.testTag("multiline-update-notice"))
                 }
             }
         } else {
