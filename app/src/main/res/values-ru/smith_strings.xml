@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="smith_title">Диаграмма Смита</string>
+    <string name="smith_description">Изучите, как импеданс нагрузки влияет на отражение и КСВ и как меняется импеданс вдоль линии передачи.</string>
+    <string name="smith_reference">Волновое сопротивление Z₀, Ом</string>
+    <string name="smith_resistance">Активное сопротивление R, Ом</string>
+    <string name="smith_reactance">Реактивное сопротивление X, Ом</string>
+    <string name="smith_exported">Диаграмма сохранена в PNG.</string>
+    <string name="smith_export_error">Не удалось сохранить диаграмму.</string>
+    <string name="smith_export_input">Z₀ = %1$s Ом · Z = %2$s</string>
+    <string name="smith_load_parameters">Параметры нагрузки</string>
+    <string name="smith_line_point">Точка на линии</string>
+    <string name="smith_chart_accessible">Нагрузка %1$s. КСВ %2$s. %3$s</string>
+    <string name="smith_legend_load">Жёлтый маркер (Z) — импеданс нагрузки.</string>
+    <string name="smith_legend_line">Зелёный маркер (Γ(d)) — коэффициент отражения в выбранной точке линии.</string>
+    <string name="smith_legend_circle">Сплошные стрелки — векторы отражения. Пунктирная окружность радиуса |Γ| — линия постоянного КСВ.</string>
+    <string name="smith_distance">Расстояние от нагрузки к генератору</string>
+    <string name="smith_drag_hint">Перемещайте жёлтый маркер, чтобы менять нагрузку. Зелёный маркер и ползунок задают точку на линии.</string>
+    <string name="smith_download">Сохранить диаграмму в PNG</string>
+    <string name="smith_input_range">Введите число от %1$d до %2$d.</string>
+    <string name="smith_normalized">Нормированный импеданс z</string>
+    <string name="smith_magnitude">Модуль коэффициента отражения</string>
+    <string name="smith_phase">Фаза отражения ∠Γ</string>
+    <string name="smith_return_loss">Возвратные потери</string>
+    <string name="smith_swr">КСВ</string>
+    <string name="smith_ohms">%1$s Ом</string>
+    <string name="smith_distance_value">d = %1$s λ · линия без потерь</string>
+    <string name="smith_line_value">d = %1$s λ · Γ в этой точке = %2$s · линия без потерь</string>
+    <string name="smith_anatomy">Анатомия графика — как читать линии и круги</string>
+    <string name="smith_inductive">+jX · индуктивная</string>
+    <string name="smith_capacitive">−jX · ёмкостная</string>
+    <string name="smith_short">КЗ</string>
+    <string name="smith_open">ХХ</string>
+    <string name="smith_inductor">L послед.</string>
+    <string name="smith_capacitor">C послед.</string>
+    <string name="smith_r_increases">R растёт</string>
+    <string name="smith_anatomy_description">Диаграмма Смита с осью активного сопротивления, окружностями постоянного сопротивления и дугами реактивности.</string>
+    <string name="smith_anatomy_axis">Горизонтальная ось соответствует чисто активному сопротивлению. В центре Z = Z₀ и Γ = 0. Слева — короткое замыкание, справа — холостой ход.</string>
+    <string name="smith_anatomy_circles">На каждой окружности активное нормированное сопротивление r постоянно. Верхняя половина диаграммы соответствует индуктивной реактивности, нижняя — ёмкостной.</string>
+    <string name="smith_anatomy_arcs">На каждой дуге нормированная реактивность x постоянна. Последовательная катушка или конденсатор сдвигают точку по окружности постоянного r.</string>
+    <string name="smith_grid_details">Как устроена сетка</string>
+    <string name="smith_grid_details_description">Сетка диаграммы Смита. Выделены опорный импеданс Z₀, окружность постоянного активного сопротивления и дуга постоянного реактивного сопротивления. Справа стрелка вверх показывает индуктивную реактивность (+j), стрелка вниз — ёмкостную (−j).</string>
+    <string name="smith_grid_details_note">На внешней окружности |Γ| = 1, что соответствует полному отражению. На пунктирной окружности |Γ| и КСВ постоянны.</string>
+    <string name="smith_grid_resistance">Круги постоянного активного сопротивления (r = const). Вдоль каждого круга меняется реактивная составляющая x, а r остаётся постоянным.</string>
+    <string name="smith_grid_reactance">Дуги постоянного реактивного сопротивления (x = const). Вдоль каждой дуги меняется r, а x остаётся постоянным. Над осью реактивность индуктивная (+j), под осью — ёмкостная (−j).</string>
+    <string name="smith_grid_reference">Опорный импеданс Z₀ задаёт масштаб сетки. В центре Z = Z₀, поэтому Γ = 0 и отражение отсутствует.</string>
+    <string name="smith_expanded">Развёрнуто</string>
+    <string name="smith_collapsed">Свёрнуто</string>
+    <string name="smith_tables">Справочные таблицы параметров</string>
+    <string name="smith_table_swr">КСВ</string>
+    <string name="smith_table_rl">Возвратные потери</string>
+    <string name="smith_table_power">Отражённая мощность</string>
+    <string name="smith_table_cables">Типичные параметры кабелей</string>
+    <string name="smith_cable">Кабель</string>
+    <string name="smith_table_z0">Z₀, Ом</string>
+    <string name="smith_vf_note">Приведены типичные значения. Уточняйте коэффициент скорости по паспорту конкретного кабеля или измеряйте его.</string>
+</resources>

@@ -1,6 +1,7 @@
 package local.antenna.calculator.ui
 
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -34,7 +35,11 @@ abstract class CalculatorUiFixture {
         compose.setContent {
             val state by model.state.collectAsState()
             val density = LocalDensity.current
-            CompositionLocalProvider(LocalDensity provides Density(density.density, fontScale), LocalLayoutDirection provides layoutDirection) {
+            CompositionLocalProvider(
+                LocalDensity provides Density(density.density, fontScale),
+                LocalLayoutDirection provides layoutDirection,
+                LocalActivityResultRegistryOwner provides compose.activity,
+            ) {
                 CalculatorApp(state, model::onEvent) { model.state.value }
             }
         }

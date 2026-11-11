@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
 import androidx.compose.ui.unit.dp
@@ -27,17 +30,23 @@ import org.junit.runner.RunWith
 class ToolsScreenTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
-    private fun start(height: Int = 500, onOpen: () -> Unit = {}) {
+    private fun start(height: Int = 500, densityScale: Float = 1f, onOpen: () -> Unit = {}) {
         compose.setContent {
-            MaterialTheme {
-                Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen, onOpen) }
+            val currentDensity = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(currentDensity.density * densityScale, currentDensity.fontScale)) {
+                MaterialTheme {
+                    Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen, onOpen, onOpen) }
+                }
             }
         }
         compose.waitForIdle()
     }
 
     @Test fun shortCatalogMovesBothWaysAndReturnsAfterReleaseOrCancellation() {
-        start(height = 700)
+        start(height = 850, densityScale = 0.75f)
+        val range = compose.onNodeWithTag("tools-cards").fetchSemanticsNode()
+            .config[androidx.compose.ui.semantics.SemanticsProperties.VerticalScrollAxisRange]
+        assertEquals(0f, range.maxValue(), 0f)
         val viewport = compose.onNodeWithTag("tools-viewport")
         val cards = compose.onNodeWithTag("open-matching")
         val initial = cards.fetchSemanticsNode().boundsInRoot.top
@@ -118,11 +127,11 @@ class ToolsScreenTest {
         compose.onNodeWithTag("open-matching").performTouchInput { swipeUp() }
         compose.waitForIdle()
         assertEquals(0, opened)
-        compose.onNodeWithTag("open-matching").performClick()
+        compose.onNodeWithTag("open-matching").performScrollTo().performClick()
         compose.runOnIdle { assertEquals(1, opened) }
     }
 
-    @Test fun overflowingCatalogStillScrollsToSecondCard() {
+    @Test fun overflowingCatalogStillScrollsToCableCard() {
         var opened = 0
         start(height = 180, onOpen = { opened++ })
         val cards = compose.onNodeWithTag("tools-cards")

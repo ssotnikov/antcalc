@@ -1,0 +1,1 @@
+The Smith chart guide now explains resistance circles, reactance arcs, and reference impedance. The illustration shows the +j and −j directions on the right.

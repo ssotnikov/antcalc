@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="smith_title">Smith Chart</string>
+    <string name="smith_description">Explore how load impedance affects reflection and SWR, and how impedance changes along a transmission line.</string>
+    <string name="smith_reference">Characteristic impedance Z₀, Ω</string>
+    <string name="smith_resistance">Resistance R, Ω</string>
+    <string name="smith_reactance">Reactance X, Ω</string>
+    <string name="smith_exported">Chart saved as PNG.</string>
+    <string name="smith_export_error">Could not save the chart.</string>
+    <string name="smith_export_input">Z₀ = %1$s Ω · Z = %2$s</string>
+    <string name="smith_load_parameters">Load parameters</string>
+    <string name="smith_line_point">Point on the line</string>
+    <string name="smith_chart_accessible">Load %1$s. SWR %2$s. %3$s</string>
+    <string name="smith_legend_load">Yellow marker (Z) — load impedance.</string>
+    <string name="smith_legend_line">Green marker (Γ(d)) — reflection coefficient at the selected point on the line.</string>
+    <string name="smith_legend_circle">Solid arrows show the reflection vectors. The dashed circle of radius |Γ| shows constant SWR.</string>
+    <string name="smith_distance">Distance from load toward generator</string>
+    <string name="smith_drag_hint">Drag the yellow marker to change the load. Drag the green marker or move the distance slider to explore the line.</string>
+    <string name="smith_download">Save chart as PNG</string>
+    <string name="smith_input_range">Enter a value from %1$d to %2$d.</string>
+    <string name="smith_normalized">Normalized impedance z</string>
+    <string name="smith_magnitude">Reflection coefficient magnitude</string>
+    <string name="smith_phase">Reflection phase ∠Γ</string>
+    <string name="smith_return_loss">Return loss</string>
+    <string name="smith_swr">SWR</string>
+    <string name="smith_ohms">%1$s Ω</string>
+    <string name="smith_distance_value">d = %1$s λ · lossless line</string>
+    <string name="smith_line_value">d = %1$s λ · Γ at this point = %2$s · lossless line</string>
+    <string name="smith_anatomy">Chart anatomy — how to read the lines and circles</string>
+    <string name="smith_inductive">+jX · inductive</string>
+    <string name="smith_capacitive">−jX · capacitive</string>
+    <string name="smith_short">Short</string>
+    <string name="smith_open">Open</string>
+    <string name="smith_inductor">Series L</string>
+    <string name="smith_capacitor">Series C</string>
+    <string name="smith_r_increases">R increases</string>
+    <string name="smith_anatomy_description">Smith chart showing the resistive axis, constant resistance circles and reactance arcs.</string>
+    <string name="smith_anatomy_axis">The horizontal axis is purely resistive. At the center, Z = Z₀ and Γ = 0. The left edge is a short circuit and the right edge is an open circuit.</string>
+    <string name="smith_anatomy_circles">Each resistance circle holds the normalized resistance r constant. The upper half is inductive and the lower half is capacitive.</string>
+    <string name="smith_anatomy_arcs">Each reactance arc holds the normalized reactance x constant. A series inductor or capacitor moves the point along a circle of constant r.</string>
+    <string name="smith_grid_details">Reading the grid</string>
+    <string name="smith_grid_details_description">Smith chart grid highlighting the reference impedance Z₀, a constant-resistance circle, and a constant-reactance arc. On the right, the up arrow indicates inductive reactance (+j) and the down arrow indicates capacitive reactance (−j).</string>
+    <string name="smith_grid_details_note">The outer boundary represents total reflection, where |Γ| = 1. Reflection magnitude and SWR are constant along the dashed circle.</string>
+    <string name="smith_grid_resistance">Constant-resistance circles (r = const). Along each circle, reactance x changes while resistance r stays fixed.</string>
+    <string name="smith_grid_reactance">Constant-reactance arcs (x = const). Along each arc, resistance r changes while reactance x stays fixed. Reactance is inductive (+j) above the axis and capacitive (−j) below it.</string>
+    <string name="smith_grid_reference">The reference impedance Z₀ sets the scale of the grid. At the center, Z = Z₀, so Γ = 0 and there is no reflection.</string>
+    <string name="smith_expanded">Expanded</string>
+    <string name="smith_collapsed">Collapsed</string>
+    <string name="smith_tables">Reference tables</string>
+    <string name="smith_table_swr">SWR</string>
+    <string name="smith_table_rl">Return loss</string>
+    <string name="smith_table_power">Reflected power</string>
+    <string name="smith_table_cables">Typical cable parameters</string>
+    <string name="smith_cable">Cable</string>
+    <string name="smith_table_z0">Z₀, Ω</string>
+    <string name="smith_vf_note">Cable values are typical. Check the datasheet for the exact cable or measure its velocity factor.</string>
+</resources>

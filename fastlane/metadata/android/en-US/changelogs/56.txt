@@ -1,0 +1,1 @@
+Added an offline Smith chart tool with movable load and feed-line markers, impedance and SWR calculations, reference tables, and PNG export.
