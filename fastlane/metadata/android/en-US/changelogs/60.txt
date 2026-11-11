@@ -1,0 +1,1 @@
+Separate builds are now available for stores and direct GitHub installation. The store build receives updates through its store.

@@ -240,7 +240,9 @@ class RuStoreDeliveryTest(unittest.TestCase):
                     signature_verification="passed", certificate_sha256=release.signing_policy(release.ROOT)["certificate_sha256"],
                     manifest_sha256=release.sha256(folder / "release-manifest.json"), listing_sha256=release.sha256(folder / "listing.json"))
         with patch.object(release, "version", return_value=("0.15.0", 17)):
-            for key, value in ((None, None), ("certificate_sha256", "0" * 64), ("versionName", "0.16.0"), ("sha256", "0" * 64)):
+            cases = ((None, None), ("certificate_sha256", "0" * 64), ("versionName", "0.16.0"),
+                     ("sha256", "0" * 64), ("channel", release.DIRECT_CHANNEL))
+            for key, value in cases:
                 record = dict(data) if key is None else dict(data, **{key: value})
                 (folder / "verified-input.json").write_text(json.dumps(record))
                 if key is None:

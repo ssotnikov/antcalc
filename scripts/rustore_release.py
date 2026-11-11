@@ -58,6 +58,7 @@ def verify_input(project, folder, version, expected_hash, environ):
 def load_input(project, folder, version, expected_hash, environ):
     data = json.loads((folder / "verified-input.json").read_text(encoding="utf-8"))
     if (data.get("verification_ci") != prepare.context(environ) or data.get("state") != "verified"
+            or data.get("channel", release.STORE_CHANNEL) != release.STORE_CHANNEL
             or data.get("package") != release.PACKAGE or data.get("versionName") != version
             or release.version(project) != (version, data.get("versionCode"))
             or data.get("certificate_sha256") != release.signing_policy(release.ROOT)["certificate_sha256"]

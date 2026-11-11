@@ -59,9 +59,10 @@ def published_history():
         if item.get("draft"):
             continue
         tag = item.get("tag_name", "")
-        if not tag.startswith("v"):
+        version_suffix = tag.removeprefix("github-direct-")
+        if not version_suffix.startswith("v"):
             raise ValueError("Unexpected release tag in history")
-        semver(tag[1:])
+        semver(version_suffix[1:])
         manifest = json.loads(checked(["gh", "release", "download", tag, "--repo", REPOSITORY,
                                       "--pattern", "release-manifest.json", "--output", "-"]))
         if manifest.get("intended_tag") != tag:
@@ -81,7 +82,9 @@ def validate_history(name, code, history, certificate):
                 or old_code <= 0 or old.get("certificate_sha256") != certificate
                 or not re.fullmatch(r"[a-f0-9]{64}", old.get("sha256", ""))):
             raise ValueError("Invalid historical release manifest")
-        if old.get("intended_tag") != "v" + old_name:
+        channel = old.get("channel", release.STORE_CHANNEL)
+        semver(old_name)
+        if channel not in release.CHANNELS or old.get("intended_tag") != release.release_tag(old_name, channel):
             raise ValueError("Invalid historical version tag")
         if candidate <= semver(old_name) or code <= old_code:
             raise ValueError("Candidate version and versionCode must exceed every published release")

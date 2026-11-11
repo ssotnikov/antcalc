@@ -502,6 +502,58 @@ resolved runtime dependency inventory. An unsigned APK is not installable.
 APK: `app/build/outputs/apk/release/antcalc.apk`. Release disables debugging,
 code shrinking and embedded VCS metadata. Version literals are in `app/build.gradle.kts`.
 
+## Каналы APK / APK distribution channels
+
+По умолчанию Gradle и скрипты выпуска собирают магазинный APK. F-Droid и
+RuStore используют этот вариант и теги `v<versionName>`. Прямой вариант
+включается через `-PdistributionChannel=github-direct`. Его теги
+`github-direct-v<versionName>` находятся вне фильтра F-Droid.
+
+The default Gradle and release-script route builds the store APK. F-Droid
+and RuStore use that APK and `v<versionName>` tags. Use the default store verification for any Google Play APK handoff. The direct variant uses
+`-PdistributionChannel=github-direct` and `github-direct-v<versionName>` tags.
+
+Обычный CI проверяет оба варианта и выгружает два неподписанных артефакта.
+Прямой APK находится в артефакте с префиксом `github-direct-unsigned-`.
+
+CI checks both variants and uploads separate unsigned artifacts. The
+GitHub Direct artifact has the `github-direct-unsigned-` prefix.
+
+```powershell
+python scripts/build_release.py build --channel github-direct --output artifacts/unsigned-github-direct
+.\scripts\sign_release.ps1 -Channel github-direct -UnsignedApk artifacts\unsigned-github-direct\antcalc.apk -OutputDirectory artifacts\github-direct
+python scripts/build_release.py verify --channel github-direct --apk artifacts/github-direct/antcalc.apk
+```
+
+Для прямого канала скрипт подписи создаёт `update-manifest.json` из
+проверенного APK. Публикуйте его как вложение того же релиза
+`github-direct-v<versionName>` вместе с `antcalc.apk` и `release-manifest.json`.
+Поля схемы 1 включают `channel`, `tag`, `packageName`, `versionName`,
+`versionCode`, `minSdk` и объект `apk` с именем, размером в байтах и SHA-256.
+
+For the direct channel, signing writes `update-manifest.json` from the
+verified APK. Attach it to the same direct release as `antcalc.apk` and
+`release-manifest.json`.
+
+### Установка прямого APK / Installing the direct APK
+
+Первый прямой выпуск установите вручную из его GitHub Release. Android
+сохраняет проекты и настройки при обновлении поверх APK с тем же пакетом,
+совместимой подписью и более высоким versionCode. Последующие выпуски
+прямой сборки доступны через «Проверить обновления». После проверки файла
+AntCalc открывает системный установщик. Если Android запросит разрешение
+на установку из этого источника, откройте настройки по кнопке в диалоге.
+При системном запрете можно открыть страницу релиза и использовать
+доступный на устройстве способ ручной установки.
+
+Install the first direct APK manually from its GitHub Release. Android
+preserves projects and settings when the package and signing identity are
+compatible and the new versionCode is higher. For later direct releases,
+choose **Check for updates**. After verifying the APK, AntCalc opens the
+Android installer. Use the in-app button to open Android settings if it
+asks to allow installs from this source. The release page remains available
+for manual installation.
+
 ## Production signature
 
 Для обоих магазинов используется один ключ и один подписанный APK.

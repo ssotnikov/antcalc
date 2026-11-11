@@ -15,6 +15,9 @@ enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 internal const val INVERTED_V_SOURCE_RU = "https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/"
 internal const val RFI_DIELECTRICS_URL = "https://products.rfi.com.au/hubfs/Wireless%20download%20library/Coaxial%20Cable%20Dielectrics%20%20Velocity%20of%20Propagation%20and%20Attenuation.pdf?hsLang=en"
 internal const val RADIOLAB_CABLES_URL = "https://radiolab.ru/ru/5/1188382333/"
+private val directReleaseAddress = Regex(
+    """https://github\.com/ssotnikov/antcalc/releases/tag/github-direct-v[0-9]{1,9}\.[0-9]{1,9}\.[0-9]{1,9}""",
+)
 private val additionalSourceAddresses = setOf(
     "https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/",
     "https://www.rlocman.ru/shem/schematics.html?di=4982",
@@ -63,7 +66,7 @@ internal fun validatedSourceAddress(address: String): String? {
     val url = uri.toASCIIString()
     return when (url) {
         BUG_REPORT_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
-        else -> url.takeIf { it in additionalSourceAddresses || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
+        else -> url.takeIf { it in additionalSourceAddresses || directReleaseAddress.matches(it) || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
     }
 }
 

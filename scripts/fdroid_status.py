@@ -44,6 +44,8 @@ def verify_public_release(project, version, sdk, folder):
         raise ValueError("Checkout version or signing policy does not match the trusted source")
     download_public(url.rsplit("/", 1)[0] + "/release-manifest.json", folder / "release-manifest.json", 65536)
     manifest = json.loads((folder / "release-manifest.json").read_text(encoding="utf-8"))
+    if manifest.get("channel", release.STORE_CHANNEL) != release.STORE_CHANNEL:
+        raise ValueError("Store delivery requires the store APK")
     source = prepare.checked(["git", "rev-parse", "HEAD"], cwd=project).strip()
     if manifest.get("source_commit") != source or manifest.get("intended_tag") != "v" + version:
         raise ValueError("Public manifest does not match the selected release source")

@@ -106,6 +106,18 @@ class PrepareReleaseTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             prepare.validate_history("0.15.0", 17, [self.baseline, future], self.certificate)
 
+    def test_direct_releases_also_reserve_version_codes(self):
+        direct = dict(self.baseline, versionName="0.16.0", versionCode=18,
+                      channel=release.DIRECT_CHANNEL, intended_tag="github-direct-v0.16.0")
+        pages = [[dict(draft=False, tag_name=direct["intended_tag"])]]
+        with patch.object(prepare, "checked", side_effect=[json.dumps(pages), json.dumps(direct)]):
+            self.assertEqual([direct], prepare.published_history())
+        prepare.validate_history("0.17.0", 19, [self.baseline, direct], self.certificate)
+        with self.assertRaises(ValueError):
+            prepare.validate_history("0.17.0", 18, [self.baseline, direct], self.certificate)
+        with self.assertRaises(ValueError):
+            prepare.validate_history("0.17.0", 19, [self.baseline, dict(direct, intended_tag="v0.16.0")], self.certificate)
+
     def test_missing_history_manifest_is_not_ignored(self):
         with patch.object(prepare, "checked", side_effect=[json.dumps([[dict(draft=False, tag_name="v0.14.0")]]),
                                                           ValueError("Unavailable")]):
@@ -200,7 +212,8 @@ class PrepareReleaseTest(unittest.TestCase):
 
     def test_existing_signer_rejects_an_unapproved_key_without_fallback(self):
         key = self.root / "wrong.p12"; key.write_bytes(b"synthetic keystore")
-        args = argparse.Namespace(project=self.project, sdk=self.root, unsigned=self.unsigned, output=self.root / "signed")
+        args = argparse.Namespace(project=self.project, sdk=self.root, unsigned=self.unsigned,
+                                  output=self.root / "signed", channel=release.STORE_CHANNEL)
         env = dict(os.environ, ANTCALC_RELEASE_KEYSTORE=str(key), ANTCALC_STORE_PASSWORD="fixture-password")
         exported = subprocess.CompletedProcess(["keytool"], 0, b"unapproved certificate", b"")
         with patch.dict(os.environ, env, clear=True), patch.object(release, "run", side_effect=["", self.plan["source_commit"]]), \

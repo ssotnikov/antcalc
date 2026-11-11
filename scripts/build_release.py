@@ -1,4 +1,4 @@
-"""One unsigned build and one controlled signature for both distribution channels."""
+"""Build, inspect, and sign the selected APK distribution channel."""
 import argparse
 import hashlib
 import json
@@ -13,6 +13,11 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE = "local.antenna.calculator"
 TOOLS_VERSION = "36.0.0"
+STORE_CHANNEL = "store"
+DIRECT_CHANNEL = "github-direct"
+CHANNELS = (STORE_CHANNEL, DIRECT_CHANNEL)
+CHANNEL_METADATA = PACKAGE + ".UPDATE_CHANNEL"
+DIRECT_PERMISSIONS = {"android.permission.INTERNET", "android.permission.REQUEST_INSTALL_PACKAGES"}
 
 
 def run(command, *, cwd=None, capture=False, env=None):
@@ -70,7 +75,34 @@ def signing_policy(project):
     return policy
 
 
-def inspect_apk(apk, project, sdk, *, signed):
+def release_tag(version_name, channel):
+    return f"github-direct-v{version_name}" if channel == DIRECT_CHANNEL else f"v{version_name}"
+
+
+def verify_channel(xml, permissions, channel):
+    if channel not in CHANNELS:
+        raise ValueError("Unsupported distribution channel")
+    allowed = {PACKAGE + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}
+    if channel == DIRECT_CHANNEL:
+        allowed |= DIRECT_PERMISSIONS
+        if not DIRECT_PERMISSIONS.issubset(permissions):
+            raise ValueError("Missing direct update permissions")
+    if set(permissions) - allowed:
+        raise ValueError("Unexpected release permission")
+    marker = f'"{CHANNEL_METADATA}"'
+    if channel == STORE_CHANNEL:
+        if marker in xml:
+            raise ValueError("Direct update channel marker is forbidden in store APKs")
+        return
+
+    metadata = re.findall(r"(?m)^ +E: meta-data[^\n]*\n((?: +A:[^\n]*\n?)*)", xml)
+    channel_entries = [entry for entry in metadata if f'="{CHANNEL_METADATA}"' in entry]
+    if (len(channel_entries) != 1
+            or not re.search(r'android:value(?:\([^)]*\))?="github-direct"', channel_entries[0])):
+        raise ValueError("Missing or invalid direct update channel marker")
+
+
+def inspect_apk(apk, project, sdk, *, signed, channel=STORE_CHANNEL):
     java, aapt, signer = sdk_tools(sdk)
     name, code = version(project)
     badging = run([aapt, "dump", "badging", apk], capture=True)
@@ -84,11 +116,15 @@ def inspect_apk(apk, project, sdk, *, signed):
         if not re.search(r"android:" + attribute + r"[^\n]*(?:0x0\b|=\"false\")", xml):
             raise ValueError("Required manifest protection missing: " + attribute)
     permissions = re.findall(r"^uses-permission(?:-sdk-\d+)?: name='([^']+)'", badging, re.M)
-    if set(permissions) - {PACKAGE + ".DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"}:
-        raise ValueError("Unexpected release permission")
+    verify_channel(xml, permissions, channel)
     report = dict(package=PACKAGE, versionName=name, versionCode=code, sha256=sha256(apk),
                   bytes=Path(apk).stat().st_size, debuggable=False, allowBackup=False,
                   usesCleartextTraffic=False, permissions=permissions)
+    if channel == DIRECT_CHANNEL:
+        minimum = re.search(r"^sdkVersion:'([1-9][0-9]*)'$", badging, re.M)
+        if not minimum:
+            raise ValueError("Direct APK requires a numeric minimum Android SDK")
+        report.update(channel=DIRECT_CHANNEL, minSdk=int(minimum[1]))
     if signed:
         output = run([java, "-jar", signer, "verify", "--verbose", "--print-certs", apk], capture=True)
         certificates = re.findall(r"certificate SHA-256 digest:\s*([a-fA-F0-9]{64})", output)
@@ -105,17 +141,30 @@ def build(args):
     env.update(ANDROID_HOME=str(args.sdk), ANDROID_SDK_ROOT=str(args.sdk),
                GRADLE_OPTS="-Dorg.gradle.jvmargs=-Xmx1024m -Dorg.gradle.workers.max=1")
     wrapper = args.project / ("gradlew.bat" if os.name == "nt" else "gradlew")
+    direct = args.channel == DIRECT_CHANNEL
+    variant = "GithubDirect" if direct else ""
     command = [wrapper, "--no-daemon", "--no-build-cache", "--no-configuration-cache",
-               "-Pkotlin.incremental=false", ":calculator-core:test", ":app:testDebugUnitTest",
-               ":app:assembleRelease", ":app:lintRelease", ":app:writeReleaseDependencyInventory", "--console", "plain"]
+               f"-PdistributionChannel={args.channel}", "-Pkotlin.incremental=false", ":calculator-core:test",
+               f":app:test{variant}DebugUnitTest", f":app:assemble{variant}Release", f":app:lint{variant}Release",
+               ":app:writeReleaseDependencyInventory", "--console", "plain"]
     run(command, cwd=args.project, env=env)
-    apk = args.project / "app/build/outputs/apk/release/antcalc.apk"
-    report = inspect_apk(apk, args.project, args.sdk, signed=False)
+    apk_folder = "githubDirect/release" if direct else "release"
+    apk = args.project / "app/build/outputs/apk" / apk_folder / "antcalc.apk"
+    report = inspect_apk(apk, args.project, args.sdk, signed=False, channel=args.channel)
     source = subprocess.run(["git", "rev-parse", "HEAD"], cwd=args.project, capture_output=True, text=True)
     report["source_commit"] = source.stdout.strip() if source.returncode == 0 else None
     args.output.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(apk, args.output / "antcalc.apk")
     (args.output / "unsigned-manifest.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+
+
+def direct_update_manifest(report):
+    if report["channel"] != DIRECT_CHANNEL or report["signature_verification"] != "passed":
+        raise ValueError("Update metadata requires a verified signed direct APK")
+    return dict(schemaVersion=1, channel=DIRECT_CHANNEL, tag=report["intended_tag"],
+                packageName=report["package"], versionName=report["versionName"],
+                versionCode=report["versionCode"], minSdk=report["minSdk"],
+                apk=dict(name="antcalc.apk", size=report["bytes"], sha256=report["sha256"]))
 
 
 def sign(args):
@@ -129,7 +178,9 @@ def sign(args):
     origin = json.loads((args.unsigned.parent / "unsigned-manifest.json").read_text(encoding="utf-8"))
     if origin.get("source_commit") != commit or origin.get("sha256") != sha256(args.unsigned):
         raise ValueError("Unsigned artifact is not bound to this clean source commit")
-    inspect_apk(args.unsigned, args.project, args.sdk, signed=False)
+    if origin.get("channel", STORE_CHANNEL) != args.channel:
+        raise ValueError("Unsigned APK channel differs from signing request")
+    inspect_apk(args.unsigned, args.project, args.sdk, signed=False, channel=args.channel)
     java, _, signer = sdk_tools(args.sdk)
     keytool = java.parent / ("keytool.exe" if os.name == "nt" else "keytool")
     certificate = subprocess.run([str(keytool), "-exportcert", "-keystore", keystore,
@@ -148,11 +199,16 @@ def sign(args):
          "--alignment-preserved", "true",
          "--v1-signing-enabled", "true", "--v2-signing-enabled", "true", "--v3-signing-enabled", "true",
          "--v4-signing-enabled", "false", "--out", output, args.unsigned])
-    report = inspect_apk(output, args.project, args.sdk, signed=True)
-    report.update(source_commit=commit, intended_tag="v" + report["versionName"],
+    report = inspect_apk(output, args.project, args.sdk, signed=True, channel=args.channel)
+    signing_model = ("developer key; GitHub direct distribution" if args.channel == DIRECT_CHANNEL
+                     else "shared developer key; F-Droid requires reproducible verification")
+    report.update(source_commit=commit, intended_tag=release_tag(report["versionName"], args.channel),
                   unsigned_sha256=sha256(args.unsigned), build_tools=TOOLS_VERSION,
-                  signing_model="shared developer key; F-Droid requires reproducible verification")
+                  signing_model=signing_model)
     (args.output / "release-manifest.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    if args.channel == DIRECT_CHANNEL:
+        update = direct_update_manifest(report)
+        (args.output / "update-manifest.json").write_text(json.dumps(update, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report))
 
 
@@ -162,6 +218,7 @@ def main():
     for name in ("build", "sign", "verify"):
         p = sub.add_parser(name)
         p.add_argument("--project", type=Path, default=ROOT)
+        p.add_argument("--channel", choices=CHANNELS, default=STORE_CHANNEL)
         p.add_argument("--sdk", type=Path, default=Path(os.environ.get("ANDROID_HOME", "")))
         if name == "build":
             p.add_argument("--output", type=Path, required=True)
@@ -174,7 +231,7 @@ def main():
     args.project = args.project.resolve(); args.sdk = args.sdk.resolve()
     if args.command == "build": build(args)
     elif args.command == "sign": sign(args)
-    else: print(json.dumps(inspect_apk(args.apk, args.project, args.sdk, signed=True), indent=2))
+    else: print(json.dumps(inspect_apk(args.apk, args.project, args.sdk, signed=True, channel=args.channel), indent=2))
 
 
 if __name__ == "__main__":

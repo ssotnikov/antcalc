@@ -81,6 +81,11 @@ jobs:
         run: |
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37.0" "build-tools;36.0.0"
 
+      - name: Check the GitHub Direct APK
+        run: |
+          python scripts/build_release.py build --channel github-direct --output artifacts/ci/github-direct
+          cp app/build/reports/release-dependencies.txt artifacts/ci/github-direct/release-dependencies.txt
+
       - name: Run JVM tests, release lint and unsigned build
         run: python scripts/build_release.py build --output artifacts/ci/unsigned
 
@@ -91,6 +96,14 @@ jobs:
           path: |
             artifacts/ci/unsigned/antcalc.apk
             artifacts/ci/unsigned/unsigned-manifest.json
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload the checked unsigned GitHub Direct APK
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: github-direct-unsigned-${{ github.sha }}-${{ github.run_attempt }}
+          path: artifacts/ci/github-direct/
           if-no-files-found: error
           retention-days: 14
 
@@ -106,6 +119,10 @@ jobs:
             app/build/reports/tests/testDebugUnitTest/
             app/build/reports/lint-results-release.html
             app/build/reports/lint-results-release.xml
+            app/build/test-results/testGithubDirectDebugUnitTest/*.xml
+            app/build/reports/tests/testGithubDirectDebugUnitTest/
+            app/build/reports/lint-results-githubDirectRelease.html
+            app/build/reports/lint-results-githubDirectRelease.xml
             app/build/reports/release-dependencies.txt
           if-no-files-found: warn
           retention-days: 14
@@ -120,6 +137,6 @@ jobs:
             echo '## CI checks'
             printf 'Commit: %s\n\n' "$CHECKED_SHA"
             printf 'Status: %s\n\n' "$CHECK_STATUS"
-            echo 'A successful run provides an **unsigned** antcalc.apk for inspection.'
-            echo 'It cannot be installed. CI does not sign or publish the app.'
+            echo 'A successful run provides separate unsigned APKs for the store and GitHub Direct channels.'
+            echo 'Signing and publication are separate from this workflow.'
           } >> "$GITHUB_STEP_SUMMARY"

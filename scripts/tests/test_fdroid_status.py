@@ -97,6 +97,12 @@ class FdroidStatusTest(unittest.TestCase):
                 patch.object(release, "inspect_apk", return_value=actual) as inspect:
             self.assertEqual("verified", status.verify_upstream(Path("source"), "0.14.0", Path("sdk"))["state"])
             inspect.assert_called_with(ANY, Path("source"), Path("sdk"), signed=True)
+            inspect.reset_mock()
+            manifest["channel"] = release.DIRECT_CHANNEL
+            with self.assertRaisesRegex(ValueError, "Store delivery requires"):
+                status.verify_upstream(Path("source"), "0.14.0", Path("sdk"))
+            inspect.assert_not_called()
+            del manifest["channel"]
             manifest["sha256"] = "0" * 64
             with self.assertRaises(ValueError):
                 status.verify_upstream(Path("source"), "0.14.0", Path("sdk"))

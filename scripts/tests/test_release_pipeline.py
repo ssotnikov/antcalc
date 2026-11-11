@@ -3,6 +3,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import sys
 import tempfile
 import struct
@@ -52,12 +53,12 @@ class ReleasePipelineTest(unittest.TestCase):
             runner.assert_not_called()
             self.assertFalse(args.output.exists())
 
-    def inspect(self, xml, permissions=""):
+    def inspect(self, xml, permissions="", channel=release.STORE_CHANNEL):
         apk = self.root / "test.apk"
         apk.write_bytes(b"fixture only")
-        badging = "package: name='local.antenna.calculator' versionCode='16' versionName='0.14.0'\n" + permissions
+        badging = "package: name='local.antenna.calculator' versionCode='16' versionName='0.14.0'\nsdkVersion:'26'\n" + permissions
         with patch.object(release, "sdk_tools", return_value=(Path("java"), Path("aapt"), Path("apksigner.jar"))), patch.object(release, "run", side_effect=[badging, xml]):
-            return release.inspect_apk(apk, self.root, self.root, signed=False)
+            return release.inspect_apk(apk, self.root, self.root, signed=False, channel=channel)
 
     def test_manifest_protections_and_unexpected_permissions(self):
         xml = "A: android:allowBackup=(type 0x12)0x0\nA: android:usesCleartextTraffic=(type 0x12)0x0\n"
@@ -68,6 +69,41 @@ class ReleasePipelineTest(unittest.TestCase):
             self.inspect(xml, "uses-permission: name='android.permission.INTERNET'\n")
         with self.assertRaisesRegex(ValueError, "manifest protection"):
             self.inspect("")
+
+    def test_direct_apk_is_verified_only_on_the_direct_route(self):
+        protected = "A: android:allowBackup=(type 0x12)0x0\nA: android:usesCleartextTraffic=(type 0x12)0x0\n"
+        marker = (f'  E: meta-data (line=7)\n'
+                  f'    A: android:name(0x01010003)="{release.CHANNEL_METADATA}"\n'
+                  '    A: android:value(0x01010024)="github-direct"\n')
+        permissions = "".join(f"uses-permission: name='{name}'\n" for name in release.DIRECT_PERMISSIONS)
+        actual = self.inspect(protected + marker, permissions, channel=release.DIRECT_CHANNEL)
+        self.assertEqual(release.DIRECT_CHANNEL, actual["channel"])
+        self.assertEqual(26, actual["minSdk"])
+        signed = dict(actual, intended_tag="github-direct-v0.14.0", signature_verification="passed")
+        self.assertEqual(dict(schemaVersion=1, channel="github-direct", tag="github-direct-v0.14.0",
+                              packageName=release.PACKAGE, versionName="0.14.0", versionCode=16,
+                              minSdk=26, apk=dict(name="antcalc.apk", size=actual["bytes"], sha256=actual["sha256"])),
+                         release.direct_update_manifest(signed))
+        with self.assertRaises(ValueError):
+            release.direct_update_manifest(dict(signed, signature_verification="failed"))
+        with self.assertRaisesRegex(ValueError, "Unexpected release permission"):
+            self.inspect(protected + marker, permissions)
+        with self.assertRaisesRegex(ValueError, "marker is forbidden"):
+            self.inspect(protected + marker)
+        with self.assertRaisesRegex(ValueError, "marker"):
+            self.inspect(protected, permissions, channel=release.DIRECT_CHANNEL)
+        with self.assertRaisesRegex(ValueError, "Missing direct update permissions"):
+            self.inspect(protected + marker, channel=release.DIRECT_CHANNEL)
+        self.assertEqual("github-direct-v1.7.0", release.release_tag("1.7.0", release.DIRECT_CHANNEL))
+        self.assertEqual("v1.7.0", release.release_tag("1.7.0", release.STORE_CHANNEL))
+
+    def test_fdroid_recipe_uses_only_store_tags_and_assets(self):
+        recipe = (SCRIPTS.parent / "distribution/fdroid/metadata/local.antenna.calculator.yml").read_text(encoding="utf-8")
+        tag_filter = next(line.removeprefix("UpdateCheckMode: Tags ") for line in recipe.splitlines()
+                          if line.startswith("UpdateCheckMode: Tags "))
+        self.assertIsNotNone(re.fullmatch(tag_filter, release.release_tag("1.7.0", release.STORE_CHANNEL)))
+        self.assertIsNone(re.fullmatch(tag_filter, release.release_tag("1.7.0", release.DIRECT_CHANNEL)))
+        self.assertIn("/releases/download/v%v/antcalc.apk", recipe)
 
     def prepare_metadata(self):
         for locale, title in (("ru", "Антенный калькулятор"), ("en-US", "Antenna Calculator")):

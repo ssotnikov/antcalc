@@ -35,6 +35,7 @@ class WebSourcesTest {
             "https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf",
             "https://ssotnikov.pro",
             "https://github.com/ssotnikov/antcalc/issues/new",
+            "https://github.com/ssotnikov/antcalc/releases/tag/github-direct-v1.7.0",
             "https://t.me/ssotnikov",
         )) assertEquals(url, validatedSourceAddress(url))
     }
@@ -51,6 +52,9 @@ class WebSourcesTest {
             "https://products.rfi.com.au/", "https://radiolab.ru/", RFI_DIELECTRICS_URL + "&q=unexpected",
             RADIOLAB_CABLES_URL + "?q=unexpected",
             "https://t.me/other", "https://t.me/ssotnikov?text=unexpected",
+            "https://github.com/ssotnikov/other/releases/tag/github-direct-v1.7.0",
+            "https://github.com/ssotnikov/antcalc/releases/download/github-direct-v1.7.0/other.apk",
+            "https://github.com/ssotnikov/antcalc/releases/tag/github-direct-v1.7.0?next=unsafe",
             "tg://resolve?domain=ssotnikov", "https://github.com/ssotnikov/other/issues/new", "https://github.com/ssotnikov/antcalc/issues/new?body=data",
             "https://www.arrl.org%2eevil.example/", "https://www.arrl.org/\n", "https://www.arrl.org/" + "a".repeat(3000))) {
             assertNull(url.take(80), validatedSourceAddress(url))

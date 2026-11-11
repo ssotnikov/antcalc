@@ -5,6 +5,10 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+val distributionChannel = providers.gradleProperty("distributionChannel").orElse("store").get()
+require(distributionChannel in setOf("store", "github-direct")) { "Unsupported distribution channel" }
+val githubDirect = distributionChannel == "github-direct"
+
 android {
     namespace = "local.antenna.calculator"
     compileSdk = 37
@@ -14,9 +18,25 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 59
-        versionName = "1.6.3"
+        versionCode = 60
+        versionName = "1.7.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    if (githubDirect) {
+        flavorDimensions += "distribution"
+        productFlavors {
+            create("githubDirect") {
+                dimension = "distribution"
+                val signingPolicy = groovy.json.JsonSlurper().parse(rootProject.file("distribution/signing.json")) as Map<*, *>
+                val fingerprint = signingPolicy["certificate_sha256"] as String
+                require(fingerprint.matches(Regex("[a-f0-9]{64}"))) { "Invalid production certificate fingerprint" }
+                buildConfigField("String", "UPDATE_SIGNER_SHA256", "\"$fingerprint\"")
+            }
+        }
+    } else {
+        sourceSets.getByName("main").kotlin.directories.add("src/store/kotlin")
+        sourceSets.getByName("androidTest").kotlin.directories.add("src/androidTestStore/kotlin")
     }
 
     buildFeatures {
@@ -50,7 +70,8 @@ tasks.register("writeReleaseDependencyInventory") {
     outputs.file(output)
     outputs.upToDateWhen { false }
     doLast {
-        val modules = configurations.getByName("releaseRuntimeClasspath").incoming.resolutionResult.allComponents
+        val classpath = if (githubDirect) "githubDirectReleaseRuntimeClasspath" else "releaseRuntimeClasspath"
+        val modules = configurations.getByName(classpath).incoming.resolutionResult.allComponents
             .mapNotNull { it.id as? org.gradle.api.artifacts.component.ModuleComponentIdentifier }
             .map { "${it.group}:${it.module}:${it.version}" }.sorted()
         output.get().asFile.apply { parentFile.mkdirs(); writeText(modules.joinToString("\n", postfix = "\n")) }
@@ -91,6 +112,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
+    if (githubDirect) androidTestImplementation(libs.kotlinx.coroutines.test)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     constraints {
         implementation(libs.androidx.lifecycle.runtime) {

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import java.util.UUID
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
+import local.antenna.calculator.update.rememberUpdateMenu
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.journal.JournalPage
 import local.antenna.calculator.journal.JournalScreen
@@ -164,6 +165,8 @@ private fun LocalizedCalculatorApp(
     }
     BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
+        val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
+        val updateMenu = rememberUpdateMenu(offerAllowed, page == Page.CALCULATOR, snackbar)
         val title = when (page) {
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
@@ -212,6 +215,14 @@ private fun LocalizedCalculatorApp(
                                     onClick = { menu = false; openAuthorContact(context) },
                                     modifier = Modifier.testTag("contact-author"),
                                 )
+                                if (updateMenu != null) {
+                                    DropdownMenuItem(
+                                        text = { Text(updateMenu.title) },
+                                        enabled = updateMenu.enabled,
+                                        onClick = { menu = false; updateMenu.onClick() },
+                                        modifier = Modifier.testTag("check-for-updates"),
+                                    )
+                                }
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.report_bug)) },
                                     onClick = { menu = false; openSourceWithFeedback(context, BUG_REPORT_URL) },
