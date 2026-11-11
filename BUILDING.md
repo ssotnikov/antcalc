@@ -530,10 +530,13 @@ python scripts/build_release.py verify --channel github-direct --apk artifacts/g
 `github-direct-v<versionName>` вместе с `antcalc.apk` и `release-manifest.json`.
 Поля схемы 1 включают `channel`, `tag`, `packageName`, `versionName`,
 `versionCode`, `minSdk` и объект `apk` с именем, размером в байтах и SHA-256.
+При подписи добавляются `notes.ru` и `notes.en` из changelog Fastlane
+для того же `versionCode`. Android также принимает старые манифесты без этих полей.
 
 For the direct channel, signing writes `update-manifest.json` from the
 verified APK. Attach it to the same direct release as `antcalc.apk` and
-`release-manifest.json`.
+`release-manifest.json`. Signing adds `notes.ru` and `notes.en` from the Fastlane
+changelogs for the same `versionCode`. Android also accepts older manifests without these fields.
 
 ### Установка прямого APK / Installing the direct APK
 

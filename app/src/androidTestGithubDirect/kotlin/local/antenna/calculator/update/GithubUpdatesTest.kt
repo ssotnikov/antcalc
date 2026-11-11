@@ -84,6 +84,35 @@ class GithubUpdatesTest {
         assertNull(UpdateRelease.parse(first.json().put("schemaVersion", 2)))
     }
 
+    @Test fun olderManifestUsesLocalizedGithubNotesWithoutBindingThemToTheApk() {
+        val body = "## Что изменилось\r\n\r\n- Зазор над навигацией\r\n\r\n## What's changed\r\n\r\n- Navigation spacing"
+        val listing = listing(first).put("body", body)
+        val source = catalog { url, _ ->
+            when {
+                url.endsWith("page=1") -> page(listing)
+                url == LATEST_UPDATE_MANIFEST -> manifest(first)
+                else -> manifest(first)
+            }
+        }
+        val offered = requireNotNull(source.fetch(null).release)
+        assertEquals("• Зазор над навигацией", offered.notes?.text("ru"))
+        assertEquals("• Navigation spacing", offered.notes?.text("en"))
+        assertEquals(offered, UpdateRelease.parse(offered.json()))
+        source.confirm(offered, apiAvailable = false)
+    }
+
+    @Test fun latestManifestSuppliesNotesWithNoReleasesApiAndIgnoresOversizedText() {
+        val release = first.copy(notes = UpdateReleaseNotes("а".repeat(4_001), "- Navigation spacing"))
+        val source = catalog { url, _ ->
+            assertEquals(LATEST_UPDATE_MANIFEST, url)
+            manifest(release)
+        }
+        val offered = source.fetchLatest().release
+        assertEquals(UpdateReleaseNotes(null, "- Navigation spacing"), offered?.notes)
+        assertEquals("• Navigation spacing", offered?.notes?.text("ru"))
+        source.confirm(release, apiAvailable = false)
+    }
+
     @Test fun usesFreshCacheAndCoalescesRequestsButManualCheckRevalidates() = runTest {
         val old = UpdateCatalog(first, "\"first\"")
         val latest = UpdateCatalog(newest, "\"newest\"")

@@ -7,10 +7,11 @@
     <string name="update_unavailable">Could not check for updates</string>
     <string name="update_rate_limited">GitHub is limiting requests — try again later</string>
     <string name="update_available">Update available</string>
-    <string name="update_installed_version">Installed version %1$s</string>
-    <string name="update_available_version">Available version %1$s</string>
+    <string name="update_versions">Version %1$s → %2$s</string>
     <string name="update_whats_new">What’s new</string>
-    <string name="update_download">Download and install</string>
+    <string name="update_notes_unavailable">Release notes unavailable</string>
+    <string name="update_skip">Skip</string>
+    <string name="update_download">Update</string>
     <string name="update_downloading">Downloading update</string>
     <string name="update_download_percent">%1$d%%</string>
     <string name="update_download_failed">Could not download the update</string>

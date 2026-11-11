@@ -167,6 +167,18 @@ def direct_update_manifest(report):
                 apk=dict(name="antcalc.apk", size=report["bytes"], sha256=report["sha256"]))
 
 
+def direct_update_notes(project, version_code):
+    root = project / "fastlane/metadata/android"
+    notes = {}
+    for language, folder in (("ru", "ru"), ("en", "en-US")):
+        path = root / folder / "changelogs" / f"{version_code}.txt"
+        text = path.read_text(encoding="utf-8").strip()
+        if not 1 <= len(text.encode("utf-16-le")) // 2 <= 4000:
+            raise ValueError(f"Empty or oversized update notes: {path}")
+        notes[language] = text
+    return notes
+
+
 def sign(args):
     policy = signing_policy(args.project)
     keystore = os.environ.get("ANTCALC_RELEASE_KEYSTORE")
@@ -180,7 +192,8 @@ def sign(args):
         raise ValueError("Unsigned artifact is not bound to this clean source commit")
     if origin.get("channel", STORE_CHANNEL) != args.channel:
         raise ValueError("Unsigned APK channel differs from signing request")
-    inspect_apk(args.unsigned, args.project, args.sdk, signed=False, channel=args.channel)
+    unsigned = inspect_apk(args.unsigned, args.project, args.sdk, signed=False, channel=args.channel)
+    notes = direct_update_notes(args.project, unsigned["versionCode"]) if args.channel == DIRECT_CHANNEL else None
     java, _, signer = sdk_tools(args.sdk)
     keytool = java.parent / ("keytool.exe" if os.name == "nt" else "keytool")
     certificate = subprocess.run([str(keytool), "-exportcert", "-keystore", keystore,
@@ -208,6 +221,7 @@ def sign(args):
     (args.output / "release-manifest.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     if args.channel == DIRECT_CHANNEL:
         update = direct_update_manifest(report)
+        update["notes"] = notes
         (args.output / "update-manifest.json").write_text(json.dumps(update, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report))
 

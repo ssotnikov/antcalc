@@ -12,11 +12,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,10 +33,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -190,32 +201,49 @@ private fun downloadErrorMessage(reason: UpdateDownloadError): String = when (re
 
 @Composable
 private fun UpdateOfferDialog(release: UpdateRelease, onDismiss: () -> Unit, onDownload: () -> Unit) {
-    val context = LocalContext.current
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.testTag("update-offer"),
-        title = { Text(stringResource(R.string.update_available)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(R.string.update_installed_version, BuildConfig.VERSION_NAME))
-                Text(stringResource(R.string.update_available_version, release.versionName))
-                TextButton(
-                    onClick = { openSourceWithFeedback(context, release.pageUrl) },
-                    modifier = Modifier.testTag("update-notes"),
-                ) { Text(stringResource(R.string.update_whats_new)) }
+    val language = LocalConfiguration.current.locales[0].language
+    val notes = release.notes?.text(language) ?: stringResource(R.string.update_notes_unavailable)
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth().testTag("update-offer"),
+            shape = MaterialTheme.shapes.extraLarge,
+            color = MaterialTheme.colorScheme.surfaceContainer,
+        ) {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Text(
+                        stringResource(R.string.update_available),
+                        modifier = Modifier.semantics { heading() },
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        stringResource(R.string.update_versions, BuildConfig.VERSION_NAME, release.versionName),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    HorizontalDivider()
+                    Text(
+                        stringResource(R.string.update_whats_new),
+                        modifier = Modifier.semantics { heading() },
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                    Text(notes, modifier = Modifier.testTag("update-notes"), style = MaterialTheme.typography.bodyMedium)
+                }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    TextButton(onDismiss, Modifier.weight(1f).testTag("update-cancel")) {
+                        Text(stringResource(R.string.update_skip))
+                    }
+                    Button(onDownload, Modifier.weight(1f).testTag("update-download")) {
+                        Text(stringResource(R.string.update_download))
+                    }
+                }
             }
-        },
-        confirmButton = {
-            Column(Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = onDownload,
-                    modifier = Modifier.fillMaxWidth().testTag("update-download"),
-                ) { Text(stringResource(R.string.update_download)) }
-                TextButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth().testTag("update-cancel"),
-                ) { Text(stringResource(R.string.update_cancel)) }
-            }
-        },
-    )
+        }
+    }
 }

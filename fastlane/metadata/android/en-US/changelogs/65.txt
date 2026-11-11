@@ -1,0 +1,1 @@
+The update dialog shows what's new, both version numbers, and Skip and Update actions.

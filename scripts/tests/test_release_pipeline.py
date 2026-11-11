@@ -38,6 +38,20 @@ class ReleasePipelineTest(unittest.TestCase):
     def tearDown(self):
         self.directory.cleanup()
 
+    def test_direct_notes_use_localized_changelogs_for_the_exact_build(self):
+        root = self.root / "fastlane/metadata/android"
+        for locale, text in (("en-US", "English notes"), ("ru", "Описание выпуска")):
+            path = root / locale / "changelogs/16.txt"
+            path.parent.mkdir(parents=True)
+            path.write_text(text + "\n", encoding="utf-8")
+        self.assertEqual({"en": "English notes", "ru": "Описание выпуска"},
+                         release.direct_update_notes(self.root, 16))
+        with self.assertRaises(FileNotFoundError):
+            release.direct_update_notes(self.root, 17)
+        (root / "ru/changelogs/16.txt").write_text("а" * 4001, encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "oversized update notes"):
+            release.direct_update_notes(self.root, 16)
+
     def test_static_version_and_dynamic_version_rejection(self):
         self.assertEqual(("0.14.0", 16), release.version(self.root))
         (self.root / "app/build.gradle.kts").write_text('versionName = gitDescribe()\nversionCode = 16\n')

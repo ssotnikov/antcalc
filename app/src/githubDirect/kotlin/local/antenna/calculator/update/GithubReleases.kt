@@ -28,6 +28,7 @@ internal data class UpdateRelease(
     val minSdk: Long,
     val size: Long,
     val sha256: String,
+    val notes: UpdateReleaseNotes? = null,
 ) {
     val tag: String get() = TAG_PREFIX + versionName
     val pageUrl: String get() = "https://github.com/$REPOSITORY/releases/tag/$tag"
@@ -37,6 +38,9 @@ internal data class UpdateRelease(
         .put("tag", tag).put("packageName", "local.antenna.calculator")
         .put("versionName", versionName).put("versionCode", versionCode).put("minSdk", minSdk)
         .put("apk", JSONObject().put("name", APK).put("size", size).put("sha256", sha256))
+        .put("notes", notes?.json())
+
+    fun sameApk(other: UpdateRelease?) = other != null && copy(notes = null) == other.copy(notes = null)
 
     companion object {
         fun parse(json: JSONObject): UpdateRelease? {
@@ -50,7 +54,7 @@ internal data class UpdateRelease(
             if (apk.opt("name") != APK) return null
             val size = apk.integer("size")?.takeIf { it in 1..MAX_APK_BYTES } ?: return null
             val hash = (apk.opt("sha256") as? String)?.takeIf(SHA256::matches) ?: return null
-            return UpdateRelease(name, code, sdk, size, hash)
+            return UpdateRelease(name, code, sdk, size, hash, UpdateReleaseNotes.parse(json.optJSONObject("notes")))
         }
     }
 }
@@ -173,7 +177,7 @@ internal class GithubReleases(
                     if (++manifestRequests > 12) throw IOException("Too many update manifests")
                 } ?: continue
                 val current = best
-                if (current != null && candidate.versionCode == current.versionCode && candidate != current) {
+                if (current != null && candidate.versionCode == current.versionCode && !candidate.sameApk(current)) {
                     throw IOException("Conflicting update versions")
                 }
                 if (current == null || candidate.versionCode > current.versionCode) best = candidate
@@ -216,10 +220,10 @@ internal class GithubReleases(
             null
         }
         if (response == null) {
-            if (fetchLatest().release != release) throw IOException("The selected update is no longer available")
+            if (!release.sameApk(fetchLatest().release)) throw IOException("The selected update is no longer available")
             return
         }
-        if (response.status != 200 || readRelease(JSONObject(response.body)) {} != release) {
+        if (response.status != 200 || !release.sameApk(readRelease(JSONObject(response.body)) {})) {
             throw IOException("The selected update is no longer available")
         }
     }
@@ -249,7 +253,7 @@ internal class GithubReleases(
         val digest = apk.opt("digest")
         if (digest != null && digest != JSONObject.NULL && digest != "sha256:${candidate.sha256}") return null
 
-        return candidate
+        return candidate.copy(notes = candidate.notes ?: UpdateReleaseNotes.fromGithubBody(release.opt("body") as? String))
     }
 
     private fun asset(assets: JSONArray, tag: String, name: String): JSONObject? {

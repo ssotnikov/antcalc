@@ -33,7 +33,10 @@ import org.junit.Test
 class UpdateMenuTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
     private val language = mutableStateOf(AppLanguage.RUSSIAN)
-    private val installedUpdate = UpdateRelease("1.7.5", 65, 26, 512, "a".repeat(64))
+    private val installedUpdate = UpdateRelease(
+        "1.7.6", 66, 26, 512, "a".repeat(64),
+        UpdateReleaseNotes("- Исправлено окно обновления", "- Improved update dialog"),
+    )
 
     @Test fun menuChecksManuallyInBothLanguagesWhileCalculationsStayAvailable() {
         val checks = AtomicInteger()
@@ -104,9 +107,10 @@ class UpdateMenuTest {
         val dialog = compose.onNodeWithTag("update-offer")
         waitForOffer()
         dialog.assertIsDisplayed()
-        compose.onNodeWithText("Установленная версия ${BuildConfig.VERSION_NAME}").assertIsDisplayed()
-        compose.onNodeWithText("Доступная версия ${installedUpdate.versionName}").assertIsDisplayed()
-        compose.onNodeWithTag("update-notes").assertIsDisplayed().assertHasClickAction()
+        compose.onNodeWithText("Версия ${BuildConfig.VERSION_NAME} → ${installedUpdate.versionName}").assertIsDisplayed()
+        compose.onNodeWithText("• Исправлено окно обновления").assertIsDisplayed()
+        compose.onNodeWithText("Обновить").assertIsDisplayed()
+        compose.onNodeWithText("Пропустить").assertIsDisplayed()
         compose.onNodeWithTag("update-download").assertIsDisplayed().assertHasClickAction()
         compose.onNodeWithTag("update-cancel").assertIsDisplayed().assertHasClickAction()
         compose.onNodeWithTag("update-cancel").performClick()
@@ -124,13 +128,28 @@ class UpdateMenuTest {
         compose.onNodeWithTag("update-cancel").performClick()
         compose.waitUntil(5000) { reopened.state.value == UpdateUiState.Idle }
 
-        val newer = installedUpdate.copy(versionName = "1.7.6", versionCode = 66)
+        val newer = installedUpdate.copy(versionName = "1.7.7", versionCode = 67)
         val newerModel = model(prefs) { UpdateCheck.Available(newer) }
         compose.runOnIdle { active.value = newerModel }
         waitForOffer()
         dialog.assertIsDisplayed()
-        compose.onNodeWithText("Доступная версия ${newer.versionName}").assertIsDisplayed()
+        compose.onNodeWithText("Версия ${BuildConfig.VERSION_NAME} → ${newer.versionName}").assertIsDisplayed()
         assertFalse(UpdateDismissals(prefs).allows(60))
+    }
+
+    @Test fun longNotesScrollInTheAppWhileBothActionsRemainVisible() {
+        language.value = AppLanguage.ENGLISH
+        val notes = (1..40).joinToString("\n") { "- Update detail $it" }
+        val release = installedUpdate.copy(notes = UpdateReleaseNotes("Описание", notes))
+        val model = model { UpdateCheck.Available(release) }
+        show(model, fontScale = 2f)
+        waitForOffer()
+        val body = compose.onNodeWithTag("update-notes")
+        body.assertTextContains("• Update detail 40", substring = true)
+        compose.onNode(hasScrollAction() and hasAnyDescendant(hasTestTag("update-notes")))
+            .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.ScrollBy) { it(0f, 1000f) }
+        compose.onNodeWithText("Skip").assertIsDisplayed()
+        compose.onNodeWithText("Update").assertIsDisplayed()
     }
 
     @Test fun permissionPromptCanBeCancelled() {
