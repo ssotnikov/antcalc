@@ -12,6 +12,13 @@
     <string name="update_whats_new">What’s new</string>
     <string name="update_download">Download and install</string>
     <string name="update_downloading">Downloading update</string>
+    <string name="update_download_percent">%1$d%%</string>
+    <string name="update_download_failed">Could not download the update</string>
+    <string name="update_error_http">GitHub returned HTTP %1$d</string>
+    <string name="update_error_timeout">The connection to GitHub timed out</string>
+    <string name="update_error_connection">The connection to GitHub is unavailable or was interrupted</string>
+    <string name="update_error_incomplete">The download ended before the full file arrived</string>
+    <string name="update_error_file">Could not read or save the update file</string>
     <string name="update_permission_title">Allow APK installation</string>
     <string name="update_permission_message">Allow AntCalc to install apps from this source in Android settings, or download the update from GitHub</string>
     <string name="update_open_settings">Open Android settings</string>

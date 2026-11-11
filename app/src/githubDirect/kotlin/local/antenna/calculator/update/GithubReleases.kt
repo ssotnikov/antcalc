@@ -97,7 +97,11 @@ internal class GithubUpdateTransport : UpdateTransport {
 }
 
 internal fun <T> withUpdateResponse(
-    url: String, accept: String, etag: String? = null, consume: (HttpURLConnection, Int) -> T,
+    url: String,
+    accept: String,
+    etag: String? = null,
+    readTimeoutMillis: Int = 5_000,
+    consume: (HttpURLConnection, Int) -> T,
 ): T {
     var uri = URI(url)
     repeat(4) {
@@ -105,7 +109,7 @@ internal fun <T> withUpdateResponse(
         try {
             connection.instanceFollowRedirects = false
             connection.connectTimeout = 5000
-            connection.readTimeout = 5000
+            connection.readTimeout = readTimeoutMillis
             connection.setRequestProperty("Accept", accept)
             connection.setRequestProperty("User-Agent", "AntCalc-Android")
             etag?.let { connection.setRequestProperty("If-None-Match", it) }

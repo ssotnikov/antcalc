@@ -2,7 +2,7 @@
 <resources>
     <string name="update_check">Проверить обновления</string>
     <string name="update_open_releases">Релизы на GitHub</string>
-    <string name="update_checking">Проверка обновлений</string>
+    <string name="update_checking">Поиск обновлений...</string>
     <string name="update_current">Обновления отсутствуют</string>
     <string name="update_unavailable">Не удалось проверить обновления</string>
     <string name="update_rate_limited">GitHub ограничил запросы — повторите проверку позже</string>
@@ -11,7 +11,14 @@
     <string name="update_available_version">Доступная версия %1$s</string>
     <string name="update_whats_new">Что нового</string>
     <string name="update_download">Скачать и установить</string>
-    <string name="update_downloading">Скачиваем обновление</string>
+    <string name="update_downloading">Скачивание обновления...</string>
+    <string name="update_download_percent">%1$d%%</string>
+    <string name="update_download_failed">Не удалось скачать обновление</string>
+    <string name="update_error_http">GitHub вернул ошибку HTTP %1$d</string>
+    <string name="update_error_timeout">Истекло время ожидания ответа от GitHub</string>
+    <string name="update_error_connection">Соединение с GitHub потеряно или недоступно</string>
+    <string name="update_error_incomplete">Загрузка прервалась до получения полного файла</string>
+    <string name="update_error_file">Не удалось прочитать или сохранить файл обновления</string>
     <string name="update_permission_title">Разрешите установку APK</string>
     <string name="update_permission_message">Разрешите AntCalc установку из этого источника в настройках Android или скачайте обновление с GitHub</string>
     <string name="update_open_settings">Открыть настройки Android</string>

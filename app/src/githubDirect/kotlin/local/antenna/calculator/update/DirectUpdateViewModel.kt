@@ -34,6 +34,7 @@ internal sealed interface UpdateUiState {
     data class Downloading(val release: UpdateRelease, val bytes: Long) : UpdateUiState
     data class Confirmation(val release: UpdateRelease, val intent: Intent) : UpdateUiState
     data object Installing : UpdateUiState
+    data class DownloadFailed(val reason: UpdateDownloadError) : UpdateUiState
     data class InstallFailed(val invalidApk: Boolean) : UpdateUiState
 }
 
@@ -71,10 +72,21 @@ internal class DirectUpdateViewModel(
     fun start() {
         if (started) return
         started = true
-        if (testCheck == null) {
-            recovery = viewModelScope.launch(Dispatchers.IO) { UpdateInstallSessions.recover(app, cache) }
+        if (testCheck != null) {
+            if (requestId == 0) check(manual = false)
+            return
         }
-        if (requestId == 0) check(manual = false)
+        recovery = viewModelScope.launch {
+            val interrupted = withContext(Dispatchers.IO) {
+                val partialApk = cache.list()?.any { it.startsWith("update-") && it.endsWith(".apk") } == true
+                UpdateInstallSessions.recover(app, cache)
+                partialApk
+            }
+            if (requestId == 0 && mutableState.value == UpdateUiState.Idle) {
+                if (interrupted) mutableState.value = UpdateUiState.DownloadFailed(UpdateDownloadError.Incomplete)
+                else check(manual = false)
+            }
+        }
     }
 
     fun checkManually() {
@@ -141,8 +153,12 @@ internal class DirectUpdateViewModel(
                         BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, System::currentTimeMillis,
                     )
                     source.confirm(release, apiAvailable = checks.apiAvailable())
-                    if (!cache.isDirectory && !cache.mkdirs()) throw IOException("Could not create update cache")
-                    val file = File.createTempFile("update-", ".apk", cache)
+                    val file = try {
+                        if (!cache.isDirectory && !cache.mkdirs()) throw IOException("Could not create update cache")
+                        File.createTempFile("update-", ".apk", cache)
+                    } catch (error: IOException) {
+                        throw UpdateDownloadException(UpdateDownloadError.FileAccess, error)
+                    }
                     try {
                         downloadUpdate(release, file) { bytes ->
                             mutableState.value = UpdateUiState.Downloading(release, bytes)
@@ -177,6 +193,8 @@ internal class DirectUpdateViewModel(
                         else -> mutableState.value = UpdateUiState.InstallFailed(false)
                     }
                 }
+            } catch (error: UpdateDownloadException) {
+                mutableState.value = UpdateUiState.DownloadFailed(error.reason)
             } catch (_: InvalidUpdateApk) {
                 mutableState.value = UpdateUiState.InstallFailed(true)
             } catch (_: TimeoutCancellationException) {

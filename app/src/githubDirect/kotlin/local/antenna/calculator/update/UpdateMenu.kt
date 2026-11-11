@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -24,11 +25,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
@@ -121,13 +124,35 @@ internal fun rememberUpdateMenuActions(
         is UpdateUiState.Downloading -> if (active) {
             AlertDialog(
                 onDismissRequest = { model.cancelInstall(current.release) },
+                properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
                 title = { Text(stringResource(R.string.update_downloading)) },
                 text = {
                     val progress = (current.bytes.toFloat() / current.release.size).coerceIn(0f, 1f)
-                    LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        LinearProgressIndicator(
+                            progress = { progress },
+                            modifier = Modifier.weight(1f),
+                            drawStopIndicator = {},
+                        )
+                        Text(stringResource(R.string.update_download_percent, (progress * 100).toInt()))
+                    }
                 },
                 confirmButton = {
                     TextButton(onClick = { model.cancelInstall(current.release) }) { Text(stringResource(R.string.update_cancel)) }
+                },
+            )
+        }
+        is UpdateUiState.DownloadFailed -> if (active) {
+            val dismiss = { model.messageShown(current) }
+            AlertDialog(
+                onDismissRequest = dismiss,
+                title = { Text(stringResource(R.string.update_download_failed)) },
+                text = { Text(downloadErrorMessage(current.reason)) },
+                confirmButton = {
+                    TextButton(onClick = dismiss) { Text(stringResource(android.R.string.ok)) }
                 },
             )
         }
@@ -151,6 +176,16 @@ internal fun rememberUpdateMenuActions(
             openSourceWithFeedback(context, GITHUB_RELEASES_URL)
         },
     )
+}
+
+@Composable
+private fun downloadErrorMessage(reason: UpdateDownloadError): String = when (reason) {
+    is UpdateDownloadError.Http -> stringResource(R.string.update_error_http, reason.status)
+    UpdateDownloadError.Timeout -> stringResource(R.string.update_error_timeout)
+    UpdateDownloadError.Connection -> stringResource(R.string.update_error_connection)
+    UpdateDownloadError.Incomplete -> stringResource(R.string.update_error_incomplete)
+    UpdateDownloadError.Integrity -> stringResource(R.string.update_invalid_apk)
+    UpdateDownloadError.FileAccess -> stringResource(R.string.update_error_file)
 }
 
 @Composable

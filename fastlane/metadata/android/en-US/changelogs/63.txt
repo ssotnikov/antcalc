@@ -1,0 +1,1 @@
+Fixed the download progress indicator and added details when a download fails.
