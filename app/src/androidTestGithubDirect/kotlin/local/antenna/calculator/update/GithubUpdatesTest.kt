@@ -1,6 +1,7 @@
 package local.antenna.calculator.update
 
 import java.io.IOException
+import java.net.URI
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
@@ -120,6 +121,37 @@ class GithubUpdatesTest {
             assertEquals(UpdateCheck.RateLimited(now + 120_000), checks.check(true))
             assertEquals(1, calls)
         }
+    }
+
+    @Test fun usesLatestDirectManifestWhileTheRestApiIsRateLimited() = runTest {
+        val storage = MemoryStorage(null)
+        val requests = mutableListOf<String>()
+        var latest = first
+        val source = catalog { url, _ ->
+            requests += url
+            if (url == LATEST_UPDATE_MANIFEST) manifest(latest)
+            else UpdateHttpResponse(403, headers = mapOf("X-RateLimit-Remaining" to "0"))
+        }
+        val checks = UpdateChecks(backgroundScope, storage, source::fetch, { 0 }, source::fetchLatest)
+        assertEquals(UpdateCheck.Available(first), checks.check(true))
+        assertEquals(UpdateCheck.Available(first), checks.check(true))
+        source.confirm(first, apiAvailable = checks.apiAvailable())
+        latest = newest
+        assertThrows(IOException::class.java) { source.confirm(first, apiAvailable = checks.apiAvailable()) }
+        assertEquals(1, requests.count { it.startsWith("https://api.github.com/") })
+    }
+
+    @Test fun fallbackOnlyAcceptsDirectManifestAndValidLatestRedirect() {
+        val source = catalog { _, _ -> manifest(first.copy(versionName = "1.9.0", versionCode = 59)) }
+        assertEquals(UpdateCatalog(null, null), source.fetchLatest())
+        assertThrows(IOException::class.java) {
+            catalog { _, _ -> UpdateHttpResponse(404) }.fetchLatest()
+        }
+        val latest = URI(LATEST_UPDATE_MANIFEST)
+        val tagged = first.apkUrl.replace("antcalc.apk", "update-manifest.json")
+        assertEquals(URI(tagged), updateRedirect(latest, tagged))
+        assertThrows(IOException::class.java) { updateRedirect(latest, tagged.replace("ssotnikov", "other")) }
+        assertThrows(IOException::class.java) { updateRedirect(latest, tagged.replace("github-direct-", "")) }
     }
 
     private fun catalog(now: Long = 0, get: (String, String?) -> UpdateHttpResponse) =

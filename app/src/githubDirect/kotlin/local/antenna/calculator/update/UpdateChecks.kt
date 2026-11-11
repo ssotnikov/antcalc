@@ -68,6 +68,7 @@ internal class UpdateChecks(
     private val storage: UpdateCheckStorage,
     private val fetch: (UpdateCatalog?) -> UpdateCatalog,
     private val clock: () -> Long,
+    private val fetchLatest: (() -> UpdateCatalog)? = null,
 ) {
     private var pending: Deferred<UpdateCheck>? = null
 
@@ -87,6 +88,8 @@ internal class UpdateChecks(
         }
     }
 
+    fun apiAvailable() = storage.retryAt <= clock()
+
     private fun activeRequest() = pending?.takeUnless { it.isCompleted }
 
     private fun startRequest() = scope.async(start = CoroutineStart.LAZY) { resolve() }.also { pending = it }
@@ -95,20 +98,32 @@ internal class UpdateChecks(
         val now = clock()
         val cache = storage.read()
         val retryAt = storage.retryAt
-        if (retryAt > now) return UpdateCheck.RateLimited(retryAt)
+        if (retryAt > now) return resolveLatest(retryAt)
 
         return try {
             val result = fetch(cache?.catalog)
-            storage.write(CachedUpdates(result, clock()))
-            result.result()
+            remember(result)
         } catch (limited: UpdateRateLimit) {
             storage.retryAt = limited.retryAt
-            UpdateCheck.RateLimited(limited.retryAt)
+            resolveLatest(limited.retryAt)
         } catch (_: IOException) {
             UpdateCheck.Unavailable
         } catch (_: JSONException) {
             UpdateCheck.Unavailable
         }
+    }
+
+    private fun resolveLatest(retryAt: Long): UpdateCheck = try {
+        fetchLatest?.invoke()?.let(::remember) ?: UpdateCheck.RateLimited(retryAt)
+    } catch (_: IOException) {
+        UpdateCheck.RateLimited(retryAt)
+    } catch (_: JSONException) {
+        UpdateCheck.RateLimited(retryAt)
+    }
+
+    private fun remember(result: UpdateCatalog): UpdateCheck {
+        storage.write(CachedUpdates(result, clock()))
+        return result.result()
     }
 
     private fun UpdateCatalog.result(): UpdateCheck =
@@ -122,7 +137,7 @@ internal class UpdateChecks(
             val releases = GithubReleases(
                 GithubUpdateTransport(), BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, clock,
             )
-            return UpdateChecks(scope, PreferencesUpdateStorage(prefs), releases::fetch, clock)
+            return UpdateChecks(scope, PreferencesUpdateStorage(prefs), releases::fetch, clock, releases::fetchLatest)
         }
     }
 }

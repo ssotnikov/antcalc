@@ -13,6 +13,8 @@ private const val RELEASES_BY_ID = "https://api.github.com/repositories/14456834
 private const val TAG_PREFIX = "github-direct-v"
 private const val APK = "antcalc.apk"
 private const val MANIFEST = "update-manifest.json"
+internal const val LATEST_UPDATE_MANIFEST = "https://github.com/$REPOSITORY/releases/latest/download/$MANIFEST"
+private const val TAGGED_MANIFEST_PATH = "/$REPOSITORY/releases/download/"
 private const val PAGE_BYTES = 2 * 1024 * 1024
 private const val MANIFEST_BYTES = 64 * 1024
 private const val MAX_APK_BYTES = 64L * 1024 * 1024
@@ -125,8 +127,12 @@ internal fun updateRedirect(from: URI, location: String): URI {
     val next = try { from.resolve(location) } catch (_: IllegalArgumentException) {
         throw IOException("Invalid update redirect")
     }
-    if (from.host == "api.github.com" || next.scheme != "https" ||
-        next.host !in setOf("release-assets.githubusercontent.com", "objects.githubusercontent.com") ||
+    val latestTag = next.rawPath.orEmpty().removePrefix(TAGGED_MANIFEST_PATH).removeSuffix("/$MANIFEST")
+    val latestToTagged = from.toString() == LATEST_UPDATE_MANIFEST && next.host == "github.com" &&
+        next.rawPath == "$TAGGED_MANIFEST_PATH$latestTag/$MANIFEST" && next.rawQuery == null &&
+        latestTag.startsWith(TAG_PREFIX) && VERSION.matches(latestTag.removePrefix(TAG_PREFIX))
+    val assetRedirect = next.host in setOf("release-assets.githubusercontent.com", "objects.githubusercontent.com")
+    if (from.host == "api.github.com" || next.scheme != "https" || (!assetRedirect && !latestToTagged) ||
         next.userInfo != null || next.port !in setOf(-1, 443) || next.fragment != null) {
         throw IOException("Unexpected update redirect")
     }
@@ -185,9 +191,30 @@ internal class GithubReleases(
         throw IOException("Release search incomplete")
     }
 
-    fun confirm(release: UpdateRelease) {
+    fun fetchLatest(): UpdateCatalog {
+        val response = request(LATEST_UPDATE_MANIFEST, null, MANIFEST_BYTES)
+        if (response.status != 200) throw IOException("Latest release has no update manifest")
+        val candidate = UpdateRelease.parse(JSONObject(response.body))
+            ?: throw IOException("Invalid latest update manifest")
+        val comparison = compareVersions(candidate.versionName, versionName)
+        if (comparison <= 0 && candidate.versionCode <= versionCode) return UpdateCatalog(null, null)
+        if (comparison <= 0 || candidate.versionCode <= versionCode || candidate.minSdk > sdk) {
+            throw IOException("Could not establish a compatible latest update")
+        }
+        return UpdateCatalog(candidate, null)
+    }
+
+    fun confirm(release: UpdateRelease, apiAvailable: Boolean = true) {
         if (!VERSION.matches(release.versionName)) throw IOException("Invalid update version")
-        val response = request("$RELEASES/tags/${release.tag}", null, PAGE_BYTES)
+        val response = try {
+            if (apiAvailable) request("$RELEASES/tags/${release.tag}", null, PAGE_BYTES) else null
+        } catch (_: UpdateRateLimit) {
+            null
+        }
+        if (response == null) {
+            if (fetchLatest().release != release) throw IOException("The selected update is no longer available")
+            return
+        }
         if (response.status != 200 || readRelease(JSONObject(response.body)) {} != release) {
             throw IOException("The selected update is no longer available")
         }

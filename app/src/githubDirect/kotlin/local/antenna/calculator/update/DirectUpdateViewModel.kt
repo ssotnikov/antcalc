@@ -140,7 +140,7 @@ internal class DirectUpdateViewModel(
                         transport, BuildConfig.VERSION_NAME,
                         BuildConfig.VERSION_CODE.toLong(), Build.VERSION.SDK_INT, System::currentTimeMillis,
                     )
-                    source.confirm(release)
+                    source.confirm(release, apiAvailable = checks.apiAvailable())
                     if (!cache.isDirectory && !cache.mkdirs()) throw IOException("Could not create update cache")
                     val file = File.createTempFile("update-", ".apk", cache)
                     try {

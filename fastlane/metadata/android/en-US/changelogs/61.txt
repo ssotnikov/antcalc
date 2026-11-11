@@ -1,0 +1,1 @@
+Fixed GitHub Direct update checks when the GitHub API rate limit is reached.
