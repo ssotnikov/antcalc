@@ -32,6 +32,7 @@ private val additionalSourceAddresses = setOf(
     "https://radioskot.com/calc/interaktivnaya-diagramma-smita",
 )
 
+internal const val GITHUB_RELEASES_URL = "https://github.com/ssotnikov/antcalc/releases"
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
 private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
 internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"
@@ -65,7 +66,7 @@ internal fun validatedSourceAddress(address: String): String? {
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
     return when (url) {
-        BUG_REPORT_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
+        BUG_REPORT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
         else -> url.takeIf { it in additionalSourceAddresses || directReleaseAddress.matches(it) || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
     }
 }

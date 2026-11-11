@@ -23,6 +23,7 @@ class StoreUpdateMenuTest {
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-settings").assertExists()
         compose.onNodeWithTag("check-for-updates").assertDoesNotExist()
+        compose.onNodeWithTag("open-github-releases").assertDoesNotExist()
         compose.onNodeWithTag("update-offer").assertDoesNotExist()
     }
 }

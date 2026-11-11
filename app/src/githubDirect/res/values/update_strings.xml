@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="update_check">Check for updates</string>
-    <string name="update_checking">Checking for updates…</string>
-    <string name="update_current">You have the latest compatible version.</string>
-    <string name="update_unavailable">Could not check for updates. Try again later.</string>
-    <string name="update_rate_limited">GitHub is limiting update checks. Try again later.</string>
+    <string name="update_open_releases">GitHub releases</string>
+    <string name="update_checking">Checking for updates</string>
+    <string name="update_current">No updates available</string>
+    <string name="update_unavailable">Could not check for updates</string>
+    <string name="update_rate_limited">GitHub is limiting requests — try again later</string>
     <string name="update_available">Update available</string>
     <string name="update_installed_version">Installed version %1$s</string>
     <string name="update_available_version">Available version %1$s</string>
     <string name="update_whats_new">What’s new</string>
     <string name="update_download">Download and install</string>
-    <string name="update_downloading">Downloading update…</string>
+    <string name="update_downloading">Downloading update</string>
     <string name="update_permission_title">Allow APK installation</string>
-    <string name="update_permission_message">Allow AntCalc to install apps from this source in Android settings, or download the update from GitHub.</string>
+    <string name="update_permission_message">Allow AntCalc to install apps from this source in Android settings, or download the update from GitHub</string>
     <string name="update_open_settings">Open Android settings</string>
     <string name="update_open_release">Open GitHub release</string>
-    <string name="update_invalid_apk">The downloaded APK did not pass verification.</string>
-    <string name="update_install_failed">Could not install the update.</string>
+    <string name="update_invalid_apk">Could not verify the APK</string>
+    <string name="update_install_failed">Could not install the update</string>
     <string name="update_cancel">Cancel</string>
 </resources>

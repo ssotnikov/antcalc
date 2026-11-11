@@ -33,7 +33,7 @@ import org.junit.Test
 class UpdateMenuTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
     private val language = mutableStateOf(AppLanguage.RUSSIAN)
-    private val installedUpdate = UpdateRelease("1.7.1", 61, 26, 512, "a".repeat(64))
+    private val installedUpdate = UpdateRelease("1.7.3", 63, 26, 512, "a".repeat(64))
 
     @Test fun menuChecksManuallyInBothLanguagesWhileCalculationsStayAvailable() {
         val checks = AtomicInteger()
@@ -46,15 +46,32 @@ class UpdateMenuTest {
         compose.waitUntil(5000) { checks.get() == 1 }
         openMenu()
         compose.onNodeWithText("Проверить обновления").assertIsDisplayed()
+        compose.onNodeWithText("Релизы на GitHub").assertIsDisplayed().assertHasClickAction()
         compose.onNodeWithTag("check-for-updates").performClick()
-        compose.onNodeWithText("Проверяем обновления…").assertIsDisplayed()
+        compose.onNodeWithText("Проверка обновлений").assertIsDisplayed()
         compose.onNodeWithTag("nav-TRIMMING").performClick()
         compose.runOnIdle { language.value = AppLanguage.ENGLISH }
         result.complete(UpdateCheck.Current)
-        compose.onNodeWithText("You have the latest compatible version.").assertIsDisplayed()
+        val text = compose.onNodeWithText("No updates available", useUnmergedTree = true)
+        text.assertIsDisplayed()
+        val panel = compose.onNodeWithTag("compact-update-notice", useUnmergedTree = true).getUnclippedBoundsInRoot()
+        val label = text.getUnclippedBoundsInRoot()
+        val screen = compose.onRoot().getUnclippedBoundsInRoot()
+        assertEquals((screen.left + screen.right).value, (panel.left + panel.right).value, 2f)
+        assertEquals((label.left - panel.left).value, (panel.right - label.right).value, 1f)
+        assertTrue(panel.right - panel.left < screen.right - screen.left)
         openMenu()
         compose.onNodeWithText("Check for updates").assertIsDisplayed()
+        compose.onNodeWithText("GitHub releases").assertIsDisplayed().assertHasClickAction()
         assertEquals(2, checks.get())
+    }
+
+    @Test fun longUpdateNoticeKeepsTheStandardSnackbar() {
+        show(model { UpdateCheck.RateLimited(60_000) }, fontScale = 2f)
+        openMenu()
+        compose.onNodeWithTag("check-for-updates").performClick()
+        compose.onNodeWithText("GitHub ограничил запросы — повторите проверку позже").assertIsDisplayed()
+        compose.onNodeWithTag("compact-update-notice").assertDoesNotExist()
     }
 
     @Test fun cancellationPersistsAndManualCheckOffersTheSameReleaseAgain() {
@@ -67,7 +84,7 @@ class UpdateMenuTest {
         waitForOffer()
         dialog.assertIsDisplayed()
         compose.onNodeWithText("Установленная версия ${BuildConfig.VERSION_NAME}").assertIsDisplayed()
-        compose.onNodeWithText("Доступная версия 1.7.1").assertIsDisplayed()
+        compose.onNodeWithText("Доступная версия ${installedUpdate.versionName}").assertIsDisplayed()
         compose.onNodeWithTag("update-notes").assertIsDisplayed().assertHasClickAction()
         compose.onNodeWithTag("update-download").assertIsDisplayed().assertHasClickAction()
         compose.onNodeWithTag("update-cancel").assertIsDisplayed().assertHasClickAction()
@@ -86,12 +103,12 @@ class UpdateMenuTest {
         compose.onNodeWithTag("update-cancel").performClick()
         compose.waitUntil(5000) { reopened.state.value == UpdateUiState.Idle }
 
-        val newer = installedUpdate.copy(versionName = "1.7.2", versionCode = 62)
+        val newer = installedUpdate.copy(versionName = "1.7.4", versionCode = 64)
         val newerModel = model(prefs) { UpdateCheck.Available(newer) }
         compose.runOnIdle { active.value = newerModel }
         waitForOffer()
         dialog.assertIsDisplayed()
-        compose.onNodeWithText("Доступная версия 1.7.2").assertIsDisplayed()
+        compose.onNodeWithText("Доступная версия ${newer.versionName}").assertIsDisplayed()
         assertFalse(UpdateDismissals(prefs).allows(60))
     }
 

@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import java.util.UUID
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
-import local.antenna.calculator.update.rememberUpdateMenu
+import local.antenna.calculator.update.rememberUpdateMenuActions
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.journal.JournalPage
 import local.antenna.calculator.journal.JournalScreen
@@ -166,7 +166,7 @@ private fun LocalizedCalculatorApp(
     BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
-        val updateMenu = rememberUpdateMenu(offerAllowed, page == Page.CALCULATOR, snackbar)
+        val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
         val title = when (page) {
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
@@ -215,12 +215,12 @@ private fun LocalizedCalculatorApp(
                                     onClick = { menu = false; openAuthorContact(context) },
                                     modifier = Modifier.testTag("contact-author"),
                                 )
-                                if (updateMenu != null) {
+                                for (action in updateActions) {
                                     DropdownMenuItem(
-                                        text = { Text(updateMenu.title) },
-                                        enabled = updateMenu.enabled,
-                                        onClick = { menu = false; updateMenu.onClick() },
-                                        modifier = Modifier.testTag("check-for-updates"),
+                                        text = { Text(action.title) },
+                                        enabled = action.enabled,
+                                        onClick = { menu = false; action.onClick() },
+                                        modifier = Modifier.testTag(action.tag),
                                     )
                                 }
                                 DropdownMenuItem(
@@ -256,7 +256,7 @@ private fun LocalizedCalculatorApp(
                     }
                 }
             },
-            snackbarHost = { SnackbarHost(snackbar) },
+            snackbarHost = { AppSnackbarHost(snackbar) },
         ) { padding ->
             val gestures = if (page == Page.CALCULATOR && settings.section != Section.TOOLS) Modifier.calculatorSwipes(settings.section) { section ->
                 leaveInput()

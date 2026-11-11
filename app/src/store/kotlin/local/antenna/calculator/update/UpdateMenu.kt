@@ -5,6 +5,6 @@ import androidx.compose.runtime.Composable
 
 @Suppress("UNUSED_PARAMETER")
 @Composable
-internal fun rememberUpdateMenu(
+internal fun rememberUpdateMenuActions(
     allowOffer: Boolean, allowAutomaticOffer: Boolean, snackbar: SnackbarHostState,
-): UpdateMenuAction? = null
+): List<UpdateMenuAction> = emptyList()

@@ -35,6 +35,7 @@ class WebSourcesTest {
             "https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf",
             "https://ssotnikov.pro",
             "https://github.com/ssotnikov/antcalc/issues/new",
+            "https://github.com/ssotnikov/antcalc/releases",
             "https://github.com/ssotnikov/antcalc/releases/tag/github-direct-v1.7.0",
             "https://t.me/ssotnikov",
         )) assertEquals(url, validatedSourceAddress(url))

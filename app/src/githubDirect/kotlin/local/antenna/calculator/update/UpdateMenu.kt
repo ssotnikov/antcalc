@@ -35,15 +35,17 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import local.antenna.calculator.BuildConfig
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.GITHUB_RELEASES_URL
+import local.antenna.calculator.ui.UpdateSnackbarVisuals
 import local.antenna.calculator.ui.openSourceWithFeedback
 
 internal val LocalDirectUpdateViewModel = staticCompositionLocalOf<DirectUpdateViewModel?> { null }
 
 @Composable
-internal fun rememberUpdateMenu(
+internal fun rememberUpdateMenuActions(
     allowOffer: Boolean, allowAutomaticOffer: Boolean, snackbar: SnackbarHostState,
-): UpdateMenuAction? {
-    val activity = LocalActivity.current as? ComponentActivity ?: return null
+): List<UpdateMenuAction> {
+    val activity = LocalActivity.current as? ComponentActivity ?: return emptyList()
     val suppliedModel = LocalDirectUpdateViewModel.current
     val model = suppliedModel ?: remember(activity) {
         val factory = viewModelFactory { initializer { DirectUpdateViewModel(activity.applicationContext) } }
@@ -72,9 +74,8 @@ internal fun rememberUpdateMenu(
     LaunchedEffect(state, notice) {
         val current = state
         if (notice != null) {
-            snackbar.showSnackbar(notice, duration = if (current == UpdateUiState.Checking) {
-                SnackbarDuration.Indefinite
-            } else SnackbarDuration.Short)
+            val duration = if (current == UpdateUiState.Checking) SnackbarDuration.Indefinite else SnackbarDuration.Short
+            snackbar.showSnackbar(UpdateSnackbarVisuals(notice, duration))
             if (current is UpdateUiState.Message || current is UpdateUiState.InstallFailed) model.messageShown(current)
         }
     }
@@ -144,7 +145,12 @@ internal fun rememberUpdateMenu(
         else -> Unit
     }
     val enabled = state == UpdateUiState.Idle || state is UpdateUiState.Offer || state is UpdateUiState.Message
-    return UpdateMenuAction(stringResource(R.string.update_check), enabled, model::checkManually)
+    return listOf(
+        UpdateMenuAction("check-for-updates", stringResource(R.string.update_check), enabled, model::checkManually),
+        UpdateMenuAction("open-github-releases", stringResource(R.string.update_open_releases)) {
+            openSourceWithFeedback(context, GITHUB_RELEASES_URL)
+        },
+    )
 }
 
 @Composable

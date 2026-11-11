@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="update_check">Проверить обновления</string>
-    <string name="update_checking">Проверяем обновления…</string>
-    <string name="update_current">Установлена последняя совместимая версия.</string>
-    <string name="update_unavailable">Не удалось проверить обновления. Повторите попытку позже.</string>
-    <string name="update_rate_limited">GitHub ограничил запросы. Повторите проверку позже.</string>
+    <string name="update_open_releases">Релизы на GitHub</string>
+    <string name="update_checking">Проверка обновлений</string>
+    <string name="update_current">Обновления отсутствуют</string>
+    <string name="update_unavailable">Не удалось проверить обновления</string>
+    <string name="update_rate_limited">GitHub ограничил запросы — повторите проверку позже</string>
     <string name="update_available">Доступно обновление</string>
     <string name="update_installed_version">Установленная версия %1$s</string>
     <string name="update_available_version">Доступная версия %1$s</string>
     <string name="update_whats_new">Что нового</string>
     <string name="update_download">Скачать и установить</string>
-    <string name="update_downloading">Скачиваем обновление…</string>
+    <string name="update_downloading">Скачиваем обновление</string>
     <string name="update_permission_title">Разрешите установку APK</string>
-    <string name="update_permission_message">Разрешите AntCalc установку из этого источника в настройках Android или скачайте обновление с GitHub.</string>
+    <string name="update_permission_message">Разрешите AntCalc установку из этого источника в настройках Android или скачайте обновление с GitHub</string>
     <string name="update_open_settings">Открыть настройки Android</string>
     <string name="update_open_release">Открыть релиз на GitHub</string>
-    <string name="update_invalid_apk">Не удалось подтвердить подлинность скачанного APK.</string>
-    <string name="update_install_failed">Не удалось установить обновление.</string>
+    <string name="update_invalid_apk">Не удалось подтвердить подлинность APK</string>
+    <string name="update_install_failed">Не удалось установить обновление</string>
     <string name="update_cancel">Отмена</string>
 </resources>

@@ -1,0 +1,1 @@
+Updated GitHub Direct notifications and added a GitHub releases link to the menu.
