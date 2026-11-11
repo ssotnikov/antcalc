@@ -70,7 +70,15 @@ data class CalculatorSettings(
     val language: AppLanguage = AppLanguage.initial(),
 )
 
-data class CalculatorDraft(val fields: Map<FieldKey, NumericDraft>, val settings: CalculatorSettings = CalculatorSettings(), val matching: MatchingDraft = MatchingDraft(), val cable: CableDraft = CableDraft(), val invertedV: InvertedVDraft = InvertedVDraft(), val groundPlane: GroundPlaneDraft = GroundPlaneDraft()) {
+data class CalculatorDraft(
+    val fields: Map<FieldKey, NumericDraft>,
+    val settings: CalculatorSettings = CalculatorSettings(),
+    val matching: MatchingDraft = MatchingDraft(),
+    val cable: CableDraft = CableDraft(),
+    val invertedV: InvertedVDraft = InvertedVDraft(),
+    val groundPlane: GroundPlaneDraft = GroundPlaneDraft(),
+    val feedline: FeedlineDraft = FeedlineDraft(),
+) {
     operator fun get(key: FieldKey): NumericDraft = fields.getValue(key)
     fun update(key: FieldKey, field: NumericDraft) = copy(fields = fields + (key to field))
     fun edit(key: FieldKey, text: String): CalculatorDraft {
@@ -133,6 +141,7 @@ data class CalculatorUiState(
 
 sealed interface CalculatorEvent {
     data class Cable(val value: CableDraft) : CalculatorEvent
+    data class Feedline(val value: FeedlineDraft) : CalculatorEvent
     data class GroundPlane(val value: GroundPlaneDraft) : CalculatorEvent
     data class InvertedV(val value: InvertedVDraft) : CalculatorEvent
     data class Matching(val value: MatchingDraft) : CalculatorEvent

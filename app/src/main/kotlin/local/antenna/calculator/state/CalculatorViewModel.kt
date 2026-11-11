@@ -20,11 +20,13 @@ class CalculatorViewModel(
 ) : ViewModel() {
     private val restoredInvertedV = InvertedVDraftCodec.decode(savedState[InvertedVDraftCodec.KEY])
     private val restoredGroundPlane = GroundPlaneDraftCodec.decode(savedState[GroundPlaneDraftCodec.KEY])
+    private val restoredFeedline = FeedlineDraftCodec.decode(savedState[FeedlineDraftCodec.KEY])
     private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])?.copy(
         matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft(),
         cable = CableDraftCodec.decode(savedState[CableDraftCodec.KEY]) ?: CableDraft(),
         invertedV = restoredInvertedV ?: InvertedVDraft(),
         groundPlane = restoredGroundPlane ?: GroundPlaneDraft(),
+        feedline = restoredFeedline ?: FeedlineDraft(),
     )
     private val mutableState = MutableStateFlow(CalculatorUiState(draft = restoredDraft ?: CalculatorDraft.defaults()))
     val state: StateFlow<CalculatorUiState> = mutableState.asStateFlow()
@@ -64,6 +66,7 @@ class CalculatorViewModel(
             is CalculatorEvent.Settings -> draft.copy(settings = event.value)
             is CalculatorEvent.Matching -> draft.copy(matching = event.value)
             is CalculatorEvent.Cable -> draft.copy(cable = event.value)
+            is CalculatorEvent.Feedline -> draft.copy(feedline = event.value)
             is CalculatorEvent.GroundPlane -> draft.copy(groundPlane = event.value)
             is CalculatorEvent.InvertedV -> draft.copy(invertedV = event.value)
             else -> return
@@ -84,6 +87,7 @@ class CalculatorViewModel(
         savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(draft.cable)
         savedState[InvertedVDraftCodec.KEY] = InvertedVDraftCodec.encode(draft.invertedV)
         savedState[GroundPlaneDraftCodec.KEY] = GroundPlaneDraftCodec.encode(draft.groundPlane)
+        savedState[FeedlineDraftCodec.KEY] = FeedlineDraftCodec.encode(draft.feedline)
     }
 
     private fun load(initial: Boolean) {
@@ -98,6 +102,7 @@ class CalculatorViewModel(
                     restoredDraft?.copy(
                         invertedV = restoredInvertedV ?: stored.invertedV,
                         groundPlane = restoredGroundPlane ?: stored.groundPlane,
+                        feedline = restoredFeedline ?: stored.feedline,
                     ) ?: stored.toDraft()
                 } else state.value.draft
                 mutableState.value = state.value.copy(loading = false, storageIssue = null)

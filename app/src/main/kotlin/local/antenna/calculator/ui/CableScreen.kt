@@ -31,6 +31,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.feedline.*
 import local.antenna.calculator.core.input.*
 import local.antenna.calculator.core.units.*
+import local.antenna.calculator.data.CableCatalog
 import local.antenna.calculator.state.*
 import java.math.BigDecimal
 import java.text.NumberFormat
@@ -57,7 +58,8 @@ internal fun cableRows(context: Context, draft: CableDraft, result: CableResult)
     R.string.cable_delay to context.getString(R.string.cable_ns, cableNumber(context, result.delayNanoseconds)),
 )
 internal fun cableCopy(context: Context, draft: CableDraft): String? {
-    val result = draft.result() ?: return null
+    val profile = if (draft.profileId == null) null else CableCatalog.read(context).profile(draft.profileId)
+    val result = draft.result(profile?.velocity) ?: return null
     return buildString {
         appendLine(context.getString(R.string.cable_title))
         appendLine(context.getString(draft.mode.label()))
@@ -67,10 +69,20 @@ internal fun cableCopy(context: Context, draft: CableDraft): String? {
                 CableField.LENGTH -> " " + context.getString(draft.lengthUnit.labelResource())
                 else -> ""
             }
-            appendLine("${context.getString(field.label())}: ${draft.fields.getValue(field)}$unit")
+            val text = if (field == CableField.VELOCITY && profile?.velocity != null)
+                cableNumber(context, BigDecimal.valueOf(profile.velocity.tenThousandths.toLong(), 4), 4)
+            else draft.fields.getValue(field)
+            appendLine("${context.getString(field.label())}: $text$unit")
         }
         cableRows(context, draft, result).forEach { appendLine("${context.getString(it.first)}: ${it.second}") }
-        appendLine(context.getString(R.string.cable_vf_source))
+        if (profile == null) {
+            appendLine(context.getString(R.string.cable_vf_source))
+        } else {
+            appendLine(profile.name)
+            appendLine(context.getString(R.string.feedline_verified, profile.verified))
+            if (profile.reciprocalVelocity) appendLine(context.getString(R.string.feedline_vf_reciprocal))
+            appendLine(profile.source)
+        }
         append(context.getString(R.string.cable_model))
     }
 }
@@ -78,8 +90,10 @@ internal fun cableCopy(context: Context, draft: CableDraft): String? {
 @Composable
 internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, currentState: () -> CalculatorUiState, onCopied: () -> Unit) {
     val draft = state.draft.cable
-    val result = draft.result()
     val context = LocalContext.current
+    val catalog = remember(context) { CableCatalog.read(context) }
+    val profile = catalog.profile(draft.profileId)
+    val result = draft.result(profile?.velocity)
     val appName = stringResource(R.string.app_name)
     val focus = LocalFocusManager.current
     var details by rememberSaveable { mutableStateOf(false) }
@@ -89,7 +103,26 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
         StorageNotice(state, onEvent)
         ChoicePicker(stringResource(R.string.cable_direction), CableMode.entries, draft.mode, { stringResource(it.label()) },
             { focus.clearFocus(); change(currentState().draft.cable.copy(mode = it)) }, "cable-mode")
+        CableCatalogPicker(stringResource(R.string.feedline_model),
+            profile?.name ?: stringResource(if (draft.profileId == null) R.string.feedline_manual else R.string.feedline_unknown),
+            catalog.profiles.filter { it.velocity != null }, state.editingEnabled, "cable-profile", includeManual = true) {
+            focus.clearFocus()
+            change(currentState().draft.cable.copy(profileId = it?.id))
+        }
         draft.active.forEach { key ->
+            if (key == CableField.VELOCITY && draft.profileId != null) {
+                val velocity = profile?.velocity
+                if (velocity == null) {
+                    HelpText(R.string.feedline_unknown)
+                } else {
+                    Text(stringResource(R.string.feedline_vf) + " · " +
+                        cableNumber(context, BigDecimal.valueOf(velocity.tenThousandths.toLong(), 4), 4),
+                        modifier = Modifier.testTag("cable-profile-vf"))
+                    if (profile.reciprocalVelocity) HelpText(R.string.feedline_vf_reciprocal)
+                    CableProfileSource(profile)
+                }
+                return@forEach
+            }
             val parsed = draft.number(key)
             val visible = parsed is FieldState.Invalid || parsed !is FieldState.Valid && key in draft.checked
             val multiplier = BigDecimal.valueOf(cableMultiplier(key, draft.frequencyValidationUnit, draft.lengthValidationUnit))

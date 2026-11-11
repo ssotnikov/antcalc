@@ -15,21 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.JournalLimits
+import local.antenna.calculator.data.CableCatalog
 
 internal enum class JournalSuggestion(val label: Int, val example: Int, val tag: String, val options: List<Int>) {
     INSTALLATION(R.string.journal_installation, R.string.journal_example_installation, "journal-installation", listOf(
         R.string.journal_setup_mast, R.string.journal_setup_roof, R.string.journal_setup_balcony,
         R.string.journal_setup_attic, R.string.journal_setup_field, R.string.journal_setup_trees,
     )),
-    FEEDLINE(R.string.journal_feedline, R.string.journal_example_feedline, "journal-feedline", listOf(
-        R.string.journal_feed_rg58, R.string.journal_feed_rg8x, R.string.journal_feed_rg213,
-        R.string.journal_feed_lmr240, R.string.journal_feed_lmr400, R.string.journal_feed_ladder,
-    )),
+    FEEDLINE(R.string.journal_feedline, R.string.journal_example_feedline, "journal-feedline", emptyList()),
 }
 
 @Composable
@@ -39,7 +39,11 @@ internal fun JournalSuggestionField(
     enabled: Boolean,
 ) {
     var focused by remember { mutableStateOf(false) }
-    val options = field.options.map { stringResource(it) }
+    val context = LocalContext.current
+    val options = if (field == JournalSuggestion.FEEDLINE) {
+        val russian = LocalConfiguration.current.locales[0].language == "ru"
+        CableCatalog.read(context).suggestions.map { if (russian) it.russian else it.english }
+    } else field.options.map { stringResource(it) }
     val query = state.text.toString().trimStart()
     val suggestions = if (focused && enabled && options.none { it.equals(query, ignoreCase = true) }) {
         options.filter { it.startsWith(query, ignoreCase = true) }

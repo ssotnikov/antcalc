@@ -16,12 +16,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.matching.matchingFromSwr
-
-private data class CableReference(val name: String, val impedance: Int, val velocityFactor: Double)
-private val cables = listOf(
-    CableReference("RG-58 C/U", 50, .66), CableReference("RG-213", 50, .66), CableReference("LMR-400", 50, .85),
-    CableReference("RG-6", 75, .82), CableReference("RG-11", 75, .82), CableReference("РК 50-2-11", 50, .66),
-)
+import local.antenna.calculator.data.CableCatalog
 
 @Composable
 internal fun SmithReferencePanels(palette: SmithPalette, format: (Double) -> String) {
@@ -68,7 +63,9 @@ internal fun SmithReferencePanels(palette: SmithPalette, format: (Double) -> Str
             Spacer(Modifier.height(5.dp))
             SmithHeading(R.string.smith_table_cables)
             SmithTableRow(listOf(stringResource(R.string.smith_cable), stringResource(R.string.smith_table_z0), "VF"), header = true)
-            for (cable in cables) SmithTableRow(listOf(cable.name, cable.impedance.toString(), matchingNumber(context, cable.velocityFactor, 2)))
+            for (cable in CableCatalog.read(context).references) {
+                SmithTableRow(listOf(cable.name, cable.impedance.toString(), matchingNumber(context, cable.velocityFactor, 2)))
+            }
             SmithHint(R.string.smith_vf_note)
         }
     }

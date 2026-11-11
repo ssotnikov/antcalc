@@ -22,6 +22,7 @@ internal fun ToolsScreen(
     onOpenInvertedV: () -> Unit,
     onOpenGroundPlane: () -> Unit,
     onOpenJournal: (() -> Unit)? = null,
+    onOpenFeedline: (() -> Unit)? = null,
 ) {
     val scroll = rememberScrollState()
     Box(Modifier.widthIn(max = 680.dp).fillMaxSize().testTag("tools-viewport")) {
@@ -32,6 +33,7 @@ internal fun ToolsScreen(
             ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
             ToolCard(R.string.smith_title, R.string.smith_description, "open-smith-chart", onOpenSmithChart)
             ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
+            if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV)
             ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane)
         }

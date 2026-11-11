@@ -95,7 +95,6 @@
     <string name="journal_comparison_missing">No value</string>
     <string name="journal_report_project">Project</string>
     <string name="journal_project_actions">Project actions</string>
-    <string name="journal_feed_ladder">450 Ω ladder line</string>
     <string name="journal_setup_mast">On a mast</string>
     <string name="journal_setup_roof">On a roof</string>
     <string name="journal_setup_balcony">On a balcony</string>
@@ -106,11 +105,6 @@
     <string name="project_transfer_search">Project name or frequency</string>
     <string name="project_transfer_no_match">No projects match your search.</string>
     <string name="project_transfer_no_frequency">Frequency not set</string>
-    <string name="journal_feed_rg58" translatable="false">RG-58</string>
-    <string name="journal_feed_rg8x" translatable="false">RG-8X</string>
-    <string name="journal_feed_rg213" translatable="false">RG-213</string>
-    <string name="journal_feed_lmr240" translatable="false">LMR-240</string>
-    <string name="journal_feed_lmr400" translatable="false">LMR-400</string>
     <string name="journal_project_name">Project name</string>
     <string name="journal_example_name">Portable dipole</string>
     <string name="journal_example_target">145.5</string>

@@ -18,6 +18,7 @@ data class CableDraft(
     val frequencyValidationUnit: FrequencyUnit = frequencyUnit,
     val lengthValidationUnit: LengthUnit = lengthUnit,
     val checked: Set<CableField> = emptySet(),
+    val profileId: String? = null,
 ) {
     val active: List<CableField> get() = listOf(CableField.FREQUENCY, CableField.VELOCITY,
         if (mode == CableMode.ANGLE_TO_LENGTH) CableField.ANGLE else CableField.LENGTH)
@@ -42,9 +43,10 @@ data class CableDraft(
         fields = CableField.entries.associateWith { field -> text(field, value(field) ?: previous.value(field)!!) },
         frequencyValidationUnit = frequencyUnit, lengthValidationUnit = lengthUnit, checked = emptySet(),
     )
-    fun result(): CableResult? {
+    fun result(profileVelocity: VelocityFactor? = null): CableResult? {
         val frequency = Frequency.ofHertz(value(CableField.FREQUENCY) ?: return null)
-        val vf = VelocityFactor.ofTenThousandths((value(CableField.VELOCITY) ?: return null).toInt())
+        val vf = if (profileId == null) VelocityFactor.ofTenThousandths((value(CableField.VELOCITY) ?: return null).toInt())
+            else profileVelocity ?: return null
         return when (mode) {
             CableMode.ANGLE_TO_LENGTH -> cableFromAngle(frequency, vf, value(CableField.ANGLE) ?: return null)
             CableMode.LENGTH_TO_ANGLE -> {
@@ -61,12 +63,14 @@ object CableDraftCodec {
     fun encode(draft: CableDraft): ArrayList<String> = arrayListOf(draft.mode.name, draft.frequencyUnit.name, draft.lengthUnit.name,
         draft.frequencyValidationUnit.name, draft.lengthValidationUnit.name).apply {
         fields.forEach { add(boundedCableText(draft.fields.getValue(it))); add((it in draft.checked).toString()) }
+        add(draft.profileId.orEmpty())
     }
     fun decode(values: ArrayList<String>?): CableDraft? = try {
-        if (values == null || values.size != 13) null else CableDraft(
+        if (values == null || values.size !in 13..14) null else CableDraft(
             CableMode.valueOf(values[0]), fields.mapIndexed { i, f -> f to boundedCableText(values[5 + i * 2]) }.toMap(),
             FrequencyUnit.valueOf(values[1]), LengthUnit.valueOf(values[2]), FrequencyUnit.valueOf(values[3]), LengthUnit.valueOf(values[4]),
             fields.filterIndexed { i, _ -> values[6 + i * 2].toBooleanStrict() }.toSet(),
+            values.getOrNull(13)?.ifEmpty { null }?.also { require(it.matches(Regex("[a-z0-9-]{1,48}"))) },
         )
     } catch (_: IllegalArgumentException) { null }
 }

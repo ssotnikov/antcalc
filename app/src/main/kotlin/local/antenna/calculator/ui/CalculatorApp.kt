@@ -32,7 +32,7 @@ import local.antenna.calculator.journal.groundPlaneSnapshot
 import local.antenna.calculator.state.*
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -174,6 +174,7 @@ private fun LocalizedCalculatorApp(
             Page.MATCHING -> R.string.matching_title
             Page.SMITH_CHART -> R.string.smith_title
             Page.CABLE -> R.string.cable_screen_title
+            Page.FEEDLINE -> R.string.feedline_title
             Page.INVERTED_V -> R.string.inverted_v_title
             Page.GROUND_PLANE -> R.string.ground_plane_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
@@ -233,7 +234,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -273,6 +274,7 @@ private fun LocalizedCalculatorApp(
                         SmithChartScreen { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
                     Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    Page.FEEDLINE -> FeedlineScreen(state, currentState, onEvent) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     Page.INVERTED_V -> screenStates.SaveableStateProvider("inverted-v") {
                         val chooseProject = if (journal != null) ::openInvertedVTransfer else null
                         InvertedVScreen(state, onEvent, currentState, chooseProject) { message ->
@@ -330,6 +332,7 @@ private fun LocalizedCalculatorApp(
                                     onOpenSmithChart = { leaveInput(); page = Page.SMITH_CHART },
                                     onOpenMatching = { leaveInput(); page = Page.MATCHING },
                                     onOpenCable = { leaveInput(); page = Page.CABLE },
+                                    onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
                                     onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
                                     onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
                                     onOpenJournal = journal?.let { { leaveInput(); linkedProjectId = null; journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },

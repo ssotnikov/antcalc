@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedline_title">Feedline loss</string>
+    <string name="feedline_intro">Estimate cable attenuation and how much power reaches the far end.</string>
+    <string name="feedline_inputs">Inputs</string>
+    <string name="feedline_method">Attenuation source</string>
+    <string name="feedline_datasheet">Datasheet</string>
+    <string name="feedline_manual">Manual</string>
+    <string name="feedline_model">Cable model</string>
+    <string name="feedline_frequency">Operating frequency, %1$s</string>
+    <string name="feedline_attenuation">Attenuation</string>
+    <string name="feedline_attenuation_unit">Attenuation unit</string>
+    <string name="feedline_per_metres">dB/100 m</string>
+    <string name="feedline_per_feet">dB/100 ft</string>
+    <string name="feedline_length">Cable length, m</string>
+    <string name="feedline_power">Incident power, W (optional)</string>
+    <string name="feedline_result">Result</string>
+    <string name="feedline_loss">Cable attenuation</string>
+    <string name="feedline_transmitted">Power delivered to the far end</string>
+    <string name="feedline_output">Output power</string>
+    <string name="feedline_lost">Power lost in the cable</string>
+    <string name="feedline_watts">%1$s W</string>
+    <string name="feedline_matched_temperature">Datasheet conditions: 1:1 SWR, +25 °C.</string>
+    <string name="feedline_nominal">Nominal attenuation from the datasheet.</string>
+    <string name="feedline_frequencies">Datasheet frequencies</string>
+    <string name="feedline_missing_frequency">This frequency is absent from the datasheet. Enter attenuation manually.</string>
+    <string name="feedline_confirm_frequency">The frequency changed. Check the attenuation at the new frequency.</string>
+    <string name="feedline_confirm_attenuation">Confirm attenuation</string>
+    <string name="feedline_unknown">Cable profile unavailable. Select another model or enter values manually.</string>
+    <string name="feedline_source">Datasheet · %1$s</string>
+    <string name="feedline_verified">Source checked on %1$s</string>
+    <string name="feedline_frequency_error">Enter a frequency from 100 kHz to 6 GHz in 1 Hz steps.</string>
+    <string name="feedline_attenuation_error">Enter an attenuation from 0 to 1000.</string>
+    <string name="feedline_length_error">Enter a length from 0 to 10,000 m.</string>
+    <string name="feedline_power_error">Enter power from 0 to 100,000 W or leave it blank.</string>
+    <string name="feedline_pending">The result appears when the input is complete.</string>
+    <string name="feedline_formula_help">A is the loss in dB, α the loss for reference length L₀, and T the fraction of power delivered. 100 feet is exactly 30.48 m.</string>
+    <string name="feedline_limits">Matched line model. Connector losses and mismatch are excluded. The result does not determine the cable power rating.</string>
+    <string name="feedline_vf">Datasheet velocity factor</string>
+    <string name="feedline_vf_reciprocal">VF is calculated as the reciprocal of the published shortening ratio.</string>
+</resources>

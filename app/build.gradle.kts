@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+apply(from = "cable-catalog-validation.gradle.kts")
+
 val distributionChannel = providers.gradleProperty("distributionChannel").orElse("store").get()
 require(distributionChannel in setOf("store", "github-direct")) { "Unsupported distribution channel" }
 val githubDirect = distributionChannel == "github-direct"
@@ -18,8 +20,8 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 65
-        versionName = "1.7.5"
+        versionCode = 66
+        versionName = "1.8.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

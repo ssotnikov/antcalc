@@ -24,6 +24,16 @@ remains 37.
 контрольную сумму, подпись и SHA исходников. Воспроизводимость указывайте
 по отдельному отчёту независимой пересборки именно этого APK.
 
+Кабельный каталог хранится в `app/src/main/res/raw/cable_catalog.json`.
+Задача `:app:validateCableCatalog` выполняется при каждой сборке APK и проверяет
+структуру, диапазоны, уникальность, допустимые символы и адреса источников.
+Обновление каталога поставляется вместе с новой сборкой.
+
+The offline cable catalog lives in `app/src/main/res/raw/cable_catalog.json`.
+Every APK build runs `:app:validateCableCatalog` before packaging the resource.
+The validator checks the schema, bounds, unique entries, plain text labels
+and approved datasheet addresses.
+
 For a release published from a local production build, record the hash,
 signature and source SHA. Record reproducibility separately, based on an
 independent rebuild report for that exact APK.

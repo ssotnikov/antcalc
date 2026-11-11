@@ -33,8 +33,12 @@ import org.junit.Test
 class UpdateMenuTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
     private val language = mutableStateOf(AppLanguage.RUSSIAN)
+    private fun futureVersion(patches: Int): String =
+        BuildConfig.VERSION_NAME.substringBeforeLast('.') + "." +
+            (BuildConfig.VERSION_NAME.substringAfterLast('.').toInt() + patches)
+
     private val installedUpdate = UpdateRelease(
-        "1.7.6", 66, 26, 512, "a".repeat(64),
+        futureVersion(1), BuildConfig.VERSION_CODE.toLong() + 1, 26, 512, "a".repeat(64),
         UpdateReleaseNotes("- Исправлено окно обновления", "- Improved update dialog"),
     )
 
@@ -128,7 +132,7 @@ class UpdateMenuTest {
         compose.onNodeWithTag("update-cancel").performClick()
         compose.waitUntil(5000) { reopened.state.value == UpdateUiState.Idle }
 
-        val newer = installedUpdate.copy(versionName = "1.7.7", versionCode = 67)
+        val newer = installedUpdate.copy(versionName = futureVersion(2), versionCode = installedUpdate.versionCode + 1)
         val newerModel = model(prefs) { UpdateCheck.Available(newer) }
         compose.runOnIdle { active.value = newerModel }
         waitForOffer()

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feedline_title">Потери в фидере</string>
+    <string name="feedline_intro">Оцените затухание кабеля и мощность на его выходе.</string>
+    <string name="feedline_inputs">Исходные данные</string>
+    <string name="feedline_method">Источник затухания</string>
+    <string name="feedline_datasheet">По паспорту</string>
+    <string name="feedline_manual">Вручную</string>
+    <string name="feedline_model">Модель кабеля</string>
+    <string name="feedline_frequency">Рабочая частота, %1$s</string>
+    <string name="feedline_attenuation">Затухание</string>
+    <string name="feedline_attenuation_unit">Единица затухания</string>
+    <string name="feedline_per_metres">дБ/100 м</string>
+    <string name="feedline_per_feet">дБ/100 футов</string>
+    <string name="feedline_length">Длина кабеля, м</string>
+    <string name="feedline_power">Падающая мощность, Вт (необязательно)</string>
+    <string name="feedline_result">Результат</string>
+    <string name="feedline_loss">Затухание отрезка</string>
+    <string name="feedline_transmitted">Доля мощности на выходе</string>
+    <string name="feedline_output">Мощность на выходе</string>
+    <string name="feedline_lost">Потери мощности в кабеле</string>
+    <string name="feedline_watts">%1$s Вт</string>
+    <string name="feedline_matched_temperature">Условия по паспорту: КСВ 1:1, +25 °C.</string>
+    <string name="feedline_nominal">Номинальное затухание по паспорту.</string>
+    <string name="feedline_frequencies">Паспортные частоты</string>
+    <string name="feedline_missing_frequency">В паспорте нет точки для этой частоты. Введите затухание вручную.</string>
+    <string name="feedline_confirm_frequency">Частота изменилась. Сверьте затухание на новой частоте.</string>
+    <string name="feedline_confirm_attenuation">Подтвердить затухание</string>
+    <string name="feedline_unknown">Профиль кабеля недоступен. Выберите другую модель или введите данные вручную.</string>
+    <string name="feedline_source">Источник данных · %1$s</string>
+    <string name="feedline_verified">Источник проверен %1$s</string>
+    <string name="feedline_frequency_error">Введите частоту от 100 кГц до 6 ГГц с шагом 1 Гц.</string>
+    <string name="feedline_attenuation_error">Введите затухание от 0 до 1000.</string>
+    <string name="feedline_length_error">Введите длину от 0 до 10 000 м.</string>
+    <string name="feedline_power_error">Введите мощность от 0 до 100 000 Вт или оставьте поле пустым.</string>
+    <string name="feedline_pending">Результат появится после заполнения исходных данных.</string>
+    <string name="feedline_formula_help">A — затухание в дБ, α — затухание на опорной длине L₀, T — доля мощности на выходе. 100 футов равны ровно 30,48 м.</string>
+    <string name="feedline_limits">Модель согласованной линии. Потери в разъёмах и рассогласование не учитываются. Расчёт не определяет допустимую мощность кабеля.</string>
+    <string name="feedline_vf">Коэффициент скорости по паспорту</string>
+    <string name="feedline_vf_reciprocal">VF вычислен как величина, обратная паспортному коэффициенту укорочения.</string>
+</resources>

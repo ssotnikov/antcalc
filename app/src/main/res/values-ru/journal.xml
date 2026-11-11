@@ -95,7 +95,6 @@
     <string name="journal_comparison_missing">Нет значения</string>
     <string name="journal_report_project">Проект</string>
     <string name="journal_project_actions">Действия с проектом</string>
-    <string name="journal_feed_ladder">Симметричная линия 450 Ом</string>
     <string name="journal_setup_mast">На мачте</string>
     <string name="journal_setup_roof">На крыше</string>
     <string name="journal_setup_balcony">На балконе</string>

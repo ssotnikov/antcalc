@@ -18,6 +18,9 @@ internal const val RADIOLAB_CABLES_URL = "https://radiolab.ru/ru/5/1188382333/"
 private val directReleaseAddress = Regex(
     """https://github\.com/ssotnikov/antcalc/releases/tag/github-direct-v[0-9]{1,9}\.[0-9]{1,9}\.[0-9]{1,9}""",
 )
+private val cableDatasheetAddress = Regex(
+    """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
+)
 private val additionalSourceAddresses = setOf(
     "https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/",
     "https://www.rlocman.ru/shem/schematics.html?di=4982",
@@ -67,7 +70,8 @@ internal fun validatedSourceAddress(address: String): String? {
     val url = uri.toASCIIString()
     return when (url) {
         BUG_REPORT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
-        else -> url.takeIf { it in additionalSourceAddresses || directReleaseAddress.matches(it) || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
+        else -> url.takeIf { it in additionalSourceAddresses || directReleaseAddress.matches(it) ||
+            cableDatasheetAddress.matches(it) || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
     }
 }
 

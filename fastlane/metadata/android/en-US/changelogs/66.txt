@@ -1,0 +1,1 @@
+Estimate feedline attenuation and delivered power from six cable datasheets or manual input. Cable tools, the Smith chart reference and journal suggestions now use a shared offline catalog. GitHub Direct shows release notes before downloading an update.
