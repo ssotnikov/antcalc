@@ -23,6 +23,7 @@ internal fun ToolsScreen(
     onOpenGroundPlane: () -> Unit,
     onOpenJournal: (() -> Unit)? = null,
     onOpenFeedline: (() -> Unit)? = null,
+    onOpenAdditional: (() -> Unit)? = null,
 ) {
     val scroll = rememberScrollState()
     Box(Modifier.widthIn(max = 680.dp).fillMaxSize().testTag("tools-viewport")) {
@@ -36,7 +37,19 @@ internal fun ToolsScreen(
             if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV)
             ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane)
+            if (onOpenAdditional != null) ToolCard(R.string.additional_tools, R.string.sweep_tool_title, "open-additional-tools", onOpenAdditional)
         }
+    }
+}
+
+@Composable
+internal fun AdditionalToolsScreen(onOpenMeasurements: () -> Unit) {
+    val scroll = rememberScrollState()
+    Column(
+        Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
+            .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
+    ) {
+        ToolCard(R.string.sweep_tool_title, R.string.sweep_tool_description, "open-measurements", onOpenMeasurements)
     }
 }
 

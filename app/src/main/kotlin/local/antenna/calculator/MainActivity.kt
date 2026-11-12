@@ -19,6 +19,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import local.antenna.calculator.journal.JournalViewModel
+import local.antenna.calculator.measurements.MeasurementViewModel
 import local.antenna.calculator.state.*
 import local.antenna.calculator.ui.CalculatorApp
 
@@ -34,6 +35,9 @@ class MainActivity : ComponentActivity() {
         val journal = ViewModelProvider(this, viewModelFactory {
             initializer { JournalViewModel(container.projectsRepository) }
         })[JournalViewModel::class.java]
+        val measurements = ViewModelProvider(this, viewModelFactory {
+            initializer { MeasurementViewModel(container.measurementStorage) }
+        })[MeasurementViewModel::class.java]
         splash.setKeepOnScreenCondition { calculator.state.value.loading }
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
@@ -57,7 +61,7 @@ class MainActivity : ComponentActivity() {
                 LocalActivity provides this@MainActivity,
                 LocalActivityResultRegistryOwner provides this@MainActivity,
             ) {
-                CalculatorApp(state, calculator::onEvent, journal) { calculator.state.value }
+                CalculatorApp(state, calculator::onEvent, journal, measurements) { calculator.state.value }
             }
         }
     }

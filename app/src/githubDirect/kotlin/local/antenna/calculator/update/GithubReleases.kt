@@ -19,6 +19,7 @@ private const val PAGE_BYTES = 2 * 1024 * 1024
 private const val MANIFEST_BYTES = 64 * 1024
 private const val MAX_APK_BYTES = 64L * 1024 * 1024
 private const val MAX_PAGES = 3
+private val LOCAL_BETA = Regex("beta\\.[1-9][0-9]{0,8}")
 private val VERSION = Regex("(0|[1-9][0-9]{0,8})\\.(0|[1-9][0-9]{0,8})\\.(0|[1-9][0-9]{0,8})")
 private val SHA256 = Regex("[a-f0-9]{64}")
 
@@ -158,7 +159,17 @@ internal class GithubReleases(
     private val sdk: Int,
     private val clock: () -> Long,
 ) {
-    init { require(VERSION.matches(versionName)) }
+    private val installedStableVersion = versionName.substringBefore('-')
+
+    init {
+        require(VERSION.matches(installedStableVersion))
+        require(versionName == installedStableVersion || versionName.substringAfter('-').matches(LOCAL_BETA))
+    }
+
+    private fun compareToInstalled(stable: String): Int =
+        compareVersions(stable, installedStableVersion).let { comparison ->
+            if (comparison == 0 && versionName != installedStableVersion) 1 else comparison
+        }
 
     fun fetch(previous: UpdateCatalog?): UpdateCatalog {
         val first = request("$RELEASES?per_page=30&page=1", previous?.etag, PAGE_BYTES)
@@ -204,7 +215,7 @@ internal class GithubReleases(
         if (response.status != 200) throw IOException("Latest release has no update manifest")
         val candidate = UpdateRelease.parse(JSONObject(response.body))
             ?: throw IOException("Invalid latest update manifest")
-        val comparison = compareVersions(candidate.versionName, versionName)
+        val comparison = compareToInstalled(candidate.versionName)
         if (comparison <= 0 && candidate.versionCode <= versionCode) return UpdateCatalog(null, null)
         if (comparison <= 0 || candidate.versionCode <= versionCode || candidate.minSdk > sdk) {
             throw IOException("Could not establish a compatible latest update")
@@ -234,7 +245,7 @@ internal class GithubReleases(
         val tag = release.opt("tag_name") as? String ?: return null
         if (!tag.startsWith(TAG_PREFIX)) return null
         val name = tag.removePrefix(TAG_PREFIX)
-        if (!VERSION.matches(name) || compareVersions(name, versionName) <= 0) return null
+        if (!VERSION.matches(name) || compareToInstalled(name) <= 0) return null
 
         val assets = release.optJSONArray("assets") ?: return null
         val manifest = asset(assets, tag, MANIFEST) ?: return null

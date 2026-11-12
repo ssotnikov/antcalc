@@ -145,6 +145,7 @@ internal object JournalJson {
         "id" to p.id.toString(), "title" to p.title, "antennaType" to p.antennaType.name,
         "targetHz" to p.target?.hertz, "initialLengthNm" to p.initialLength?.nanometers, "note" to p.note,
         "installation" to p.installation, "feedline" to p.feedline, "records" to array(p.records, ::encodeRecord),
+        "sweeps" to p.sweeps.takeIf { it.isNotEmpty() }?.let { array(it, ::encodeSweep) },
     )
 
     private fun decodeProject(o: JsonObject) = AntennaProject(
@@ -152,7 +153,20 @@ internal object JournalJson {
         target = o.frequency("targetHz"), initialLength = o.length("initialLengthNm"),
         note = o.string("note"), installation = o.string("installation"), feedline = o.string("feedline"),
         records = o.list("records", JournalLimits.RECORDS, ::decodeRecord),
+        sweeps = o.optionalList("sweeps", JournalLimits.RECORDS, ::decodeSweep).orEmpty(),
     )
+
+    private fun encodeSweep(sweep: SweepComparison) = json("traces" to array(sweep.traces) { ref ->
+        json("id" to ref.id, "name" to ref.name, "plane" to ref.plane, "referenceOhms" to ref.referenceOhms,
+            "points" to ref.points, "firstHz" to ref.firstHz, "lastHz" to ref.lastHz)
+    })
+
+    private fun decodeSweep(o: JsonObject) = SweepComparison(o.list("traces", 2) { ref ->
+        SweepAttachment(ref.string("id"), ref.string("name"), ref.string("plane"),
+            ref.optionalDouble("referenceOhms") ?: invalid(),
+            ref.long("points").also { require(it in 1..20_000) }.toInt(),
+            ref.optionalDouble("firstHz") ?: invalid(), ref.optionalDouble("lastHz") ?: invalid())
+    })
 
     private fun encodeRecord(r: JournalRecord) = json(
         "id" to r.id.toString(), "title" to r.title, "time" to r.time.toString(), "antennaType" to r.antennaType.name,
@@ -219,6 +233,9 @@ internal object JournalJson {
             if (values.size > limit) throw JournalException(JournalProblem.LIMIT)
             return values.map { it as? String ?: invalid() }
         }
+
+        fun <T> optionalList(key: String, limit: Int, parse: (JsonObject) -> T): List<T>? =
+            if (key in fields) list(key, limit, parse) else null
 
         fun <T> list(key: String, limit: Int, parse: (JsonObject) -> T): List<T> {
             val values = fields[key] as? List<*> ?: invalid()

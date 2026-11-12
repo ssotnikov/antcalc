@@ -30,9 +30,11 @@ import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.journal.invertedVSnapshot
 import local.antenna.calculator.journal.groundPlaneSnapshot
 import local.antenna.calculator.state.*
+import local.antenna.calculator.measurements.MeasurementScreen
+import local.antenna.calculator.measurements.MeasurementViewModel
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ADDITIONAL_TOOLS, MEASUREMENTS }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +42,7 @@ internal fun CalculatorApp(
     state: CalculatorUiState,
     onEvent: (CalculatorEvent) -> Unit,
     journal: JournalViewModel? = null,
+    measurements: MeasurementViewModel? = null,
     currentState: () -> CalculatorUiState,
 ) {
     if (state.loading) {
@@ -47,7 +50,7 @@ internal fun CalculatorApp(
         return
     }
     LocalizedContent(state.draft.settings.language) {
-        LocalizedCalculatorApp(state, onEvent, journal, currentState)
+        LocalizedCalculatorApp(state, onEvent, journal, measurements, currentState)
     }
 }
 
@@ -57,11 +60,13 @@ private fun LocalizedCalculatorApp(
     state: CalculatorUiState,
     onEvent: (CalculatorEvent) -> Unit,
     journal: JournalViewModel?,
+    measurements: MeasurementViewModel?,
     currentState: () -> CalculatorUiState,
 ) {
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menu by remember { mutableStateOf(false) }
+    var fromJournal by rememberSaveable { mutableStateOf(false) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
@@ -95,6 +100,8 @@ private fun LocalizedCalculatorApp(
         leaveInput()
         when (page) {
             Page.REFERENCES -> page = referencesBackPage
+            Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
+            Page.MEASUREMENTS -> page = if (fromJournal) Page.JOURNAL else Page.ADDITIONAL_TOOLS
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
             Page.TRANSFER_PICKER -> if (pending?.needsAntennaChoice == true) page = Page.TRANSFER_TYPE else finishTransfer()
             Page.TRANSFER_TYPE -> finishTransfer()
@@ -163,11 +170,14 @@ private fun LocalizedCalculatorApp(
         val calculation = pending
         if (calculation != null && savedTransfer != null) transferSaved(calculation, savedTransfer.id)
     }
+    LaunchedEffect(page) { if (page != Page.MEASUREMENTS) measurements?.cancelImport() }
     BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
         val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
         val title = when (page) {
+            Page.ADDITIONAL_TOOLS -> R.string.additional_tools
+            Page.MEASUREMENTS -> R.string.sweep_title
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
             Page.REFERENCES -> R.string.references_title
@@ -234,7 +244,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -266,6 +276,16 @@ private fun LocalizedCalculatorApp(
             Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).then(gestures)
                 .testTag("page-content"), contentAlignment = Alignment.TopCenter) {
                 when (page) {
+                    Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
+                        AdditionalToolsScreen {
+                            fromJournal = false
+                            measurements?.showWorkspace()
+                            page = Page.MEASUREMENTS
+                        }
+                    }
+                    Page.MEASUREMENTS -> if (measurements != null) screenStates.SaveableStateProvider("measurements") {
+                        MeasurementScreen(measurements, journal) { message -> scope.launch { snackbar.showSnackbar(message) } }
+                    }
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
                     Page.ABOUT -> HelpScreen()
                     Page.REFERENCES -> ReferencesScreen(settings.language)
@@ -320,7 +340,15 @@ private fun LocalizedCalculatorApp(
                     Page.JOURNAL -> if (journal != null) {
                         screenStates.SaveableStateProvider(if (linkedProjectId == null) "journal" else "linked-journal") {
                             JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next },
-                                state, currentState, initialProjectId = linkedProjectId) { message ->
+                                state, currentState, initialProjectId = linkedProjectId,
+                                onOpenSweeps = measurements?.let { model ->
+                                    { sweep ->
+                                        fromJournal = true
+                                        page = Page.MEASUREMENTS
+                                        model.openAttachments(sweep.traces)
+                                    }
+                                },
+                            ) { message ->
                                 scope.launch { snackbar.showSnackbar(message) }
                             }
                         }
@@ -333,6 +361,7 @@ private fun LocalizedCalculatorApp(
                                     onOpenMatching = { leaveInput(); page = Page.MATCHING },
                                     onOpenCable = { leaveInput(); page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
+                                    onOpenAdditional = measurements?.let { { leaveInput(); page = Page.ADDITIONAL_TOOLS } },
                                     onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
                                     onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
                                     onOpenJournal = journal?.let { { leaveInput(); linkedProjectId = null; journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },

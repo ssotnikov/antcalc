@@ -66,6 +66,7 @@ internal fun JournalScreen(
     calculator: CalculatorUiState,
     currentCalculator: () -> CalculatorUiState,
     initialProjectId: String? = null,
+    onOpenSweeps: ((SweepComparison) -> Unit)? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -75,6 +76,7 @@ internal fun JournalScreen(
         save = { it }, restore = { it.toList() },
     )) { mutableStateOf(emptyList()) }
     var projectToDelete by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingSweepExport by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmRecordDeletion by rememberSaveable { mutableStateOf(false) }
     val project = state.projects.find { it.id.toString() == projectId }
     val record = project?.records?.find { it.id.toString() == recordId }
@@ -106,6 +108,32 @@ internal fun JournalScreen(
         if (uri == null) model.cancelExport() else model.writeExport(context.contentResolver, uri) { onMessage(exported) }
     }
 
+    fun export(target: AntennaProject) {
+        model.prepareExport(target) {
+            try {
+                createDocument.launch("antcalc-project.json")
+            } catch (_: ActivityNotFoundException) {
+                model.cancelExport()
+                model.filePickerUnavailable()
+            } catch (_: SecurityException) {
+                model.cancelExport()
+                model.filePickerUnavailable()
+            }
+        }
+    }
+
+    state.projects.find { it.id.toString() == pendingSweepExport }?.let { target ->
+        AlertDialog(
+            onDismissRequest = { pendingSweepExport = null },
+            title = { Text(stringResource(R.string.journal_export)) },
+            text = { Text(stringResource(R.string.sweep_export_notice)) },
+            confirmButton = {
+                TextButton(onClick = { pendingSweepExport = null; export(target) }) { Text(stringResource(R.string.journal_export)) }
+            },
+            dismissButton = { TextButton(onClick = { pendingSweepExport = null }) { Text(stringResource(R.string.sweep_cancel)) } },
+        )
+    }
+
     fun onProjectAction(target: AntennaProject, action: ProjectAction) {
         when (action) {
             ProjectAction.EDIT -> {
@@ -117,17 +145,8 @@ internal fun JournalScreen(
                 val shortTitle = target.title.take(105).trimEnd().dropLastWhile(Char::isHighSurrogate)
                 model.duplicate(target.id, resources.getString(R.string.journal_copy_name, shortTitle), ::openProject)
             }
-            ProjectAction.EXPORT -> model.prepareExport(target) {
-                try {
-                    createDocument.launch("antcalc-project.json")
-                } catch (_: ActivityNotFoundException) {
-                    model.cancelExport()
-                    model.filePickerUnavailable()
-                } catch (_: SecurityException) {
-                    model.cancelExport()
-                    model.filePickerUnavailable()
-                }
-            }
+            ProjectAction.EXPORT -> if (target.sweeps.isEmpty()) export(target)
+                else pendingSweepExport = target.id.toString()
             ProjectAction.DELETE -> projectToDelete = target.id.toString()
         }
     }
@@ -189,6 +208,8 @@ internal fun JournalScreen(
                     onAdd = { navigate(JournalPage.ADD_RECORD) },
                     onCompare = { navigate(JournalPage.COMPARE) },
                     onAction = { onProjectAction(project, it) },
+                    onOpenSweeps = onOpenSweeps,
+                    onRemoveSweeps = { model.removeSweeps(project.id, it) },
                 )
             } else MissingItem()
             JournalPage.ADD_RECORD -> if (project != null) {
@@ -337,6 +358,8 @@ private fun ProjectHistory(
     project: AntennaProject, presentation: JournalPresentation, picked: List<String>, enabled: Boolean,
     onPick: (UUID) -> Unit, onOpen: (UUID) -> Unit, onAdd: () -> Unit, onCompare: () -> Unit,
     onAction: (ProjectAction) -> Unit,
+    onOpenSweeps: ((SweepComparison) -> Unit)?,
+    onRemoveSweeps: (SweepComparison) -> Unit,
 ) {
     var actions by remember { mutableStateOf(false) }
     val records = remember(project.records) { project.records.sortedWith(journalChronology.reversed()) }
@@ -392,6 +415,33 @@ private fun ProjectHistory(
                     Text(stringResource(R.string.journal_selected, count), style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.secondary)
                     Text(stringResource(R.string.journal_compare_help), style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+        if (project.sweeps.isNotEmpty()) {
+            item { JournalHeading(stringResource(R.string.sweep_saved_traces), MaterialTheme.colorScheme.secondary) }
+            items(project.sweeps.asReversed()) { sweep ->
+                OutlinedCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(12.dp)) {
+                        sweep.traces.forEach { Text(it.name) }
+                        Row {
+                            if (onOpenSweeps != null) TextButton(enabled = enabled, onClick = { onOpenSweeps(sweep) }) {
+                                Text(stringResource(R.string.sweep_open_saved))
+                            }
+                            var confirm by remember { mutableStateOf(false) }
+                            TextButton(enabled = enabled, onClick = { confirm = true }) { Text(stringResource(R.string.sweep_remove)) }
+                            if (confirm) AlertDialog(
+                                onDismissRequest = { confirm = false },
+                                title = { Text(stringResource(R.string.sweep_remove_saved)) },
+                                confirmButton = {
+                                    TextButton(onClick = { confirm = false; onRemoveSweeps(sweep) }) {
+                                        Text(stringResource(R.string.sweep_remove))
+                                    }
+                                },
+                                dismissButton = { TextButton(onClick = { confirm = false }) { Text(stringResource(R.string.sweep_cancel)) } },
+                            )
+                        }
+                    }
                 }
             }
         }

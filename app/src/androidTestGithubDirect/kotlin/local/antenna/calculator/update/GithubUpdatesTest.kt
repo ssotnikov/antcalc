@@ -76,6 +76,15 @@ class GithubUpdatesTest {
         assertThrows(IOException::class.java) { source.confirm(first) }
     }
 
+    @Test fun localBetaCanUpgradeToStableOfTheSameVersion() {
+        val stable = first.copy(versionName = "1.9.0", versionCode = 69)
+        val beta = GithubReleases(UpdateTransport { url, _, _ ->
+            if (url.endsWith("page=1")) page(listing(stable)) else manifest(stable)
+        }, "1.9.0-beta.1", 68, 26) { 0 }
+        assertEquals(stable, beta.fetch(null).release)
+        assertEquals(stable, beta.fetchLatest().release)
+    }
+
     @Test fun manifestRequiresTheExpectedSchemaAndTypes() {
         assertEquals(first, UpdateRelease.parse(first.json()))
         assertNull(UpdateRelease.parse(first.json().put("versionCode", "61")))

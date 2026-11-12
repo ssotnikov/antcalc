@@ -43,6 +43,26 @@ class ProjectsRepositoryTest {
         assertEquals(listOf(first, duplicate), repo.read())
     }
 
+    @Test fun sweepAttachmentsPersistAndProjectExportContainsOnlyReferences() = runBlocking {
+        val storage = local.antenna.calculator.measurements.MeasurementStorage(File(directory, "measurements"))
+        val repo = ProjectsRepository(directory, storage)
+        val project = sample()
+        repo.update { listOf(project) }
+        val sweep = local.antenna.calculator.core.measurements.Touchstone.read(
+            "# MHz S RI R 50\n145 0.25 0.125".byteInputStream(),
+        )
+        val trace = local.antenna.calculator.measurements.MeasurementTrace("dipole.s1p", sweep)
+        repo.saveSweeps(project.id, listOf(trace))
+        val restored = ProjectsRepository(directory, storage).read().single()
+        val reference = restored.sweeps.single().traces.single()
+        assertEquals(trace, storage.readAttachment(reference))
+        val encoded = JournalJson.encodeTransfer(restored)
+        assertFalse(encoded.decodeToString().contains("0.125"))
+        assertEquals(restored, JournalJson.decodeTransfer(encoded.inputStream()))
+        val anotherDevice = local.antenna.calculator.measurements.MeasurementStorage(File(directory, "another-device"))
+        assertNull(anotherDevice.readAttachment(reference))
+    }
+
     @Test fun interruptedOrFailedWriteKeepsCommittedBytes() = runBlocking {
         val repo = ProjectsRepository(directory)
         val first = sample()

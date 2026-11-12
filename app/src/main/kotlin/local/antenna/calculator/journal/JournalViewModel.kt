@@ -14,6 +14,8 @@ import kotlinx.coroutines.withContext
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.journal.JournalLimits
 import local.antenna.calculator.core.journal.JournalRecord
+import local.antenna.calculator.core.journal.SweepComparison
+import local.antenna.calculator.measurements.MeasurementTrace
 
 internal data class JournalUiState(
     val projects: List<AntennaProject> = emptyList(),
@@ -37,7 +39,7 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
     fun saveProject(project: AntennaProject, create: Boolean, done: (UUID) -> Unit) =
         mutate({ projects ->
             if (create) projects + project else projects.replace(project.id) {
-                project.copy(records = it.records)
+                project.copy(records = it.records, sweeps = it.sweeps)
             }
         }) { done(project.id) }
 
@@ -64,6 +66,15 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
             }
         }
     }, {})
+
+    fun saveSweeps(projectId: UUID, traces: List<MeasurementTrace>, done: () -> Unit) =
+        operation(JournalProblem.WRITE) {
+            current.value = current.value.copy(projects = repository.saveSweeps(projectId, traces), readable = true)
+            done()
+        }
+
+    fun removeSweeps(projectId: UUID, sweep: SweepComparison) =
+        mutate({ projects -> projects.replace(projectId) { it.copy(sweeps = it.sweeps - sweep) } }, {})
 
     fun removeRecord(projectId: UUID, recordId: UUID, done: () -> Unit) =
         mutate({ projects ->

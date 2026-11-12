@@ -87,6 +87,27 @@ data class JournalRecord(
     }
 }
 
+data class SweepAttachment(
+    val id: String,
+    val name: String,
+    val plane: String,
+    val referenceOhms: Double,
+    val points: Int,
+    val firstHz: Double,
+    val lastHz: Double,
+) {
+    init {
+        require(id.matches(Regex("[a-f0-9]{64}")) && name.isNotBlank() && name.length <= JournalLimits.TITLE)
+        require(plane in setOf("UNKNOWN", "FEED_POINT", "TRANSCEIVER"))
+        require(referenceOhms.isFinite() && referenceOhms > 0 && points in 1..20_000)
+        require(firstHz in 1e5..6e9 && lastHz in firstHz..6e9)
+    }
+}
+
+data class SweepComparison(val traces: List<SweepAttachment>) {
+    init { require(traces.size in 1..2) }
+}
+
 data class AntennaProject(
     val id: UUID,
     val title: String,
@@ -97,10 +118,12 @@ data class AntennaProject(
     val installation: String = "",
     val feedline: String = "",
     val records: List<JournalRecord> = emptyList(),
+    val sweeps: List<SweepComparison> = emptyList(),
 ) {
     init {
         validateTitle(title)
         require(listOf(note, installation, feedline).all { it.length <= JournalLimits.NOTE })
+        require(sweeps.size <= JournalLimits.RECORDS)
         require(records.size <= JournalLimits.RECORDS && records.map { it.id }.toSet().size == records.size)
     }
 
