@@ -68,5 +68,5 @@
     <string name="sweep_previous_frequency">Предыдущая частота</string>
     <string name="sweep_next_frequency">Следующая частота</string>
     <string name="antenna_parameter_tools">Расчет параметров антенн</string>
-    <string name="antenna_parameter_tools_hint">Диполь «Перевёрнутая V» и антенна Ground Plane (GP)</string>
+    <string name="antenna_parameter_tools_hint">Диполь «Перевёрнутая V», Ground Plane (GP) и полноволновая рамка</string>
 </resources>

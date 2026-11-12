@@ -13,9 +13,14 @@ import local.antenna.calculator.state.GroundPlaneMode
 import local.antenna.calculator.state.InvertedVDraft
 import local.antenna.calculator.state.InvertedVMode
 import local.antenna.calculator.state.Section
+import local.antenna.calculator.state.FullWaveLoopDraft
+import local.antenna.calculator.state.LoopField
+import local.antenna.calculator.state.LoopMode
+import local.antenna.calculator.state.validValue
+import local.antenna.calculator.core.layout.LoopModel
 
 internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, section: Section): CalculationSnapshot? {
-    if (!state.editingEnabled) return null
+    if (!state.editingEnabled || type == AntennaType.FULL_WAVE_LOOP) return null
     return when (section) {
         Section.SIZING -> sizingSnapshot(state)?.let { it.copy(outputs = it.outputsForAntenna(type)) }
         Section.TRIMMING -> state.trimming.result?.takeIf { it.input.antennaType == type }?.let { result ->
@@ -108,6 +113,26 @@ internal fun GroundPlaneDraft.groundPlaneSnapshot(): CalculationSnapshot? {
         snapshot("gp_tip", layout.tipHeightMeters, METERS),
         snapshot("gp_wire", layout.wireMeters, METERS),
     ), if (layout.endHeightMeters == 0.0) listOf("RADIALS_TOUCH_GROUND") else emptyList())
+}
+
+internal fun FullWaveLoopDraft.fullWaveLoopSnapshot(): CalculationSnapshot? {
+    val layout = layout() ?: return null
+    return CalculationSnapshot("full_wave_loop", 1, buildList {
+        add(snapshot("loop_shape", shape.sides, FACTOR))
+        add(snapshot("loop_model", model.ordinal, FACTOR))
+        add(snapshot("loop_feed", feed.ordinal, FACTOR))
+        if (model == LoopModel.CUSTOM) {
+            add(snapshot("loop_factor", checkNotNull(number(LoopField.FACTOR).validValue()), FACTOR))
+        }
+        if (mode == LoopMode.FREQUENCY) add(snapshot("frequency", layout.frequencyMhz * 1e6, HERTZ))
+        else add(snapshot("loop_perimeter", layout.perimeterMeters, METERS))
+    }, listOf(
+        snapshot("loop_frequency", layout.frequencyMhz * 1e6, HERTZ),
+        snapshot("loop_perimeter", layout.perimeterMeters, METERS),
+        snapshot("loop_side", layout.sideMeters, METERS),
+        snapshot("loop_width", layout.widthMeters, METERS),
+        snapshot("loop_height", layout.heightMeters, METERS),
+    ))
 }
 
 private fun snapshot(key: String, value: Number, unit: SnapshotUnit) = SnapshotValue(key, value.toDouble(), unit)

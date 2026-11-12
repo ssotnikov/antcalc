@@ -309,3 +309,18 @@ Exact and interpolated `X = 0` frequencies are reported separately from the meas
 For SWR ≤ 2, samples at 100, 110, 120, 130 and 140 MHz with magnitudes 0.5, 0, 0.5, 0 and 0.5 give estimated bands of 103.333333–116.666667 MHz and 123.333333–136.666667 MHz. Each band is approximately 13.333333 MHz wide. A single sample exactly on the threshold with both neighbors above it gives zero width.
 
 [Keysight — Reflection measurements](https://helpfiles.keysight.com/csg/pxivna/Tutorials/Reflection_Measurements.htm) · [ARRL — Analyzing an Antenna System](https://www.arrl.org/files/file/On%20the%20Air%20Email/Analyzing%20Antenna.pdf)
+
+## Full-wave wire loop
+
+`fullWaveLoop` takes either frequency in MHz or perimeter in metres. It uses
+`P = C/f` and `f = C/P`, with C equal to 299.792458 for one free-space wavelength,
+306.324 for the empirical thin-wire HF estimate (1005 ft·MHz), or
+`q × 299.792458` for a user multiplier from 0.5 to 1.5. The perimeter range is
+0.004 to 10,000 m. A 12 m perimeter gives a 3 m square or a 4 m equilateral
+triangle with height 3.464101615 m. At 14.2 MHz the ideal and empirical
+perimeters are about 21.11 m and 21.57 m. Measure the resonance after installation.
+
+`quarterWaveSection` uses the measured resistive load, the main line impedance,
+the frequency and the matching cable's velocity factor. It calculates
+`sqrt(R × Z₀)` and `VF × c / (4f)`. With 112.5 Ω into 50 Ω at 14.2 MHz and
+VF = 0.66 the result is 75 Ω and about 3.48 m.

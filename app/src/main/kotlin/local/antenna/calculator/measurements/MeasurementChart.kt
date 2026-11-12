@@ -38,6 +38,8 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.measurements.BandEdgeKind
 import local.antenna.calculator.core.measurements.SwrBandwidth
 
+internal const val BandwidthFillAlpha = 0.28f
+
 @Composable
 internal fun MeasurementChart(
     traces: List<Pair<Int, MeasurementTrace>>,
@@ -119,8 +121,14 @@ internal fun MeasurementChart(
         bandwidth?.bands?.forEach { band ->
             val start = x(band.lower.hertz)
             val end = x(band.upper.hertz)
-            if (end > start) drawRect(colors.primary.copy(alpha = 0.14f), Offset(start, top), Size(end - start, bottom - top))
-            else drawLine(colors.primary.copy(alpha = 0.4f), Offset(start, top), Offset(start, bottom), 2.dp.toPx())
+            if (end > start) {
+                drawRect(colors.primary.copy(alpha = BandwidthFillAlpha), Offset(start, top), Size(end - start, bottom - top))
+            }
+            val edgeStyle = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 4.dp.toPx()))
+            drawLine(colors.primary, Offset(start, top), Offset(start, bottom), 1.5.dp.toPx(), pathEffect = edgeStyle)
+            if (end > start) {
+                drawLine(colors.primary, Offset(end, top), Offset(end, bottom), 1.5.dp.toPx(), pathEffect = edgeStyle)
+            }
         }
         bandwidth?.threshold?.takeIf { it / bounds.scale in low..high }?.let {
             val thresholdY = y(it)

@@ -79,7 +79,7 @@ class TrimmingWarningsTest {
     @Test
     fun `equal frequencies preserve exact input boundaries for either antenna type`() {
         for (length in listOf(PhysicalLength.MIN_NANOMETERS, PhysicalLength.MAX_NANOMETERS)) {
-            for (type in AntennaType.entries) {
+            for (type in AntennaType.straightConductors) {
                 val result = tune(length, 6_000_000_000, 6_000_000_000, type)
                 assertTrue(result.warnings.minus(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL).isEmpty())
                 assertEquals(AdjustmentDirection.UNCHANGED, result.direction)

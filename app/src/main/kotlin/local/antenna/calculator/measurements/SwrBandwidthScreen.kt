@@ -5,6 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -13,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +42,8 @@ import local.antenna.calculator.ui.cardListBounce
 internal fun SwrBandwidthScreen(
     model: MeasurementViewModel,
     onOpenMeasurements: () -> Unit,
+    entrySlot: Int? = null,
+    onEntryApplied: () -> Unit = {},
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -56,7 +61,14 @@ internal fun SwrBandwidthScreen(
     val entries = if (state.showTraces && !state.busy) state.traces.mapIndexedNotNull { slot, trace ->
         trace?.let { slot to it }
     } else emptyList()
-    val active = entries.firstOrNull { it.first == selectedSlot } ?: entries.firstOrNull()
+    LaunchedEffect(entrySlot) {
+        if (entrySlot != null) {
+            selectedSlot = entrySlot
+            cursor = Double.NaN
+            onEntryApplied()
+        }
+    }
+    val active = entries.firstOrNull { it.first == (entrySlot ?: selectedSlot) } ?: entries.firstOrNull()
     val trace = active?.second
     val threshold = parseBandwidthThreshold(rawThreshold)
     val result = remember(trace?.sweep, threshold) {
@@ -120,7 +132,12 @@ internal fun SwrBandwidthScreen(
                 MeasurementChart(listOf(active), SweepMetric.SWR, frequency, active.first, bandwidth = result) {
                     cursor = it.coerceIn(points.first().hertz, points.last().hertz)
                 }
-                Text(stringResource(R.string.bandwidth_chart_hint), style = MaterialTheme.typography.bodySmall)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
+                    val bandColor = MaterialTheme.colorScheme.primary
+                    Box(Modifier.padding(top = 3.dp).size(width = 18.dp, height = 12.dp)
+                        .background(bandColor.copy(alpha = BandwidthFillAlpha)).border(1.dp, bandColor))
+                    Text(stringResource(R.string.bandwidth_chart_hint), style = MaterialTheme.typography.bodySmall)
+                }
             }
             item {
                 BandwidthHeading(R.string.bandwidth_intervals)
@@ -160,7 +177,9 @@ internal fun SwrBandwidthScreen(
             }
         }
         item {
-            Text(stringResource(R.string.bandwidth_method), style = MaterialTheme.typography.bodySmall)
+            val method = stringResource(R.string.bandwidth_method)
+            val symbol = "|S11|"
+            Text(method.replace(symbol, symbol.toList().joinToString("\u2060")), style = MaterialTheme.typography.bodySmall)
             Text(stringResource(R.string.bandwidth_scope), style = MaterialTheme.typography.bodySmall)
             TextButton(onClick = { showFormula = !showFormula }) {
                 Text(stringResource(if (showFormula) R.string.bandwidth_hide_formula else R.string.bandwidth_show_formula))
@@ -192,7 +211,9 @@ private class BandwidthPresentation(
 
     fun minimum(label: Int, minimum: SwrMinimum) = text(label, format.measurement(minimum.swr), frequency(minimum.hertz))
 
-    private fun edge(label: Int, edge: BandEdge) = text(label, frequency(edge.hertz), text(when (edge.kind) {
+    private fun bandFrequency(hertz: Double) = text(R.string.sweep_mhz, format.bandMegahertz(hertz))
+
+    private fun edge(label: Int, edge: BandEdge) = text(label, bandFrequency(edge.hertz), text(when (edge.kind) {
         BandEdgeKind.MEASURED -> R.string.bandwidth_edge_measured
         BandEdgeKind.ESTIMATED -> R.string.bandwidth_edge_estimated
         BandEdgeKind.SWEEP_LIMIT -> R.string.bandwidth_edge_sweep
@@ -208,7 +229,7 @@ private class BandwidthPresentation(
             else -> R.string.bandwidth_width
         }
         return listOf(edge(R.string.bandwidth_lower, band.lower), edge(R.string.bandwidth_upper, band.upper),
-            text(widthLabel, frequency(band.widthHertz)), minimum(R.string.bandwidth_band_minimum, band.minimum))
+            text(widthLabel, bandFrequency(band.widthHertz)), minimum(R.string.bandwidth_band_minimum, band.minimum))
     }
 
     fun reactance(zero: ReactanceZero) = when {

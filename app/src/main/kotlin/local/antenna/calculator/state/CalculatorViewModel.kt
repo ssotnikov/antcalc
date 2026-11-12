@@ -20,6 +20,7 @@ class CalculatorViewModel(
 ) : ViewModel() {
     private val restoredInvertedV = InvertedVDraftCodec.decode(savedState[InvertedVDraftCodec.KEY])
     private val restoredGroundPlane = GroundPlaneDraftCodec.decode(savedState[GroundPlaneDraftCodec.KEY])
+    private val restoredLoop = FullWaveLoopDraftCodec.decode(savedState[FullWaveLoopDraftCodec.KEY])
     private val restoredFeedline = FeedlineDraftCodec.decode(savedState[FeedlineDraftCodec.KEY])
     private val restoredDraft = DraftCodec.decode(savedState[DraftCodec.KEY])?.copy(
         matching = MatchingDraftCodec.decode(savedState[MatchingDraftCodec.KEY]) ?: MatchingDraft(),
@@ -27,6 +28,7 @@ class CalculatorViewModel(
         invertedV = restoredInvertedV ?: InvertedVDraft(),
         groundPlane = restoredGroundPlane ?: GroundPlaneDraft(),
         feedline = restoredFeedline ?: FeedlineDraft(),
+        fullWaveLoop = restoredLoop ?: FullWaveLoopDraft(),
     )
     private val mutableState = MutableStateFlow(CalculatorUiState(draft = restoredDraft ?: CalculatorDraft.defaults()))
     val state: StateFlow<CalculatorUiState> = mutableState.asStateFlow()
@@ -67,6 +69,7 @@ class CalculatorViewModel(
             is CalculatorEvent.Matching -> draft.copy(matching = event.value)
             is CalculatorEvent.Cable -> draft.copy(cable = event.value)
             is CalculatorEvent.Feedline -> draft.copy(feedline = event.value)
+            is CalculatorEvent.FullWaveLoop -> draft.copy(fullWaveLoop = event.value)
             is CalculatorEvent.GroundPlane -> draft.copy(groundPlane = event.value)
             is CalculatorEvent.InvertedV -> draft.copy(invertedV = event.value)
             else -> return
@@ -87,6 +90,7 @@ class CalculatorViewModel(
         savedState[CableDraftCodec.KEY] = CableDraftCodec.encode(draft.cable)
         savedState[InvertedVDraftCodec.KEY] = InvertedVDraftCodec.encode(draft.invertedV)
         savedState[GroundPlaneDraftCodec.KEY] = GroundPlaneDraftCodec.encode(draft.groundPlane)
+        savedState[FullWaveLoopDraftCodec.KEY] = FullWaveLoopDraftCodec.encode(draft.fullWaveLoop)
         savedState[FeedlineDraftCodec.KEY] = FeedlineDraftCodec.encode(draft.feedline)
     }
 
@@ -103,6 +107,7 @@ class CalculatorViewModel(
                         invertedV = restoredInvertedV ?: stored.invertedV,
                         groundPlane = restoredGroundPlane ?: stored.groundPlane,
                         feedline = restoredFeedline ?: stored.feedline,
+                        fullWaveLoop = restoredLoop ?: stored.fullWaveLoop,
                     ) ?: stored.toDraft()
                 } else state.value.draft
                 mutableState.value = state.value.copy(loading = false, storageIssue = null)

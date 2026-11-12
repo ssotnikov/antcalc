@@ -22,6 +22,10 @@ private val cableDatasheetAddress = Regex(
     """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
 )
 private val additionalSourceAddresses = setOf(
+    "https://www.radioman.ru/shem/anteny/an-kvad.php",
+    "https://gef79.narod.ru/Shem/Antens/119.htm",
+    "https://ra1ohx.ru/publ/antenny_kv/antenna_delta_loop_diapazona_20_metrov/1-1-0-549",
+    "https://courses.ece.vt.edu/ece3105/chp2_lssn6.html",
     "https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/",
     "https://www.rlocman.ru/shem/schematics.html?di=4982",
     "https://lib.qrz.ru/book/export/html/2182",

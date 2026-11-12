@@ -41,7 +41,10 @@ internal enum class SweepMetric(val title: Int, val axis: String) {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun MeasurementScreen(
-    model: MeasurementViewModel, onSaveToProject: (() -> Unit)?, onMessage: (String) -> Unit,
+    model: MeasurementViewModel,
+    onSaveToProject: (() -> Unit)?,
+    onOpenBandwidth: ((Int) -> Unit)? = null,
+    onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
     val context = LocalContext.current
@@ -231,6 +234,11 @@ internal fun MeasurementScreen(
                 FrequencyStep(forward = true, enabled = index < points.lastIndex) { selectPoint(index + 1) }
             }
             comparisonNotes.forEach { Text(stringResource(it), color = MaterialTheme.colorScheme.error) }
+            if (onOpenBandwidth != null) {
+                OutlinedButton(onClick = { onOpenBandwidth(activeSlot) }, modifier = Modifier.testTag("sweep-open-bandwidth")) {
+                    Text(stringResource(R.string.bandwidth_title))
+                }
+            }
             MeasurementSummaries(entries, selected, display, ::frequencyText)
             if (onSaveToProject != null) Button(onClick = onSaveToProject, modifier = Modifier.fillMaxWidth().testTag("sweep-save-project")) {
                 Text(stringResource(R.string.sweep_save))

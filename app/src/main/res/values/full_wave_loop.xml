@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="loop_title">Full-wave loop</string>
+    <string name="loop_intro">Calculate the dimensions of a wire loop and mark its feed point.</string>
+    <string name="loop_shape">Loop shape</string>
+    <string name="loop_square">Square</string>
+    <string name="loop_triangle">Triangle</string>
+    <string name="loop_square_image">Square loop on a mast, fed at the midpoint of its bottom side.</string>
+    <string name="loop_triangle_image">Triangular loop on a mast, fed at the midpoint of its base.</string>
+    <string name="loop_mode">Calculate by</string>
+    <string name="loop_by_frequency">By frequency</string>
+    <string name="loop_by_perimeter">By perimeter</string>
+    <string name="loop_model">Perimeter model</string>
+    <string name="loop_ideal">Ideal · 1λ</string>
+    <string name="loop_empirical">Wire-loop estimate · 1005/f</string>
+    <string name="loop_custom">Custom q</string>
+    <string name="loop_ideal_hint">The perimeter equals one free-space wavelength.</string>
+    <string name="loop_empirical_hint">Starting estimate for a thin-wire HF loop up to about 30 MHz. 1005/f in feet is 306.324/f in metres.</string>
+    <string name="loop_custom_hint">The perimeter is q·λ. Choose q for your antenna design.</string>
+    <string name="loop_factor">Perimeter multiplier q</string>
+    <string name="loop_factor_error">Enter q from 0.5 to 1.5, with up to four decimal places.</string>
+    <string name="loop_perimeter">Perimeter P</string>
+    <string name="loop_input_unit">Perimeter unit</string>
+    <string name="loop_output_unit">Result unit</string>
+    <string name="loop_perimeter_error">The supported perimeter is from 0.004 to 10,000 m.</string>
+    <string name="loop_frequency">Frequency, MHz</string>
+    <string name="loop_calculated_perimeter">Calculated perimeter</string>
+    <string name="loop_calculated_frequency">Calculated frequency</string>
+    <string name="loop_frequency_hint">Measure resonance after installing the antenna.</string>
+    <string name="loop_dimensions">Wire dimensions</string>
+    <string name="loop_side">Side a</string>
+    <string name="loop_width">Width W</string>
+    <string name="loop_height">Loop height H</string>
+    <string name="loop_feed">Feed point</string>
+    <string name="loop_base">Middle of the bottom side</string>
+    <string name="loop_corner">Lower left corner</string>
+    <string name="loop_side_middle">Middle of the vertical side</string>
+    <string name="loop_apex">Top vertex</string>
+    <string name="loop_quarter_apex">On the side, P/4 from the apex</string>
+    <string name="loop_horizontal">With the loop in a vertical plane, this feed point gives predominantly horizontal polarization.</string>
+    <string name="loop_vertical">With the loop in a vertical plane, this feed point gives predominantly vertical polarization.</string>
+    <string name="loop_illustrated_feed">The illustration above shows the feed point at the midpoint of the bottom side.</string>
+    <string name="loop_diagram_description">%1$s. Width %2$s. Height %3$s. Feed point: %4$s.</string>
+    <string name="loop_limits">The perimeter excludes allowances for connections. H is the height of the loop itself. Height above ground, the wire, and nearby objects affect resonance.</string>
+    <string name="loop_matching">Quarter-wave matching section</string>
+    <string name="loop_matching_hint">Enter the frequency and R measured at the feed point where X is close to zero. Use the cable manufacturer’s velocity factor or measure it.</string>
+    <string name="loop_load">Measured loop resistance R, Ω</string>
+    <string name="loop_line">Main feed line impedance, Ω</string>
+    <string name="loop_vf">Cable velocity factor VF</string>
+    <string name="loop_vf_error">Enter VF greater than zero and at most 1.</string>
+    <string name="loop_impedance">Required characteristic impedance</string>
+    <string name="loop_impedance_value">%1$s Ω</string>
+    <string name="loop_section_length">Physical section length</string>
+    <string name="loop_formulas">Formulas and limitations</string>
+    <string name="loop_formula_alt">Perimeter is C divided by frequency. Frequency is C divided by perimeter. Side length is the perimeter divided by the number of sides. A square’s height equals its side. A triangle’s height is its side times the square root of three divided by two.</string>
+    <string name="loop_frequency_value">%1$s %2$s</string>
+    <string name="loop_source_ru_quad">HF Quad Antennas: Tuning and Construction</string>
+    <string name="loop_source_ru_quad_description">Mounting, feed lines, and matching, mainly for multi-element quads.</string>
+    <string name="loop_source_ru_7">A Low-Mounted 7 MHz Antenna</string>
+    <string name="loop_source_ru_7_description">A built delta loop with measured feed-point resistance and two matching sections.</string>
+    <string name="loop_source_ru_20">A Delta Loop for 20 Metres</string>
+    <string name="loop_source_ru_20_description">How changing the feed point affects input impedance in a particular model.</string>
+    <string name="loop_source_en_theory">Theory of Full Wave Loops</string>
+    <string name="loop_source_en_theory_description">Perimeter, feed-point position, polarization, and the effect of ground.</string>
+    <string name="loop_source_en_sizes">Dimensions for Vertical Full Wave Loops</string>
+    <string name="loop_source_en_sizes_description">Dimension tables for specific wire-loop models and installation conditions.</string>
+    <string name="loop_source_en_build">Construction of Wire Loop Antennas</string>
+    <string name="loop_source_en_build_description">Wire supports, spreaders, suspension, and feed hardware.</string>
+    <string name="loop_source_en_arrl">HF Loop Antennas</string>
+    <string name="loop_source_en_arrl_description">An overview and links to QST construction articles. Some articles require an ARRL account.</string>
+    <string name="loop_source_en_arrl_url" translatable="false">https://www.arrl.org/hf-loop-antennas</string>
+    <string name="loop_source_en_match">The Quarter Wave Transformer as a Matching Network</string>
+    <string name="loop_source_en_match_description">Derives the characteristic impedance of a quarter-wave section for a resistive load.</string>
+    <string name="loop_references">Full-wave loops</string>
+    <string name="loop_source_ru_quad_url" translatable="false">https://www.radioman.ru/shem/anteny/an-kvad.php</string>
+    <string name="loop_source_ru_7_url" translatable="false">https://gef79.narod.ru/Shem/Antens/119.htm</string>
+    <string name="loop_source_ru_20_url" translatable="false">https://ra1ohx.ru/publ/antenny_kv/antenna_delta_loop_diapazona_20_metrov/1-1-0-549</string>
+    <string name="loop_source_en_theory_url" translatable="false">https://practicalantennas.com/theory/loop/full-wave/</string>
+    <string name="loop_source_en_sizes_url" translatable="false">https://practicalantennas.com/designs/loops/loop-sizes/</string>
+    <string name="loop_source_en_build_url" translatable="false">https://practicalantennas.com/construction/wireloop/</string>
+    <string name="loop_source_en_match_url" translatable="false">https://courses.ece.vt.edu/ece3105/chp2_lssn6.html</string>
+</resources>

@@ -49,7 +49,7 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
         HelpText(R.string.factor_note)
         if (factor != null && factor.tenThousandths < 9000) HelpText(R.string.factor_low_note)
     } else {
-        ChoicePicker(stringResource(R.string.antenna_type), AntennaType.entries, settings.antennaType,
+        ChoicePicker(stringResource(R.string.antenna_type), AntennaType.straightConductors, settings.antennaType,
             { stringResource(if (it == AntennaType.MONOPOLE) R.string.monopole else R.string.dipole) },
             { onEvent(CalculatorEvent.Settings(settings.copy(antennaType = it))) }, "antenna")
         AntennaDiagram(dipole = settings.antennaType == AntennaType.SYMMETRIC_DIPOLE)

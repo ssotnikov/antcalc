@@ -15,6 +15,7 @@ data class PersistedCalculatorState(
     val invertedV: InvertedVDraft = InvertedVDraft(),
     val groundPlane: GroundPlaneDraft = GroundPlaneDraft(),
     val feedline: FeedlineDraft = FeedlineDraft(),
+    val fullWaveLoop: FullWaveLoopDraft = FullWaveLoopDraft(),
 ) {
     fun advance(draft: CalculatorDraft): PersistedCalculatorState = copy(
         values = values + draft.fields.mapNotNull { (key, field) ->
@@ -31,6 +32,7 @@ data class PersistedCalculatorState(
         invertedV = draft.invertedV.canonical(invertedV),
         groundPlane = draft.groundPlane.canonical(groundPlane),
         feedline = draft.feedline,
+        fullWaveLoop = draft.fullWaveLoop.canonical(fullWaveLoop),
     )
 
     fun toDraft(): CalculatorDraft = CalculatorDraft(FieldKey.entries.associateWith { key ->
@@ -42,7 +44,7 @@ data class PersistedCalculatorState(
             else -> Frequency.ofHertz(value).inUnit(FrequencyUnit.valueOf(unit)).inputText()
         }
         NumericDraft(text, unit)
-    }, settings, matching, cable, invertedV, groundPlane, feedline)
+    }, settings, matching, cable, invertedV, groundPlane, feedline, fullWaveLoop)
 
     companion object {
         fun defaults(): PersistedCalculatorState {

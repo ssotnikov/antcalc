@@ -6,11 +6,18 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import local.antenna.calculator.R
+import local.antenna.calculator.core.layout.LoopFeed
+import local.antenna.calculator.core.layout.LoopModel
+import local.antenna.calculator.core.layout.LoopShape
+import local.antenna.calculator.ui.loopLabel
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.core.trimming.AntennaType
 
-internal fun AntennaType.journalLabel(): Int =
-    if (this == AntennaType.SYMMETRIC_DIPOLE) R.string.dipole else R.string.monopole
+internal fun AntennaType.journalLabel(): Int = when (this) {
+    AntennaType.MONOPOLE -> R.string.monopole
+    AntennaType.SYMMETRIC_DIPOLE -> R.string.dipole
+    AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
+}
 
 internal fun MeasurementPoint.journalLabel(): Int = when (this) {
     MeasurementPoint.FEED_POINT -> R.string.journal_point_feed
@@ -81,6 +88,7 @@ internal class JournalPresentation(private val context: Context) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
                 "ground_plane" -> text(R.string.ground_plane_title)
+                "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 else -> s.model
             }
@@ -127,6 +135,15 @@ internal class JournalPresentation(private val context: Context) {
         "new_arm" -> text(R.string.new_arm)
         "adjustment" -> text(R.string.adjustment)
         "arm_adjustment" -> text(R.string.arm_adjustment)
+        "loop_shape" -> text(R.string.loop_shape)
+        "loop_model" -> text(R.string.loop_model)
+        "loop_feed" -> text(R.string.loop_feed)
+        "loop_factor" -> text(R.string.loop_factor)
+        "loop_frequency" -> text(R.string.loop_calculated_frequency)
+        "loop_perimeter" -> text(R.string.loop_perimeter)
+        "loop_side" -> text(R.string.loop_side)
+        "loop_width" -> text(R.string.loop_width)
+        "loop_height" -> text(R.string.loop_height)
         "gp_base" -> text(R.string.ground_plane_height)
         "gp_slope" -> text(R.string.ground_plane_angle)
         "gp_whip_factor" -> text(R.string.ground_plane_whip_factor)
@@ -146,11 +163,20 @@ internal class JournalPresentation(private val context: Context) {
         else -> key
     }
 
-    private fun metricValue(metric: SnapshotValue): String = when (metric.unit) {
+    private fun metricValue(metric: SnapshotValue): String {
+        val label = when (metric.key) {
+            "loop_shape" -> LoopShape.entries.firstOrNull { it.sides.toDouble() == metric.value }?.loopLabel()
+            "loop_model" -> LoopModel.entries.firstOrNull { it.ordinal.toDouble() == metric.value }?.loopLabel()
+            "loop_feed" -> LoopFeed.entries.firstOrNull { it.ordinal.toDouble() == metric.value }?.loopLabel()
+            else -> null
+        }
+        if (label != null) return text(label)
+        return when (metric.unit) {
         SnapshotUnit.HERTZ -> withUnit(metric.value / 1_000_000, R.string.mhz)
         SnapshotUnit.NANOMETERS -> withUnit(metric.value / 10_000_000, R.string.cm)
         SnapshotUnit.METERS -> withUnit(metric.value, R.string.m)
         SnapshotUnit.FACTOR -> number(metric.value)
         SnapshotUnit.DEGREES -> context.getString(R.string.inverted_v_degrees, number(metric.value))
+        }
     }
 }

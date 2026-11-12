@@ -28,6 +28,9 @@ internal class MeasurementNumberFormat(locale: Locale) {
 
     fun measurement(value: Double?): String = format(value, two)
     fun magnitude(value: Double): String = format(value, four)
+    private val bandFrequency = decimalFormat(locale, 3)
+
+    fun bandMegahertz(hertz: Double): String = bandFrequency.format(hertz / 1e6)
     fun megahertz(hertz: Double): String = frequency.format(hertz / 1e6)
 
     private fun format(value: Double?, formatter: NumberFormat): String = when {

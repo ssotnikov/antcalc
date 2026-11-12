@@ -28,12 +28,13 @@ internal fun ReferencesScreen(language: AppLanguage) {
     ) {
         HelpText(R.string.materials_note)
         referenceGroups.forEach { group ->
+            val eligible = group.materials.filter { !it.interfaceLanguageOnly || it.language == language }
             val materials = if (group.interfaceLanguageOnly || language == AppLanguage.ENGLISH) {
-                group.materials.filter { it.language == language }
+                eligible.filter { it.language == language }
             } else if (group.preferRussianSources) {
-                group.materials.sortedBy { it.language != AppLanguage.RUSSIAN }
+                eligible.sortedBy { it.language != AppLanguage.RUSSIAN }
             } else {
-                group.materials
+                eligible
             }
             if (materials.isEmpty()) return@forEach
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

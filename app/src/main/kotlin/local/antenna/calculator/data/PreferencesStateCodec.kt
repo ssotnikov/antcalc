@@ -35,6 +35,7 @@ object PreferencesStateCodec {
             InvertedVPreferences.write(this, state.invertedV)
             GroundPlanePreferences.write(this, state.groundPlane)
             FeedlinePreferences.write(this, state.feedline)
+            FullWaveLoopPreferences.write(this, state.fullWaveLoop)
         }.toPreferences()
     }
 
@@ -60,7 +61,7 @@ object PreferencesStateCodec {
             val state = PersistedCalculatorState(
                 values, units, settings, MatchingPreferences.read(preferences), CablePreferences.read(preferences),
                 InvertedVPreferences.read(preferences), GroundPlanePreferences.read(preferences),
-                FeedlinePreferences.read(preferences),
+                FeedlinePreferences.read(preferences), FullWaveLoopPreferences.read(preferences),
             )
             val draft = state.toDraft()
             for (key in FieldKey.entries) {

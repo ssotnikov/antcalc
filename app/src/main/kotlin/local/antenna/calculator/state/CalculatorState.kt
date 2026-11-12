@@ -68,7 +68,9 @@ data class CalculatorSettings(
     val sizingLengthUnit: LengthUnit = LengthUnit.MILLIMETERS,
     val trimmingLengthUnit: LengthUnit = LengthUnit.MILLIMETERS,
     val language: AppLanguage = AppLanguage.initial(),
-)
+) {
+    init { require(antennaType in AntennaType.straightConductors) }
+}
 
 data class CalculatorDraft(
     val fields: Map<FieldKey, NumericDraft>,
@@ -78,6 +80,7 @@ data class CalculatorDraft(
     val invertedV: InvertedVDraft = InvertedVDraft(),
     val groundPlane: GroundPlaneDraft = GroundPlaneDraft(),
     val feedline: FeedlineDraft = FeedlineDraft(),
+    val fullWaveLoop: FullWaveLoopDraft = FullWaveLoopDraft(),
 ) {
     operator fun get(key: FieldKey): NumericDraft = fields.getValue(key)
     fun update(key: FieldKey, field: NumericDraft) = copy(fields = fields + (key to field))
@@ -143,6 +146,7 @@ sealed interface CalculatorEvent {
     data class Cable(val value: CableDraft) : CalculatorEvent
     data class Feedline(val value: FeedlineDraft) : CalculatorEvent
     data class GroundPlane(val value: GroundPlaneDraft) : CalculatorEvent
+    data class FullWaveLoop(val value: FullWaveLoopDraft) : CalculatorEvent
     data class InvertedV(val value: InvertedVDraft) : CalculatorEvent
     data class Matching(val value: MatchingDraft) : CalculatorEvent
     data class Edit(val key: FieldKey, val text: String) : CalculatorEvent

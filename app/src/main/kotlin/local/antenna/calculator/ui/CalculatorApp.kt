@@ -29,6 +29,7 @@ import local.antenna.calculator.journal.JournalScreen
 import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.journal.invertedVSnapshot
 import local.antenna.calculator.journal.groundPlaneSnapshot
+import local.antenna.calculator.journal.fullWaveLoopSnapshot
 import local.antenna.calculator.state.*
 import local.antenna.calculator.journal.ProjectForm
 import local.antenna.calculator.measurements.MeasurementScreen
@@ -36,7 +37,7 @@ import local.antenna.calculator.measurements.MeasurementViewModel
 import local.antenna.calculator.measurements.SwrBandwidthScreen
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +70,8 @@ private fun LocalizedCalculatorApp(
     var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menu by remember { mutableStateOf(false) }
     var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
+    var bandwidthFromMeasurements by rememberSaveable { mutableStateOf(false) }
+    var bandwidthEntrySlot by rememberSaveable { mutableStateOf<Int?>(null) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
@@ -93,6 +96,7 @@ private fun LocalizedCalculatorApp(
             sweepTransferId != null -> Page.MEASUREMENTS
             pending?.isInvertedV == true -> Page.INVERTED_V
             pending?.isGroundPlane == true -> Page.GROUND_PLANE
+            pending?.isFullWaveLoop == true -> Page.FULL_WAVE_LOOP
             else -> Page.CALCULATOR
         }
         pending?.let {
@@ -112,9 +116,9 @@ private fun LocalizedCalculatorApp(
         when (page) {
             Page.REFERENCES -> page = referencesBackPage
             Page.ANTENNA_PARAMETER_TOOLS, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
-            Page.INVERTED_V, Page.GROUND_PLANE -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP -> page = Page.ANTENNA_PARAMETER_TOOLS
             Page.MEASUREMENTS -> page = measurementsParent
-            Page.SWR_BANDWIDTH -> page = Page.ADDITIONAL_TOOLS
+            Page.SWR_BANDWIDTH -> page = if (bandwidthFromMeasurements) Page.MEASUREMENTS else Page.ADDITIONAL_TOOLS
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
             Page.TRANSFER_PICKER -> if (pending?.needsAntennaChoice == true) page = Page.TRANSFER_TYPE else finishTransfer()
             Page.TRANSFER_TYPE -> finishTransfer()
@@ -149,6 +153,12 @@ private fun LocalizedCalculatorApp(
         if (!current.editingEnabled) return
         val snapshot = current.draft.groundPlane.groundPlaneSnapshot() ?: return
         startTransfer(PendingProjectCalculation(snapshot), AntennaType.MONOPOLE)
+    }
+    fun openFullWaveLoopTransfer() {
+        val current = currentState()
+        if (!current.editingEnabled) return
+        val snapshot = current.draft.fullWaveLoop.fullWaveLoopSnapshot() ?: return
+        startTransfer(PendingProjectCalculation(snapshot), AntennaType.FULL_WAVE_LOOP)
     }
     fun showSavedProject(projectId: UUID) {
         finishTransfer()
@@ -210,6 +220,7 @@ private fun LocalizedCalculatorApp(
             Page.FEEDLINE -> R.string.feedline_title
             Page.INVERTED_V -> R.string.inverted_v_title
             Page.GROUND_PLANE -> R.string.ground_plane_title
+            Page.FULL_WAVE_LOOP -> R.string.loop_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
             Page.TRANSFER_PICKER -> if (sweepTransferId != null) R.string.sweep_save else R.string.project_transfer_title
             Page.TRANSFER_NEW -> R.string.journal_new_project
@@ -267,7 +278,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -303,6 +314,7 @@ private fun LocalizedCalculatorApp(
                         AntennaParameterToolsScreen(
                             onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
                             onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
+                            onOpenFullWaveLoop = { leaveInput(); page = Page.FULL_WAVE_LOOP },
                         )
                     }
                     Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
@@ -313,6 +325,8 @@ private fun LocalizedCalculatorApp(
                                 page = Page.MEASUREMENTS
                             },
                             onOpenBandwidth = {
+                                bandwidthFromMeasurements = false
+                                bandwidthEntrySlot = null
                                 measurements?.showWorkspace()
                                 page = Page.SWR_BANDWIDTH
                             },
@@ -323,14 +337,22 @@ private fun LocalizedCalculatorApp(
                             measurements,
                             onOpenMeasurements = {
                                 leaveInput()
-                                measurementsParent = Page.SWR_BANDWIDTH
+                                if (!bandwidthFromMeasurements) measurementsParent = Page.SWR_BANDWIDTH
                                 page = Page.MEASUREMENTS
                             },
+                            entrySlot = bandwidthEntrySlot,
+                            onEntryApplied = { bandwidthEntrySlot = null },
                         ) { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
                     Page.MEASUREMENTS -> if (measurements != null) screenStates.SaveableStateProvider("measurements") {
                         MeasurementScreen(
                             measurements,
+                            onOpenBandwidth = { slot ->
+                                leaveInput()
+                                bandwidthFromMeasurements = measurementsParent != Page.SWR_BANDWIDTH
+                                bandwidthEntrySlot = slot
+                                page = Page.SWR_BANDWIDTH
+                            },
                             onSaveToProject = if (journal == null) null else {
                                 {
                                     snackbar.currentSnackbarData?.dismiss()
@@ -359,6 +381,12 @@ private fun LocalizedCalculatorApp(
                     Page.GROUND_PLANE -> screenStates.SaveableStateProvider("ground-plane") {
                         val chooseProject = if (journal != null) ::openGroundPlaneTransfer else null
                         GroundPlaneScreen(state, onEvent, currentState, chooseProject) {
+                            scope.launch { snackbar.showSnackbar(copiedMessage) }
+                        }
+                    }
+                    Page.FULL_WAVE_LOOP -> screenStates.SaveableStateProvider("full-wave-loop") {
+                        val chooseProject = if (journal != null) ::openFullWaveLoopTransfer else null
+                        FullWaveLoopScreen(state, currentState, onEvent, chooseProject) {
                             scope.launch { snackbar.showSnackbar(copiedMessage) }
                         }
                     }

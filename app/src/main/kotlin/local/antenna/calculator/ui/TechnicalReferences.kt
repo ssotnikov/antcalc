@@ -12,6 +12,7 @@ internal data class TechnicalReference(
     val language: AppLanguage,
     val section: String? = null,
     val subsection: Int? = null,
+    val interfaceLanguageOnly: Boolean = false,
 )
 
 internal data class ReferenceGroup(
@@ -64,7 +65,17 @@ internal val referenceGroups = listOf(
         TechnicalReference("ground-plane-qrz", R.string.source_ground_plane_qrz, R.string.source_ground_plane_qrz_description, R.string.source_ground_plane_qrz_url, "QRZ.RU", AppLanguage.RUSSIAN),
         TechnicalReference("ground-plane-m0ukd", R.string.source_ground_plane_m0ukd, R.string.source_ground_plane_m0ukd_description, R.string.source_ground_plane_m0ukd_url, "M0UKD", AppLanguage.ENGLISH),
     )),
+    ReferenceGroup(R.string.loop_references, listOf(
+        TechnicalReference("loop-quad-ru", R.string.loop_source_ru_quad, R.string.loop_source_ru_quad_description, R.string.loop_source_ru_quad_url, "Радио · 1976", AppLanguage.RUSSIAN),
+        TechnicalReference("loop-delta-7-ru", R.string.loop_source_ru_7, R.string.loop_source_ru_7_description, R.string.loop_source_ru_7_url, "Игорь Захаров, UR5EFX", AppLanguage.RUSSIAN),
+        TechnicalReference("loop-delta-20-ru", R.string.loop_source_ru_20, R.string.loop_source_ru_20_description, R.string.loop_source_ru_20_url, "UA1CBM · RA1OHX", AppLanguage.RUSSIAN),
+        TechnicalReference("loop-theory-en", R.string.loop_source_en_theory, R.string.loop_source_en_theory_description, R.string.loop_source_en_theory_url, "Practical Antennas", AppLanguage.ENGLISH),
+        TechnicalReference("loop-sizes-en", R.string.loop_source_en_sizes, R.string.loop_source_en_sizes_description, R.string.loop_source_en_sizes_url, "Practical Antennas", AppLanguage.ENGLISH),
+        TechnicalReference("loop-build-en", R.string.loop_source_en_build, R.string.loop_source_en_build_description, R.string.loop_source_en_build_url, "Practical Antennas", AppLanguage.ENGLISH),
+        TechnicalReference("loop-arrl-en", R.string.loop_source_en_arrl, R.string.loop_source_en_arrl_description, R.string.loop_source_en_arrl_url, "ARRL", AppLanguage.ENGLISH),
+    ), interfaceLanguageOnly = true),
     ReferenceGroup(R.string.references_cable, listOf(
+        TechnicalReference("quarter-wave-transformer", R.string.loop_source_en_match, R.string.loop_source_en_match_description, R.string.loop_source_en_match_url, "Virginia Tech", AppLanguage.ENGLISH, interfaceLanguageOnly = true),
         TechnicalReference("radiolab", R.string.source_radiolab, R.string.source_radiolab_description, R.string.source_radiolab_url, "Радиолэб", AppLanguage.RUSSIAN),
         TechnicalReference("rfi-dielectrics", R.string.source_rfi_dielectrics, R.string.source_rfi_dielectrics_description, R.string.source_rfi_dielectrics_url, "RFI", AppLanguage.ENGLISH, "PDF"),
         TechnicalReference("rig-cable", R.string.source_rig_cable, R.string.source_rig_cable_description, R.string.source_rig_cable_url, "RigExpert", AppLanguage.RUSSIAN, "§ 5.2.5"),

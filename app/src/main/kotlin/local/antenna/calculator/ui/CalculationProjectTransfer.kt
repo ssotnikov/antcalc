@@ -44,6 +44,7 @@ private enum class TransferSource(val model: String, val title: Int, val frequen
     TRIMMING("trimming", R.string.trimming, "target"),
     INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
     GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
+    FULL_WAVE_LOOP("full_wave_loop", R.string.loop_title, "loop_frequency"),
 }
 
 internal class PendingProjectCalculation(
@@ -56,15 +57,20 @@ internal class PendingProjectCalculation(
     val needsAntennaChoice get() = source == TransferSource.SIZING
     val isInvertedV get() = source == TransferSource.INVERTED_V
     val isGroundPlane get() = source == TransferSource.GROUND_PLANE
+    val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
     val title get() = source.title
-    val target = snapshot.inputs.firstOrNull { it.key == source.frequencyKey }
-        ?.let { Frequency.ofHertz(it.value.toLong()) }
+    val target = (if (isFullWaveLoop) snapshot.outputs else snapshot.inputs)
+        .firstOrNull { it.key == source.frequencyKey }
+        ?.let { if (isFullWaveLoop) it.value.roundToLong() else it.value.toLong() }
+        ?.takeIf { it in Frequency.MIN_HERTZ..Frequency.MAX_HERTZ }
+        ?.let(Frequency::ofHertz)
     val recommendedLengthNanometers get() = if (source == TransferSource.TRIMMING)
         outputLengthNanometers("new_length") else null
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
+            TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
             TransferSource.INVERTED_V -> outputLengthNanometers("dipole_total")
             TransferSource.SIZING -> outputLengthNanometers(if (type == AntennaType.MONOPOLE) "monopole_length" else "dipole_total")
             TransferSource.TRIMMING -> snapshot.inputs.first { it.key == "length" }.value.toLong()
@@ -119,7 +125,7 @@ internal fun TransferAntennaType(
 ) {
     JournalColumn(Modifier.widthIn(max = 680.dp)) {
         HelpText(R.string.project_transfer_type_hint)
-        ChoicePicker(stringResource(R.string.antenna_type), AntennaType.entries, type,
+        ChoicePicker(stringResource(R.string.antenna_type), AntennaType.straightConductors, type,
             { stringResource(it.journalLabel()) }, onType, "project-transfer-type")
         TransferSummary(pending, type)
         Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().testTag("project-transfer-continue")) {

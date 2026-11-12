@@ -1,0 +1,2 @@
+Full-wave loop calculator: square and triangular dimensions from frequency or perimeter, feed points, and quarter-wave matching.
+Measured SWR bandwidth: clearer band edges, shorter frequency labels, and access from S1P measurements.
