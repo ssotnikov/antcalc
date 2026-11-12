@@ -258,7 +258,6 @@ internal fun CableProfileSource(profile: CableProfile) {
     TextButton(onClick = { openSourceWithFeedback(context, profile.source) }) {
         Text(stringResource(R.string.feedline_source, profile.name))
     }
-    Text(stringResource(R.string.feedline_verified, profile.verified), style = MaterialTheme.typography.bodySmall)
 }
 
 private fun report(context: Context, draft: FeedlineDraft, profile: CableProfile?, result: FeedlineLoss): String = buildString {

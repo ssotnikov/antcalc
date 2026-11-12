@@ -10,6 +10,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -73,6 +74,7 @@ internal fun JournalScreen(
 ) {
     val state by model.state.collectAsState()
     var projectId by rememberSaveable { mutableStateOf(initialProjectId) }
+    val historyScroll = key(projectId) { rememberLazyListState() }
     var recordId by rememberSaveable { mutableStateOf<String?>(null) }
     var picked by rememberSaveable(stateSaver = listSaver<List<String>, String>(
         save = { it }, restore = { it.toList() },
@@ -210,7 +212,7 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.HISTORY -> if (project != null) {
                 ProjectHistory(
-                    project, presentation, picked, enabled, canCompare, rejectedKey,
+                    project, presentation, picked, enabled, canCompare, rejectedKey, scroll = historyScroll,
                     onPick = { key ->
                         val proposed = if (key in picked) picked - key else picked.takeLast(1) + key
                         val rejection = project.comparisonRejection(proposed)
@@ -418,6 +420,7 @@ private fun ProjectActionsMenu(expanded: Boolean, onDismiss: () -> Unit, onActio
 private fun ProjectHistory(
     project: AntennaProject, presentation: JournalPresentation, picked: List<String>, enabled: Boolean, canCompare: Boolean,
     rejectedKey: String?,
+    scroll: LazyListState,
     onPick: (String) -> Unit, onOpen: (UUID) -> Unit, onAdd: () -> Unit, onCompare: () -> Unit,
     onAction: (ProjectAction) -> Unit,
     onOpenSweeps: ((SweepComparison) -> Unit)?,
@@ -467,7 +470,6 @@ private fun ProjectHistory(
             }
         }
     }
-    val scroll = rememberLazyListState()
     LazyColumn(
         Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("journal-history"),
         state = scroll, overscrollEffect = null, contentPadding = PaddingValues(16.dp),

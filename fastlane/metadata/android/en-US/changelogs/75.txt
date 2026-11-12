@@ -1,0 +1,3 @@
+Import S1P measurements, compare two traces, and save them to a project. The chart marks the selected frequency, and the table remembers each trace's page.
+The Inverted V and Ground Plane calculators are grouped under Antenna Calculators.
+The tuning log restores its scroll position when you return from an entry. The update download dialog follows the app theme.

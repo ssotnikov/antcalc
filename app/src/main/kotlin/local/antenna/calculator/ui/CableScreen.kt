@@ -120,6 +120,7 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
                         modifier = Modifier.testTag("cable-profile-vf"))
                     if (profile.reciprocalVelocity) HelpText(R.string.feedline_vf_reciprocal)
                     CableProfileSource(profile)
+                    Text(stringResource(R.string.feedline_verified, profile.verified), style = MaterialTheme.typography.bodySmall)
                 }
                 return@forEach
             }

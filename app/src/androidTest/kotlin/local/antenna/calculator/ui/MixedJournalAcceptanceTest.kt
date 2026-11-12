@@ -1,6 +1,7 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
@@ -21,6 +22,7 @@ import local.antenna.calculator.core.units.PhysicalLength
 import local.antenna.calculator.measurements.MeasurementTrace
 import local.antenna.calculator.measurements.SweepPlane
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,6 +30,46 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class MixedJournalAcceptanceTest {
     @get:Rule val compose = createEmptyComposeRule()
+
+    @Test fun journalRestoresScrollAfterOpeningARecord() {
+        val application = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as CalculatorApplication
+        val repository = application.projectsRepository
+        val id = UUID.randomUUID()
+        val title = "Scroll position ${id.toString().take(8)}"
+        val type = AntennaType.SYMMETRIC_DIPOLE
+        val now = OffsetDateTime.now()
+        val records = List(16) { index ->
+            JournalRecord(UUID.randomUUID(), "Measurement ${index + 1}", now.minusMinutes(index.toLong()), type,
+                measurement = JournalMeasurement(resonance = Frequency.ofHertz(145_000_000)))
+        }
+        try {
+            runBlocking { repository.update { it + AntennaProject(id, title, type, records = records) } }
+            ActivityScenario.launch(MainActivity::class.java).use {
+                click("nav-TOOLS")
+                compose.onNodeWithTag("open-journal").performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+                val project = hasTestTag("journal-project") and hasText(title)
+                waitFor("journal-projects")
+                compose.onNodeWithTag("journal-projects").performScrollToNode(project)
+                compose.onNode(project).performSemanticsAction(SemanticsActions.OnClick)
+                waitFor("journal-history")
+                val history = compose.onNodeWithTag("journal-history")
+                val record = hasText(records.last().title)
+                history.performScrollToNode(record)
+                compose.onNode(record).assertIsDisplayed()
+                fun scrollPosition() = history.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+                val before = scrollPosition()
+                assertTrue(before > 0f)
+                compose.onNode(record).performSemanticsAction(SemanticsActions.OnClick)
+                waitFor("journal-record-details")
+                click("back")
+                waitFor("journal-history")
+                assertEquals(before, scrollPosition(), 0f)
+                compose.onNode(record).assertIsDisplayed()
+            }
+        } finally {
+            runBlocking { repository.update { projects -> projects.filterNot { it.id == id } } }
+        }
+    }
 
     @Test fun projectComparesAManualRecordWithATraceAndWithSizing() {
         val application = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext as CalculatorApplication

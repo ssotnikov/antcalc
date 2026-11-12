@@ -136,6 +136,7 @@ internal fun rememberUpdateMenuActions(
             AlertDialog(
                 onDismissRequest = { model.cancelInstall(current.release) },
                 properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
+                containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 title = { Text(stringResource(R.string.update_downloading)) },
                 text = {
                     val progress = (current.bytes.toFloat() / current.release.size).coerceIn(0f, 1f)
