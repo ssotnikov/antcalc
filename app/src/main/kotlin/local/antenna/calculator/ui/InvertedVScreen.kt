@@ -211,13 +211,17 @@ private fun InvertedVInput(draft: InvertedVDraft, field: InvertedVField, onEdit:
     }
     val label = stringResource(field.label())
     val inputLabel = if (suffix == null) label else stringResource(R.string.inverted_v_input_unit, label, suffix)
+    val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
+        Modifier, field == FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
+    )
     OutlinedTextField(
+        visualTransformation = frequencyTransformation,
         value = draft.fields.getValue(field), onValueChange = onEdit,
         label = { Text(inputLabel) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         isError = message != null,
         supportingText = message?.let { { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) } },
-        modifier = Modifier.fillMaxWidth().testTag("inverted-v-${field.name}").semantics {
+        modifier = fieldModifier.fillMaxWidth().testTag("inverted-v-${field.name}").semantics {
             if (message != null) error(message)
         },
     )
@@ -264,7 +268,7 @@ private fun InvertedVDraft.copyText(context: Context): String? {
         add("")
         add(line(R.string.inverted_v_mode, context.getString(mode.label())))
         if (mode == InvertedVMode.ESTIMATED) {
-            add(line(R.string.frequency, withUnit(input(FREQUENCY), frequencyUnit.labelResource())))
+            add(line(R.string.frequency, context.frequencyWithUnit(requireNotNull(number(FREQUENCY).validValue()), frequencyUnit)))
             add(line(R.string.factor, input(FACTOR)))
         } else {
             add(line(R.string.dipole_arm, withUnit(input(ARM), lengthUnit.labelResource())))

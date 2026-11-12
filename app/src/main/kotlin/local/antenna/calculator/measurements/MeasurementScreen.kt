@@ -102,7 +102,7 @@ internal fun MeasurementScreen(
     }
 
     val display = remember(locale) { MeasurementNumberFormat(locale) }
-    fun frequencyText(hertz: Double) = resources.getString(R.string.sweep_mhz, number(hertz / 1e6))
+    fun frequencyText(hertz: Double) = resources.getString(R.string.sweep_mhz, display.megahertz(hertz))
     fun row(label: Int, value: String) = "${resources.getString(label)} · $value"
     fun pointText(point: S11Point, referenceOhms: Double): String {
         val impedance = point.impedance(referenceOhms)

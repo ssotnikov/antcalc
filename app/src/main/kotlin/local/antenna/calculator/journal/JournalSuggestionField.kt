@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import local.antenna.calculator.ui.megahertzOutputTransformation
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
@@ -85,6 +86,7 @@ internal fun JournalTextField(
     error: Int? = null,
     hint: Int? = null,
     numeric: Boolean = keyboard == KeyboardType.Decimal,
+    megahertz: Boolean = false,
 ) {
     val supporting = error ?: hint
     var focused by remember { mutableStateOf(false) }
@@ -104,6 +106,7 @@ internal fun JournalTextField(
         supportingText = supporting?.let { { Text(stringResource(it)) } },
         isError = error != null,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
+        outputTransformation = megahertzOutputTransformation(megahertz && !focused),
         inputTransformation = if (numeric) {
             InputTransformation { if (length > limit) replace(limit, length, "!") }
         } else InputTransformation.maxLength(limit),

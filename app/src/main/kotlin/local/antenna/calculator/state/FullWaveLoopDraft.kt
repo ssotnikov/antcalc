@@ -41,6 +41,7 @@ data class FullWaveLoopDraft(
         val parsed = PositiveDecimalParser.parse(fields.getValue(field))
         val value = parsed.validValue() ?: return parsed
         val invalid = when (field) {
+            LoopField.FREQUENCY, LoopField.MATCH_FREQUENCY -> InputError.TOO_PRECISE.takeIf { value.scale() > 6 }
             LoopField.FACTOR -> when {
                 value < BigDecimal("0.5") || value > BigDecimal("1.5") -> InputError.OUT_OF_RANGE
                 value.scale() > 4 -> InputError.TOO_PRECISE

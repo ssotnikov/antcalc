@@ -109,13 +109,13 @@
     <string name="project_transfer_no_frequency">Frequency not set</string>
     <string name="journal_project_name">Project name</string>
     <string name="journal_example_name">Portable dipole</string>
-    <string name="journal_example_target">145.5</string>
+    <string name="journal_example_target">145.500</string>
     <string name="journal_example_length">98.3</string>
     <string name="journal_example_installation">On a mast, 8 m high</string>
     <string name="journal_example_feedline">RG-58, 12 m, choke at the feed point</string>
     <string name="journal_example_note">Check after installation</string>
     <string name="journal_example_record_name">First sweep</string>
-    <string name="journal_example_resonance">144.6</string>
+    <string name="journal_example_resonance">144.600</string>
     <string name="journal_example_swr">1.34</string>
     <string name="journal_example_resistance">61</string>
     <string name="journal_example_reactance">-12</string>

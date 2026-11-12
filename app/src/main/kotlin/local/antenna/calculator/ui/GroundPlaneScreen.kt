@@ -179,13 +179,17 @@ private fun GroundPlaneInput(draft: GroundPlaneDraft, field: GroundPlaneField, o
         FieldState.Incomplete -> R.string.error_incomplete
         is FieldState.Invalid -> field.errorLabel(status.error)
     }?.let { stringResource(it) }
+    val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
+        Modifier, field == FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
+    )
     OutlinedTextField(
+        visualTransformation = frequencyTransformation,
         value = draft.fields.getValue(field), onValueChange = onEdit,
         label = { Text(if (suffix == null) label else stringResource(R.string.inverted_v_input_unit, label, suffix)) },
         singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         isError = message != null,
         supportingText = message?.let { { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) } },
-        modifier = Modifier.fillMaxWidth().testTag("ground-plane-${field.name}").semantics { if (message != null) error(message) },
+        modifier = fieldModifier.fillMaxWidth().testTag("ground-plane-${field.name}").semantics { if (message != null) error(message) },
     )
 }
 
@@ -249,7 +253,7 @@ private fun GroundPlaneDraft.copyText(context: Context): String? {
             val raw = fields.getValue(field).trim()
             val displayed = when (field) {
                 WHIP, RADIAL, HEIGHT -> "$raw $lengthLabel"
-                FREQUENCY -> "$raw ${context.getString(frequencyUnit.labelResource())}"
+                FREQUENCY -> context.frequencyWithUnit(requireNotNull(number(field).validValue()), frequencyUnit)
                 ANGLE -> context.getString(R.string.inverted_v_degrees, raw)
                 WHIP_FACTOR, RADIAL_FACTOR -> raw
             }

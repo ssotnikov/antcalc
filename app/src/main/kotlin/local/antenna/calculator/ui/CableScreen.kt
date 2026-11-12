@@ -69,9 +69,12 @@ internal fun cableCopy(context: Context, draft: CableDraft): String? {
                 CableField.LENGTH -> " " + context.getString(draft.lengthUnit.labelResource())
                 else -> ""
             }
-            val text = if (field == CableField.VELOCITY && profile?.velocity != null)
-                cableNumber(context, BigDecimal.valueOf(profile.velocity.tenThousandths.toLong(), 4), 4)
-            else draft.fields.getValue(field)
+            val text = when {
+                field == CableField.FREQUENCY -> context.formatFrequency(requireNotNull(draft.number(field).validValue()), draft.frequencyUnit)
+                field == CableField.VELOCITY && profile?.velocity != null ->
+                    cableNumber(context, BigDecimal.valueOf(profile.velocity.tenThousandths.toLong(), 4), 4)
+                else -> draft.fields.getValue(field)
+            }
             appendLine("${context.getString(field.label())}: $text$unit")
         }
         cableRows(context, draft, result).forEach { appendLine("${context.getString(it.first)}: ${it.second}") }
@@ -145,9 +148,13 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
                 CableField.LENGTH -> ", " + stringResource(draft.lengthUnit.labelResource())
                 else -> ""
             }
+            val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
+                Modifier, key == CableField.FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
+            )
             OutlinedTextField(draft.fields.getValue(key), { change(currentState().draft.cable.edit(key, it)) },
                 label = { Text(stringResource(key.label()) + suffix) }, enabled = state.editingEnabled,
-                modifier = Modifier.fillMaxWidth().testTag("cable-${key.name}").semantics { if (visible) error(message) }.onFocusChanged {
+                visualTransformation = frequencyTransformation,
+                modifier = fieldModifier.fillMaxWidth().testTag("cable-${key.name}").semantics { if (visible) error(message) }.onFocusChanged {
                     if (hadFocus && !it.isFocused) { val live = currentState().draft.cable; change(live.copy(checked = live.checked + key)) }
                     hadFocus = it.isFocused
                 }, singleLine = true, isError = visible,

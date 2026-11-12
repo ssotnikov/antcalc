@@ -78,8 +78,8 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         compose.onNodeWithTag("new-length").assertTextContains("935,5 мм")
         compose.onNodeWithTag("new-arm").assertTextContains("467,7 мм")
         val text = copy()
-        listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная резонансная частота: 145 МГц",
-            "Целевая частота: 155 МГц", "Оценка полной длины диполя: 935,5 мм", "Изменение каждого плеча: Уменьшение на 32,3 мм",
+        listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная резонансная частота: 145,000 МГц",
+            "Целевая частота: 155,000 МГц", "Оценка полной длины диполя: 935,5 мм", "Изменение каждого плеча: Уменьшение на 32,3 мм",
             "Оценка длины каждого плеча: 467,7 мм", "Приближённый расчет").forEach { assertTrue(text, text.contains(it)) }
     }
 
@@ -118,7 +118,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
     @Test fun mainSizingClipboardContainsContextPhysicalAndIdealValues() {
         start()
         val text = copy()
-        listOf("Частота: 145 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491,0 мм",
+        listOf("Частота: 145,000 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491,0 мм",
             "Полная длина диполя: 982,1 мм", "Длина одного плеча: 491,0 мм", "Длина волны λ: 2067,5 мм", "Приближённый расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
@@ -143,7 +143,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
     @Test fun monopoleClipboardContainsActualLengthBothFrequenciesAndNewLength() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500")
         val text = copy()
-        listOf("Фактическая длина штыря: 500 мм", "Измеренная резонансная частота: 145 МГц", "Целевая частота: 155 МГц",
+        listOf("Фактическая длина штыря: 500 мм", "Измеренная резонансная частота: 145,000 МГц", "Целевая частота: 155,000 МГц",
             "Уменьшение на 32,3 мм", "Оценка новой длины штыря: 467,7 мм", "Приближённый расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }

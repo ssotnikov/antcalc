@@ -81,7 +81,7 @@ internal fun ProjectForm(
         JournalTextField(target, R.string.journal_target, R.string.journal_example_target, "journal-target", enabled,
             modifier = Modifier.bringIntoViewRequester(targetLocation),
             limit = PositiveDecimalParser.MAX_CHARACTERS, keyboard = KeyboardType.Decimal,
-            error = R.string.journal_number_invalid.takeIf { targetError })
+            error = R.string.journal_number_invalid.takeIf { targetError }, megahertz = true)
         JournalTextField(initialLength, R.string.journal_initial_length, R.string.journal_example_length, "journal-initial-length", enabled,
             modifier = Modifier.bringIntoViewRequester(lengthLocation),
             limit = PositiveDecimalParser.MAX_CHARACTERS, keyboard = KeyboardType.Decimal,
@@ -187,7 +187,7 @@ internal fun RecordForm(
             JournalNumberField(measuredLength, R.string.journal_measure_length, R.string.journal_example_length, "journal-length", enabled,
                 lengthError, lengthLocation, requiredError = R.string.journal_measurement_required.takeIf { attempted && missingMeasurement })
             JournalNumberField(resonance, R.string.journal_resonance, R.string.journal_example_resonance, "journal-resonance", enabled,
-                resonanceError, resonanceLocation)
+                resonanceError, resonanceLocation, megahertz = true)
             JournalNumberField(swr, R.string.matching_swr, R.string.journal_example_swr, "journal-swr", enabled, swrError, swrLocation)
             JournalNumberField(resistance, R.string.journal_resistance, R.string.journal_example_resistance, "journal-resistance", enabled,
                 resistanceError, resistanceLocation, requiredError = R.string.journal_impedance_pair_required.takeIf { attempted && missingResistance })
@@ -195,7 +195,7 @@ internal fun RecordForm(
                 reactanceError, reactanceLocation, requiredError = R.string.journal_impedance_pair_required.takeIf { attempted && missingReactance },
                 signed = true)
             JournalNumberField(testFrequency, R.string.journal_test_frequency, R.string.journal_example_target, "journal-test-frequency", enabled,
-                testFrequencyError, testFrequencyLocation)
+                testFrequencyError, testFrequencyLocation, megahertz = true)
             JournalNumberField(reference, R.string.journal_reference_optional, R.string.journal_example_reference,
                 "journal-reference", enabled, referenceError, referenceLocation)
             ChoicePicker(stringResource(R.string.journal_point), MeasurementPoint.entries, point,
@@ -278,7 +278,7 @@ private fun JournalDateTime(time: OffsetDateTime, enabled: Boolean, onChange: (O
 @Composable
 private fun JournalNumberField(
     state: TextFieldState, label: Int, example: Int, tag: String, enabled: Boolean, invalid: Boolean,
-    location: BringIntoViewRequester, requiredError: Int? = null, signed: Boolean = false,
+    location: BringIntoViewRequester, requiredError: Int? = null, signed: Boolean = false, megahertz: Boolean = false,
 ) {
     JournalTextField(
         state, label, example, tag, enabled,
@@ -286,6 +286,6 @@ private fun JournalNumberField(
         limit = PositiveDecimalParser.MAX_CHARACTERS,
         keyboard = if (signed) KeyboardType.Text else KeyboardType.Decimal,
         error = if (invalid) R.string.journal_number_invalid else requiredError,
-        numeric = true,
+        numeric = true, megahertz = megahertz,
     )
 }

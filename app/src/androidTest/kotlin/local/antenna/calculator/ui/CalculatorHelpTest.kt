@@ -60,14 +60,14 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         compose.onNodeWithText("Settings").assertExists()
         compose.onNodeWithTag("theme-DARK").performScrollTo().performClick()
         back()
-        field(FieldKey.SIZING_FREQUENCY).assertTextContains("433,5")
+        compose.runOnIdle { assertEquals("433,5", model.state.value.draft[FieldKey.SIZING_FREQUENCY].text) }
         compose.onNodeWithTag("monopole-result").performScrollTo().assertTextContains("164.2 mm")
         compose.onNodeWithTag("copy-result").performScrollTo().performClick()
         compose.onNodeWithText("Calculation copied").assertExists()
         compose.runOnUiThread {
             val clipboard = compose.activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val text = clipboard.primaryClip!!.getItemAt(0).text.toString()
-            assertTrue(text, text.contains("Frequency: 433.5 MHz"))
+            assertTrue(text, text.contains("Frequency: 433.500 MHz"))
             assertTrue(text, text.contains("Quarter-wave monopole"))
             assertFalse(text, text.contains("Частота"))
         }
@@ -171,7 +171,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         checkSizes(",", "см")
         checkOrder("itu", "nist", "Русский")
         checkOrder("radiolab", "rfi-dielectrics", "Русский")
-        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145")
+        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145", substring = true)
         settings()
         compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
         back()

@@ -104,11 +104,11 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         trimming()
         edit(FieldKey.ACTUAL_LENGTH, "500")
         compose.onNodeWithTag("nav-SIZING").performClick()
-        field(FieldKey.SIZING_FREQUENCY).assertTextContains("433")
+        field(FieldKey.SIZING_FREQUENCY).assertTextContains("433", substring = true)
         settings()
         compose.onNodeWithTag("theme-DARK").performClick()
         compose.runOnUiThread { compose.activity.onBackPressedDispatcher.onBackPressed() }
-        field(FieldKey.SIZING_FREQUENCY).assertTextContains("433")
+        field(FieldKey.SIZING_FREQUENCY).assertTextContains("433", substring = true)
         trimming()
         field(FieldKey.ACTUAL_LENGTH).assertTextContains("500")
         compose.onNodeWithTag("menu").performClick()

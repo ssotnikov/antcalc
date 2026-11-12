@@ -77,7 +77,7 @@ class CableAcceptanceTest {
         compose.runOnIdle {
             val clipboard = compose.activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val text = clipboard.primaryClip!!.getItemAt(0).text.toString()
-            assertTrue(text.contains("145 МГц")); assertTrue(text.contains("VF: 0,84")); assertTrue(text.contains("90°") || text.contains("°: 90"))
+            assertTrue(text.contains("145,000 МГц")); assertTrue(text.contains("VF: 0,84")); assertTrue(text.contains("90°") || text.contains("°: 90"))
             assertTrue(text.contains("плоскостями A и B"))
         }
     }

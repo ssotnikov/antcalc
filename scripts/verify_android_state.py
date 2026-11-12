@@ -59,7 +59,12 @@ def wait_for(check, description):
 
 
 def has_value(tree, value):
-    return any(n.get("class") == "android.widget.EditText" and n.get("text") == value
+    accepted = {value}
+    if re.fullmatch(r"[0-9]+(?:[.,][0-9]+)?", value):
+        whole, _, fraction = value.replace(",", ".").partition(".")
+        fraction = fraction.ljust(3, "0")
+        accepted.update({f"{whole}.{fraction}", f"{whole},{fraction}"})
+    return any(n.get("class") == "android.widget.EditText" and n.get("text") in accepted
                for n in tree.iter("node"))
 
 

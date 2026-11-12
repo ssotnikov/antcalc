@@ -108,17 +108,17 @@ class MeasurementAcceptanceTest {
             fun assertChartFrequency(mhz: String) = chart.assert(SemanticsMatcher.expectValue(
                 SemanticsProperties.StateDescription, compose.activity.getString(R.string.sweep_mhz, mhz),
             ))
-            assertChartFrequency("145")
+            assertChartFrequency("145.000")
             chart.performTouchInput { swipe(center, Offset(right, centerY)) }
-            assertChartFrequency("168")
+            assertChartFrequency("168.000")
             chart.performScrollTo().performTouchInput { swipe(center, Offset(centerX, bottom)) }
-            assertChartFrequency("168")
+            assertChartFrequency("168.000")
             chart.performScrollTo().performTouchInput {
                 val start = 52.dp.toPx()
                 val plotWidth = width - start - 12.dp.toPx()
                 click(Offset(start + plotWidth / 24f, centerY))
             }
-            assertChartFrequency("145")
+            assertChartFrequency("145.000")
 
             compose.onNodeWithTag("sweep-table-toggle").performScrollTo().performClick()
             val middleRow = compose.onNodeWithTag("sweep-table-row-1")
@@ -161,7 +161,7 @@ class MeasurementAcceptanceTest {
                     val lines = blocks[index].lines()
                     assertEquals(8, lines.size)
                     assertEquals(activity.getString(if (index == 0) R.string.sweep_trace_a else R.string.sweep_trace_b) + " · " + fileName, lines[0])
-                    assertEquals(activity.getString(R.string.sweep_mhz, "145"), lines[1])
+                    assertEquals(activity.getString(R.string.sweep_mhz, "145.000"), lines[1])
                     assertEquals("|S11| · ${decimal.format(magnitude)}", lines[3])
                 }
             }

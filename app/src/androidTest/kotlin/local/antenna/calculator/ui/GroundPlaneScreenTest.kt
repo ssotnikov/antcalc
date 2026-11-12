@@ -33,7 +33,7 @@ class GroundPlaneScreenTest : CalculatorUiFixture() {
         openTool()
         angle.performScrollTo().assertTextContains("30")
         compose.onNodeWithTag("nav-SIZING").performClick()
-        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145")
+        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145", substring = true)
     }
 
     @Test fun bothLocalesCanReadAndReachTheToolAtDoubleFontSize() {

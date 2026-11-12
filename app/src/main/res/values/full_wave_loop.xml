@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="loop_title">Full-wave loop</string>
-    <string name="loop_intro">Calculate the dimensions of a wire loop and mark its feed point.</string>
+    <string name="loop_intro">Wire loop dimensions (Quad, Delta Loop) and feed point location.</string>
     <string name="loop_shape">Loop shape</string>
     <string name="loop_square">Square</string>
     <string name="loop_triangle">Triangle</string>
@@ -51,6 +51,12 @@
     <string name="loop_impedance">Required characteristic impedance</string>
     <string name="loop_impedance_value">%1$s Ω</string>
     <string name="loop_section_length">Physical section length</string>
+    <string name="loop_band_title">Estimated dimensions by band</string>
+    <string name="loop_band_note">Starting dimensions use the empirical formula P = 306.324 / f, with f in MHz. The VHF and UHF values are extrapolated. Check resonance and tune the loop after installation.</string>
+    <string name="loop_band_column">Band</string>
+    <string name="loop_band_perimeter">Perimeter, m</string>
+    <string name="loop_band_square">Square side, m</string>
+    <string name="loop_band_triangle">Triangle side, m</string>
     <string name="loop_formulas">Formulas and limitations</string>
     <string name="loop_formula_alt">Perimeter is C divided by frequency. Frequency is C divided by perimeter. Side length is the perimeter divided by the number of sides. A square’s height equals its side. A triangle’s height is its side times the square root of three divided by two.</string>
     <string name="loop_frequency_value">%1$s %2$s</string>

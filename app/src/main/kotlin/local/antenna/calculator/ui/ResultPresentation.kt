@@ -40,7 +40,9 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
         val value = when (key) {
             FieldKey.FACTOR -> text
             FieldKey.ACTUAL_LENGTH -> context.getString(R.string.value_unit, text, context.getString(LengthUnit.valueOf(field.unit).labelResource()))
-            else -> context.getString(R.string.value_unit, text, context.getString(FrequencyUnit.valueOf(field.unit).labelResource()))
+            else -> field.frequency().validValue()?.let {
+                context.frequencyWithUnit(it.hertz, FrequencyUnit.valueOf(field.unit))
+            } ?: text
         }
         summary += line(label, value)
     }

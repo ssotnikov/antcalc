@@ -1,0 +1,2 @@
+Frequencies in MHz show three decimal places and keep additional digits when needed for 1 Hz precision. Updated the full-wave loop and S1P import descriptions.
+Added a reference table of full-wave loop dimensions by band.

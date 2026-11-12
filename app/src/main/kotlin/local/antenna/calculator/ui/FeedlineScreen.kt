@@ -23,9 +23,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.feedline.AttenuationUnit
 import local.antenna.calculator.core.feedline.FeedlineLoss
 import local.antenna.calculator.core.feedline.calculateFeedlineLoss
-import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.FrequencyUnit
-import local.antenna.calculator.core.units.inUnit
 import local.antenna.calculator.data.CableCatalog
 import local.antenna.calculator.data.CableProfile
 import local.antenna.calculator.state.CalculatorEvent
@@ -112,7 +110,8 @@ internal fun FeedlineScreen(
         }
         val frequencyLabel = stringResource(draft.frequencyUnit.labelResource())
         FeedlineField(draft.frequency, stringResource(R.string.feedline_frequency, frequencyLabel), enabled,
-            "feedline-frequency", if (draft.frequency.isNotBlank() && hertz == null) R.string.feedline_frequency_error else null) {
+            "feedline-frequency", if (draft.frequency.isNotBlank() && hertz == null) R.string.feedline_frequency_error else null,
+            megahertz = draft.frequencyUnit == FrequencyUnit.MEGAHERTZ) {
             edit { value -> value.copy(frequency = it.boundedNumericText()) }
         }
         ChoicePicker(stringResource(R.string.frequency_units), FrequencyUnit.entries, draft.frequencyUnit,
@@ -146,8 +145,7 @@ internal fun FeedlineScreen(
                 OutlinedButton({ frequencies = true }, enabled = enabled) { Text(stringResource(R.string.feedline_frequencies)) }
                 DropdownMenu(frequencies, { frequencies = false }) {
                     for (frequency in profile.attenuation.keys) {
-                        val display = Frequency.ofHertz(frequency).inUnit(draft.frequencyUnit)
-                        DropdownMenuItem(text = { Text(number(context, display, 9) + " " + frequencyLabel) }, onClick = {
+                        DropdownMenuItem(text = { Text(context.frequencyWithUnit(frequency, draft.frequencyUnit)) }, onClick = {
                             frequencies = false
                             edit { it.chooseFrequency(frequency) }
                         })
@@ -214,11 +212,15 @@ private fun FeedlineHeading(resource: Int) {
 }
 
 @Composable
-private fun FeedlineField(value: String, label: String, enabled: Boolean, tag: String, error: Int?, onEdit: (String) -> Unit) {
-    OutlinedTextField(value, onEdit, label = { Text(label) }, enabled = enabled, singleLine = true,
+private fun FeedlineField(
+    value: String, label: String, enabled: Boolean, tag: String, error: Int?,
+    megahertz: Boolean = false, onEdit: (String) -> Unit,
+) {
+    val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(Modifier, megahertz)
+    OutlinedTextField(value, onEdit, visualTransformation = frequencyTransformation, label = { Text(label) }, enabled = enabled, singleLine = true,
         isError = error != null, supportingText = error?.let { { Text(stringResource(it)) } },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        modifier = Modifier.fillMaxWidth().testTag(tag))
+        modifier = fieldModifier.fillMaxWidth().testTag(tag))
 }
 
 @Composable
@@ -263,7 +265,7 @@ internal fun CableProfileSource(profile: CableProfile) {
 private fun report(context: Context, draft: FeedlineDraft, profile: CableProfile?, result: FeedlineLoss): String = buildString {
     appendLine(context.getString(R.string.feedline_title))
     val frequencyUnit = context.getString(draft.frequencyUnit.labelResource())
-    val frequency = number(context, Frequency.ofHertz(requireNotNull(draft.hertz())).inUnit(draft.frequencyUnit), 9)
+    val frequency = context.formatFrequency(requireNotNull(draft.hertz()), draft.frequencyUnit)
     appendLine(context.getString(R.string.feedline_frequency, frequencyUnit) + ": " + frequency)
     appendLine(context.getString(R.string.feedline_length) + ": " + number(context, requireNotNull(draft.metres()), 32))
     draft.watts()?.let { appendLine(context.getString(R.string.feedline_power) + ": " + number(context, it, 32)) }

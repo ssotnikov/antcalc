@@ -174,25 +174,25 @@ class MixedJournalAcceptanceTest {
                 smith.performScrollTo().performTouchInput {
                     click(Offset(width * (219.6f / 360), height * (140.6f / 340)))
                 }
-                assertFrequency(1, "144")
+                assertFrequency(1, "144.000")
                 smith.performScrollTo().performTouchInput {
                     click(Offset(width * (193.2f / 360), height * (167f / 340)))
                 }
-                assertFrequency(1, "145")
+                assertFrequency(1, "145.000")
                 smith.performTouchInput {
                     swipe(Offset(width * (193.2f / 360), height * (167f / 340)),
                         Offset(width * (219.6f / 360), height * (140.6f / 340)))
                 }
-                assertFrequency(1, "144")
+                assertFrequency(1, "144.000")
                 val next = compose.onNodeWithContentDescription(application.getString(R.string.sweep_next_frequency))
                 next.performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
-                assertFrequency(1, "145")
+                assertFrequency(1, "145.000")
                 next.performSemanticsAction(SemanticsActions.OnClick)
-                assertFrequency(1, "146")
+                assertFrequency(1, "146.000")
                 compose.onNodeWithText(application.getString(R.string.sweep_smith_outside)).assertExists()
                 scenario.recreate()
                 waitFor("sweep-smith-chart")
-                assertFrequency(1, "146")
+                assertFrequency(1, "146.000")
                 click("back")
                 waitFor("journal-history")
             }

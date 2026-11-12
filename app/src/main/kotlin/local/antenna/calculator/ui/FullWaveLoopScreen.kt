@@ -35,6 +35,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.InputError
 import local.antenna.calculator.core.layout.*
+import local.antenna.calculator.core.units.FrequencyUnit
 import local.antenna.calculator.core.units.LengthUnit
 import local.antenna.calculator.state.*
 
@@ -54,6 +55,7 @@ internal fun FullWaveLoopScreen(
     val number = remember(locale) {
         NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 2; isGroupingUsed = false }
     }
+    val frequencyNumbers = remember(locale) { FrequencyNumberFormat(locale) }
     var matching by rememberSaveable { mutableStateOf(false) }
     var formulas by rememberSaveable { mutableStateOf(false) }
     val square = draft.shape == LoopShape.SQUARE
@@ -64,12 +66,13 @@ internal fun FullWaveLoopScreen(
         resources.getString(R.string.loop_frequency_value,
             number.format(meters * 1e9 / unit.nanometersPerUnit), resources.getString(unit.labelResource()))
     fun frequency(mhz: Double): String {
-        val (value, label) = when {
-            mhz < 1 -> mhz * 1000 to R.string.khz
-            mhz >= 1000 -> mhz / 1000 to R.string.ghz
-            else -> mhz to R.string.mhz
+        val (value, unit) = when {
+            mhz < 1 -> mhz * 1000 to FrequencyUnit.KILOHERTZ
+            mhz >= 1000 -> mhz / 1000 to FrequencyUnit.GIGAHERTZ
+            else -> mhz to FrequencyUnit.MEGAHERTZ
         }
-        return resources.getString(R.string.loop_frequency_value, number.format(value), resources.getString(label))
+        return resources.getString(R.string.loop_frequency_value,
+            frequencyNumbers.inUnit(value, unit), resources.getString(unit.labelResource()))
     }
 
     val scroll = rememberScrollState()
@@ -185,6 +188,7 @@ internal fun FullWaveLoopScreen(
                 LoopValue(R.string.loop_section_length, length(section.lengthMeters), Modifier.testTag("loop-match-length"))
             }
         }
+        FullWaveLoopBandTable()
         TextButton(onClick = { formulas = !formulas }) {
             Text(stringResource(R.string.loop_formulas), color = MaterialTheme.colorScheme.secondary)
         }
@@ -227,18 +231,23 @@ private fun LoopInput(
             InputError.INVALID_NUMBER -> R.string.error_number
             InputError.NON_POSITIVE -> R.string.error_positive
             else -> when (field) {
+                LoopField.FREQUENCY, LoopField.MATCH_FREQUENCY -> R.string.error_frequency_step
                 LoopField.FACTOR -> R.string.loop_factor_error
                 LoopField.MATCH_VF -> R.string.loop_vf_error
                 else -> R.string.loop_perimeter_error
             }
         }
     }?.let { stringResource(it) }
+    val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
+        Modifier, field == LoopField.FREQUENCY || field == LoopField.MATCH_FREQUENCY,
+    )
     OutlinedTextField(
-        raw, { onEdit(field, it) }, enabled = enabled, singleLine = true,
+        visualTransformation = frequencyTransformation,
+        value = raw, onValueChange = { onEdit(field, it) }, enabled = enabled, singleLine = true,
         label = { Text(stringResource(field.loopLabel())) },
         supportingText = issue?.let { { Text(it) } },
         isError = issue != null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        modifier = Modifier.fillMaxWidth().testTag("loop-${field.name}").semantics { if (issue != null) error(issue) },
+        modifier = fieldModifier.fillMaxWidth().testTag("loop-${field.name}").semantics { if (issue != null) error(issue) },
     )
 }
 

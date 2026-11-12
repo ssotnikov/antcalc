@@ -16,6 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import local.antenna.calculator.ui.FrequencyNumberFormat
 import java.text.NumberFormat
 import java.util.Locale
 import local.antenna.calculator.R
@@ -24,14 +25,13 @@ import local.antenna.calculator.core.measurements.S11Point
 internal class MeasurementNumberFormat(locale: Locale) {
     private val two = decimalFormat(locale, 2)
     private val four = decimalFormat(locale, 4)
-    private val frequency = decimalFormat(locale, 9)
+    private val frequency = FrequencyNumberFormat(locale)
 
     fun measurement(value: Double?): String = format(value, two)
     fun magnitude(value: Double): String = format(value, four)
-    private val bandFrequency = decimalFormat(locale, 3)
 
-    fun bandMegahertz(hertz: Double): String = bandFrequency.format(hertz / 1e6)
-    fun megahertz(hertz: Double): String = frequency.format(hertz / 1e6)
+    fun bandMegahertz(hertz: Double): String = frequency.estimatedMegahertz(hertz)
+    fun megahertz(hertz: Double): String = frequency.megahertz(hertz)
 
     private fun format(value: Double?, formatter: NumberFormat): String = when {
         value == null || value.isNaN() -> "—"

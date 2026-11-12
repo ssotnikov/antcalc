@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="loop_title">Полноволновая рамка</string>
-    <string name="loop_intro">Размеры проволочной рамки и положение точки питания.</string>
+    <string name="loop_intro">Размеры проволочной рамки (Quad, Delta Loop) и положение точки питания.</string>
     <string name="loop_shape">Форма рамки</string>
     <string name="loop_square">Квадрат</string>
     <string name="loop_triangle">Треугольник</string>
@@ -51,6 +51,12 @@
     <string name="loop_impedance">Требуемое волновое сопротивление отрезка</string>
     <string name="loop_impedance_value">%1$s Ом</string>
     <string name="loop_section_length">Физическая длина отрезка</string>
+    <string name="loop_band_title">Расчетные размеры по диапазонам</string>
+    <string name="loop_band_note">Начальные размеры по эмпирической формуле P = 306,324 / f, где f в МГц. Для УКВ это экстраполяция. После установки проверьте резонанс и подстройте рамку.</string>
+    <string name="loop_band_column">Диапазон</string>
+    <string name="loop_band_perimeter">Периметр, м</string>
+    <string name="loop_band_square">Сторона квадрата, м</string>
+    <string name="loop_band_triangle">Сторона треугольника, м</string>
     <string name="loop_formulas">Формулы и ограничения</string>
     <string name="loop_formula_alt">Периметр равен C, делённой на частоту. Частота равна C, делённой на периметр. Сторона равна периметру, делённому на число сторон. Высота квадрата равна стороне, высота треугольника равна стороне, умноженной на корень из трёх и делённой на два.</string>
     <string name="loop_frequency_value">%1$s %2$s</string>

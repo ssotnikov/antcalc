@@ -35,7 +35,7 @@ class InvertedVScreenTest : CalculatorUiFixture() {
         compose.onNodeWithTag("open-inverted-v").performScrollTo().performClick()
         height.performScrollTo().assertTextContains("7,5")
         compose.onNodeWithTag("nav-SIZING").performClick()
-        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145")
+        field(FieldKey.SIZING_FREQUENCY).assertTextContains("145", substring = true)
     }
 
     @Test fun localizedReadingAndControlsAtDoubleFontSize() {

@@ -1,6 +1,7 @@
 package local.antenna.calculator.journal
 
 import android.content.Context
+import local.antenna.calculator.ui.FrequencyNumberFormat
 import java.text.NumberFormat
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -36,6 +37,7 @@ internal fun JournalProblem.label(): Int = when (this) {
 
 internal class JournalPresentation(private val context: Context) {
     private val locale = context.resources.configuration.locales[0]
+    private val frequencies = FrequencyNumberFormat(locale)
     private fun text(id: Int): String = context.getString(id)
 
     fun date(value: OffsetDateTime): String =
@@ -47,8 +49,7 @@ internal class JournalPresentation(private val context: Context) {
         maximumFractionDigits = digits
     }.format(value)
 
-    fun frequency(hertz: Long): String = frequency(hertz.toDouble())
-    fun frequency(hertz: Double): String = withUnit(hertz / 1_000_000.0, R.string.mhz)
+    fun frequency(hertz: Number): String = context.getString(R.string.value_unit, frequencies.megahertz(hertz), text(R.string.mhz))
     fun length(nanometers: Long): String = withUnit(nanometers / 10_000_000.0, R.string.cm)
     private fun withUnit(value: Number, unit: Int) = context.getString(R.string.value_unit, number(value), text(unit))
 
@@ -172,7 +173,7 @@ internal class JournalPresentation(private val context: Context) {
         }
         if (label != null) return text(label)
         return when (metric.unit) {
-        SnapshotUnit.HERTZ -> withUnit(metric.value / 1_000_000, R.string.mhz)
+        SnapshotUnit.HERTZ -> frequency(metric.value)
         SnapshotUnit.NANOMETERS -> withUnit(metric.value / 10_000_000, R.string.cm)
         SnapshotUnit.METERS -> withUnit(metric.value, R.string.m)
         SnapshotUnit.FACTOR -> number(metric.value)

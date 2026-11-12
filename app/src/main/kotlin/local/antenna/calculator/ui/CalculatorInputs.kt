@@ -83,8 +83,12 @@ private fun NumericInput(key: FieldKey, label: Int, state: CalculatorUiState, on
     val requester = remember(key) { FocusRequester() }
     var hadFocus by remember(key) { mutableStateOf(false) }
     LaunchedEffect(key) { if (field.focused) requester.requestFocus() }
+    val (frequencyModifier, frequencyTransformation) = megahertzFieldPresentation(
+        Modifier, field.unit == FrequencyUnit.MEGAHERTZ.name,
+    )
     OutlinedTextField(value = field.text, onValueChange = { onEvent(CalculatorEvent.Edit(key, it)) },
-        modifier = Modifier.fillMaxWidth().testTag("field-${key.name}").semantics {
+        visualTransformation = frequencyTransformation,
+        modifier = frequencyModifier.fillMaxWidth().testTag("field-${key.name}").semantics {
             if (errorMessage != null) error(errorMessage)
         }.focusRequester(requester).onFocusChanged {
             // Initial unfocused composition is not a user blur and must not reveal empty-field errors.
