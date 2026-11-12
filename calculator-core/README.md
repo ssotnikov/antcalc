@@ -299,3 +299,13 @@ r·sinβ, высота конца равна H−r·sinβ. Высота верш
 диапазона трассы. При равном расстоянии выбирается меньшая частота.
 
 [Спецификация Touchstone 1.1](https://ibis.org/connector/touchstone_spec11.pdf)
+
+## SWR bandwidth from a measured sweep
+
+`S11Sweep.swrBandwidth` takes a validated, frequency-ordered S1P sweep and an inclusive SWR threshold from 1 to 1000. Frequencies and widths are in hertz. It compares the measured magnitude `g = |S11|` with `(SWR − 1) / (SWR + 1)`. It interpolates crossings linearly in magnitude between adjacent valid samples, keeping every separate band. A sweep limit or a non-passive sample (`g > 1`) marks an unknown edge. The reported width then covers only the observed part. Equal measured minima use the lower frequency.
+
+Exact and interpolated `X = 0` frequencies are reported separately from the measured SWR minimum. Interpolation uses adjacent finite reactances. Consecutive exact zeros are reported as a run of measured samples. The calculation leaves the source trace intact.
+
+For SWR ≤ 2, samples at 100, 110, 120, 130 and 140 MHz with magnitudes 0.5, 0, 0.5, 0 and 0.5 give estimated bands of 103.333333–116.666667 MHz and 123.333333–136.666667 MHz. Each band is approximately 13.333333 MHz wide. A single sample exactly on the threshold with both neighbors above it gives zero width.
+
+[Keysight — Reflection measurements](https://helpfiles.keysight.com/csg/pxivna/Tutorials/Reflection_Measurements.htm) · [ARRL — Analyzing an Antenna System](https://www.arrl.org/files/file/On%20the%20Air%20Email/Analyzing%20Antenna.pdf)

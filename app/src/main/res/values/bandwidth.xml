@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bandwidth_additional_tools">Import analyzer measurements and find the SWR bandwidth.</string>
+    <string name="bandwidth_title">SWR bandwidth</string>
+    <string name="bandwidth_description">Find the band edges and bandwidth at a chosen SWR threshold from an S1P sweep.</string>
+    <string name="bandwidth_source">S1P sweep</string>
+    <string name="bandwidth_trace_details">Z₀ %1$s Ω · %2$s\n%3$s – %4$s · Points: %5$d</string>
+    <string name="bandwidth_no_trace">Import an S1P sweep to calculate the bandwidth.</string>
+    <string name="bandwidth_unreadable">Could not load the S1P sweep. Check the file on the measurements screen.</string>
+    <string name="bandwidth_open_measurements">Open S1P measurements</string>
+    <string name="bandwidth_threshold">SWR threshold</string>
+    <string name="bandwidth_threshold_range">Enter a value from 1 to 1000</string>
+    <string name="bandwidth_threshold_report">SWR threshold: %1$s</string>
+    <string name="bandwidth_chart">SWR plot</string>
+    <string name="bandwidth_chart_hint">Shading marks intervals at or below the SWR threshold. Their edges are listed below.</string>
+    <string name="bandwidth_intervals">SWR bands</string>
+    <string name="bandwidth_interval">Band %1$d</string>
+    <string name="bandwidth_sweep_minimum">Sweep minimum SWR · %1$s at %2$s</string>
+    <string name="bandwidth_band_minimum">Band minimum SWR · %1$s at %2$s</string>
+    <string name="bandwidth_no_bands">No intervals meet the SWR threshold within the measured range.</string>
+    <string name="bandwidth_excluded">Points excluded with |S11| &gt; 1: %1$d</string>
+    <string name="bandwidth_lower">Lower edge · %1$s (%2$s)</string>
+    <string name="bandwidth_upper">Upper edge · %1$s (%2$s)</string>
+    <string name="bandwidth_edge_measured">measured point</string>
+    <string name="bandwidth_edge_estimated">estimated between points</string>
+    <string name="bandwidth_edge_sweep">sweep limit, edge unknown</string>
+    <string name="bandwidth_edge_gap">measurement gap, edge unknown</string>
+    <string name="bandwidth_width">Bandwidth · %1$s</string>
+    <string name="bandwidth_estimated_width">Estimated bandwidth · %1$s</string>
+    <string name="bandwidth_partial_width">Observed width · %1$s</string>
+    <string name="bandwidth_single_point">Single qualifying point · width %1$s</string>
+    <string name="bandwidth_reactance">Zero-reactance points</string>
+    <string name="bandwidth_reactance_hint">The frequency where X = 0 can differ from the frequency of minimum SWR.</string>
+    <string name="bandwidth_no_reactance">No X = 0 points were found in the measured range.</string>
+    <string name="bandwidth_zero_estimated">Estimated X = 0 · %1$s</string>
+    <string name="bandwidth_zero_measured">Measured X = 0 · %1$s</string>
+    <string name="bandwidth_zero_range">X = 0 at sampled points from %1$s to %2$s</string>
+    <string name="bandwidth_copy">Copy results</string>
+    <string name="bandwidth_copy_failed">Could not copy results</string>
+    <string name="bandwidth_method">Band edges are estimated by linearly interpolating |S11| between neighboring samples. The calculation stops at sweep limits and gaps.</string>
+    <string name="bandwidth_scope">SWR bandwidth describes matching at the measurement plane. Antenna efficiency requires separate measurements. Follow your license conditions for permitted transmit frequencies.</string>
+    <string name="bandwidth_show_formula">Show formula</string>
+    <string name="bandwidth_hide_formula">Hide formula</string>
+</resources>

@@ -35,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import kotlin.math.abs
 import local.antenna.calculator.R
+import local.antenna.calculator.core.measurements.BandEdgeKind
+import local.antenna.calculator.core.measurements.SwrBandwidth
 
 @Composable
 internal fun MeasurementChart(
@@ -42,6 +44,7 @@ internal fun MeasurementChart(
     metric: SweepMetric,
     selectedHz: Double,
     activeSlot: Int,
+    bandwidth: SwrBandwidth? = null,
     select: (Double) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -64,6 +67,10 @@ internal fun MeasurementChart(
         val maximum = values.maxOrNull() ?: minimum
         val scale = maxOf(1.0, abs(minimum), abs(maximum))
         Bounds(minimum / scale, maximum / scale, scale)
+    }
+    val estimatedEdges = remember(bandwidth) {
+        bandwidth?.bands.orEmpty().flatMap { band -> listOf(band.lower, band.upper) }
+            .filter { it.kind == BandEdgeKind.ESTIMATED }.map { it.hertz }
     }
     val formatter = remember(locale) { NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 3; isGroupingUsed = false } }
     val frequencyFormat = remember(locale) { MeasurementNumberFormat(locale) }
@@ -109,6 +116,17 @@ internal fun MeasurementChart(
         val high = bounds.maximum + pad
         fun x(hz: Double) = if (last == first) (left + right) / 2 else left + ((hz - first) / (last - first)).toFloat() * (right - left)
         fun y(value: Double) = bottom - (((value / bounds.scale - low) / (high - low)).coerceIn(0.0, 1.0).toFloat()) * (bottom - top)
+        bandwidth?.bands?.forEach { band ->
+            val start = x(band.lower.hertz)
+            val end = x(band.upper.hertz)
+            if (end > start) drawRect(colors.primary.copy(alpha = 0.14f), Offset(start, top), Size(end - start, bottom - top))
+            else drawLine(colors.primary.copy(alpha = 0.4f), Offset(start, top), Offset(start, bottom), 2.dp.toPx())
+        }
+        bandwidth?.threshold?.takeIf { it / bounds.scale in low..high }?.let {
+            val thresholdY = y(it)
+            drawLine(colors.primary, Offset(left, thresholdY), Offset(right, thresholdY),
+                strokeWidth = 1.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(5.dp.toPx(), 4.dp.toPx())))
+        }
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colors.onSurfaceVariant.toArgb()
             textSize = 11.dp.toPx()
@@ -149,11 +167,17 @@ internal fun MeasurementChart(
             val color = traceColors[data.slot]
             val path = Path()
             var started = false
+            var edgeIndex = 0
             data.points.forEach { (hz, value) ->
-                if (value != null && value.isFinite()) {
-                    val x = x(hz)
-                    val y = y(value)
-                    if (started) path.lineTo(x, y) else path.moveTo(x, y)
+                val visibleValue = value != null && (value.isFinite() || bandwidth != null && value == Double.POSITIVE_INFINITY)
+                if (visibleValue) {
+                    while (edgeIndex < estimatedEdges.size && estimatedEdges[edgeIndex] <= hz) {
+                        if (started && bandwidth != null) {
+                            path.lineTo(x(estimatedEdges[edgeIndex]), y(bandwidth.threshold))
+                        }
+                        edgeIndex++
+                    }
+                    if (started) path.lineTo(x(hz), y(value)) else path.moveTo(x(hz), y(value))
                     started = true
                 } else started = false
             }

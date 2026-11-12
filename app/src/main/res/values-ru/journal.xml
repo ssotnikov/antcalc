@@ -56,6 +56,8 @@
     <string name="journal_delete">Удалить</string>
     <string name="journal_duplicate">Дублировать проект</string>
     <string name="journal_copy_name">%1$s (копия)</string>
+    <string name="journal_delete_project_title">Удаление проекта</string>
+    <string name="journal_delete_record_title">Удаление записи</string>
     <string name="journal_delete_project">Удалить этот проект и все его записи?</string>
     <string name="journal_delete_record">Удалить эту запись?</string>
     <string name="journal_select">Выбрать для сравнения: %1$s</string>

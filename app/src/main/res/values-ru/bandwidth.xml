@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bandwidth_additional_tools">Импорт измерений анализатора и расчет рабочей полосы по КСВ.</string>
+    <string name="bandwidth_title">Рабочая полоса по КСВ</string>
+    <string name="bandwidth_description">Границы и ширина полосы по выбранному порогу КСВ на трассе S1P.</string>
+    <string name="bandwidth_source">Трасса S1P</string>
+    <string name="bandwidth_trace_details">Z₀ %1$s Ом · %2$s\n%3$s — %4$s · Точек: %5$d</string>
+    <string name="bandwidth_no_trace">Загрузите измерение S1P, чтобы рассчитать полосу.</string>
+    <string name="bandwidth_unreadable">Не удалось загрузить измерение S1P. Проверьте файл в экране измерений.</string>
+    <string name="bandwidth_open_measurements">Открыть измерения S1P</string>
+    <string name="bandwidth_threshold">Порог КСВ</string>
+    <string name="bandwidth_threshold_range">Введите значение от 1 до 1000</string>
+    <string name="bandwidth_threshold_report">Порог КСВ: %1$s</string>
+    <string name="bandwidth_chart">График КСВ</string>
+    <string name="bandwidth_chart_hint">Цветом выделены интервалы, где КСВ не превышает порог. Их границы перечислены ниже.</string>
+    <string name="bandwidth_intervals">Интервалы рабочей полосы</string>
+    <string name="bandwidth_interval">Интервал %1$d</string>
+    <string name="bandwidth_sweep_minimum">Минимум КСВ на трассе · %1$s при %2$s</string>
+    <string name="bandwidth_band_minimum">Минимум КСВ в интервале · %1$s при %2$s</string>
+    <string name="bandwidth_no_bands">В измеренном диапазоне нет интервалов с КСВ на пороге или ниже.</string>
+    <string name="bandwidth_excluded">Пропущено точек с |S11| &gt; 1: %1$d</string>
+    <string name="bandwidth_lower">Нижняя граница · %1$s (%2$s)</string>
+    <string name="bandwidth_upper">Верхняя граница · %1$s (%2$s)</string>
+    <string name="bandwidth_edge_measured">измеренная точка</string>
+    <string name="bandwidth_edge_estimated">оценка между точками</string>
+    <string name="bandwidth_edge_sweep">край прохода, граница неизвестна</string>
+    <string name="bandwidth_edge_gap">разрыв измерений, граница неизвестна</string>
+    <string name="bandwidth_width">Ширина · %1$s</string>
+    <string name="bandwidth_estimated_width">Оценка ширины · %1$s</string>
+    <string name="bandwidth_partial_width">Ширина в пределах измерений · %1$s</string>
+    <string name="bandwidth_single_point">Одна подходящая точка · ширина %1$s</string>
+    <string name="bandwidth_reactance">Точки нулевой реактивности</string>
+    <string name="bandwidth_reactance_hint">Частота X = 0 может отличаться от частоты минимума КСВ.</string>
+    <string name="bandwidth_no_reactance">В измеренном диапазоне не найдено точек X = 0.</string>
+    <string name="bandwidth_zero_estimated">Оценка X = 0 · %1$s</string>
+    <string name="bandwidth_zero_measured">Измеренная точка X = 0 · %1$s</string>
+    <string name="bandwidth_zero_range">X = 0 в измеренных точках от %1$s до %2$s</string>
+    <string name="bandwidth_copy">Копировать результаты</string>
+    <string name="bandwidth_copy_failed">Не удалось скопировать результаты</string>
+    <string name="bandwidth_method">Границы полосы оцениваются линейной интерполяцией |S11| между соседними точками. За пределами прохода и через разрывы границы не оцениваются.</string>
+    <string name="bandwidth_scope">Рабочая полоса по КСВ характеризует согласование в точке измерения. Для оценки эффективности антенны нужны отдельные измерения. Допустимые частоты передачи определяются условиями лицензии.</string>
+    <string name="bandwidth_show_formula">Показать формулу</string>
+    <string name="bandwidth_hide_formula">Скрыть формулу</string>
+</resources>

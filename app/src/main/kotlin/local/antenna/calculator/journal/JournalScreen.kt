@@ -35,6 +35,7 @@ import java.util.UUID
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.state.CalculatorUiState
+import local.antenna.calculator.ui.AppAlertDialog
 import local.antenna.calculator.ui.cardListBounce
 
 internal enum class JournalPage(val title: Int) {
@@ -136,7 +137,7 @@ internal fun JournalScreen(
     }
 
     state.projects.find { it.id.toString() == pendingSweepExport }?.let { target ->
-        AlertDialog(
+        AppAlertDialog(
             onDismissRequest = { pendingSweepExport = null },
             title = { Text(stringResource(R.string.journal_export)) },
             text = { Text(stringResource(R.string.sweep_export_notice)) },
@@ -272,11 +273,8 @@ internal fun JournalScreen(
     }
 
     state.preview?.let { preview ->
-        AlertDialog(
+        AppAlertDialog(
             onDismissRequest = { if (!state.busy) model.clearPreview() },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            titleContentColor = MaterialTheme.colorScheme.onSurface,
-            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             title = { Text(stringResource(R.string.journal_preview)) },
             text = {
                 Column(Modifier.heightIn(max = 330.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -298,8 +296,13 @@ internal fun JournalScreen(
             projectToDelete = null
             confirmRecordDeletion = false
         }
-        AlertDialog(
+        AppAlertDialog(
             onDismissRequest = ::dismissDeletion,
+            title = {
+                Text(stringResource(
+                    if (deleteProjectId != null) R.string.journal_delete_project_title else R.string.journal_delete_record_title,
+                ))
+            },
             text = {
                 Text(stringResource(if (deleteProjectId != null) R.string.journal_delete_project else R.string.journal_delete_record))
             },
@@ -314,7 +317,9 @@ internal fun JournalScreen(
                             navigate(JournalPage.HISTORY)
                         }
                     }
-                }, enabled = !state.busy) { Text(stringResource(R.string.journal_delete)) }
+                }, enabled = !state.busy, colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)) {
+                    Text(stringResource(R.string.journal_delete))
+                }
             },
             dismissButton = { TextButton(onClick = ::dismissDeletion) { Text(stringResource(R.string.journal_cancel)) } },
         )
@@ -544,11 +549,14 @@ private fun ProjectHistory(
                             }
                             var confirm by remember { mutableStateOf(false) }
                             TextButton(enabled = enabled, onClick = { confirm = true }) { Text(stringResource(R.string.sweep_remove)) }
-                            if (confirm) AlertDialog(
+                            if (confirm) AppAlertDialog(
                                 onDismissRequest = { confirm = false },
                                 title = { Text(stringResource(R.string.sweep_remove_saved)) },
                                 confirmButton = {
-                                    TextButton(onClick = { confirm = false; onRemoveSweeps(sweep) }) {
+                                    TextButton(
+                                        onClick = { confirm = false; onRemoveSweeps(sweep) },
+                                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                                    ) {
                                         Text(stringResource(R.string.sweep_remove))
                                     }
                                 },

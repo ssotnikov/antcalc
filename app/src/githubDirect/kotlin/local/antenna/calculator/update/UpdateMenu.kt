@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
@@ -49,6 +48,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import local.antenna.calculator.BuildConfig
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.AppAlertDialog
 import local.antenna.calculator.ui.GITHUB_RELEASES_URL
 import local.antenna.calculator.ui.UpdateSnackbarVisuals
 import local.antenna.calculator.ui.openSourceWithFeedback
@@ -101,7 +101,7 @@ internal fun rememberUpdateMenuActions(
             UpdateOfferDialog(current.release, onDismiss = { model.dismiss(current) }, onDownload = { model.download(current) })
         }
         is UpdateUiState.Permission -> if (active) {
-            AlertDialog(
+            AppAlertDialog(
                 onDismissRequest = { model.cancelInstall(current.release) },
                 title = { Text(stringResource(R.string.update_permission_title)) },
                 text = {
@@ -133,10 +133,9 @@ internal fun rememberUpdateMenuActions(
             )
         }
         is UpdateUiState.Downloading -> if (active) {
-            AlertDialog(
+            AppAlertDialog(
                 onDismissRequest = { model.cancelInstall(current.release) },
                 properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
                 title = { Text(stringResource(R.string.update_downloading)) },
                 text = {
                     val progress = (current.bytes.toFloat() / current.release.size).coerceIn(0f, 1f)
@@ -159,7 +158,7 @@ internal fun rememberUpdateMenuActions(
         }
         is UpdateUiState.DownloadFailed -> if (active) {
             val dismiss = { model.messageShown(current) }
-            AlertDialog(
+            AppAlertDialog(
                 onDismissRequest = dismiss,
                 title = { Text(stringResource(R.string.update_download_failed)) },
                 text = { Text(downloadErrorMessage(current.reason)) },
@@ -209,6 +208,7 @@ private fun UpdateOfferDialog(release: UpdateRelease, onDismiss: () -> Unit, onD
             modifier = Modifier.fillMaxWidth().testTag("update-offer"),
             shape = MaterialTheme.shapes.extraLarge,
             color = MaterialTheme.colorScheme.surfaceContainer,
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
             Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Column(
@@ -231,7 +231,12 @@ private fun UpdateOfferDialog(release: UpdateRelease, onDismiss: () -> Unit, onD
                         modifier = Modifier.semantics { heading() },
                         style = MaterialTheme.typography.titleSmall,
                     )
-                    Text(notes, modifier = Modifier.testTag("update-notes"), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        notes,
+                        modifier = Modifier.testTag("update-notes"),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),

@@ -33,9 +33,10 @@ import local.antenna.calculator.state.*
 import local.antenna.calculator.journal.ProjectForm
 import local.antenna.calculator.measurements.MeasurementScreen
 import local.antenna.calculator.measurements.MeasurementViewModel
+import local.antenna.calculator.measurements.SwrBandwidthScreen
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ADDITIONAL_TOOLS, MEASUREMENTS }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +68,7 @@ private fun LocalizedCalculatorApp(
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menu by remember { mutableStateOf(false) }
-    var fromJournal by rememberSaveable { mutableStateOf(false) }
+    var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
@@ -112,7 +113,8 @@ private fun LocalizedCalculatorApp(
             Page.REFERENCES -> page = referencesBackPage
             Page.ANTENNA_PARAMETER_TOOLS, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
             Page.INVERTED_V, Page.GROUND_PLANE -> page = Page.ANTENNA_PARAMETER_TOOLS
-            Page.MEASUREMENTS -> page = if (fromJournal) Page.JOURNAL else Page.ADDITIONAL_TOOLS
+            Page.MEASUREMENTS -> page = measurementsParent
+            Page.SWR_BANDWIDTH -> page = Page.ADDITIONAL_TOOLS
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
             Page.TRANSFER_PICKER -> if (pending?.needsAntennaChoice == true) page = Page.TRANSFER_TYPE else finishTransfer()
             Page.TRANSFER_TYPE -> finishTransfer()
@@ -198,6 +200,7 @@ private fun LocalizedCalculatorApp(
             Page.ANTENNA_PARAMETER_TOOLS -> R.string.antenna_parameter_tools
             Page.ADDITIONAL_TOOLS -> R.string.additional_tools
             Page.MEASUREMENTS -> R.string.sweep_title
+            Page.SWR_BANDWIDTH -> R.string.bandwidth_title
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
             Page.REFERENCES -> R.string.references_title
@@ -264,7 +267,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -303,11 +306,27 @@ private fun LocalizedCalculatorApp(
                         )
                     }
                     Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
-                        AdditionalToolsScreen {
-                            fromJournal = false
-                            measurements?.showWorkspace()
-                            page = Page.MEASUREMENTS
-                        }
+                        AdditionalToolsScreen(
+                            onOpenMeasurements = {
+                                measurementsParent = Page.ADDITIONAL_TOOLS
+                                measurements?.showWorkspace()
+                                page = Page.MEASUREMENTS
+                            },
+                            onOpenBandwidth = {
+                                measurements?.showWorkspace()
+                                page = Page.SWR_BANDWIDTH
+                            },
+                        )
+                    }
+                    Page.SWR_BANDWIDTH -> if (measurements != null) screenStates.SaveableStateProvider("swr-bandwidth") {
+                        SwrBandwidthScreen(
+                            measurements,
+                            onOpenMeasurements = {
+                                leaveInput()
+                                measurementsParent = Page.SWR_BANDWIDTH
+                                page = Page.MEASUREMENTS
+                            },
+                        ) { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
                     Page.MEASUREMENTS -> if (measurements != null) screenStates.SaveableStateProvider("measurements") {
                         MeasurementScreen(
@@ -414,7 +433,7 @@ private fun LocalizedCalculatorApp(
                                 state, currentState, initialProjectId = linkedProjectId,
                                 onOpenSweeps = measurements?.let { model ->
                                     { sweep ->
-                                        fromJournal = true
+                                        measurementsParent = Page.JOURNAL
                                         page = Page.MEASUREMENTS
                                         model.openAttachments(sweep.traces)
                                     }

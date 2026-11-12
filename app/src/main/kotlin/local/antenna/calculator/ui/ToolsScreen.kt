@@ -39,7 +39,7 @@ internal fun ToolsScreen(
             if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             ToolCard(R.string.antenna_parameter_tools, R.string.antenna_parameter_tools_hint,
                 "open-antenna-parameter-tools", onOpenAntennaCalculations, showChevron = true)
-            if (onOpenAdditional != null) ToolCard(R.string.additional_tools, R.string.sweep_tool_title,
+            if (onOpenAdditional != null) ToolCard(R.string.additional_tools, R.string.bandwidth_additional_tools,
                 "open-additional-tools", onOpenAdditional, showChevron = true, highlighted = true)
         }
     }
@@ -59,13 +59,15 @@ internal fun AntennaParameterToolsScreen(onOpenInvertedV: () -> Unit, onOpenGrou
 }
 
 @Composable
-internal fun AdditionalToolsScreen(onOpenMeasurements: () -> Unit) {
+internal fun AdditionalToolsScreen(onOpenMeasurements: () -> Unit, onOpenBandwidth: () -> Unit) {
     val scroll = rememberScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         ToolCard(R.string.sweep_tool_title, R.string.sweep_tool_description, "open-measurements", onOpenMeasurements, showChevron = true)
+        ToolCard(R.string.bandwidth_title, R.string.bandwidth_description, "open-bandwidth", onOpenBandwidth, showChevron = true)
     }
 }
 

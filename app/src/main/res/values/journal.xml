@@ -56,6 +56,8 @@
     <string name="journal_delete">Delete</string>
     <string name="journal_duplicate">Duplicate project</string>
     <string name="journal_copy_name">%1$s (copy)</string>
+    <string name="journal_delete_project_title">Delete project</string>
+    <string name="journal_delete_record_title">Delete record</string>
     <string name="journal_delete_project">Delete this project and all its records?</string>
     <string name="journal_delete_record">Delete this record?</string>
     <string name="journal_select">Select %1$s for comparison</string>
