@@ -181,7 +181,7 @@
     <string name="inverted_v_height_alt">h = H − L × cos(α/2).</string>
     <string name="source_ground_plane_m0ukd" translatable="false">1/4 Wave Ground Plane Antenna Calculator</string>
     <string name="source_ground_plane_m0ukd_url" translatable="false">https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/</string>
-    <string name="source_ground_plane_rlocman" translatable="false">Расчёт вертикальной четвертьволновой антенны</string>
+    <string name="source_ground_plane_rlocman" translatable="false">Расчет вертикальной четвертьволновой антенны</string>
     <string name="source_ground_plane_rlocman_url" translatable="false">https://www.rlocman.ru/shem/schematics.html?di=4982</string>
     <string name="source_ground_plane_qrz" translatable="false">Техника гражданской (СИ-БИ) радиосвязи — Антенны</string>
     <string name="source_ground_plane_qrz_url" translatable="false">https://lib.qrz.ru/book/export/html/2182</string>

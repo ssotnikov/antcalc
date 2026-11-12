@@ -6,8 +6,8 @@
     <string name="sweep_title">Измерения S1P</string>
     <string name="sweep_files">Файлы измерений</string>
     <string name="sweep_graph">График измерений</string>
-    <string name="sweep_graph_description">График %1$s. Значения доступны в таблице точек.</string>
-    <string name="sweep_selected">Выбранная точка</string>
+    <string name="sweep_graph_description">График %1$s. Значения доступны в таблице измерений.</string>
+    <string name="sweep_selected">Выбранная частота</string>
     <string name="sweep_trace_a">Трасса A</string>
     <string name="sweep_trace_b">Трасса B</string>
     <string name="sweep_mhz">%1$s МГц</string>
@@ -22,7 +22,7 @@
     <string name="sweep_remove">Удалить</string>
     <string name="sweep_cancel">Отмена</string>
     <string name="sweep_swr">КСВ</string>
-    <string name="sweep_magnitude">Модуль |S11|</string>
+    <string name="sweep_magnitude">|S11|</string>
     <string name="sweep_db">S11, дБ</string>
     <string name="sweep_impedance">Импеданс R / X</string>
     <string name="sweep_phase">Фаза S11</string>
@@ -33,14 +33,13 @@
     <string name="sweep_reference_mismatch">У трасс разный опорный импеданс Z₀.</string>
     <string name="sweep_plane_mismatch">Плоскости калибровки различаются или не указаны.</string>
     <string name="sweep_grid_mismatch">Ближайшие измеренные точки имеют разные частоты.</string>
-    <string name="sweep_table_show">Показать таблицу точек</string>
-    <string name="sweep_table_hide">Скрыть таблицу точек</string>
+    <string name="sweep_table_show">Таблица измерений</string>
+    <string name="sweep_table_hide">Скрыть таблицу измерений</string>
     <string name="sweep_table_page">Страница %1$d из %2$d</string>
     <string name="sweep_previous">Назад</string>
     <string name="sweep_next">Далее</string>
     <string name="sweep_save">Сохранить в проект</string>
-    <string name="sweep_copy">Копировать данные точки</string>
-    <string name="sweep_no_projects">Создайте проект в журнале подстройки.</string>
+    <string name="sweep_copy">Копировать данные выбранной частоты</string>
     <string name="sweep_error_line">Строка %1$d. %2$s</string>
     <string name="sweep_error_format">Ожидается файл Touchstone 1.x с однопортовыми S-параметрами.</string>
     <string name="sweep_error_frequency">Частоты должны строго возрастать и лежать в пределах от 100 кГц до 6 ГГц.</string>
@@ -49,11 +48,21 @@
     <string name="sweep_error_write">Не удалось сохранить измерения. Проверьте доступное место.</string>
     <string name="sweep_error_workspace">Сохранённые измерения повреждены или имеют неизвестный формат. Исходные данные сохранены.</string>
     <string name="sweep_error_missing">Файлы трасс отсутствуют на этом устройстве. Загрузите исходные S1P для сравнения.</string>
-    <string name="sweep_graph_legend">Частота, МГц. Нажмите на график, чтобы выбрать точку.</string>
+    <string name="sweep_graph_legend">Частота, МГц. Нажмите на график или проведите по нему пальцем, чтобы выбрать точку.</string>
     <string name="sweep_rx_legend">R — сплошная линия, X — пунктир.</string>
     <string name="sweep_help">Поддерживаются файлы Touchstone 1.x с одним портом (RI, MA или DB). Импеданс вычисляется по формуле Z = Z₀ × (1 + S11) / (1 − S11). Сравнивайте трассы при одинаковых условиях измерения.</string>
     <string name="sweep_export_notice">JSON содержит сведения о трассах. Сохраните исходные файлы S1P отдельно.</string>
-    <string name="sweep_saved_traces">Измерения анализатора</string>
+    <string name="sweep_saved_traces">Измерения анализатора (S1P)</string>
     <string name="sweep_open_saved">Открыть измерения</string>
     <string name="sweep_remove_saved">Удалить измерения из проекта?</string>
+    <string name="sweep_frequency">Частота</string>
+    <string name="sweep_frequency_column">Частота, МГц</string>
+    <string name="sweep_ohms">%1$s Ом</string>
+    <string name="sweep_decibels">%1$s дБ</string>
+    <string name="sweep_r_column">R, Ом</string>
+    <string name="sweep_x_column">X, Ом</string>
+    <string name="sweep_previous_frequency">Предыдущая частота</string>
+    <string name="sweep_next_frequency">Следующая частота</string>
+    <string name="antenna_parameter_tools">Расчет параметров антенн</string>
+    <string name="antenna_parameter_tools_hint">Диполь «Перевёрнутая V» и антенна Ground Plane (GP)</string>
 </resources>

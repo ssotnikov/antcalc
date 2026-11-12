@@ -30,11 +30,12 @@ import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.journal.invertedVSnapshot
 import local.antenna.calculator.journal.groundPlaneSnapshot
 import local.antenna.calculator.state.*
+import local.antenna.calculator.journal.ProjectForm
 import local.antenna.calculator.measurements.MeasurementScreen
 import local.antenna.calculator.measurements.MeasurementViewModel
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ADDITIONAL_TOOLS, MEASUREMENTS }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ADDITIONAL_TOOLS, MEASUREMENTS }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,6 +71,7 @@ private fun LocalizedCalculatorApp(
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
+    var sweepTransferId by rememberSaveable { mutableStateOf<UUID?>(null) }
     var transferType by rememberSaveable { mutableStateOf(AntennaType.SYMMETRIC_DIPOLE) }
     var linkedProjectId by rememberSaveable { mutableStateOf<String?>(null) }
     val context = LocalContext.current
@@ -77,6 +79,8 @@ private fun LocalizedCalculatorApp(
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
     val journalStatus = journal?.state?.collectAsState()?.value
+    val measurementState = measurements?.state?.collectAsState()?.value
+    val sweepTraces = measurementState?.takeIf { !it.busy && it.showTraces }?.traces?.filterNotNull().orEmpty()
     val copiedMessage = stringResource(R.string.copied)
     val transferSavedMessage = stringResource(R.string.project_transfer_saved)
     val openProjectLabel = stringResource(R.string.project_transfer_open)
@@ -85,6 +89,7 @@ private fun LocalizedCalculatorApp(
     fun leaveInput() { focus.clearFocus(); keyboard?.hide() }
     fun finishTransfer() {
         page = when {
+            sweepTransferId != null -> Page.MEASUREMENTS
             pending?.isInvertedV == true -> Page.INVERTED_V
             pending?.isGroundPlane == true -> Page.GROUND_PLANE
             else -> Page.CALCULATOR
@@ -94,13 +99,19 @@ private fun LocalizedCalculatorApp(
             screenStates.removeState("transfer-new-${it.recordId}")
         }
         pending = null
+        sweepTransferId?.let {
+            screenStates.removeState("transfer-picker-$it")
+            screenStates.removeState("transfer-new-$it")
+        }
+        sweepTransferId = null
     }
     fun goBack() {
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
         when (page) {
             Page.REFERENCES -> page = referencesBackPage
-            Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
+            Page.ANTENNA_PARAMETER_TOOLS, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
+            Page.INVERTED_V, Page.GROUND_PLANE -> page = Page.ANTENNA_PARAMETER_TOOLS
             Page.MEASUREMENTS -> page = if (fromJournal) Page.JOURNAL else Page.ADDITIONAL_TOOLS
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
             Page.TRANSFER_PICKER -> if (pending?.needsAntennaChoice == true) page = Page.TRANSFER_TYPE else finishTransfer()
@@ -137,8 +148,7 @@ private fun LocalizedCalculatorApp(
         val snapshot = current.draft.groundPlane.groundPlaneSnapshot() ?: return
         startTransfer(PendingProjectCalculation(snapshot), AntennaType.MONOPOLE)
     }
-    fun transferSaved(calculation: PendingProjectCalculation, projectId: UUID) {
-        if (pending?.recordId != calculation.recordId) return
+    fun showSavedProject(projectId: UUID) {
         finishTransfer()
         scope.launch {
             val result = snackbar.showSnackbar(
@@ -161,14 +171,23 @@ private fun LocalizedCalculatorApp(
     }
     val transferring = page == Page.TRANSFER_TYPE || page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW
     LaunchedEffect(transferring, pending) {
-        if (transferring && pending == null) finishTransfer()
+        if (transferring && pending == null && sweepTransferId == null) finishTransfer()
     }
     val savedTransfer = pending?.let { draft ->
         journalStatus?.projects?.firstOrNull { project -> project.records.any { it.id == draft.recordId } }
     }
     LaunchedEffect(savedTransfer?.id, pending?.recordId) {
         val calculation = pending
-        if (calculation != null && savedTransfer != null) transferSaved(calculation, savedTransfer.id)
+        if (calculation != null && savedTransfer != null) showSavedProject(savedTransfer.id)
+    }
+    val savedSweepTransfer = journalStatus?.savedSweepTransfer
+    LaunchedEffect(sweepTransferId, savedSweepTransfer) {
+        if (savedSweepTransfer != null && savedSweepTransfer.first == sweepTransferId) {
+            showSavedProject(savedSweepTransfer.second)
+        }
+    }
+    LaunchedEffect(sweepTransferId, measurementState?.busy, sweepTraces.isEmpty()) {
+        if (sweepTransferId != null && measurementState?.busy == false && sweepTraces.isEmpty()) finishTransfer()
     }
     LaunchedEffect(page) { if (page != Page.MEASUREMENTS) measurements?.cancelImport() }
     BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
@@ -176,6 +195,7 @@ private fun LocalizedCalculatorApp(
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
         val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
         val title = when (page) {
+            Page.ANTENNA_PARAMETER_TOOLS -> R.string.antenna_parameter_tools
             Page.ADDITIONAL_TOOLS -> R.string.additional_tools
             Page.MEASUREMENTS -> R.string.sweep_title
             Page.SETTINGS -> R.string.settings
@@ -188,7 +208,7 @@ private fun LocalizedCalculatorApp(
             Page.INVERTED_V -> R.string.inverted_v_title
             Page.GROUND_PLANE -> R.string.ground_plane_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
-            Page.TRANSFER_PICKER -> R.string.project_transfer_title
+            Page.TRANSFER_PICKER -> if (sweepTransferId != null) R.string.sweep_save else R.string.project_transfer_title
             Page.TRANSFER_NEW -> R.string.journal_new_project
             Page.JOURNAL -> journalPage.title
             Page.CALCULATOR -> when (settings.section) {
@@ -244,7 +264,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -276,6 +296,12 @@ private fun LocalizedCalculatorApp(
             Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).then(gestures)
                 .testTag("page-content"), contentAlignment = Alignment.TopCenter) {
                 when (page) {
+                    Page.ANTENNA_PARAMETER_TOOLS -> screenStates.SaveableStateProvider("antenna-parameter-tools") {
+                        AntennaParameterToolsScreen(
+                            onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
+                            onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
+                        )
+                    }
                     Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
                         AdditionalToolsScreen {
                             fromJournal = false
@@ -284,7 +310,17 @@ private fun LocalizedCalculatorApp(
                         }
                     }
                     Page.MEASUREMENTS -> if (measurements != null) screenStates.SaveableStateProvider("measurements") {
-                        MeasurementScreen(measurements, journal) { message -> scope.launch { snackbar.showSnackbar(message) } }
+                        MeasurementScreen(
+                            measurements,
+                            onSaveToProject = if (journal == null) null else {
+                                {
+                                    snackbar.currentSnackbarData?.dismiss()
+                                    leaveInput()
+                                    sweepTransferId = UUID.randomUUID()
+                                    page = Page.TRANSFER_PICKER
+                                }
+                            },
+                        ) { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
                     Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
                     Page.ABOUT -> HelpScreen()
@@ -313,27 +349,62 @@ private fun LocalizedCalculatorApp(
                             transferType = type
                         }) { page = Page.TRANSFER_PICKER }
                     }
-                    Page.TRANSFER_PICKER -> if (journal != null) pending?.let { calculation ->
-                        screenStates.SaveableStateProvider("transfer-picker-${calculation.recordId}") {
-                            val recordTitle = stringResource(calculation.title)
-                            ProjectPicker(journal, transferType,
-                                onSelect = { project ->
-                                    leaveInput()
-                                    journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle))
-                                },
-                                targetHertz = calculation.target?.hertz,
-                                onCreate = { leaveInput(); page = Page.TRANSFER_NEW },
-                                header = { TransferSummary(calculation, transferType) },
-                            )
+                    Page.TRANSFER_PICKER -> if (journal != null) {
+                        val sweepId = sweepTransferId
+                        if (sweepId != null) {
+                            screenStates.SaveableStateProvider("transfer-picker-$sweepId") {
+                                ProjectPicker(journal, antennaType = null,
+                                    onSelect = { project ->
+                                        leaveInput()
+                                        if (sweepTraces.isNotEmpty()) journal.saveSweeps(sweepId, project.id, sweepTraces)
+                                    },
+                                    targetHertz = null,
+                                    onCreate = { leaveInput(); page = Page.TRANSFER_NEW },
+                                    header = {
+                                        Text(stringResource(R.string.sweep_saved_traces),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.secondary)
+                                        sweepTraces.forEach { trace -> Text(trace.name, style = MaterialTheme.typography.bodyMedium) }
+                                    },
+                                )
+                            }
+                        } else pending?.let { calculation ->
+                            screenStates.SaveableStateProvider("transfer-picker-${calculation.recordId}") {
+                                val recordTitle = stringResource(calculation.title)
+                                ProjectPicker(journal, transferType,
+                                    onSelect = { project ->
+                                        leaveInput()
+                                        journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle))
+                                    },
+                                    targetHertz = calculation.target?.hertz,
+                                    onCreate = { leaveInput(); page = Page.TRANSFER_NEW },
+                                    header = { TransferSummary(calculation, transferType) },
+                                )
+                            }
                         }
                     }
-                    Page.TRANSFER_NEW -> if (journal != null) pending?.let { calculation ->
-                        screenStates.SaveableStateProvider("transfer-new-${calculation.recordId}") {
-                            val recordTitle = stringResource(calculation.title)
-                            TransferNewProject(calculation, transferType, journal) { name ->
-                                leaveInput()
-                                val project = calculation.newProject(transferType, name)
-                                journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle), project)
+                    Page.TRANSFER_NEW -> if (journal != null) {
+                        val sweepId = sweepTransferId
+                        if (sweepId != null) {
+                            screenStates.SaveableStateProvider("transfer-new-$sweepId") {
+                                ProjectForm(
+                                    initial = null,
+                                    enabled = journalStatus?.let { it.readable && !it.busy } == true && sweepTraces.isNotEmpty(),
+                                    problem = journalStatus?.problem,
+                                ) { project ->
+                                    leaveInput()
+                                    val newProject = project.copy(id = sweepId)
+                                    journal.saveSweeps(sweepId, newProject.id, sweepTraces, newProject)
+                                }
+                            }
+                        } else pending?.let { calculation ->
+                            screenStates.SaveableStateProvider("transfer-new-${calculation.recordId}") {
+                                val recordTitle = stringResource(calculation.title)
+                                TransferNewProject(calculation, transferType, journal) { name ->
+                                    leaveInput()
+                                    val project = calculation.newProject(transferType, name)
+                                    journal.saveTransferredCalculation(project.id, calculation.record(transferType, recordTitle), project)
+                                }
                             }
                         }
                     }
@@ -362,8 +433,7 @@ private fun LocalizedCalculatorApp(
                                     onOpenCable = { leaveInput(); page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
                                     onOpenAdditional = measurements?.let { { leaveInput(); page = Page.ADDITIONAL_TOOLS } },
-                                    onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
-                                    onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
+                                    onOpenAntennaCalculations = { leaveInput(); page = Page.ANTENNA_PARAMETER_TOOLS },
                                     onOpenJournal = journal?.let { { leaveInput(); linkedProjectId = null; journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
                                 )
                             }

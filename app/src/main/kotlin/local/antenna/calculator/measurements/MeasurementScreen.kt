@@ -11,17 +11,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import local.antenna.calculator.R
 import local.antenna.calculator.core.measurements.S11Point
-import local.antenna.calculator.journal.JournalViewModel
 
 internal enum class SweepMetric(val title: Int, val axis: String) {
     SWR(R.string.sweep_swr, ""), MAGNITUDE(R.string.sweep_magnitude, "|S11|"),
@@ -37,7 +39,9 @@ internal enum class SweepMetric(val title: Int, val axis: String) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun MeasurementScreen(model: MeasurementViewModel, journal: JournalViewModel?, onMessage: (String) -> Unit) {
+internal fun MeasurementScreen(
+    model: MeasurementViewModel, onSaveToProject: (() -> Unit)?, onMessage: (String) -> Unit,
+) {
     val state by model.state.collectAsState()
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -45,24 +49,24 @@ internal fun MeasurementScreen(model: MeasurementViewModel, journal: JournalView
     val format = remember(locale) { NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 9; isGroupingUsed = false } }
     var slot by rememberSaveable { mutableIntStateOf(0) }
     var active by rememberSaveable { mutableIntStateOf(0) }
-    var cursor by rememberSaveable { mutableIntStateOf(0) }
-    var tablePage by rememberSaveable { mutableIntStateOf(0) }
+    var cursor by rememberSaveable { mutableIntStateOf(-1) }
+    val tablePageA = rememberSaveable { mutableIntStateOf(-1) }
+    val tablePageB = rememberSaveable { mutableIntStateOf(-1) }
     var metric by rememberSaveable { mutableStateOf(SweepMetric.SWR) }
-    var projectsOpen by rememberSaveable { mutableStateOf(false) }
     val appName = stringResource(R.string.app_name)
     val copied = stringResource(R.string.copied)
-    val saved = stringResource(R.string.project_transfer_saved)
     val displayedTraces = if (state.showTraces) state.traces else listOf(null, null)
     val entries = displayedTraces.mapIndexedNotNull { index, trace -> trace?.let { index to it } }
     val activeSlot = active.takeIf { displayedTraces[it] != null } ?: entries.firstOrNull()?.first ?: 0
+    val tablePage = if (activeSlot == 0) tablePageA else tablePageB
     val activeTrace = displayedTraces[activeSlot]
     val points = activeTrace?.sweep?.points.orEmpty()
     val index = if (points.isEmpty()) 0 else cursor.coerceIn(points.indices)
     val frequency = points.getOrNull(index)?.hertz
     LaunchedEffect(activeTrace?.sweep) {
-        if (points.isNotEmpty() && cursor == 0) {
+        if (points.isNotEmpty() && cursor < 0) {
             cursor = points.indices.minByOrNull { points[it].swr ?: Double.POSITIVE_INFINITY } ?: 0
-            tablePage = cursor / PAGE_SIZE
+            tablePage.intValue = cursor / PAGE_SIZE
         }
     }
     val selected = entries.map { (_, trace) ->
@@ -92,11 +96,11 @@ internal fun MeasurementScreen(model: MeasurementViewModel, journal: JournalView
             else format.format(value)
     }
 
+    val display = remember(locale) { MeasurementNumberFormat(locale) }
     fun frequencyText(hertz: Double) = resources.getString(R.string.sweep_mhz, number(hertz / 1e6))
     fun row(label: Int, value: String) = "${resources.getString(label)} · $value"
-    fun pointText(trace: MeasurementTrace, point: S11Point?): String {
-        if (point == null) return resources.getString(R.string.sweep_outside)
-        val impedance = point.impedance(trace.sweep.referenceOhms)
+    fun pointText(point: S11Point, referenceOhms: Double): String {
+        val impedance = point.impedance(referenceOhms)
         return buildList {
             add(frequencyText(point.hertz))
             add(row(R.string.sweep_swr, number(point.swr)))
@@ -167,9 +171,9 @@ internal fun MeasurementScreen(model: MeasurementViewModel, journal: JournalView
                     FilterChip(selected = metric == option, onClick = { metric = option }, label = { Text(stringResource(option.title)) })
                 }
             }
-            MeasurementChart(entries, metric, frequency) { hertz ->
+            MeasurementChart(entries, metric, frequency, activeSlot) { hertz ->
                 cursor = activeTrace.sweep.nearestIndex(hertz.coerceIn(points.first().hertz, points.last().hertz)) ?: index
-                tablePage = cursor / PAGE_SIZE
+                tablePage.intValue = cursor / PAGE_SIZE
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 entries.forEach { (slotIndex, _) ->
@@ -180,91 +184,62 @@ internal fun MeasurementScreen(model: MeasurementViewModel, journal: JournalView
             Text(stringResource(R.string.sweep_graph_legend), style = MaterialTheme.typography.bodySmall)
             if (metric == SweepMetric.IMPEDANCE) Text(stringResource(R.string.sweep_rx_legend), style = MaterialTheme.typography.bodySmall)
             Text(stringResource(R.string.sweep_selected), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.secondary)
-            if (entries.size == 2) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                entries.forEach { (slotIndex, trace) ->
-                    FilterChip(selected = slotIndex == activeSlot, onClick = {
-                        active = slotIndex
-                        cursor = trace.sweep.nearestIndex(frequency.coerceIn(trace.sweep.points.first().hertz, trace.sweep.points.last().hertz)) ?: 0
-                        tablePage = cursor / PAGE_SIZE
-                    }, label = { Text(stringResource(traceLabel(slotIndex))) })
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                FrequencyStep(forward = false, enabled = index > 0) {
+                    cursor = index - 1
+                    tablePage.intValue = cursor / PAGE_SIZE
                 }
-            }
-            StepControls(frequencyText(frequency), index > 0, index < points.lastIndex) { delta ->
-                cursor = index + delta
-                tablePage = cursor / PAGE_SIZE
+                Text(frequencyText(frequency), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
+                FrequencyStep(forward = true, enabled = index < points.lastIndex) {
+                    cursor = index + 1
+                    tablePage.intValue = cursor / PAGE_SIZE
+                }
             }
             comparisonNotes.forEach { Text(stringResource(it), color = MaterialTheme.colorScheme.error) }
-            entries.forEachIndexed { i, (slotIndex, trace) ->
-                OutlinedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(14.dp)) {
-                        Text(stringResource(traceLabel(slotIndex)), color = MaterialTheme.colorScheme.secondary)
-                        Text(pointText(trace, selected[i]))
-                    }
-                }
-            }
-            val lastPage = points.lastIndex / PAGE_SIZE
-            val visiblePage = tablePage.coerceIn(0, lastPage)
-            var expanded by rememberSaveable { mutableStateOf(false) }
-            TextButton(onClick = { expanded = !expanded }) {
-                Text(stringResource(if (expanded) R.string.sweep_table_hide else R.string.sweep_table_show))
-            }
-            if (expanded) {
-                StepControls(stringResource(R.string.sweep_table_page, visiblePage + 1, lastPage + 1), visiblePage > 0, visiblePage < lastPage) {
-                    tablePage = visiblePage + it
-                }
-                val start = visiblePage * PAGE_SIZE
-                points.subList(start, minOf(start + PAGE_SIZE, points.size)).forEachIndexed { offset, point ->
-                    OutlinedButton(onClick = { cursor = start + offset }, modifier = Modifier.fillMaxWidth()) {
-                        Text(pointText(activeTrace, point), Modifier.fillMaxWidth())
-                    }
-                }
-            }
-            if (journal != null) Button(onClick = { projectsOpen = true }, modifier = Modifier.fillMaxWidth()) {
+            MeasurementSummaries(entries, selected, display, ::frequencyText)
+            if (onSaveToProject != null) Button(onClick = onSaveToProject, modifier = Modifier.fillMaxWidth().testTag("sweep-save-project")) {
                 Text(stringResource(R.string.sweep_save))
             }
             OutlinedButton(onClick = {
-                val content = buildString {
-                    appendLine(resources.getString(R.string.sweep_title))
-                    entries.forEachIndexed { i, (slotIndex, trace) ->
-                        appendLine()
-                        appendLine(resources.getString(traceLabel(slotIndex)) + " · " + trace.name)
-                        appendLine("Z₀ · ${number(trace.sweep.referenceOhms)} Ω")
-                        appendLine(resources.getString(trace.plane.label()))
-                        appendLine(pointText(trace, selected[i]))
-                    }
-                    comparisonNotes.forEach { appendLine(resources.getString(it)) }
-                    append(resources.getString(R.string.sweep_help))
-                }
-                context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText(appName, content))
+                val clipboard = context.getSystemService(ClipboardManager::class.java) ?: return@OutlinedButton
+                val content = entries.mapIndexed { i, (slotIndex, trace) ->
+                    val heading = resources.getString(traceLabel(slotIndex)) + " · " + trace.name
+                    val data = selected[i]?.let { pointText(it, trace.sweep.referenceOhms) }
+                        ?: resources.getString(R.string.sweep_outside)
+                    "$heading\n$data"
+                }.joinToString("\n\n")
+                clipboard.setPrimaryClip(ClipData.newPlainText(appName, content))
                 onMessage(copied)
-            }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.sweep_copy)) }
+            }, modifier = Modifier.fillMaxWidth().testTag("sweep-copy-frequency")) {
+                Text(stringResource(R.string.sweep_copy))
+            }
+            val lastPage = points.lastIndex / PAGE_SIZE
+            val visiblePage = tablePage.intValue.takeIf { it >= 0 }?.coerceAtMost(lastPage) ?: (index / PAGE_SIZE)
+            var expanded by rememberSaveable { mutableStateOf(false) }
+            TextButton(onClick = { expanded = !expanded }, modifier = Modifier.testTag("sweep-table-toggle")) {
+                Text(stringResource(if (expanded) R.string.sweep_table_hide else R.string.sweep_table_show))
+            }
+            if (expanded) {
+                if (entries.size == 2) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    entries.forEach { (slotIndex, trace) ->
+                        FilterChip(selected = slotIndex == activeSlot, onClick = {
+                            active = slotIndex
+                            cursor = trace.sweep.nearestIndex(frequency.coerceIn(trace.sweep.points.first().hertz, trace.sweep.points.last().hertz)) ?: 0
+                        }, modifier = Modifier.testTag("sweep-table-trace-$slotIndex"), label = { Text(stringResource(traceLabel(slotIndex)), color = measurementTraceColor(slotIndex)) })
+                    }
+                }
+                StepControls(stringResource(R.string.sweep_table_page, visiblePage + 1, lastPage + 1), visiblePage > 0, visiblePage < lastPage) {
+                    tablePage.intValue = visiblePage + it
+                }
+                val start = visiblePage * PAGE_SIZE
+                MeasurementTable(
+                    points.subList(start, minOf(start + PAGE_SIZE, points.size)),
+                    activeTrace.sweep.referenceOhms, index - start, display,
+                ) { cursor = start + it }
+            }
         }
         Text(stringResource(R.string.sweep_help), style = MaterialTheme.typography.bodySmall)
-    }
-
-    if (projectsOpen && journal != null && !state.busy && entries.isNotEmpty()) {
-        val projectState by journal.state.collectAsState()
-        AlertDialog(
-            onDismissRequest = { if (!projectState.busy) projectsOpen = false },
-            title = { Text(stringResource(R.string.sweep_save)) },
-            text = {
-                Column(Modifier.heightIn(max = 260.dp).verticalScroll(rememberScrollState())) {
-                    if (projectState.projects.isEmpty()) Text(stringResource(R.string.sweep_no_projects))
-                    projectState.problem?.let {
-                        Text(stringResource(R.string.sweep_error_write), color = MaterialTheme.colorScheme.error)
-                    }
-                    projectState.projects.forEach { project ->
-                        TextButton(enabled = !projectState.busy, onClick = {
-                            journal.saveSweeps(project.id, entries.map { it.second }) {
-                                projectsOpen = false
-                                onMessage(saved)
-                            }
-                        }) { Text(project.title) }
-                    }
-                }
-            },
-            confirmButton = { TextButton(enabled = !projectState.busy, onClick = { projectsOpen = false }) { Text(stringResource(R.string.sweep_cancel)) } },
-        )
     }
 }
 
@@ -296,6 +271,18 @@ private fun PlanePicker(plane: SweepPlane, enabled: Boolean, choose: (SweepPlane
             FilterChip(selected = option == plane, enabled = enabled, onClick = { choose(option) },
                 label = { Text(stringResource(option.label())) })
         }
+    }
+}
+
+@Composable
+private fun FrequencyStep(forward: Boolean, enabled: Boolean, onClick: () -> Unit) {
+    OutlinedButton(onClick = onClick, enabled = enabled, contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)) {
+        Icon(
+            painterResource(R.drawable.ic_back),
+            contentDescription = stringResource(if (forward) R.string.sweep_next_frequency else R.string.sweep_previous_frequency),
+            modifier = Modifier.size(24.dp).rotate(if (forward) 180f else 0f),
+            tint = if (enabled) MaterialTheme.colorScheme.onSurface else LocalContentColor.current,
+        )
     }
 }
 

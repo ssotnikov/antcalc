@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "9e21d963-5ad6-5c7b-9523-de5fe5652435",
+    "title": "Демо: журнал подстройки диполя на 145,5 МГц",
+    "antennaType": "SYMMETRIC_DIPOLE",
+    "targetHz": 145500000,
+    "initialLengthNm": 989000000,
+    "note": "Синтетический пример. Длина диполя — сумма длин плеч без зазора. Для сравнения выберите «Замер до подстройки» и «Контроль после подстройки», «Расчет размеров» и ручной замер либо ручной замер и комплект S1P. После импорта JSON откройте оба файла demo-dipole-145mhz-before.s1p и demo-dipole-145mhz-after.s1p в инструменте S1P, задайте обеим трассам плоскость «У точки питания» и сохраните их в этот проект. В JSON есть ссылки на трассы; сами файлы S1P передаются отдельно.",
+    "installation": "Горизонтальный диполь из медных трубок Ø 6 мм. Центр на высоте 3 м. Зазор между плечами 12 мм.",
+    "feedline": "RG-58, 50 Ом, 5 м. Токовый дроссель 1:1. Плоскость калибровки VNA — у точки питания.",
+    "records": [
+      {
+        "id": "44a34daf-8e3b-52b2-8192-442dd2fd4840",
+        "title": "Расчет размеров",
+        "time": "2026-11-10T09:00:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Начальная оценка для 145,5 МГц при коэффициенте укорочения k = 0,95.",
+        "installation": "Горизонтальный диполь из медных трубок Ø 6 мм. Центр на высоте 3 м. Зазор между плечами 12 мм.",
+        "feedline": "RG-58, 50 Ом, 5 м. Токовый дроссель 1:1. Плоскость калибровки VNA — у точки питания.",
+        "calculation": {
+          "model": "sizing",
+          "revision": 1,
+          "inputs": [
+            {
+              "key": "frequency",
+              "value": 145500000,
+              "unit": "HERTZ"
+            },
+            {
+              "key": "factor",
+              "value": 0.95,
+              "unit": "FACTOR"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "wavelength",
+              "value": 2.060429264604811,
+              "unit": "METERS"
+            },
+            {
+              "key": "ideal_quarter",
+              "value": 0.5151073161512028,
+              "unit": "METERS"
+            },
+            {
+              "key": "ideal_half",
+              "value": 1.0302146323024055,
+              "unit": "METERS"
+            },
+            {
+              "key": "dipole_total",
+              "value": 0.9787039006872852,
+              "unit": "METERS"
+            },
+            {
+              "key": "dipole_arm",
+              "value": 0.4893519503436426,
+              "unit": "METERS"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      {
+        "id": "d4b4c300-705b-5d45-a920-a0dd2e446bfc",
+        "title": "Замер до подстройки",
+        "time": "2026-11-10T09:20:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Длина каждого плеча 494,5 мм. Резонанс 144,6 МГц. КСВ и импеданс сняты на 145,5 МГц и соответствуют трассе A с округлением.",
+        "installation": "Горизонтальный диполь из медных трубок Ø 6 мм. Центр на высоте 3 м. Зазор между плечами 12 мм.",
+        "feedline": "RG-58, 50 Ом, 5 м. Токовый дроссель 1:1. Плоскость калибровки VNA — у точки питания.",
+        "measurement": {
+          "testFrequencyHz": 145500000,
+          "swr": 1.4553,
+          "resistanceOhms": 68.0,
+          "reactanceOhms": 12.658,
+          "point": "FEED_POINT",
+          "referenceOhms": 50.0,
+          "lengthNm": 989000000,
+          "resonanceHz": 144600000
+        }
+      },
+      {
+        "id": "22bd1694-ec60-5913-892b-c57faa513de9",
+        "title": "Расчет укорочения плеч",
+        "time": "2026-11-10T09:25:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Оценка по резонансу 144,6 МГц. С каждого плеча предполагается снять примерно 3 мм, затем повторить замер.",
+        "installation": "Горизонтальный диполь из медных трубок Ø 6 мм. Центр на высоте 3 м. Зазор между плечами 12 мм.",
+        "feedline": "RG-58, 50 Ом, 5 м. Токовый дроссель 1:1. Плоскость калибровки VNA — у точки питания.",
+        "calculation": {
+          "model": "trimming",
+          "revision": 1,
+          "inputs": [
+            {
+              "key": "length",
+              "value": 989000000,
+              "unit": "NANOMETERS"
+            },
+            {
+              "key": "resonance",
+              "value": 144600000,
+              "unit": "HERTZ"
+            },
+            {
+              "key": "target",
+              "value": 145500000,
+              "unit": "HERTZ"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "new_length",
+              "value": 0.9828824742268041,
+              "unit": "METERS"
+            },
+            {
+              "key": "adjustment",
+              "value": -0.006117525773195877,
+              "unit": "METERS"
+            },
+            {
+              "key": "new_arm",
+              "value": 0.49144123711340204,
+              "unit": "METERS"
+            },
+            {
+              "key": "arm_adjustment",
+              "value": -0.0030587628865979383,
+              "unit": "METERS"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      {
+        "id": "8e4fe2b4-7435-583e-8636-f092083a3c66",
+        "title": "Контроль после подстройки",
+        "time": "2026-11-10T09:45:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "С каждого плеча снято по 3 мм. КСВ и импеданс на 145,5 МГц соответствуют трассе B с округлением.",
+        "installation": "Горизонтальный диполь из медных трубок Ø 6 мм. Центр на высоте 3 м. Зазор между плечами 12 мм.",
+        "feedline": "RG-58, 50 Ом, 5 м. Токовый дроссель 1:1. Плоскость калибровки VNA — у точки питания.",
+        "measurement": {
+          "testFrequencyHz": 145500000,
+          "swr": 1.2,
+          "resistanceOhms": 60.0,
+          "reactanceOhms": 0.0,
+          "point": "FEED_POINT",
+          "referenceOhms": 50.0,
+          "lengthNm": 983000000,
+          "resonanceHz": 145500000
+        }
+      },
+      {
+        "id": "d7c8e68a-f14a-59ee-a617-0f2b34edaa1d",
+        "title": "Контрольный замер без Z₀",
+        "time": "2026-11-10T09:50:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Те же контрольные данные из прежней записи без указанного Z₀. При сравнении с трассой B доступны разницы R и X, разница КСВ отсутствует.",
+        "installation": "Горизонтальный диполь из медных трубок Ø 6 мм. Центр на высоте 3 м. Зазор между плечами 12 мм.",
+        "feedline": "RG-58, 50 Ом, 5 м. Токовый дроссель 1:1. Плоскость калибровки VNA — у точки питания.",
+        "measurement": {
+          "testFrequencyHz": 145500000,
+          "swr": 1.2,
+          "resistanceOhms": 60.0,
+          "reactanceOhms": 0.0,
+          "point": "FEED_POINT",
+          "lengthNm": 983000000,
+          "resonanceHz": 145500000
+        }
+      },
+      {
+        "id": "7d244c4d-139a-5f7f-9f8a-47e8b7c10b15",
+        "title": "Геометрия установки Inverted V",
+        "time": "2026-11-10T10:05:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Вариант для выезда: угол при вершине 120°, высота центра 3 м. Ручные замеры и трассы относятся к горизонтальной установке.",
+        "installation": "Планируемая установка Inverted V. Измерений в этой конфигурации пока нет.",
+        "feedline": "",
+        "calculation": {
+          "model": "inverted_v",
+          "revision": 1,
+          "inputs": [
+            {
+              "key": "apex_height",
+              "value": 3.0,
+              "unit": "METERS"
+            },
+            {
+              "key": "included_angle",
+              "value": 120.0,
+              "unit": "DEGREES"
+            },
+            {
+              "key": "dipole_arm",
+              "value": 0.4915,
+              "unit": "METERS"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "dipole_arm",
+              "value": 0.4915,
+              "unit": "METERS"
+            },
+            {
+              "key": "dipole_total",
+              "value": 0.983,
+              "unit": "METERS"
+            },
+            {
+              "key": "end_span",
+              "value": 0.8513029719201032,
+              "unit": "METERS"
+            },
+            {
+              "key": "end_height",
+              "value": 2.75425,
+              "unit": "METERS"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    ],
+    "sweeps": [
+      {
+        "traces": [
+          {
+            "id": "09cd6e6eee7d83abf6a952fe279c5b367593b69d6cbfbed575b5628c59923127",
+            "name": "demo-dipole-145mhz-before.s1p",
+            "plane": "FEED_POINT",
+            "referenceOhms": 50.0,
+            "points": 121,
+            "firstHz": 142000000.0,
+            "lastHz": 148000000.0
+          },
+          {
+            "id": "5131b94f05723e4c1d93dca415ea7b3b888925bd54acfdef3db3a91825f6661d",
+            "name": "demo-dipole-145mhz-after.s1p",
+            "plane": "FEED_POINT",
+            "referenceOhms": 50.0,
+            "points": 121,
+            "firstHz": 142000000.0,
+            "lastHz": 148000000.0
+          }
+        ]
+      }
+    ]
+  }
+}

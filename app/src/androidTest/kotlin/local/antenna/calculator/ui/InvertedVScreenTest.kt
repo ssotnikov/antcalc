@@ -31,6 +31,7 @@ class InvertedVScreenTest : CalculatorUiFixture() {
         copy.performScrollTo().assertIsNotEnabled()
         height.performScrollTo().performTextReplacement("7,5")
         back()
+        compose.onNodeWithTag("antenna-parameter-tools").assertIsDisplayed()
         compose.onNodeWithTag("open-inverted-v").performScrollTo().performClick()
         height.performScrollTo().assertTextContains("7,5")
         compose.onNodeWithTag("nav-SIZING").performClick()
@@ -62,6 +63,7 @@ class InvertedVScreenTest : CalculatorUiFixture() {
 
     private fun openTool() {
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
         compose.onNodeWithTag("open-inverted-v").performScrollTo().performClick()
     }
 }

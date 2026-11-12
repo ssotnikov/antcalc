@@ -2,24 +2,35 @@ package local.antenna.calculator.measurements
 
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import kotlin.math.abs
@@ -30,6 +41,7 @@ internal fun MeasurementChart(
     traces: List<Pair<Int, MeasurementTrace>>,
     metric: SweepMetric,
     selectedHz: Double,
+    activeSlot: Int,
     select: (Double) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -54,16 +66,41 @@ internal fun MeasurementChart(
         Bounds(minimum / scale, maximum / scale, scale)
     }
     val formatter = remember(locale) { NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 3; isGroupingUsed = false } }
-    Canvas(Modifier.fillMaxWidth().height(230.dp).semantics { contentDescription = label }
-        .pointerInput(first, last, select) {
+    val frequencyFormat = remember(locale) { MeasurementNumberFormat(locale) }
+    val axisFrequency = frequencyFormat.megahertz(selectedHz)
+    val selectedFrequency = stringResource(R.string.sweep_mhz, axisFrequency)
+    val selectFrequency by rememberUpdatedState(select)
+    var dragY by remember(first, last, activeSlot) { mutableStateOf<Float?>(null) }
+
+    Canvas(Modifier.fillMaxWidth().height(230.dp).testTag("sweep-chart")
+        .semantics {
+            contentDescription = label
+            stateDescription = selectedFrequency
+        }
+        .pointerInput(first, last, activeSlot) {
             detectTapGestures { tap ->
-                val left = 52.dp.toPx()
-                val width = size.width - left - 12.dp.toPx()
-                if (width > 0) select(first + (last - first) * ((tap.x - left) / width).coerceIn(0f, 1f))
+                val left = PlotLeft.toPx()
+                val width = size.width - left - PlotRight.toPx()
+                if (width > 0) selectFrequency(plotFrequency(tap.x, left, width, first, last))
             }
+        }
+        .pointerInput(first, last, activeSlot) {
+            val left = PlotLeft.toPx()
+            fun move(position: Offset) {
+                val width = size.width - left - PlotRight.toPx()
+                if (width <= 0) return
+                dragY = position.y
+                selectFrequency(plotFrequency(position.x, left, width, first, last))
+            }
+            detectHorizontalDragGestures(
+                onDragStart = ::move,
+                onDragEnd = { dragY = null },
+                onDragCancel = { dragY = null },
+                onHorizontalDrag = { change, _ -> move(change.position) },
+            )
         }) {
-        val left = 52.dp.toPx()
-        val right = size.width - 12.dp.toPx()
+        val left = PlotLeft.toPx()
+        val right = size.width - PlotRight.toPx()
         val top = 12.dp.toPx()
         val bottom = size.height - 30.dp.toPx()
         if (right <= left || bottom <= top) return@Canvas
@@ -86,13 +123,28 @@ internal fun MeasurementChart(
         }
         paint.textAlign = Paint.Align.LEFT
         if (metric.axis.isNotEmpty()) drawContext.canvas.nativeCanvas.drawText(metric.axis, left + 5.dp.toPx(), top + 12.dp.toPx(), paint)
-        drawContext.canvas.nativeCanvas.drawText(formatter.format(first / 1e6), left, bottom + 18.dp.toPx(), paint)
-        if (last != first) {
-            paint.textAlign = Paint.Align.RIGHT
-            drawContext.canvas.nativeCanvas.drawText(formatter.format(last / 1e6), right, bottom + 18.dp.toPx(), paint)
-        }
+        val nativeCanvas = drawContext.canvas.nativeCanvas
         val cursor = x(selectedHz)
+        val halfLabel = paint.measureText(axisFrequency) / 2
+        val labelX = cursor.coerceIn(halfLabel, maxOf(halfLabel, size.width - halfLabel))
+        val axisY = bottom + 18.dp.toPx()
+        val gap = 5.dp.toPx()
+        val firstLabel = frequencyFormat.megahertz(first)
+        val lastLabel = frequencyFormat.megahertz(last)
+        if (first != selectedHz && left + paint.measureText(firstLabel) + gap < labelX - halfLabel) {
+            nativeCanvas.drawText(firstLabel, left, axisY, paint)
+        }
+        if (last != selectedHz && right - paint.measureText(lastLabel) - gap > labelX + halfLabel) {
+            paint.textAlign = Paint.Align.RIGHT
+            nativeCanvas.drawText(lastLabel, right, axisY, paint)
+        }
+        paint.textAlign = Paint.Align.CENTER
+        paint.color = colors.primary.toArgb()
+        nativeCanvas.drawText(axisFrequency, labelX, axisY, paint)
         drawLine(colors.outline, Offset(cursor, top), Offset(cursor, bottom), strokeWidth = 1.dp.toPx())
+        drawLine(colors.primary, Offset(cursor, bottom), Offset(cursor, bottom + 4.dp.toPx()))
+        val pointerY = dragY
+        var tooltipAnchor: Offset? = null
         series.forEach { data ->
             val color = traceColors[data.slot]
             val path = Path()
@@ -111,15 +163,47 @@ internal fun MeasurementChart(
             val index = sweep.nearestIndex(selectedHz)
             if (index != null) {
                 val (hz, value) = data.points[index]
-                if (value != null && value.isFinite()) drawCircle(color, 4.dp.toPx(), Offset(x(hz), y(value)))
+                if (value != null && value.isFinite()) {
+                    val marker = Offset(x(hz), y(value))
+                    drawCircle(color, 4.dp.toPx(), marker)
+                    if (pointerY != null && data.slot == activeSlot &&
+                        tooltipAnchor?.let { abs(marker.y - pointerY) < abs(it.y - pointerY) } != false
+                    ) tooltipAnchor = marker
+                }
             }
+        }
+        if (pointerY != null) {
+            val anchor = tooltipAnchor ?: Offset(cursor, pointerY.coerceIn(top, bottom))
+            paint.textAlign = Paint.Align.LEFT
+            paint.color = colors.onSurface.toArgb()
+            val textWidth = paint.measureText(selectedFrequency)
+            val padding = 6.dp.toPx()
+            val bubbleWidth = textWidth + 2 * padding
+            val bubbleHeight = paint.descent() - paint.ascent() + 2 * padding
+            val preferredX = if (anchor.x + gap + bubbleWidth <= size.width) anchor.x + gap
+                else anchor.x - gap - bubbleWidth
+            val bubbleX = preferredX.coerceIn(0f, maxOf(0f, size.width - bubbleWidth))
+            val bubbleY = (anchor.y - bubbleHeight - gap).coerceIn(0f, maxOf(0f, bottom - bubbleHeight))
+            drawRoundRect(colors.surfaceContainer, Offset(bubbleX, bubbleY), Size(bubbleWidth, bubbleHeight),
+                CornerRadius(5.dp.toPx()))
+            nativeCanvas.drawText(selectedFrequency, bubbleX + padding, bubbleY + padding - paint.ascent(), paint)
         }
     }
 }
 
 @Composable
 internal fun measurementTraceColor(slot: Int) =
-    if (slot == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
+    when {
+        slot == 0 -> MaterialTheme.colorScheme.primary
+        MaterialTheme.colorScheme.surface.luminance() < 0.5f -> Color(0xFFF4C28F)
+        else -> Color(0xFF935114)
+    }
 
 private data class Series(val slot: Int, val reactance: Boolean, val points: List<Pair<Double, Double?>>)
 private data class Bounds(val minimum: Double, val maximum: Double, val scale: Double)
+
+private val PlotLeft = 52.dp
+private val PlotRight = 12.dp
+
+private fun plotFrequency(x: Float, left: Float, width: Float, first: Double, last: Double): Double =
+    first + (last - first) * ((x - left) / width).coerceIn(0f, 1f)

@@ -35,7 +35,7 @@ class ToolsScreenTest {
             val currentDensity = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(currentDensity.density * densityScale, currentDensity.fontScale)) {
                 MaterialTheme {
-                    Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen, onOpen, onOpen) }
+                    Box(Modifier.size(320.dp, height.dp)) { ToolsScreen(onOpen, onOpen, onOpen, onOpen) }
                 }
             }
         }

@@ -61,6 +61,7 @@ class GroundPlaneScreenTest : CalculatorUiFixture() {
 
     private fun openTool() {
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
         compose.onNodeWithTag("open-ground-plane").performScrollTo().performClick()
     }
 }

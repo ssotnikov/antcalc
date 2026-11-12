@@ -45,7 +45,9 @@ private fun decimal(value: Long?, divisor: Long): String = value?.let {
 }.orEmpty()
 
 @Composable
-internal fun ProjectForm(initial: AntennaProject?, enabled: Boolean, onSave: (AntennaProject) -> Unit) {
+internal fun ProjectForm(
+    initial: AntennaProject?, enabled: Boolean, problem: JournalProblem? = null, onSave: (AntennaProject) -> Unit,
+) {
     val title = rememberTextFieldState(initial?.title.orEmpty())
     var type by rememberSaveable { mutableStateOf(initial?.antennaType ?: AntennaType.MONOPOLE) }
     val target = rememberTextFieldState(decimal(initial?.target?.hertz, 1_000_000))
@@ -71,6 +73,7 @@ internal fun ProjectForm(initial: AntennaProject?, enabled: Boolean, onSave: (An
         }
     }
     JournalColumn {
+        problem?.let { Text(stringResource(it.label()), color = MaterialTheme.colorScheme.error) }
         JournalTextField(title, R.string.journal_project_name, R.string.journal_example_name, "journal-name", enabled,
             modifier = Modifier.bringIntoViewRequester(titleLocation), limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.text.isBlank() })
         ChoicePicker(stringResource(R.string.antenna_type), AntennaType.entries, type,
@@ -121,6 +124,7 @@ internal fun RecordForm(
     val resonance = rememberTextFieldState()
     val testFrequency = rememberTextFieldState()
     val swr = rememberTextFieldState()
+    val reference = rememberTextFieldState()
     val resistance = rememberTextFieldState()
     val reactance = rememberTextFieldState()
     val installation = rememberTextFieldState(project.installation)
@@ -131,11 +135,13 @@ internal fun RecordForm(
     val size = length(measuredLength.text.toString())
     val resonanceValue = frequency(resonance.text.toString())
     val testFrequencyValue = frequency(testFrequency.text.toString())
+    val referenceValue = parseMatchingNumber(reference.text.toString(), MatchingField.REFERENCE).value
     val swrValue = parseMatchingNumber(swr.text.toString(), MatchingField.SWR).value
     val resistanceValue = parseMatchingNumber(resistance.text.toString(), MatchingField.RESISTANCE).value
     val reactanceValue = parseMatchingNumber(reactance.text.toString(), MatchingField.REACTANCE).value
     val lengthError = measuredLength.text.invalid(size)
     val resonanceError = resonance.text.invalid(resonanceValue)
+    val referenceError = reference.text.invalid(referenceValue)
     val swrError = swr.text.invalid(swrValue)
     val resistanceError = resistance.text.invalid(resistanceValue)
     val reactanceError = reactance.text.invalid(reactanceValue)
@@ -148,6 +154,7 @@ internal fun RecordForm(
     val titleLocation = remember { BringIntoViewRequester() }
     val lengthLocation = remember { BringIntoViewRequester() }
     val resonanceLocation = remember { BringIntoViewRequester() }
+    val referenceLocation = remember { BringIntoViewRequester() }
     val swrLocation = remember { BringIntoViewRequester() }
     val resistanceLocation = remember { BringIntoViewRequester() }
     val reactanceLocation = remember { BringIntoViewRequester() }
@@ -189,6 +196,8 @@ internal fun RecordForm(
                 signed = true)
             JournalNumberField(testFrequency, R.string.journal_test_frequency, R.string.journal_example_target, "journal-test-frequency", enabled,
                 testFrequencyError, testFrequencyLocation)
+            JournalNumberField(reference, R.string.journal_reference_optional, R.string.journal_example_reference,
+                "journal-reference", enabled, referenceError, referenceLocation)
             ChoicePicker(stringResource(R.string.journal_point), MeasurementPoint.entries, point,
                 { stringResource(it.journalLabel()) }, { if (enabled) point = it }, "journal-point")
         } else {
@@ -216,11 +225,12 @@ internal fun RecordForm(
                 reactanceError || missingReactance -> reactanceLocation
                 missingMeasurement -> lengthLocation
                 testFrequencyError -> testFrequencyLocation
+                referenceError -> referenceLocation
                 else -> null
             }
             if (scrollTarget != null) return@Button
             val measurement = if (recordType == RecordType.MEASUREMENT) {
-                JournalMeasurement(size, resonanceValue, testFrequencyValue, swrValue, resistanceValue, reactanceValue, point)
+                JournalMeasurement(size, resonanceValue, testFrequencyValue, swrValue, resistanceValue, reactanceValue, point, referenceValue)
             } else null
             val snapshot = if (recordType == RecordType.CALCULATION) {
                 journalSnapshot(currentCalculator(), project.antennaType, calculationSection) ?: return@Button

@@ -134,4 +134,31 @@
     <string name="project_transfer_first_entry">First journal entry</string>
     <string name="project_transfer_length_outside_range">This length is outside the range for the project field. The exact result remains in the journal entry.</string>
     <string name="project_transfer_recommended_length">Recommended length</string>
+    <string name="journal_manual_records">Manual measurements</string>
+    <string name="journal_saved_calculations">Saved calculations</string>
+    <string name="journal_manual_short">Manual</string>
+    <string name="journal_reference">Reference impedance Z₀</string>
+    <string name="journal_reference_optional">Reference impedance Z₀, Ω (optional)</string>
+    <string name="journal_example_reference">50</string>
+    <string name="journal_sweep_compare_title">Manual measurement and S1P trace</string>
+    <string name="journal_sweep_compare_help">Select two records. To compare with S1P, select a manual measurement.</string>
+    <string name="journal_sweep_compare_select_manual">Select a manual measurement to compare with an S1P trace.</string>
+    <string name="journal_sweep_frequency_unknown">The SWR or impedance test frequency is missing. Resonance frequency is recorded separately.</string>
+    <string name="journal_sweep_frequency_unsampled">The trace has no sample at the manual test frequency. The nearest sample is shown without a difference.</string>
+    <string name="journal_sweep_reference_unknown">The manual measurement has no Z₀. The SWR difference is unavailable.</string>
+    <string name="journal_sweep_reference_mismatch">The measurement and trace have different Z₀ values. The SWR difference is unavailable.</string>
+    <string name="journal_sweep_delta_rule">Difference = S1P value minus manual measurement.</string>
+    <string name="journal_compare_parameter">Parameter</string>
+    <string name="journal_compare_calculated">Calculated</string>
+    <string name="journal_compare_measured">Measured</string>
+    <string name="journal_compare_difference">Difference</string>
+    <string name="journal_compare_sizing_title">Calculation and manual measurement</string>
+    <string name="journal_compare_length_rule">Difference = measured length minus calculated length.</string>
+    <string name="journal_compare_no_shared_geometry">No comparable dimensions are available. See the record details for the original values.</string>
+    <string name="journal_compare_both_details">Details of both records</string>
+    <string name="journal_reject_two_sweeps">Compare two S1P traces in the S1P measurements tool.</string>
+    <string name="journal_reject_antenna_types">The records are for different antenna types.</string>
+    <string name="journal_reject_geometry">The records have no comparable measurements</string>
+    <string name="journal_reject_calculation_models">These calculations use different models. Select two calculations of the same kind.</string>
+    <string name="journal_reject_calculation_revisions">The calculations use different revisions of the model.</string>
 </resources>

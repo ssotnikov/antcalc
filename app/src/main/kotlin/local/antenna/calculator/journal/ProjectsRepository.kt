@@ -12,6 +12,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.journal.JournalLimits
+import local.antenna.calculator.core.journal.SweepAttachment
 import local.antenna.calculator.core.journal.SweepComparison
 import local.antenna.calculator.measurements.AttachmentLimitException
 import local.antenna.calculator.measurements.MeasurementStorage
@@ -22,9 +23,13 @@ internal class ProjectsRepository(
     private val directory: File,
     private val measurements: MeasurementStorage? = null,
 ) {
-    suspend fun saveSweeps(id: UUID, traces: List<MeasurementTrace>): List<AntennaProject> =
+    suspend fun saveSweeps(
+        id: UUID, traces: List<MeasurementTrace>, newProject: AntennaProject? = null,
+    ): List<AntennaProject> =
         update { projects ->
-            val project = projects.find { it.id == id } ?: throw JournalException(JournalProblem.MISSING)
+            val existing = projects.find { it.id == id }
+            val project = existing ?: newProject ?: throw JournalException(JournalProblem.MISSING)
+            if (existing == null && projects.size >= JournalLimits.PROJECTS) throw JournalException(JournalProblem.LIMIT)
             val used = projects.flatMap { it.sweeps }.flatMap { it.traces }.map { it.id }.toSet()
             val comparison = try {
                 SweepComparison(checkNotNull(measurements).addAttachments(traces, used))
@@ -33,11 +38,17 @@ internal class ProjectsRepository(
             }
             if (comparison in project.sweeps) projects else {
                 if (project.sweeps.size >= JournalLimits.RECORDS) throw JournalException(JournalProblem.LIMIT)
-                projects.map { if (it.id == id) it.copy(sweeps = it.sweeps + comparison) else it }
+                val updated = project.copy(sweeps = project.sweeps + comparison)
+                if (existing == null) projects + updated else projects.map { if (it.id == id) updated else it }
             }
         }
     private val file = File(directory, "projects.json")
     private val mutex = Mutex()
+
+    suspend fun readSweep(ref: SweepAttachment): MeasurementTrace? =
+        withContext(Dispatchers.IO) {
+            mutex.withLock { measurements?.readAttachment(ref) }
+        }
 
     suspend fun read(): List<AntennaProject> = withContext(Dispatchers.IO) {
         mutex.withLock { readLocked() }

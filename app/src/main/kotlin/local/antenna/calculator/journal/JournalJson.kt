@@ -185,12 +185,13 @@ internal object JournalJson {
     private fun encodeMeasurement(m: JournalMeasurement) = json(
         "lengthNm" to m.length?.nanometers, "resonanceHz" to m.resonance?.hertz, "testFrequencyHz" to m.testFrequency?.hertz,
         "swr" to m.swr, "resistanceOhms" to m.resistanceOhms, "reactanceOhms" to m.reactanceOhms, "point" to m.point.name,
+        "referenceOhms" to m.referenceOhms,
     )
 
     private fun decodeMeasurement(o: JsonObject) = JournalMeasurement(
         o.length("lengthNm"), o.frequency("resonanceHz"), o.frequency("testFrequencyHz"),
         o.optionalDouble("swr"), o.optionalDouble("resistanceOhms"), o.optionalDouble("reactanceOhms"),
-        MeasurementPoint.valueOf(o.string("point")),
+        MeasurementPoint.valueOf(o.string("point")), o.optionalDouble("referenceOhms"),
     )
 
     private fun encodeSnapshot(s: CalculationSnapshot) = json(

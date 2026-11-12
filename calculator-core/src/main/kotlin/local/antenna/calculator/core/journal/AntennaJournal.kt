@@ -30,6 +30,7 @@ data class JournalMeasurement(
     val resistanceOhms: Double? = null,
     val reactanceOhms: Double? = null,
     val point: MeasurementPoint = MeasurementPoint.UNSPECIFIED,
+    val referenceOhms: Double? = null,
 ) {
     init {
         require(length != null || resonance != null || swr != null || resistanceOhms != null)
@@ -37,6 +38,7 @@ data class JournalMeasurement(
         validate(swr, MatchingField.SWR)
         validate(resistanceOhms, MatchingField.RESISTANCE)
         validate(reactanceOhms, MatchingField.REACTANCE)
+        validate(referenceOhms, MatchingField.REFERENCE)
     }
 
     private fun validate(value: Double?, field: MatchingField) {

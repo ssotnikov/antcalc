@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -28,6 +29,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import java.util.UUID
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.*
@@ -75,12 +77,21 @@ internal fun JournalScreen(
     var picked by rememberSaveable(stateSaver = listSaver<List<String>, String>(
         save = { it }, restore = { it.toList() },
     )) { mutableStateOf(emptyList()) }
+    var rejectedKey by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(rejectedKey, page, projectId) {
+        if (rejectedKey != null && page == JournalPage.HISTORY) delay(850)
+        rejectedKey = null
+    }
     var projectToDelete by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingSweepExport by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmRecordDeletion by rememberSaveable { mutableStateOf(false) }
     val project = state.projects.find { it.id.toString() == projectId }
     val record = project?.records?.find { it.id.toString() == recordId }
     val selected = project?.records.orEmpty().filter { it.id.toString() in picked }.sortedWith(journalChronology)
+    val selectedSweep = project?.sweeps?.firstOrNull { it.selectionKey() in picked }
+    val canCompare = project != null && picked.size == 2 &&
+        (selected.size == 2 || (selected.size == 1 && selectedSweep != null)) &&
+        project.comparisonRejection(picked) == null
     val context = LocalContext.current
     val presentation = JournalPresentation(context)
     val resources = LocalResources.current
@@ -199,17 +210,27 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.HISTORY -> if (project != null) {
                 ProjectHistory(
-                    project, presentation, picked, enabled,
-                    onPick = { id ->
-                        val key = id.toString()
-                        picked = if (key in picked) picked - key else picked.takeLast(1) + key
+                    project, presentation, picked, enabled, canCompare, rejectedKey,
+                    onPick = { key ->
+                        val proposed = if (key in picked) picked - key else picked.takeLast(1) + key
+                        val rejection = project.comparisonRejection(proposed)
+                        if (rejection == null) {
+                            rejectedKey = null
+                            picked = proposed
+                        } else if (rejectedKey != key) {
+                            rejectedKey = key
+                            onMessage(resources.getString(rejection))
+                        }
                     },
                     onOpen = { id -> recordId = id.toString(); navigate(JournalPage.RECORD) },
                     onAdd = { navigate(JournalPage.ADD_RECORD) },
                     onCompare = { navigate(JournalPage.COMPARE) },
                     onAction = { onProjectAction(project, it) },
                     onOpenSweeps = onOpenSweeps,
-                    onRemoveSweeps = { model.removeSweeps(project.id, it) },
+                    onRemoveSweeps = {
+                        picked = picked - it.selectionKey()
+                        model.removeSweeps(project.id, it)
+                    },
                 )
             } else MissingItem()
             JournalPage.ADD_RECORD -> if (project != null) {
@@ -232,9 +253,17 @@ internal fun JournalScreen(
                     TextButton(onClick = { confirmRecordDeletion = true }, enabled = enabled) { Text(stringResource(R.string.journal_delete)) }
                 }
             } else MissingItem()
-            JournalPage.COMPARE -> if (project != null && selected.size == 2) {
-                JournalComparisonScreen(project.title, selected[0], selected[1], presentation) { report ->
-                    copy("$report\n\n$scopeNote")
+            JournalPage.COMPARE -> if (project != null && canCompare) {
+                val copyComparison: (String) -> Unit = { report -> copy("$report\n\n$scopeNote") }
+                when {
+                    selectedSweep != null && selected.size == 1 -> JournalSweepComparisonScreen(
+                        project.title, selected.single(), selectedSweep, presentation, model::readSweep, copyComparison,
+                    )
+                    selected.count { it.measurement != null } == 1 -> JournalCalculationComparisonScreen(
+                        project.title, selected.first { it.calculation != null },
+                        selected.first { it.measurement != null }, presentation, copyComparison,
+                    )
+                    else -> JournalComparisonScreen(project.title, selected[0], selected[1], presentation, copyComparison)
                 }
             } else MissingItem()
         }
@@ -243,6 +272,9 @@ internal fun JournalScreen(
     state.preview?.let { preview ->
         AlertDialog(
             onDismissRequest = { if (!state.busy) model.clearPreview() },
+            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            textContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
             title = { Text(stringResource(R.string.journal_preview)) },
             text = {
                 Column(Modifier.heightIn(max = 330.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -284,6 +316,35 @@ internal fun JournalScreen(
             },
             dismissButton = { TextButton(onClick = ::dismissDeletion) { Text(stringResource(R.string.journal_cancel)) } },
         )
+    }
+}
+
+private fun SweepComparison.selectionKey() = traces.joinToString(separator = ":", prefix = "sweep:") { it.id }
+
+private fun AntennaProject.comparisonRejection(keys: List<String>): Int? {
+    if (keys.size != 2) return null
+    val records = records.filter { it.id.toString() in keys }
+    val sweepCount = keys.size - records.size
+    if (sweepCount == 2) return R.string.journal_reject_two_sweeps
+    if (sweepCount == 1) {
+        return R.string.journal_sweep_compare_select_manual.takeIf { records.single().measurement == null }
+    }
+    val calculations = records.filter { it.calculation != null }
+    if (calculations.isEmpty()) return null
+    if (records[0].antennaType != records[1].antennaType) return R.string.journal_reject_antenna_types
+    if (calculations.size == 1) {
+        val calculation = calculations.single()
+        val measurement = records.first { it.measurement != null }
+        return R.string.journal_reject_geometry.takeIf { compareSizingLength(calculation, measurement) == null }
+    }
+    val first = checkNotNull(calculations[0].calculation)
+    val second = checkNotNull(calculations[1].calculation)
+    return when {
+        first.model != second.model -> R.string.journal_reject_calculation_models
+        first.revision != second.revision -> R.string.journal_reject_calculation_revisions
+        first.outputs.none { a -> second.outputs.any { b -> a.key == b.key && a.unit == b.unit } } ->
+            R.string.journal_reject_geometry
+        else -> null
     }
 }
 
@@ -355,15 +416,57 @@ private fun ProjectActionsMenu(expanded: Boolean, onDismiss: () -> Unit, onActio
 
 @Composable
 private fun ProjectHistory(
-    project: AntennaProject, presentation: JournalPresentation, picked: List<String>, enabled: Boolean,
-    onPick: (UUID) -> Unit, onOpen: (UUID) -> Unit, onAdd: () -> Unit, onCompare: () -> Unit,
+    project: AntennaProject, presentation: JournalPresentation, picked: List<String>, enabled: Boolean, canCompare: Boolean,
+    rejectedKey: String?,
+    onPick: (String) -> Unit, onOpen: (UUID) -> Unit, onAdd: () -> Unit, onCompare: () -> Unit,
     onAction: (ProjectAction) -> Unit,
     onOpenSweeps: ((SweepComparison) -> Unit)?,
     onRemoveSweeps: (SweepComparison) -> Unit,
 ) {
     var actions by remember { mutableStateOf(false) }
     val records = remember(project.records) { project.records.sortedWith(journalChronology.reversed()) }
-    val count = records.count { it.id.toString() in picked }
+    val sweeps = project.sweeps.asReversed().distinctBy { it.selectionKey() }
+    val count = records.count { it.id.toString() in picked } + sweeps.count { it.selectionKey() in picked }
+    val recordGroups = records.groupBy { it.measurement != null }
+    fun LazyListScope.recordGroup(isMeasurement: Boolean) {
+        val group = recordGroups[isMeasurement] ?: return
+        item {
+            JournalHeading(stringResource(if (isMeasurement) R.string.journal_manual_records else R.string.journal_saved_calculations),
+                MaterialTheme.colorScheme.secondary)
+        }
+        items(group, key = { it.id.toString() }) { record ->
+            val description = stringResource(R.string.journal_select, record.title)
+            OutlinedCard(Modifier.fillMaxWidth()) {
+                Row(Modifier.padding(start = 4.dp, end = 12.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    val key = record.id.toString()
+                    JournalSelectionCheckbox(key in picked, rejectedKey == key, enabled, description, "journal-select-record") {
+                        onPick(key)
+                    }
+                    TextButton(
+                        onClick = { onOpen(record.id) },
+                        enabled = enabled,
+                        modifier = Modifier.weight(1f),
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    ) {
+                        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                            Text(record.title, style = MaterialTheme.typography.titleMedium,
+                                color = if (enabled) MaterialTheme.colorScheme.secondary else LocalContentColor.current)
+                            Text(presentation.date(record.time), style = MaterialTheme.typography.bodySmall)
+                            record.measurement?.let { m ->
+                                val summary = listOfNotNull(m.resonance?.let { presentation.frequency(it.hertz) },
+                                    m.swr?.let { stringResource(R.string.matching_swr) + " " + presentation.number(it) })
+                                if (summary.isNotEmpty()) Text(summary.joinToString(" · "))
+                                Text(stringResource(m.point.journalLabel()), style = MaterialTheme.typography.bodySmall)
+                            }
+                            if (record.calculation != null) Text(stringResource(R.string.journal_calculation))
+                            if (record.note.isNotBlank()) Text(record.note, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+                        }
+                    }
+                }
+            }
+        }
+    }
     val scroll = rememberLazyListState()
     LazyColumn(
         Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("journal-history"),
@@ -406,24 +509,33 @@ private fun ProjectHistory(
                 Button(onClick = onAdd, enabled = enabled, modifier = Modifier.weight(1f).testTag("journal-add")) {
                     Text(stringResource(R.string.journal_add_record))
                 }
-                OutlinedButton(onClick = onCompare, enabled = enabled && count == 2, modifier = Modifier.weight(1f).testTag("journal-compare")) {
+                OutlinedButton(onClick = onCompare, enabled = enabled && canCompare, modifier = Modifier.weight(1f).testTag("journal-compare")) {
                     Text(stringResource(R.string.journal_compare))
                 }
             }
-            if (records.size >= 2) {
+            if (records.size + sweeps.size >= 2) {
                 Column(Modifier.padding(top = 12.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(stringResource(R.string.journal_selected, count), style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.secondary)
-                    Text(stringResource(R.string.journal_compare_help), style = MaterialTheme.typography.bodySmall)
+                    val help = if (sweeps.isNotEmpty()) R.string.journal_sweep_compare_help else R.string.journal_compare_help
+                    Text(stringResource(help), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
+        recordGroup(true)
         if (project.sweeps.isNotEmpty()) {
             item { JournalHeading(stringResource(R.string.sweep_saved_traces), MaterialTheme.colorScheme.secondary) }
-            items(project.sweeps.asReversed()) { sweep ->
+            items(sweeps, key = { it.selectionKey() }) { sweep ->
+                val description = stringResource(R.string.journal_select, sweep.traces.joinToString { it.name })
                 OutlinedCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(12.dp)) {
-                        sweep.traces.forEach { Text(it.name) }
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            val key = sweep.selectionKey()
+                            JournalSelectionCheckbox(key in picked, rejectedKey == key, enabled, description, "journal-select-sweep") {
+                                onPick(key)
+                            }
+                            Column(Modifier.weight(1f)) { sweep.traces.forEach { Text(it.name) } }
+                        }
                         Row {
                             if (onOpenSweeps != null) TextButton(enabled = enabled, onClick = { onOpenSweeps(sweep) }) {
                                 Text(stringResource(R.string.sweep_open_saved))
@@ -445,38 +557,23 @@ private fun ProjectHistory(
                 }
             }
         }
-        if (records.isEmpty()) item { Text(stringResource(R.string.journal_no_records)) }
-        items(records, key = { it.id.toString() }) { record ->
-            val description = stringResource(R.string.journal_select, record.title)
-            OutlinedCard(Modifier.fillMaxWidth()) {
-                Row(Modifier.padding(start = 4.dp, end = 12.dp, top = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = record.id.toString() in picked, onCheckedChange = { onPick(record.id) }, enabled = enabled,
-                        modifier = Modifier.testTag("journal-select-record").semantics { contentDescription = description })
-                    TextButton(
-                        onClick = { onOpen(record.id) },
-                        enabled = enabled,
-                        modifier = Modifier.weight(1f),
-                        shape = MaterialTheme.shapes.small,
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                    ) {
-                        Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                            Text(record.title, style = MaterialTheme.typography.titleMedium,
-                                color = if (enabled) MaterialTheme.colorScheme.secondary else LocalContentColor.current)
-                            Text(presentation.date(record.time), style = MaterialTheme.typography.bodySmall)
-                            record.measurement?.let { m ->
-                                val summary = listOfNotNull(m.resonance?.let { presentation.frequency(it.hertz) },
-                                    m.swr?.let { stringResource(R.string.matching_swr) + " " + presentation.number(it) })
-                                if (summary.isNotEmpty()) Text(summary.joinToString(" · "))
-                                Text(stringResource(m.point.journalLabel()), style = MaterialTheme.typography.bodySmall)
-                            }
-                            if (record.calculation != null) Text(stringResource(R.string.journal_calculation))
-                            if (record.note.isNotBlank()) Text(record.note, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
-                        }
-                    }
-                }
-            }
-        }
+        if (records.isEmpty() && sweeps.isEmpty()) item { Text(stringResource(R.string.journal_no_records)) }
+        recordGroup(false)
     }
+}
+
+@Composable
+private fun JournalSelectionCheckbox(
+    checked: Boolean, rejected: Boolean, enabled: Boolean, description: String, tag: String, onPick: () -> Unit,
+) {
+    Checkbox(
+        checked = checked,
+        onCheckedChange = { onPick() },
+        enabled = enabled,
+        colors = if (rejected) CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colorScheme.error)
+            else CheckboxDefaults.colors(),
+        modifier = Modifier.testTag(tag).semantics { contentDescription = description },
+    )
 }
 
 @Composable

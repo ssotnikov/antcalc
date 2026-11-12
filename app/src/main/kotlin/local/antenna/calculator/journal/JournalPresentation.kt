@@ -40,7 +40,8 @@ internal class JournalPresentation(private val context: Context) {
         maximumFractionDigits = digits
     }.format(value)
 
-    fun frequency(hertz: Long): String = withUnit(hertz / 1_000_000.0, R.string.mhz)
+    fun frequency(hertz: Long): String = frequency(hertz.toDouble())
+    fun frequency(hertz: Double): String = withUnit(hertz / 1_000_000.0, R.string.mhz)
     fun length(nanometers: Long): String = withUnit(nanometers / 10_000_000.0, R.string.cm)
     private fun withUnit(value: Number, unit: Int) = context.getString(R.string.value_unit, number(value), text(unit))
 
@@ -67,6 +68,7 @@ internal class JournalPresentation(private val context: Context) {
             m.resonance?.let { add(text(R.string.measured_frequency) to frequency(it.hertz)) }
             m.testFrequency?.let { add(text(R.string.journal_test_frequency_label) to frequency(it.hertz)) }
             m.swr?.let { add(text(R.string.matching_swr) to number(it)) }
+            m.referenceOhms?.let { add(text(R.string.journal_reference) to withUnit(it, R.string.journal_ohms)) }
             m.resistanceOhms?.let { add(text(R.string.journal_r_label) to withUnit(it, R.string.journal_ohms)) }
             m.reactanceOhms?.let { add(text(R.string.journal_x_label) to withUnit(it, R.string.journal_ohms)) }
         }

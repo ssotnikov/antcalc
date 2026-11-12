@@ -16,7 +16,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
 
     private fun copy(): String {
         compose.onNodeWithTag("copy-result").performScrollTo().performClick()
-        compose.onNodeWithText("Расчёт скопирован").assertExists()
+        compose.onNodeWithText("Расчет скопирован").assertExists()
         var text = ""
         compose.runOnUiThread {
             val clipboard = compose.activity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -80,7 +80,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         val text = copy()
         listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная резонансная частота: 145 МГц",
             "Целевая частота: 155 МГц", "Оценка полной длины диполя: 935,5 мм", "Изменение каждого плеча: Уменьшение на 32,3 мм",
-            "Оценка длины каждого плеча: 467,7 мм", "Приближённый расчёт").forEach { assertTrue(text, text.contains(it)) }
+            "Оценка длины каждого плеча: 467,7 мм", "Приближённый расчет").forEach { assertTrue(text, text.contains(it)) }
     }
 
     @Test fun unusualAntennaLengthShowsWarningWithTheEstimate() {
@@ -119,7 +119,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         start()
         val text = copy()
         listOf("Частота: 145 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491,0 мм",
-            "Полная длина диполя: 982,1 мм", "Длина одного плеча: 491,0 мм", "Длина волны λ: 2067,5 мм", "Приближённый расчёт")
+            "Полная длина диполя: 982,1 мм", "Длина одного плеча: 491,0 мм", "Длина волны λ: 2067,5 мм", "Приближённый расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 
@@ -144,7 +144,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500")
         val text = copy()
         listOf("Фактическая длина штыря: 500 мм", "Измеренная резонансная частота: 145 МГц", "Целевая частота: 155 МГц",
-            "Уменьшение на 32,3 мм", "Оценка новой длины штыря: 467,7 мм", "Приближённый расчёт")
+            "Уменьшение на 32,3 мм", "Оценка новой длины штыря: 467,7 мм", "Приближённый расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 
@@ -159,7 +159,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         compose.onNodeWithTag("compatibility-switch").assertDoesNotExist()
         back()
         val text = copy()
-        assertTrue(text.contains("Расчёт размеров"))
+        assertTrue(text.contains("Расчет размеров"))
         assertFalse(Regex("оригинал|\\bLEN\\b|\\bTRIM\\b|\\bADD\\b|\\bCUT\\b", RegexOption.IGNORE_CASE).containsMatchIn(text))
         trimming()
         field(FieldKey.ACTUAL_LENGTH).assertExists()

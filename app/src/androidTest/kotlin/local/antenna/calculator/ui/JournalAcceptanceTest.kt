@@ -139,6 +139,7 @@ class JournalAcceptanceTest {
         waitFor("journal-history")
         repeat(2) { compose.onNodeWithTag("back").performClick() }
 
+        click("open-antenna-parameter-tools")
         click("open-inverted-v")
         click("inverted-v-mode-MEASURED")
         click("inverted-v-length-unit-METERS")
@@ -190,6 +191,7 @@ class JournalAcceptanceTest {
         val estimatedName = "Estimated V $suffix"
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-antenna-parameter-tools")
         click("open-inverted-v")
         click("inverted-v-mode-MEASURED")
         click("inverted-v-length-unit-METERS")
@@ -238,6 +240,7 @@ class JournalAcceptanceTest {
         val name = "Ground Plane " + UUID.randomUUID().toString().take(6)
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-antenna-parameter-tools")
         click("open-ground-plane")
         click("ground-plane-mode-MANUAL")
         click("ground-plane-length-unit-METERS")
@@ -362,8 +365,8 @@ class JournalAcceptanceTest {
         val project = openNewRecord("RUSSIAN", "LIGHT")
         click("journal-record-type-CALCULATION")
         compose.onNodeWithTag("journal-length").assertDoesNotExist()
-        compose.onNodeWithTag("journal-record-name").assertTextContains("Расчёт перед подстройкой")
-        edit("journal-record-name", "Расчёт перед установкой")
+        compose.onNodeWithTag("journal-record-name").assertTextContains("Расчет перед подстройкой")
+        edit("journal-record-name", "Расчет перед установкой")
         compose.onNodeWithTag("journal-installation").performScrollTo().performClick()
         edit("journal-installation", "  на МА")
         compose.onNodeWithText("На мачте").performScrollTo().performClick()

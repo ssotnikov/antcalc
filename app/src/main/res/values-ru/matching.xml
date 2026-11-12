@@ -1,7 +1,7 @@
 <resources>
     <string name="tools">Инструменты</string>
     <string name="matching_title">КСВ и отражение</string>
-    <string name="matching_description">Пересчёт КСВ, модуля коэффициента отражения и возвратных потерь. Расчёт по импедансу нагрузки.</string>
+    <string name="matching_description">Пересчёт КСВ, модуля коэффициента отражения и возвратных потерь. Расчет по импедансу нагрузки.</string>
     <string name="matching_source">Известная величина</string>
     <string name="matching_swr">КСВ</string>
     <string name="matching_gamma">Модуль коэффициента отражения |Γ|</string>

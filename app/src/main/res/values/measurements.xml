@@ -6,8 +6,8 @@
     <string name="sweep_title">S1P measurements</string>
     <string name="sweep_files">Measurement files</string>
     <string name="sweep_graph">Measurement plot</string>
-    <string name="sweep_graph_description">%1$s plot. Values are available in the data table.</string>
-    <string name="sweep_selected">Selected point</string>
+    <string name="sweep_graph_description">%1$s plot. Values are available in the measurement table.</string>
+    <string name="sweep_selected">Selected frequency</string>
     <string name="sweep_trace_a">Trace A</string>
     <string name="sweep_trace_b">Trace B</string>
     <string name="sweep_mhz">%1$s MHz</string>
@@ -22,7 +22,7 @@
     <string name="sweep_remove">Remove</string>
     <string name="sweep_cancel">Cancel</string>
     <string name="sweep_swr">SWR</string>
-    <string name="sweep_magnitude">Magnitude |S11|</string>
+    <string name="sweep_magnitude">|S11|</string>
     <string name="sweep_db">S11, dB</string>
     <string name="sweep_impedance">Impedance R / X</string>
     <string name="sweep_phase">S11 phase</string>
@@ -33,14 +33,13 @@
     <string name="sweep_reference_mismatch">The traces use different reference impedances Z₀.</string>
     <string name="sweep_plane_mismatch">Calibration planes differ or are unspecified.</string>
     <string name="sweep_grid_mismatch">The nearest measured points are at different frequencies.</string>
-    <string name="sweep_table_show">Show data table</string>
-    <string name="sweep_table_hide">Hide data table</string>
+    <string name="sweep_table_show">Measurement table</string>
+    <string name="sweep_table_hide">Hide measurement table</string>
     <string name="sweep_table_page">Page %1$d of %2$d</string>
     <string name="sweep_previous">Previous</string>
     <string name="sweep_next">Next</string>
     <string name="sweep_save">Save to project</string>
-    <string name="sweep_copy">Copy point data</string>
-    <string name="sweep_no_projects">Create a project in the tuning journal.</string>
+    <string name="sweep_copy">Copy data at selected frequency</string>
     <string name="sweep_error_line">Line %1$d. %2$s</string>
     <string name="sweep_error_format">Expected a Touchstone 1.x file with one-port S-parameters.</string>
     <string name="sweep_error_frequency">Frequencies must increase strictly and stay between 100 kHz and 6 GHz.</string>
@@ -49,11 +48,21 @@
     <string name="sweep_error_write">Could not save the measurements. Check available storage.</string>
     <string name="sweep_error_workspace">Saved measurements are damaged or use an unknown format. The original data has been kept.</string>
     <string name="sweep_error_missing">The trace files are missing on this device. Import the original S1P files to compare them.</string>
-    <string name="sweep_graph_legend">Frequency, MHz. Tap the plot to select a point.</string>
+    <string name="sweep_graph_legend">Frequency, MHz. Tap or drag across the plot to select a point.</string>
     <string name="sweep_rx_legend">R uses a solid line and X uses a dashed line.</string>
     <string name="sweep_help">Supports one-port Touchstone 1.x files in RI, MA, or DB format. Impedance is calculated as Z = Z₀ × (1 + S11) / (1 − S11). Compare traces taken under the same measurement conditions.</string>
     <string name="sweep_export_notice">The JSON contains trace details. Keep the original S1P files separately.</string>
-    <string name="sweep_saved_traces">Analyzer measurements</string>
+    <string name="sweep_saved_traces">Analyzer measurements (S1P)</string>
     <string name="sweep_open_saved">Open measurements</string>
     <string name="sweep_remove_saved">Remove measurements from the project?</string>
+    <string name="sweep_frequency">Frequency</string>
+    <string name="sweep_frequency_column">Frequency, MHz</string>
+    <string name="sweep_ohms">%1$s Ω</string>
+    <string name="sweep_decibels">%1$s dB</string>
+    <string name="sweep_r_column">R, Ω</string>
+    <string name="sweep_x_column">X, Ω</string>
+    <string name="sweep_previous_frequency">Previous frequency</string>
+    <string name="sweep_next_frequency">Next frequency</string>
+    <string name="antenna_parameter_tools">Antenna parameter calculators</string>
+    <string name="antenna_parameter_tools_hint">Inverted-V dipole and Ground Plane (GP) antenna</string>
 </resources>

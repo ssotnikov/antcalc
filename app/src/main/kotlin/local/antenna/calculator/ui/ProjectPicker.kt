@@ -33,7 +33,7 @@ import local.antenna.calculator.journal.label
 @Composable
 internal fun ProjectPicker(
     journal: JournalViewModel,
-    antennaType: AntennaType,
+    antennaType: AntennaType?,
     onSelect: (AntennaProject) -> Unit,
     targetHertz: Long?,
     onCreate: () -> Unit,
@@ -46,7 +46,7 @@ internal fun ProjectPicker(
     val presentation = remember(context) { JournalPresentation(context) }
     var query by rememberSaveable(antennaType) { mutableStateOf("") }
     var selectedId by rememberSaveable(antennaType) { mutableStateOf<UUID?>(null) }
-    val projects = status.projects.filter { it.antennaType == antennaType }
+    val projects = status.projects.filter { antennaType == null || it.antennaType == antennaType }
     val search = query.trim().replace(',', '.')
     val matches = projects.filter { project ->
         project.title.contains(query.trim(), ignoreCase = true) ||
@@ -82,7 +82,7 @@ internal fun ProjectPicker(
             keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
             modifier = Modifier.fillMaxWidth().testTag("project-transfer-project-search"),
         )
-        Text(
+        if (antennaType != null) Text(
             stringResource(R.string.project_transfer_eligible),
             Modifier.padding(vertical = 8.dp),
             style = MaterialTheme.typography.bodySmall,
@@ -109,7 +109,11 @@ internal fun ProjectPicker(
             }
             if (status.readable && !status.busy && matches.isEmpty()) {
                 item {
-                    HelpText(if (projects.isEmpty()) R.string.project_transfer_no_projects else R.string.project_transfer_no_match)
+                    HelpText(when {
+                        projects.isNotEmpty() -> R.string.project_transfer_no_match
+                        antennaType == null -> R.string.journal_no_projects
+                        else -> R.string.project_transfer_no_projects
+                    })
                 }
             }
             if (status.readable) items(matches, key = { it.id }) { project ->

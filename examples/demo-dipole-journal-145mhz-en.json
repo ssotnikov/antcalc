@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "project": {
+    "id": "f63753af-13a8-5099-823b-135017136ff1",
+    "title": "Demo: 145.5 MHz dipole tuning journal",
+    "antennaType": "SYMMETRIC_DIPOLE",
+    "targetHz": 145500000,
+    "initialLengthNm": 989000000,
+    "note": "Synthetic example. Dipole length is the sum of both arms, excluding the feed gap. Try comparing Before tuning with After tuning, the sizing calculation with a manual measurement, or a manual measurement with an S1P trace. After importing the JSON, open demo-dipole-145mhz-before.s1p and demo-dipole-145mhz-after.s1p in the S1P tool, set both calibration planes to At the feedpoint, and save them to this project. The JSON contains trace references; the S1P files are transferred separately.",
+    "installation": "Horizontal dipole made from 6 mm copper tubing, with the center 3 m above ground and a 12 mm feed gap.",
+    "feedline": "5 m of 50 Ω RG-58 coax with a 1:1 current choke. The VNA reference plane is at the feedpoint.",
+    "records": [
+      {
+        "id": "f798c6ea-3558-566a-9db6-094eef5f70f6",
+        "title": "Antenna sizing",
+        "time": "2026-11-10T09:00:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Initial estimate for 145.5 MHz using a shortening factor of 0.95.",
+        "installation": "Horizontal dipole made from 6 mm copper tubing, with the center 3 m above ground and a 12 mm feed gap.",
+        "feedline": "5 m of 50 Ω RG-58 coax with a 1:1 current choke. The VNA reference plane is at the feedpoint.",
+        "calculation": {
+          "model": "sizing",
+          "revision": 1,
+          "inputs": [
+            {
+              "key": "frequency",
+              "value": 145500000,
+              "unit": "HERTZ"
+            },
+            {
+              "key": "factor",
+              "value": 0.95,
+              "unit": "FACTOR"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "wavelength",
+              "value": 2.060429264604811,
+              "unit": "METERS"
+            },
+            {
+              "key": "ideal_quarter",
+              "value": 0.5151073161512028,
+              "unit": "METERS"
+            },
+            {
+              "key": "ideal_half",
+              "value": 1.0302146323024055,
+              "unit": "METERS"
+            },
+            {
+              "key": "dipole_total",
+              "value": 0.9787039006872852,
+              "unit": "METERS"
+            },
+            {
+              "key": "dipole_arm",
+              "value": 0.4893519503436426,
+              "unit": "METERS"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      {
+        "id": "4951e4b2-de17-50c5-a041-3e7d12372e9d",
+        "title": "Before tuning",
+        "time": "2026-11-10T09:20:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Each arm is 494.5 mm long. Resonance is at 144.6 MHz. SWR and impedance at 145.5 MHz match the rounded Trace A values.",
+        "installation": "Horizontal dipole made from 6 mm copper tubing, with the center 3 m above ground and a 12 mm feed gap.",
+        "feedline": "5 m of 50 Ω RG-58 coax with a 1:1 current choke. The VNA reference plane is at the feedpoint.",
+        "measurement": {
+          "testFrequencyHz": 145500000,
+          "swr": 1.4553,
+          "resistanceOhms": 68.0,
+          "reactanceOhms": 12.658,
+          "point": "FEED_POINT",
+          "referenceOhms": 50.0,
+          "lengthNm": 989000000,
+          "resonanceHz": 144600000
+        }
+      },
+      {
+        "id": "4a01352a-2a8c-5423-9b37-ebf60606ae91",
+        "title": "Dipole trimming calculation",
+        "time": "2026-11-10T09:25:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Estimate from the 144.6 MHz resonance. Remove about 3 mm from each arm and measure again.",
+        "installation": "Horizontal dipole made from 6 mm copper tubing, with the center 3 m above ground and a 12 mm feed gap.",
+        "feedline": "5 m of 50 Ω RG-58 coax with a 1:1 current choke. The VNA reference plane is at the feedpoint.",
+        "calculation": {
+          "model": "trimming",
+          "revision": 1,
+          "inputs": [
+            {
+              "key": "length",
+              "value": 989000000,
+              "unit": "NANOMETERS"
+            },
+            {
+              "key": "resonance",
+              "value": 144600000,
+              "unit": "HERTZ"
+            },
+            {
+              "key": "target",
+              "value": 145500000,
+              "unit": "HERTZ"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "new_length",
+              "value": 0.9828824742268041,
+              "unit": "METERS"
+            },
+            {
+              "key": "adjustment",
+              "value": -0.006117525773195877,
+              "unit": "METERS"
+            },
+            {
+              "key": "new_arm",
+              "value": 0.49144123711340204,
+              "unit": "METERS"
+            },
+            {
+              "key": "arm_adjustment",
+              "value": -0.0030587628865979383,
+              "unit": "METERS"
+            }
+          ],
+          "warnings": []
+        }
+      },
+      {
+        "id": "cb767170-6d91-5bf7-8183-b88be944683d",
+        "title": "After tuning",
+        "time": "2026-11-10T09:45:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Trimmed 3 mm from each arm. SWR and impedance at 145.5 MHz match the rounded Trace B values.",
+        "installation": "Horizontal dipole made from 6 mm copper tubing, with the center 3 m above ground and a 12 mm feed gap.",
+        "feedline": "5 m of 50 Ω RG-58 coax with a 1:1 current choke. The VNA reference plane is at the feedpoint.",
+        "measurement": {
+          "testFrequencyHz": 145500000,
+          "swr": 1.2,
+          "resistanceOhms": 60.0,
+          "reactanceOhms": 0.0,
+          "point": "FEED_POINT",
+          "referenceOhms": 50.0,
+          "lengthNm": 983000000,
+          "resonanceHz": 145500000
+        }
+      },
+      {
+        "id": "53686fee-188a-5692-a078-344823b3a11c",
+        "title": "Follow-up measurement without Z₀",
+        "time": "2026-11-10T09:50:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "The same follow-up readings from an earlier record with no Z₀. When compared with Trace B, differences in R and X are available and the SWR difference is omitted.",
+        "installation": "Horizontal dipole made from 6 mm copper tubing, with the center 3 m above ground and a 12 mm feed gap.",
+        "feedline": "5 m of 50 Ω RG-58 coax with a 1:1 current choke. The VNA reference plane is at the feedpoint.",
+        "measurement": {
+          "testFrequencyHz": 145500000,
+          "swr": 1.2,
+          "resistanceOhms": 60.0,
+          "reactanceOhms": 0.0,
+          "point": "FEED_POINT",
+          "lengthNm": 983000000,
+          "resonanceHz": 145500000
+        }
+      },
+      {
+        "id": "2dfdca2f-387b-51b7-89bf-d18f6f692449",
+        "title": "Inverted-V installation geometry",
+        "time": "2026-11-10T10:05:00+03:00",
+        "antennaType": "SYMMETRIC_DIPOLE",
+        "note": "Portable setup option with a 120° included angle and a 3 m center height. The manual measurements and traces were taken with the dipole horizontal.",
+        "installation": "Proposed inverted-V installation. This configuration has not been measured.",
+        "feedline": "",
+        "calculation": {
+          "model": "inverted_v",
+          "revision": 1,
+          "inputs": [
+            {
+              "key": "apex_height",
+              "value": 3.0,
+              "unit": "METERS"
+            },
+            {
+              "key": "included_angle",
+              "value": 120.0,
+              "unit": "DEGREES"
+            },
+            {
+              "key": "dipole_arm",
+              "value": 0.4915,
+              "unit": "METERS"
+            }
+          ],
+          "outputs": [
+            {
+              "key": "dipole_arm",
+              "value": 0.4915,
+              "unit": "METERS"
+            },
+            {
+              "key": "dipole_total",
+              "value": 0.983,
+              "unit": "METERS"
+            },
+            {
+              "key": "end_span",
+              "value": 0.8513029719201032,
+              "unit": "METERS"
+            },
+            {
+              "key": "end_height",
+              "value": 2.75425,
+              "unit": "METERS"
+            }
+          ],
+          "warnings": []
+        }
+      }
+    ],
+    "sweeps": [
+      {
+        "traces": [
+          {
+            "id": "09cd6e6eee7d83abf6a952fe279c5b367593b69d6cbfbed575b5628c59923127",
+            "name": "demo-dipole-145mhz-before.s1p",
+            "plane": "FEED_POINT",
+            "referenceOhms": 50.0,
+            "points": 121,
+            "firstHz": 142000000.0,
+            "lastHz": 148000000.0
+          },
+          {
+            "id": "5131b94f05723e4c1d93dca415ea7b3b888925bd54acfdef3db3a91825f6661d",
+            "name": "demo-dipole-145mhz-after.s1p",
+            "plane": "FEED_POINT",
+            "referenceOhms": 50.0,
+            "points": 121,
+            "firstHz": 142000000.0,
+            "lastHz": 148000000.0
+          }
+        ]
+      }
+    ]
+  }
+}
