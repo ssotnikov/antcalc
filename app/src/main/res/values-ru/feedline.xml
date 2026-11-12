@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="feedline_title">Потери в фидере</string>
-    <string name="feedline_intro">Оцените затухание кабеля и мощность на его выходе.</string>
+    <string name="feedline_intro">Оценка затухания в кабеле и мощности на его выходе</string>
     <string name="feedline_screen_intro">Расчет затухания кабеля и мощности на его выходе</string>
     <string name="feedline_inputs">Исходные данные</string>
     <string name="feedline_method">Источник затухания</string>
