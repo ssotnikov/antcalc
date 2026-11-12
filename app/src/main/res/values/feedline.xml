@@ -2,6 +2,7 @@
 <resources>
     <string name="feedline_title">Feedline loss</string>
     <string name="feedline_intro">Estimate cable attenuation and how much power reaches the far end.</string>
+    <item type="string" name="feedline_screen_intro">@string/feedline_intro</item>
     <string name="feedline_inputs">Inputs</string>
     <string name="feedline_method">Attenuation source</string>
     <string name="feedline_datasheet">Datasheet</string>

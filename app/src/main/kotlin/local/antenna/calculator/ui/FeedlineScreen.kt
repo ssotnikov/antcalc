@@ -98,7 +98,7 @@ internal fun FeedlineScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         StorageNotice(state, onEvent)
-        HelpText(R.string.feedline_intro)
+        HelpText(R.string.feedline_screen_intro)
         FeedlineHeading(R.string.feedline_inputs)
         ChoicePicker(stringResource(R.string.feedline_method), listOf(true, false), draft.profileId != null,
             { stringResource(if (it) R.string.feedline_datasheet else R.string.feedline_manual) },
