@@ -11,6 +11,8 @@ import android.net.Uri
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.widthIn
@@ -18,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
@@ -25,10 +28,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import java.io.IOException
 import local.antenna.calculator.core.matching.SmithLoad
 import local.antenna.calculator.core.matching.SmithPoint
+import local.antenna.calculator.core.measurements.S11Sweep
 import kotlin.math.*
 
 private const val WIDTH = 360f
@@ -103,6 +108,116 @@ internal fun SmithChartGraphic(
         canvas.scale(size.width / WIDTH, size.height / HEIGHT)
         SmithDrawing(canvas, palette).draw(diagram, format)
         canvas.restore()
+    }
+}
+
+@Composable
+internal fun SmithSweepGraphic(
+    sweeps: List<S11Sweep>,
+    colors: List<Color>,
+    active: Int,
+    selectedHz: Double,
+    description: String,
+    selectionDescription: String,
+    format: (Double) -> String,
+    onSelect: (Int) -> Unit,
+) {
+    val palette = smithPalette()
+    val paths = remember(sweeps) { sweeps.map(::SmithSweepPath) }
+    val drawingOrder = remember(paths, active) { paths.indices.filter { it != active } + active }
+    val activePath = paths[active]
+    val currentIndex = sweeps[active].nearestIndex(selectedHz)
+    val select by rememberUpdatedState(onSelect)
+    val selectedIndex by rememberUpdatedState(currentIndex)
+    Canvas(
+        Modifier.widthIn(max = 440.dp).fillMaxWidth().aspectRatio(WIDTH / HEIGHT)
+            .testTag("sweep-smith-chart").semantics {
+                contentDescription = description
+                stateDescription = selectionDescription
+            }
+            .pointerInput(activePath) {
+                detectTapGestures { tap ->
+                    val point = Offset(tap.x * WIDTH / size.width, tap.y * HEIGHT / size.height)
+                    if ((point - Offset(CENTER_X, CENTER_Y)).getDistance() <= RADIUS + 6f) {
+                        activePath.nearest(point, selectedIndex)?.let(select)
+                    }
+                }
+            }
+            .pointerInput(activePath) {
+                fun position(touch: Offset) = Offset(touch.x * WIDTH / size.width, touch.y * HEIGHT / size.height)
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    val point = position(down.position)
+                    val first = activePath.nearest(point, selectedIndex) ?: return@awaitEachGesture
+                    val radius = 20.dp.toPx() * WIDTH / size.width
+                    if ((checkNotNull(activePath.positions[first]) - point).getDistance() > radius) return@awaitEachGesture
+                    val start = awaitTouchSlopOrCancellation(down.id) { change, _ -> change.consume() }
+                        ?: return@awaitEachGesture
+                    var previous = selectedIndex
+                    var change = start
+                    do {
+                        val nearest = activePath.nearest(position(change.position), previous)
+                        if (nearest != null && nearest != previous) {
+                            previous = nearest
+                            select(nearest)
+                        }
+                        change.consume()
+                        change = awaitPointerEvent().changes.firstOrNull { it.id == down.id } ?: break
+                    } while (change.pressed && !change.isConsumed)
+                }
+            },
+    ) {
+        val canvas = drawContext.canvas.nativeCanvas
+        canvas.save()
+        canvas.scale(size.width / WIDTH, size.height / HEIGHT)
+        val drawing = SmithDrawing(canvas, palette)
+        drawing.grid(format, labels = true)
+        drawingOrder.forEach { index ->
+            val color = colors[index].toArgb()
+            drawing.sweep(paths[index], color, active = index == active)
+        }
+        drawingOrder.forEach { index ->
+            val point = sweeps[index].nearestIndex(selectedHz)?.let(paths[index].positions::get)
+            if (point != null) drawing.sweepMarker(point, colors[index].toArgb(), active = index == active)
+        }
+        canvas.restore()
+    }
+}
+
+private class SmithSweepPath(sweep: S11Sweep) {
+    val positions = sweep.points.map { point ->
+        if (point.magnitude <= 1.0) Offset(
+            CENTER_X + (RADIUS * point.real).toFloat(),
+            CENTER_Y - (RADIUS * point.imaginary).toFloat(),
+        ) else null
+    }
+    val path = Path()
+    val isolated = positions.filterIndexed { index, point ->
+        point != null && positions.getOrNull(index - 1) == null && positions.getOrNull(index + 1) == null
+    }.filterNotNull()
+
+    init {
+        positions.forEachIndexed { index, point ->
+            if (point != null) {
+                if (positions.getOrNull(index - 1) == null) path.moveTo(point.x, point.y)
+                else path.lineTo(point.x, point.y)
+            }
+        }
+    }
+
+    fun nearest(target: Offset, preferred: Int?): Int? {
+        var best = preferred?.takeIf { positions[it] != null }
+        var distance = best?.let { (checkNotNull(positions[it]) - target).getDistanceSquared() }
+            ?: Float.POSITIVE_INFINITY
+        for (index in positions.indices) {
+            val point = positions[index] ?: continue
+            val candidate = (point - target).getDistanceSquared()
+            if (candidate < distance) {
+                best = index
+                distance = candidate
+            }
+        }
+        return best
     }
 }
 
@@ -199,6 +314,23 @@ private class SmithDrawing(private val canvas: AndroidCanvas, private val palett
         label(diagram.loadLabel, x.coerceIn(63f, 298f), maxOf(29f, point.y - 10f), 11f, palette.ink, align)
     }
 
+    fun sweep(series: SmithSweepPath, color: Int, active: Boolean) {
+        paint.color = color
+        paint.style = Paint.Style.STROKE
+        paint.strokeWidth = if (active) 2.6f else 1.8f
+        paint.strokeJoin = Paint.Join.ROUND
+        paint.strokeCap = Paint.Cap.ROUND
+        canvas.drawPath(series.path, paint)
+        for (point in series.isolated) circle(point.x, point.y, 2.5f, color)
+    }
+
+    fun sweepMarker(point: Offset, color: Int, active: Boolean) {
+        val radius = if (active) 5.2f else 3.7f
+        circle(point.x, point.y, radius + 2f, palette.background)
+        circle(point.x, point.y, radius, color)
+        if (active) circle(point.x, point.y, radius + 2f, palette.ink, 1.1f)
+    }
+
     fun drawAnatomy(labels: List<String>, format: (Double) -> String) {
         grid(format, labels = false)
         fun sample(from: Double, to: Double, point: (Double) -> SmithPoint) =
@@ -266,7 +398,7 @@ private class SmithDrawing(private val canvas: AndroidCanvas, private val palett
         paint.pathEffect = null
     }
 
-    private fun grid(format: (Double) -> String = { it.toString() }, labels: Boolean, shadeHalves: Boolean = false) {
+    fun grid(format: (Double) -> String = { it.toString() }, labels: Boolean, shadeHalves: Boolean = false) {
         circle(CENTER_X, CENTER_Y, RADIUS, palette.background)
         if (shadeHalves) {
             val bounds = RectF(CENTER_X - RADIUS, CENTER_Y - RADIUS, CENTER_X + RADIUS, CENTER_Y + RADIUS)

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import local.antenna.calculator.R
 import local.antenna.calculator.core.measurements.S11Point
+import local.antenna.calculator.ui.SmithSweepGraphic
 
 internal enum class SweepMetric(val title: Int, val axis: String) {
     SWR(R.string.sweep_swr, ""), MAGNITUDE(R.string.sweep_magnitude, "|S11|"),
@@ -53,6 +54,7 @@ internal fun MeasurementScreen(
     val tablePageA = rememberSaveable { mutableIntStateOf(-1) }
     val tablePageB = rememberSaveable { mutableIntStateOf(-1) }
     var metric by rememberSaveable { mutableStateOf(SweepMetric.SWR) }
+    var showSmith by rememberSaveable { mutableStateOf(false) }
     val appName = stringResource(R.string.app_name)
     val copied = stringResource(R.string.copied)
     val displayedTraces = if (state.showTraces) state.traces else listOf(null, null)
@@ -165,36 +167,68 @@ internal fun MeasurementScreen(
                 color = MaterialTheme.colorScheme.error, modifier = Modifier.testTag("sweep-error"))
         }
         if (!state.busy && activeTrace != null && frequency != null) {
+            fun selectPoint(pointIndex: Int) {
+                cursor = pointIndex
+                tablePage.intValue = pointIndex / PAGE_SIZE
+            }
+            fun activateTrace(slotIndex: Int, trace: MeasurementTrace) {
+                active = slotIndex
+                val sweep = trace.sweep
+                cursor = sweep.nearestIndex(frequency.coerceIn(sweep.points.first().hertz, sweep.points.last().hertz)) ?: 0
+            }
             Text(stringResource(R.string.sweep_graph), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.secondary)
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 SweepMetric.entries.forEach { option ->
-                    FilterChip(selected = metric == option, onClick = { metric = option }, label = { Text(stringResource(option.title)) })
+                    FilterChip(selected = !showSmith && metric == option, onClick = { metric = option; showSmith = false },
+                        label = { Text(stringResource(option.title)) })
                 }
+                FilterChip(selected = showSmith, onClick = { showSmith = true },
+                    modifier = Modifier.testTag("sweep-mode-smith"), label = { Text(stringResource(R.string.smith_title)) })
             }
-            MeasurementChart(entries, metric, frequency, activeSlot) { hertz ->
-                cursor = activeTrace.sweep.nearestIndex(hertz.coerceIn(points.first().hertz, points.last().hertz)) ?: index
-                tablePage.intValue = cursor / PAGE_SIZE
-            }
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                entries.forEach { (slotIndex, _) ->
-                    Text(stringResource(traceLabel(slotIndex)),
-                        color = measurementTraceColor(slotIndex), style = MaterialTheme.typography.labelLarge)
+            if (showSmith) {
+                if (entries.size > 1) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    entries.forEach { (slotIndex, trace) ->
+                        FilterChip(selected = slotIndex == activeSlot, onClick = { activateTrace(slotIndex, trace) },
+                            modifier = Modifier.testTag("sweep-smith-trace-$slotIndex"),
+                            label = { Text(stringResource(traceLabel(slotIndex)), color = measurementTraceColor(slotIndex)) })
+                    }
                 }
+                val sweeps = remember(entries) { entries.map { it.second.sweep } }
+                val hasOutsidePoints = remember(sweeps) { sweeps.any { sweep -> sweep.points.any { it.magnitude > 1.0 } } }
+                Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    SmithSweepGraphic(
+                        sweeps = sweeps,
+                        colors = entries.map { measurementTraceColor(it.first) },
+                        active = entries.indexOfFirst { it.first == activeSlot },
+                        selectedHz = frequency,
+                        description = stringResource(R.string.sweep_smith_description),
+                        selectionDescription = stringResource(R.string.sweep_smith_selection,
+                            stringResource(traceLabel(activeSlot)), frequencyText(frequency)),
+                        format = { format.format(it) },
+                        onSelect = ::selectPoint,
+                    )
+                }
+                Text(stringResource(R.string.sweep_smith_legend), style = MaterialTheme.typography.bodySmall)
+                if (hasOutsidePoints) Text(stringResource(R.string.sweep_smith_outside), style = MaterialTheme.typography.bodySmall)
+            } else {
+                MeasurementChart(entries, metric, frequency, activeSlot) { hertz ->
+                    selectPoint(activeTrace.sweep.nearestIndex(hertz.coerceIn(points.first().hertz, points.last().hertz)) ?: index)
+                }
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    entries.forEach { (slotIndex, _) ->
+                        Text(stringResource(traceLabel(slotIndex)),
+                            color = measurementTraceColor(slotIndex), style = MaterialTheme.typography.labelLarge)
+                    }
+                }
+                Text(stringResource(R.string.sweep_graph_legend), style = MaterialTheme.typography.bodySmall)
+                if (metric == SweepMetric.IMPEDANCE) Text(stringResource(R.string.sweep_rx_legend), style = MaterialTheme.typography.bodySmall)
             }
-            Text(stringResource(R.string.sweep_graph_legend), style = MaterialTheme.typography.bodySmall)
-            if (metric == SweepMetric.IMPEDANCE) Text(stringResource(R.string.sweep_rx_legend), style = MaterialTheme.typography.bodySmall)
             Text(stringResource(R.string.sweep_selected), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.secondary)
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically) {
-                FrequencyStep(forward = false, enabled = index > 0) {
-                    cursor = index - 1
-                    tablePage.intValue = cursor / PAGE_SIZE
-                }
+                FrequencyStep(forward = false, enabled = index > 0) { selectPoint(index - 1) }
                 Text(frequencyText(frequency), Modifier.weight(1f), style = MaterialTheme.typography.titleMedium)
-                FrequencyStep(forward = true, enabled = index < points.lastIndex) {
-                    cursor = index + 1
-                    tablePage.intValue = cursor / PAGE_SIZE
-                }
+                FrequencyStep(forward = true, enabled = index < points.lastIndex) { selectPoint(index + 1) }
             }
             comparisonNotes.forEach { Text(stringResource(it), color = MaterialTheme.colorScheme.error) }
             MeasurementSummaries(entries, selected, display, ::frequencyText)
@@ -223,10 +257,9 @@ internal fun MeasurementScreen(
             if (expanded) {
                 if (entries.size == 2) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     entries.forEach { (slotIndex, trace) ->
-                        FilterChip(selected = slotIndex == activeSlot, onClick = {
-                            active = slotIndex
-                            cursor = trace.sweep.nearestIndex(frequency.coerceIn(trace.sweep.points.first().hertz, trace.sweep.points.last().hertz)) ?: 0
-                        }, modifier = Modifier.testTag("sweep-table-trace-$slotIndex"), label = { Text(stringResource(traceLabel(slotIndex)), color = measurementTraceColor(slotIndex)) })
+                        FilterChip(selected = slotIndex == activeSlot, onClick = { activateTrace(slotIndex, trace) },
+                            modifier = Modifier.testTag("sweep-table-trace-$slotIndex"),
+                            label = { Text(stringResource(traceLabel(slotIndex)), color = measurementTraceColor(slotIndex)) })
                     }
                 }
                 StepControls(stringResource(R.string.sweep_table_page, visiblePage + 1, lastPage + 1), visiblePage > 0, visiblePage < lastPage) {

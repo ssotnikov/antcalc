@@ -1,0 +1,1 @@
+View imported or saved S1P measurements on a Smith chart. Tap or drag along the active trace to select a measured frequency and read its impedance and SWR.

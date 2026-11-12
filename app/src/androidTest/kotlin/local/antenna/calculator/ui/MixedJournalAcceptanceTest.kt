@@ -1,5 +1,6 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
@@ -87,7 +88,9 @@ class MixedJournalAcceptanceTest {
                 listOf(SnapshotValue("dipole_total", 0.9821, SnapshotUnit.METERS))))
         val trimming = sizing.copy(id = UUID.randomUUID(), title = "Trimming 145",
             calculation = checkNotNull(sizing.calculation).copy(model = "trimming"))
-        val trace = MeasurementTrace("before.s1p", S11Sweep(50.0, listOf(S11Point(145e6, 0.1, 0.0))), SweepPlane.FEED_POINT)
+        val trace = MeasurementTrace("before.s1p", S11Sweep(50.0, listOf(
+            S11Point(144e6, 0.3, 0.2), S11Point(145e6, 0.1, 0.0), S11Point(146e6, 1.1, 0.0),
+        )), SweepPlane.FEED_POINT)
         val followUp = trace.copy(name = "after.s1p", plane = SweepPlane.TRANSCEIVER)
         try {
             runBlocking {
@@ -95,7 +98,7 @@ class MixedJournalAcceptanceTest {
                 repository.saveSweeps(id, listOf(trace, followUp))
                 assertEquals(50.0, repository.read().first { it.id == id }.records.first().measurement?.referenceOhms)
             }
-            ActivityScenario.launch(MainActivity::class.java).use {
+            ActivityScenario.launch(MainActivity::class.java).use { scenario ->
                 click("nav-TOOLS")
                 compose.onNodeWithTag("open-journal").performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
                 val project = hasTestTag("journal-project") and hasText(title)
@@ -152,6 +155,46 @@ class MixedJournalAcceptanceTest {
                 }
                 history.performScrollToNode(selectionFor(sizing))
                 compose.onNode(selectionFor(sizing)).assertIsOn()
+                val openSweep = hasText(application.getString(R.string.sweep_open_saved))
+                history.performScrollToNode(openSweep)
+                compose.onNode(openSweep).performSemanticsAction(SemanticsActions.OnClick)
+                waitFor("sweep-mode-smith")
+                compose.onNodeWithTag("sweep-mode-smith").performScrollTo()
+                    .performSemanticsAction(SemanticsActions.OnClick).assertIsSelected()
+                waitFor("sweep-smith-chart")
+                val smith = compose.onNodeWithTag("sweep-smith-chart").performScrollTo().assertIsDisplayed()
+                fun assertFrequency(slot: Int, mhz: String) {
+                    val traceLabel = application.getString(if (slot == 0) R.string.sweep_trace_a else R.string.sweep_trace_b)
+                    val frequency = application.getString(R.string.sweep_mhz, mhz)
+                    smith.assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription,
+                        application.getString(R.string.sweep_smith_selection, traceLabel, frequency)))
+                }
+                val selectB = compose.onNodeWithTag("sweep-smith-trace-1")
+                selectB.performScrollTo().performSemanticsAction(SemanticsActions.OnClick).assertIsSelected()
+                smith.performScrollTo().performTouchInput {
+                    click(Offset(width * (219.6f / 360), height * (140.6f / 340)))
+                }
+                assertFrequency(1, "144")
+                smith.performScrollTo().performTouchInput {
+                    click(Offset(width * (193.2f / 360), height * (167f / 340)))
+                }
+                assertFrequency(1, "145")
+                smith.performTouchInput {
+                    swipe(Offset(width * (193.2f / 360), height * (167f / 340)),
+                        Offset(width * (219.6f / 360), height * (140.6f / 340)))
+                }
+                assertFrequency(1, "144")
+                val next = compose.onNodeWithContentDescription(application.getString(R.string.sweep_next_frequency))
+                next.performScrollTo().performSemanticsAction(SemanticsActions.OnClick)
+                assertFrequency(1, "145")
+                next.performSemanticsAction(SemanticsActions.OnClick)
+                assertFrequency(1, "146")
+                compose.onNodeWithText(application.getString(R.string.sweep_smith_outside)).assertExists()
+                scenario.recreate()
+                waitFor("sweep-smith-chart")
+                assertFrequency(1, "146")
+                click("back")
+                waitFor("journal-history")
             }
         } finally {
             runBlocking { repository.update { projects -> projects.filterNot { it.id == id } } }
