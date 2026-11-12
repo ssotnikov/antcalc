@@ -60,15 +60,22 @@ class MeasurementAcceptanceTest {
         val before = "before-$suffix.s1p"
         val after = "after-$suffix.s1p"
         val extraPoints = (147..168).joinToString(separator = "") { "\n$it 0.2 0.1" }
-        val uris = ArrayDeque(listOf(
+        val selected = listOf(
             sample(before, "# MHz S RI R 50\n144 0.2 0.1\n145 0.1 0\n146 0.2 0.1" + extraPoints),
             sample(after, "# MHz S RI R 50\n144 0.2 0.1\n145 0.05 0\n146 0.2 0.1" + extraPoints),
             sample("invalid-$suffix.s1p", "# MHz S RI R 50\n144 0.2 0.1\n145 NaN 0"),
+        ).map { Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().setData(it)) }
+        val missing = sample("missing-$suffix.s1p", "# MHz S RI R 50\n145 0.1 0")
+        assertEquals(1, resolver.delete(missing, null, null))
+        documents.remove(missing)
+        val results = ArrayDeque(selected + listOf(
+            Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().setData(missing)),
+            Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null),
         ))
         val monitor = object : Instrumentation.ActivityMonitor() {
             override fun onStartActivity(intent: Intent): Instrumentation.ActivityResult? {
                 if (intent.action != Intent.ACTION_OPEN_DOCUMENT) return null
-                return Instrumentation.ActivityResult(Activity.RESULT_OK, Intent().setData(uris.removeFirst()))
+                return results.removeFirst()
             }
         }
         val instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -86,6 +93,14 @@ class MeasurementAcceptanceTest {
             waitForText(after)
             compose.onNodeWithTag("open-sweep-0").performScrollTo().assertIsEnabled().performClick()
             waitFor("sweep-error")
+            compose.onNodeWithText(before).assertExists()
+            compose.onNodeWithText(after).assertExists()
+            compose.onNodeWithTag("open-sweep-0").performScrollTo().assertIsEnabled().performClick()
+            waitForText(compose.activity.getString(R.string.sweep_error_read))
+            compose.onNodeWithText(before).assertExists()
+            compose.onNodeWithText(after).assertExists()
+            compose.onNodeWithTag("open-sweep-0").performScrollTo().assertIsEnabled().performClick()
+            compose.waitForIdle()
             compose.onNodeWithText(before).assertExists()
             compose.onNodeWithText(after).assertExists()
 
