@@ -147,7 +147,6 @@ internal fun GroundPlaneScreen(
         TextButton(onClick = { openSourceWithFeedback(context, source) }, modifier = Modifier.testTag("ground-plane-source")) {
             Text(stringResource(R.string.source_ground_plane_m0ukd))
         }
-        HelpText(R.string.source_ground_plane_m0ukd_description)
     }
 }
 
