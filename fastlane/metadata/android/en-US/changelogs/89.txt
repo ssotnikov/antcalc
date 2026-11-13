@@ -1,1 +1,4 @@
-Projects and tuning logs now show antenna illustrations. The illustration updates when you change the antenna type in a project or log entry form.
+- Import two VNA traces from S1P files, compare plots, and view traces on a Smith chart.
+- Find measured SWR bandwidth and size full-wave Quad and Delta Loop antennas.
+- Save traces to projects, compare them with manual measurements, and see antenna illustrations.
+- Sizing and tuning share a target frequency. Estimate the fundamental frequency of Inverted-V and Ground Plane antennas from measured lengths.
