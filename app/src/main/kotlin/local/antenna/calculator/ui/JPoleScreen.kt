@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,6 +16,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -221,7 +221,7 @@ private fun JPoleFormulaContent() {
     val context = LocalContext.current
     val locale = androidx.compose.ui.platform.LocalConfiguration.current.locales[0]
     val numbers = remember(locale) { FrequencyNumberFormat(locale) }
-    Column(Modifier.horizontalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    ScrollableTable(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         JPoleTableRow(listOf(stringResource(R.string.jpole_formulaFrequencyColumn), "λ", "Lᵣ", "Lₛ", "Lₜ", "S", "h"))
         for (hertz in listOf(50_500_000L, 145_000_000L, 156_800_000L, 435_000_000L, 446_100_000L)) {
             val result = calculateJPole(Frequency.ofHertz(hertz), ShorteningFactor.DEFAULT)
@@ -235,8 +235,9 @@ private fun JPoleFormulaContent() {
 
 @Composable
 private fun JPoleTableRow(cells: List<String>) {
+    val cellWidth = 78.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        cells.forEach { Text(it, Modifier.width(78.dp), style = MaterialTheme.typography.bodySmall) }
+        cells.forEach { Text(it, Modifier.width(cellWidth), style = MaterialTheme.typography.bodySmall) }
     }
 }
 

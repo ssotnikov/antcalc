@@ -1,0 +1,1 @@
+Tables wider than the screen now show a horizontal scrollbar. Swipe across the table or drag the scrollbar thumb to see the remaining columns.

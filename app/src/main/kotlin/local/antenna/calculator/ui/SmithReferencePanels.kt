@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -53,21 +54,34 @@ internal fun SmithReferencePanels(palette: SmithPalette, format: (Double) -> Str
         }
         if (expanded) {
             SmithHeading(R.string.smith_table_swr)
-            SmithTableRow(listOf(stringResource(R.string.smith_swr), stringResource(R.string.smith_table_rl),
-                stringResource(R.string.smith_table_power)), header = true)
-            for (swr in listOf(1.0, 1.1, 1.2, 1.5, 2.0, 2.5, 3.0, 5.0, 10.0)) {
-                val result = matchingFromSwr(swr)
-                SmithTableRow(listOf(format(swr), stringResource(R.string.matching_db, smithMeasure(context, result.returnLoss, 1)),
-                    stringResource(R.string.matching_percent, format(result.reflectedFraction * 100))))
+            SmithReferenceTable {
+                SmithTableRow(listOf(stringResource(R.string.smith_swr), stringResource(R.string.smith_table_rl),
+                    stringResource(R.string.smith_table_power)), header = true)
+                for (swr in listOf(1.0, 1.1, 1.2, 1.5, 2.0, 2.5, 3.0, 5.0, 10.0)) {
+                    val result = matchingFromSwr(swr)
+                    SmithTableRow(listOf(format(swr), stringResource(R.string.matching_db, smithMeasure(context, result.returnLoss, 1)),
+                        stringResource(R.string.matching_percent, format(result.reflectedFraction * 100))))
+                }
             }
             Spacer(Modifier.height(5.dp))
             SmithHeading(R.string.smith_table_cables)
-            SmithTableRow(listOf(stringResource(R.string.smith_cable), stringResource(R.string.smith_table_z0), "VF"), header = true)
-            for (cable in CableCatalog.read(context).references) {
-                SmithTableRow(listOf(cable.name, cable.impedance.toString(), matchingNumber(context, cable.velocityFactor, 2)))
+            SmithReferenceTable {
+                SmithTableRow(listOf(stringResource(R.string.smith_cable), stringResource(R.string.smith_table_z0), "VF"), header = true)
+                for (cable in CableCatalog.read(context).references) {
+                    SmithTableRow(listOf(cable.name, cable.impedance.toString(), matchingNumber(context, cable.velocityFactor, 2)))
+                }
             }
             SmithHint(R.string.smith_vf_note)
         }
+    }
+}
+
+@Composable
+private fun SmithReferenceTable(content: @Composable ColumnScope.() -> Unit) {
+    val minimumWidth = 260.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val tableWidth = maxOf(maxWidth, minimumWidth)
+        ScrollableTable(Modifier.width(tableWidth), content = content)
     }
 }
 

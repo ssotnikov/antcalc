@@ -1,7 +1,6 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -76,7 +75,7 @@ internal fun FullWaveLoopBandTable() {
                 HelpText(R.string.loop_band_note)
                 BoxWithConstraints(Modifier.fillMaxWidth()) {
                     val tableWidth = maxOf(maxWidth, 365.dp * maxOf(1f, LocalDensity.current.fontScale))
-                    Column(Modifier.horizontalScroll(tableScroll).width(tableWidth).testTag("loop-band-table")) {
+                    ScrollableTable(Modifier.width(tableWidth).testTag("loop-band-table"), scrollState = tableScroll) {
                         LoopBandRow(
                             listOf(R.string.loop_band_column, R.string.loop_frequency, R.string.loop_band_perimeter,
                                 R.string.loop_band_square, R.string.loop_band_triangle).map { stringResource(it) },

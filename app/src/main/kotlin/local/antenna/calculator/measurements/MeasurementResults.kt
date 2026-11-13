@@ -1,9 +1,7 @@
 package local.antenna.calculator.measurements
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -17,6 +15,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.ui.FrequencyNumberFormat
+import local.antenna.calculator.ui.ScrollableTable
 import java.text.NumberFormat
 import java.util.Locale
 import local.antenna.calculator.R
@@ -111,7 +110,7 @@ internal fun MeasurementTable(
     BoxWithConstraints(Modifier.fillMaxWidth()) {
         val tableWidth = maxOf(maxWidth, minimumWidth)
         OutlinedCard(Modifier.fillMaxWidth().testTag("sweep-table")) {
-            Column(Modifier.horizontalScroll(rememberScrollState()).width(tableWidth)) {
+            ScrollableTable(Modifier.width(tableWidth)) {
                 TableRow(listOf(
                     stringResource(R.string.sweep_frequency_column), stringResource(R.string.sweep_swr),
                     stringResource(R.string.sweep_magnitude), stringResource(R.string.sweep_r_column),
