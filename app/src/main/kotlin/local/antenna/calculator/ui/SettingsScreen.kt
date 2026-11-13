@@ -2,6 +2,7 @@ package local.antenna.calculator.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -27,38 +29,55 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
     val settings = state.draft.settings
     val context = LocalContext.current
     val website = stringResource(R.string.author_website_url)
-    Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(20.dp)) {
-        ChoicePicker(stringResource(R.string.language), AppLanguage.entries, settings.language, {
-            stringResource(if (it == AppLanguage.RUSSIAN) R.string.language_russian else R.string.language_english)
-        }, { onEvent(CalculatorEvent.Settings(settings.copy(language = it))) }, "language")
-        ChoicePicker(stringResource(R.string.theme), AppTheme.entries, settings.theme, {
-            stringResource(when (it) { AppTheme.SYSTEM -> R.string.theme_system; AppTheme.LIGHT -> R.string.theme_light; AppTheme.DARK -> R.string.theme_dark })
-        }, { onEvent(CalculatorEvent.Settings(settings.copy(theme = it))) }, "theme")
-        StorageNotice(state, onEvent)
-        OutlinedButton(onClick = onAbout) { Text(stringResource(R.string.about)) }
-        Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
-        HorizontalDivider()
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(stringResource(R.string.copyright), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(stringResource(R.string.license_mit), style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant)
-            TextButton(onClick = { openSourceWithFeedback(context, website) }, modifier = Modifier.testTag("source-author")) {
-                Text(stringResource(R.string.author_website_label))
+    BoxWithConstraints(Modifier.widthIn(max = 680.dp).fillMaxSize()) {
+        val viewportHeight = maxHeight
+        val bottomGap = (viewportHeight * 0.025f).coerceIn(12.dp, 24.dp)
+        Column(
+            Modifier.fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .testTag("settings-scroll")
+                .heightIn(min = viewportHeight)
+                .padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = bottomGap),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                ChoicePicker(stringResource(R.string.language), AppLanguage.entries, settings.language, {
+                    stringResource(if (it == AppLanguage.RUSSIAN) R.string.language_russian else R.string.language_english)
+                }, { onEvent(CalculatorEvent.Settings(settings.copy(language = it))) }, "language")
+                ChoicePicker(stringResource(R.string.theme), AppTheme.entries, settings.theme, {
+                    stringResource(when (it) { AppTheme.SYSTEM -> R.string.theme_system; AppTheme.LIGHT -> R.string.theme_light; AppTheme.DARK -> R.string.theme_dark })
+                }, { onEvent(CalculatorEvent.Settings(settings.copy(theme = it))) }, "theme")
+                StorageNotice(state, onEvent)
+                OutlinedButton(onClick = onAbout) { Text(stringResource(R.string.about)) }
+                Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
+                HorizontalDivider()
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(stringResource(R.string.copyright), style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.license_mit), style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    TextButton(onClick = { openSourceWithFeedback(context, website) }, modifier = Modifier.testTag("source-author")) {
+                        Text(stringResource(R.string.author_website_label))
+                    }
+                    TextButton(onClick = { openSourceWithFeedback(context, BUG_REPORT_URL) }, modifier = Modifier.testTag("report-bug")) {
+                        Text(stringResource(R.string.report_bug))
+                    }
+                }
             }
-            TextButton(onClick = { openSourceWithFeedback(context, BUG_REPORT_URL) }, modifier = Modifier.testTag("report-bug")) {
-                Text(stringResource(R.string.report_bug))
-            }
+            Spacer(Modifier.weight(1f))
             Image(
                 painter = painterResource(R.drawable.lizaalert_banner),
                 contentDescription = stringResource(R.string.lizaalert_banner_description),
                 modifier = Modifier
-                    .padding(top = 4.dp)
+                    .padding(top = 8.dp)
                     .fillMaxWidth()
                     .aspectRatio(1280f / 427f)
                     .clip(MaterialTheme.shapes.small)
                     .pointerHoverIcon(PointerIcon.Hand)
+                    .pointerInput(Unit) {
+                        // A horizontal drag across the image must cancel the link press.
+                        detectHorizontalDragGestures { _, _ -> }
+                    }
                     .clickable(role = Role.Button) { openSourceWithFeedback(context, LIZAALERT_URL) }
                     .testTag("lizaalert-banner"),
             )

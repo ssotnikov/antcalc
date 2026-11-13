@@ -1,0 +1,1 @@
+The LizaAlert banner sits near the bottom of Settings, with spacing that adapts to the screen height.

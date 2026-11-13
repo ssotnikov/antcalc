@@ -1,6 +1,13 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.*
+import androidx.compose.ui.unit.dp
 import local.antenna.calculator.state.*
 import org.junit.Assert.*
 import org.junit.Test
@@ -99,6 +106,36 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         assertTrue(banner.fetchSemanticsNode().positionInRoot.y > report.fetchSemanticsNode().positionInRoot.y)
         compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
         banner.performScrollTo().assertContentDescriptionEquals("LizaAlert — open the search and rescue team website")
+    }
+
+    @Test fun settingsBannerUsesViewportHeightAndRemainsReachableWhenContentOverflows() {
+        val height = mutableIntStateOf(700)
+        compose.setContent {
+            MaterialTheme {
+                Box(Modifier.size(320.dp, height.intValue.dp).testTag("settings-viewport")) {
+                    SettingsScreen(CalculatorUiState(loading = false), {}, {})
+                }
+            }
+        }
+        val viewport = compose.onNodeWithTag("settings-viewport")
+        val banner = compose.onNodeWithTag("lizaalert-banner")
+        val report = compose.onNodeWithTag("report-bug")
+
+        for ((heightDp, gap) in listOf(700 to 17.5f, 420 to 12f)) {
+            compose.runOnIdle { height.intValue = heightDp }
+            if (heightDp == 700) banner.assertIsDisplayed()
+            else {
+                banner.assertIsNotDisplayed()
+                compose.onNodeWithTag("settings-scroll").performSemanticsAction(SemanticsActions.ScrollBy) {
+                    it(0f, 10_000f)
+                }
+                banner.assertIsDisplayed()
+            }
+            val bounds = viewport.getUnclippedBoundsInRoot()
+            val bannerBounds = banner.getUnclippedBoundsInRoot()
+            assertEquals(gap, (bounds.bottom - bannerBounds.bottom).value, 1f)
+            assertTrue(bannerBounds.top >= report.getUnclippedBoundsInRoot().bottom)
+        }
     }
 
     @Test fun swipesOnMenuPagesLeavePageAndCalculationUnchanged() {
