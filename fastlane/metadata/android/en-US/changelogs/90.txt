@@ -1,0 +1,1 @@
+Add JPEG and PNG photos to tuning journals, write comments, and export single images or a ZIP archive with comments.

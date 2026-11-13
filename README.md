@@ -23,6 +23,7 @@
 - **Расчет параметров антенн.** В разделе «Инструменты» собраны калькуляторы диполя «Перевёрнутая V», антенны Ground Plane (GP) и полноволновой рамки. Для рамки доступны квадрат и равносторонний треугольник, расчет по частоте или периметру и подбор четвертьволнового согласующего отрезка.
 - **Измерения анализатора S1P.** Откройте «Инструменты» → «Дополнительные инструменты», чтобы импортировать до двух однопортовых трасс Touchstone 1.x. Смотрите графики КСВ, S11 и импеданса и копируйте значения на выбранной частоте.
 - **Проекты и журнал подстройки.** Сохраняйте расчеты, ручные замеры, трассы и условия установки отдельно для каждой антенны. Сравнивайте записи и переносите проекты через JSON. [Демонстрационный проект](examples/demo-dipole-journal-145mhz-ru.json) ссылается на [трассу до](examples/demo-dipole-145mhz-before.s1p) и [трассу после подстройки](examples/demo-dipole-145mhz-after.s1p). Импортируйте файлы S1P отдельно.
+- **Фото в журнале.** Добавляйте JPEG и PNG с комментариями в секцию «Ваши фото». Сохраняйте отдельное изображение или выгружайте всю галерею с комментариями в ZIP.
 
 КСВ, расчет кабеля и журнал находятся во вкладке **«Инструменты»**. Между расчетом размеров и подстройкой можно переключаться в нижней панели или горизонтальным свайпом. Частота вводится в кГц, МГц или ГГц с разрешением 1 Гц, длина — в мм, см или м. Ввод для расчета размеров и подстройки сохраняется раздельно. Результаты можно скопировать вместе с исходными данными и единицами.
 
@@ -56,6 +57,7 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 - **Antenna parameter calculators.** Open Tools to find the Inverted-V dipole, Ground Plane (GP), and full-wave loop calculators in one section. Calculate square or equilateral triangular loops from frequency or perimeter and size a quarter-wave matching section.
 - **S1P analyzer measurements.** Open Tools → Additional tools to import up to two one-port Touchstone 1.x traces. Plot SWR, S11, and impedance and copy the values at the selected frequency.
 - **Projects and tuning journal.** Keep calculations, manual measurements, traces, and installation notes for each antenna. Compare records and transfer projects as JSON. The [demo project](examples/demo-dipole-journal-145mhz-en.json) links to the [before](examples/demo-dipole-145mhz-before.s1p) and [after](examples/demo-dipole-145mhz-after.s1p) traces. Import the S1P files separately.
+- **Journal photos.** Add JPEG and PNG images with comments under Your photos. Save a single image or export the whole gallery with comments as a ZIP file.
 
 Open **Tools** for the SWR and cable calculators and the tuning journal. Switch between antenna sizing and tuning with the bottom navigation or a horizontal swipe. Frequency input supports kHz, MHz, and GHz with 1 Hz resolution. Length units are mm, cm, and m. Sizing and tuning keep separate inputs. You can copy results together with their inputs and units.
 

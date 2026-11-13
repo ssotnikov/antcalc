@@ -1,0 +1,36 @@
+<resources>
+    <string name="photo_section">Ваши фото</string>
+    <string name="photo_title">Фото проекта</string>
+    <string name="photo_count">%1$d из %2$d</string>
+    <string name="photo_add">Добавить фото</string>
+    <string name="photo_export_all">Экспортировать все</string>
+    <string name="photo_formats">Форматы JPEG/PNG (до 20Мб)</string>
+    <string name="photo_empty">Добавьте фото антенны, крепления или точки питания.</string>
+    <string name="photo_no_comment">Без комментария</string>
+    <string name="photo_comment">Комментарий</string>
+    <string name="photo_description">Фото проекта, добавлено %1$s</string>
+    <string name="photo_edit_comment">Комментарий к фото</string>
+    <string name="photo_discard">Удалить несохранённые изменения?</string>
+    <string name="photo_discard_action">Удалить изменения</string>
+    <string name="photo_delete">Удалить фото</string>
+    <string name="photo_delete_question">Удалить фото?</string>
+    <string name="photo_delete_help">Копия будет удалена из журнала. Исходное изображение останется на устройстве.</string>
+    <string name="photo_unavailable">Фото недоступно</string>
+    <string name="photo_export_one">Сохранить изображение</string>
+    <string name="photo_archive_help">В ZIP войдут изображения и файл с комментариями.</string>
+    <string name="photo_choose_location">Выбрать место</string>
+    <string name="photo_json_notice">Фотографии и комментарии сохраняются отдельно. Выберите «Экспортировать все» в секции «Ваши фото».</string>
+    <string name="photo_exported">Фото экспортированы</string>
+    <string name="photo_export_failed">Не удалось сохранить файл</string>
+    <string name="photo_export_incomplete">Не удалось сохранить файл. В выбранном месте могла остаться неполная копия.</string>
+    <string name="photo_added">Добавлено фото: %1$d</string>
+    <string name="photo_cancelled">Обработка оставшихся файлов отменена</string>
+    <string name="photo_import_title">Добавление фотографий</string>
+    <string name="photo_import_progress">Обработано %1$d из %2$d</string>
+    <string name="photo_problem_format">Неподдерживаемый формат: %1$d</string>
+    <string name="photo_problem_damaged">Повреждённое изображение: %1$d</string>
+    <string name="photo_problem_limit">Превышен лимит размера, количества фото или места: %1$d</string>
+    <string name="photo_problem_read">Не удалось прочитать файлы: %1$d</string>
+    <string name="photo_problem_write">Не удалось сохранить фото: %1$d</string>
+    <string name="photo_actions">Действия с фото</string>
+</resources>

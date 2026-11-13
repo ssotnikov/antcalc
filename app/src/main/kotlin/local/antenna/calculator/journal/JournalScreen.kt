@@ -46,12 +46,13 @@ internal enum class JournalPage(val title: Int) {
     RECORD(R.string.journal_record),
     ADD_RECORD(R.string.journal_new_record),
     COMPARE(R.string.journal_compare),
+    PHOTO(R.string.photo_title),
     ;
 
     fun parent(): JournalPage? = when (this) {
         PROJECTS -> null
         HISTORY, CREATE -> PROJECTS
-        EDIT, RECORD, ADD_RECORD, COMPARE -> HISTORY
+        EDIT, RECORD, ADD_RECORD, COMPARE, PHOTO -> HISTORY
     }
 }
 
@@ -75,6 +76,7 @@ internal fun JournalScreen(
 ) {
     val state by model.state.collectAsState()
     var projectId by rememberSaveable { mutableStateOf(initialProjectId) }
+    var photoId by rememberSaveable { mutableStateOf<String?>(null) }
     val historyScroll = key(projectId) { rememberLazyListState() }
     var recordId by rememberSaveable { mutableStateOf<String?>(null) }
     var picked by rememberSaveable(stateSaver = listSaver<List<String>, String>(
@@ -86,7 +88,7 @@ internal fun JournalScreen(
         rejectedKey = null
     }
     var projectToDelete by rememberSaveable { mutableStateOf<String?>(null) }
-    var pendingSweepExport by rememberSaveable { mutableStateOf<String?>(null) }
+    var pendingProjectExport by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmRecordDeletion by rememberSaveable { mutableStateOf(false) }
     val project = state.projects.find { it.id.toString() == projectId }
     val record = project?.records?.find { it.id.toString() == recordId }
@@ -102,6 +104,10 @@ internal fun JournalScreen(
     val appName = stringResource(R.string.app_name)
     val copied = stringResource(R.string.copied)
     val exported = stringResource(R.string.journal_exported)
+    val photoActions = rememberJournalPhotoActions(model, project, page, { id ->
+        photoId = id.toString()
+        navigate(JournalPage.PHOTO)
+    }, onMessage, state)
 
     fun openProject(id: UUID) {
         projectId = id.toString()
@@ -136,15 +142,23 @@ internal fun JournalScreen(
         }
     }
 
-    state.projects.find { it.id.toString() == pendingSweepExport }?.let { target ->
+    state.projects.find { it.id.toString() == pendingProjectExport }?.let { target ->
         AppAlertDialog(
-            onDismissRequest = { pendingSweepExport = null },
+            onDismissRequest = { pendingProjectExport = null },
             title = { Text(stringResource(R.string.journal_export)) },
-            text = { Text(stringResource(R.string.sweep_export_notice)) },
-            confirmButton = {
-                TextButton(onClick = { pendingSweepExport = null; export(target) }) { Text(stringResource(R.string.journal_export)) }
+            text = {
+                val notices = buildList {
+                    if (target.sweeps.isNotEmpty()) add(R.string.sweep_export_notice)
+                    if (target.photos.isNotEmpty()) add(R.string.photo_json_notice)
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    notices.forEach { Text(stringResource(it)) }
+                }
             },
-            dismissButton = { TextButton(onClick = { pendingSweepExport = null }) { Text(stringResource(R.string.sweep_cancel)) } },
+            confirmButton = {
+                TextButton(onClick = { pendingProjectExport = null; export(target) }) { Text(stringResource(R.string.journal_export)) }
+            },
+            dismissButton = { TextButton(onClick = { pendingProjectExport = null }) { Text(stringResource(R.string.sweep_cancel)) } },
         )
     }
 
@@ -159,8 +173,8 @@ internal fun JournalScreen(
                 val shortTitle = target.title.take(105).trimEnd().dropLastWhile(Char::isHighSurrogate)
                 model.duplicate(target.id, resources.getString(R.string.journal_copy_name, shortTitle), ::openProject)
             }
-            ProjectAction.EXPORT -> if (target.sweeps.isEmpty()) export(target)
-                else pendingSweepExport = target.id.toString()
+            ProjectAction.EXPORT -> if (target.sweeps.isEmpty() && target.photos.isEmpty()) export(target)
+                else pendingProjectExport = target.id.toString()
             ProjectAction.DELETE -> projectToDelete = target.id.toString()
         }
     }
@@ -214,6 +228,7 @@ internal fun JournalScreen(
             JournalPage.HISTORY -> if (project != null) {
                 ProjectHistory(
                     project, presentation, picked, enabled, canCompare, rejectedKey, scroll = historyScroll,
+                    photoActions = photoActions,
                     onPick = { key ->
                         val proposed = if (key in picked) picked - key else picked.takeLast(1) + key
                         val rejection = project.comparisonRejection(proposed)
@@ -236,6 +251,13 @@ internal fun JournalScreen(
                     },
                 )
             } else MissingItem()
+            JournalPage.PHOTO -> {
+                val photo = project?.photos?.find { it.id.toString() == photoId }
+                if (project != null && photo != null) {
+                    JournalPhotoDetail(project, photo, model, presentation, enabled,
+                        onBack = { navigate(JournalPage.HISTORY) }, onMessage = onMessage)
+                } else MissingItem()
+            }
             JournalPage.ADD_RECORD -> if (project != null) {
                 RecordForm(project, calculator, currentCalculator, enabled) { entry ->
                     model.addRecord(project.id, entry) {
@@ -426,6 +448,7 @@ private fun ProjectHistory(
     project: AntennaProject, presentation: JournalPresentation, picked: List<String>, enabled: Boolean, canCompare: Boolean,
     rejectedKey: String?,
     scroll: LazyListState,
+    photoActions: JournalPhotoActions,
     onPick: (String) -> Unit, onOpen: (UUID) -> Unit, onAdd: () -> Unit, onCompare: () -> Unit,
     onAction: (ProjectAction) -> Unit,
     onOpenSweeps: ((SweepComparison) -> Unit)?,
@@ -570,6 +593,7 @@ private fun ProjectHistory(
         }
         if (records.isEmpty() && sweeps.isEmpty()) item { Text(stringResource(R.string.journal_no_records)) }
         recordGroup(false)
+        journalPhotos(project, presentation, photoActions, enabled)
     }
 }
 

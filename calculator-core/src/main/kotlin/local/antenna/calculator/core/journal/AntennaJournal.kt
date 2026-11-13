@@ -110,6 +110,28 @@ data class SweepComparison(val traces: List<SweepAttachment>) {
     init { require(traces.size in 1..2) }
 }
 
+enum class PhotoFormat(val extension: String, val mimeType: String) {
+    JPEG("jpg", "image/jpeg"),
+    PNG("png", "image/png"),
+}
+
+data class PhotoAttachment(
+    val id: UUID,
+    val fileId: UUID,
+    val format: PhotoFormat,
+    val addedAt: OffsetDateTime,
+    val comment: String = "",
+) {
+    init {
+        require(comment.length <= MAX_COMMENT && Charsets.UTF_8.newEncoder().canEncode(comment))
+    }
+
+    companion object {
+        const val MAX_COMMENT = 500
+        const val MAX_PER_PROJECT = 24
+    }
+}
+
 data class AntennaProject(
     val id: UUID,
     val title: String,
@@ -121,16 +143,19 @@ data class AntennaProject(
     val feedline: String = "",
     val records: List<JournalRecord> = emptyList(),
     val sweeps: List<SweepComparison> = emptyList(),
+    val photos: List<PhotoAttachment> = emptyList(),
 ) {
     init {
         validateTitle(title)
         require(listOf(note, installation, feedline).all { it.length <= JournalLimits.NOTE })
         require(sweeps.size <= JournalLimits.RECORDS)
+        require(photos.size <= PhotoAttachment.MAX_PER_PROJECT && photos.distinctBy { it.id }.size == photos.size)
         require(records.size <= JournalLimits.RECORDS && records.map { it.id }.toSet().size == records.size)
     }
 
     fun duplicate(newId: UUID, recordId: () -> UUID): AntennaProject =
-        copy(id = newId, records = records.map { it.copy(id = recordId()) })
+        copy(id = newId, records = records.map { it.copy(id = recordId()) },
+            photos = photos.map { it.copy(id = recordId()) })
 }
 
 enum class MeasurementDifference { DIFFERENT_POINT, UNKNOWN_POINT, DIFFERENT_FREQUENCY, UNKNOWN_FREQUENCY }

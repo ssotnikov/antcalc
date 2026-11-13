@@ -1,0 +1,36 @@
+<resources>
+    <string name="photo_section">Your photos</string>
+    <string name="photo_title">Project photo</string>
+    <string name="photo_count">%1$d of %2$d</string>
+    <string name="photo_add">Add photos</string>
+    <string name="photo_export_all">Export all</string>
+    <string name="photo_formats">JPEG/PNG formats (up to 20 MB)</string>
+    <string name="photo_empty">Add photos of the antenna, mounting hardware, or feed point.</string>
+    <string name="photo_no_comment">No comment</string>
+    <string name="photo_comment">Comment</string>
+    <string name="photo_description">Project photo added on %1$s</string>
+    <string name="photo_edit_comment">Photo comment</string>
+    <string name="photo_discard">Discard unsaved changes?</string>
+    <string name="photo_discard_action">Discard changes</string>
+    <string name="photo_delete">Delete photo</string>
+    <string name="photo_delete_question">Delete photo?</string>
+    <string name="photo_delete_help">The copy will be removed from the journal. The original image stays on your device.</string>
+    <string name="photo_unavailable">Photo unavailable</string>
+    <string name="photo_export_one">Save image</string>
+    <string name="photo_archive_help">The ZIP includes the images and a file with their comments.</string>
+    <string name="photo_choose_location">Choose location</string>
+    <string name="photo_json_notice">Photos and comments are saved separately. Choose Export all under Your photos.</string>
+    <string name="photo_exported">Photos exported</string>
+    <string name="photo_export_failed">Could not save the file</string>
+    <string name="photo_export_incomplete">Could not save the file. A partial copy may remain at the selected location.</string>
+    <string name="photo_added">Photos added: %1$d</string>
+    <string name="photo_cancelled">Processing of the remaining files was cancelled</string>
+    <string name="photo_import_title">Adding photos</string>
+    <string name="photo_import_progress">Processed %1$d of %2$d</string>
+    <string name="photo_problem_format">Unsupported format: %1$d</string>
+    <string name="photo_problem_damaged">Damaged image: %1$d</string>
+    <string name="photo_problem_limit">Size, photo count, or storage limit exceeded: %1$d</string>
+    <string name="photo_problem_read">Could not read files: %1$d</string>
+    <string name="photo_problem_write">Could not save photos: %1$d</string>
+    <string name="photo_actions">Photo actions</string>
+</resources>

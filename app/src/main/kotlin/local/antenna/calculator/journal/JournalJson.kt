@@ -25,18 +25,20 @@ internal class JournalException(val problem: JournalProblem) : Exception()
 
 internal object JournalJson {
     private const val VERSION = 1L
+    private const val PHOTO_STORE_VERSION = 2L
 
-    fun writeStore(projects: List<AntennaProject>, output: OutputStream) {
+    fun writeStore(projects: List<AntennaProject>, output: OutputStream, photoStore: Boolean = projects.any { it.photos.isNotEmpty() }) {
         var written = 0
         fun write(bytes: ByteArray) {
             written += bytes.size
             if (written > JournalLimits.STORAGE_BYTES) throw JournalException(JournalProblem.LIMIT)
             output.write(bytes)
         }
-        write("{\"schemaVersion\":$VERSION,\"projects\":[".encodeToByteArray())
+        val version = if (photoStore) PHOTO_STORE_VERSION else VERSION
+        write("{\"schemaVersion\":$version,\"projects\":[".encodeToByteArray())
         projects.forEachIndexed { index, project ->
             if (index != 0) write(byteArrayOf(','.code.toByte()))
-            write(encode(encodeProject(project), JournalLimits.STORAGE_BYTES - written))
+            write(encode(encodeProject(project, photoStore), JournalLimits.STORAGE_BYTES - written))
         }
         write("]}".encodeToByteArray())
     }
@@ -44,11 +46,14 @@ internal object JournalJson {
     fun encodeTransfer(project: AntennaProject): ByteArray =
         encode(json("schemaVersion" to VERSION, "project" to encodeProject(project)), JournalLimits.TRANSFER_BYTES)
 
-    fun decodeStore(input: InputStream): List<AntennaProject> = decode(input, JournalLimits.STORAGE_BYTES) { root ->
-        val projects = root.list("projects", JournalLimits.PROJECTS, ::decodeProject)
-        require(projects.map { it.id }.toSet().size == projects.size)
-        projects
-    }
+    fun decodeStore(input: InputStream, onVersion: (Boolean) -> Unit = {}): List<AntennaProject> =
+        decode(input, JournalLimits.STORAGE_BYTES, allowPhotoStore = true) { root ->
+            val photoStore = root.long("schemaVersion") == PHOTO_STORE_VERSION
+            val projects = root.list("projects", JournalLimits.PROJECTS) { decodeProject(it, photoStore) }
+            require(projects.map { it.id }.toSet().size == projects.size)
+            onVersion(photoStore)
+            projects
+        }
 
     fun decodeTransfer(input: InputStream): AntennaProject =
         decode(input, JournalLimits.TRANSFER_BYTES) { decodeProject(it.obj("project")) }
@@ -67,13 +72,16 @@ internal object JournalJson {
         return ByteArray(bytes.remaining()).also(bytes::get)
     }
 
-    private fun <T> decode(input: InputStream, limit: Int, parse: (JsonObject) -> T): T {
+    private fun <T> decode(input: InputStream, limit: Int, allowPhotoStore: Boolean = false, parse: (JsonObject) -> T): T {
         return try {
             val source = InputStreamReader(LimitedInput(input, limit), Charsets.UTF_8.newDecoder())
             JsonReader(source).use { reader ->
                 val root = reader.readValue(0) as? JsonObject ?: invalid()
                 require(reader.peek() == JsonToken.END_DOCUMENT)
-                if (root.long("schemaVersion") != VERSION) throw JournalException(JournalProblem.UNSUPPORTED)
+                val version = root.long("schemaVersion")
+                if (version != VERSION && !(allowPhotoStore && version == PHOTO_STORE_VERSION)) {
+                    throw JournalException(JournalProblem.UNSUPPORTED)
+                }
                 parse(root)
             }
         } catch (_: IllegalArgumentException) {
@@ -141,19 +149,29 @@ internal object JournalJson {
         }
     }
 
-    private fun encodeProject(p: AntennaProject) = json(
+    private fun encodeProject(p: AntennaProject, photoStore: Boolean = false) = json(
         "id" to p.id.toString(), "title" to p.title, "antennaType" to p.antennaType.name,
         "targetHz" to p.target?.hertz, "initialLengthNm" to p.initialLength?.nanometers, "note" to p.note,
         "installation" to p.installation, "feedline" to p.feedline, "records" to array(p.records, ::encodeRecord),
         "sweeps" to p.sweeps.takeIf { it.isNotEmpty() }?.let { array(it, ::encodeSweep) },
+        "photos" to p.photos.takeIf { photoStore && it.isNotEmpty() }?.let { photos ->
+            array(photos) { photo ->
+                json("id" to photo.id.toString(), "fileId" to photo.fileId.toString(), "format" to photo.format.name,
+                    "addedAt" to photo.addedAt.toString(), "comment" to photo.comment)
+            }
+        },
     )
 
-    private fun decodeProject(o: JsonObject) = AntennaProject(
+    private fun decodeProject(o: JsonObject, photoStore: Boolean = false) = AntennaProject(
         id = o.id(), title = o.string("title"), antennaType = AntennaType.valueOf(o.string("antennaType")),
         target = o.frequency("targetHz"), initialLength = o.length("initialLengthNm"),
         note = o.string("note"), installation = o.string("installation"), feedline = o.string("feedline"),
         records = o.list("records", JournalLimits.RECORDS, ::decodeRecord),
         sweeps = o.optionalList("sweeps", JournalLimits.RECORDS, ::decodeSweep).orEmpty(),
+        photos = if (photoStore) o.optionalList("photos", PhotoAttachment.MAX_PER_PROJECT) {
+            PhotoAttachment(it.id(), it.uuid("fileId"), PhotoFormat.valueOf(it.string("format")),
+                OffsetDateTime.parse(it.string("addedAt")), it.string("comment"))
+        }.orEmpty() else emptyList(),
     )
 
     private fun encodeSweep(sweep: SweepComparison) = json("traces" to array(sweep.traces) { ref ->
@@ -228,7 +246,8 @@ internal object JournalJson {
         fun obj(key: String): JsonObject = optionalObj(key) ?: invalid()
         fun frequency(key: String): Frequency? = optionalLong(key)?.let(Frequency::ofHertz)
         fun length(key: String): PhysicalLength? = optionalLong(key)?.let(PhysicalLength::ofNanometers)
-        fun id(): UUID = string("id").let { raw -> UUID.fromString(raw).also { require(it.toString() == raw) } }
+        fun id(): UUID = uuid("id")
+        fun uuid(key: String): UUID = string(key).let { raw -> UUID.fromString(raw).also { require(it.toString() == raw) } }
         fun strings(key: String, limit: Int): List<String> {
             val values = fields[key] as? List<*> ?: invalid()
             if (values.size > limit) throw JournalException(JournalProblem.LIMIT)

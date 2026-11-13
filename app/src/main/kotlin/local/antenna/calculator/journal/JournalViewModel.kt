@@ -2,11 +2,18 @@ package local.antenna.calculator.journal
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.provider.DocumentsContract
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import java.io.IOException
+import java.io.File
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -14,6 +21,7 @@ import kotlinx.coroutines.withContext
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.journal.JournalLimits
 import local.antenna.calculator.core.journal.JournalRecord
+import local.antenna.calculator.core.journal.PhotoAttachment
 import local.antenna.calculator.core.journal.SweepAttachment
 import local.antenna.calculator.core.journal.SweepComparison
 import local.antenna.calculator.measurements.MeasurementTrace
@@ -25,12 +33,139 @@ internal data class JournalUiState(
     val readable: Boolean = false,
     val preview: AntennaProject? = null,
     val savedSweepTransfer: Pair<UUID, UUID>? = null,
+    val photoProgress: Pair<Int, Int>? = null,
+    val photoImport: PhotoImportResult? = null,
+)
+
+internal data class PhotoImportResult(
+    val projectId: UUID, val added: Int, val problems: Map<PhotoImportProblem, Int>, val cancelled: Boolean,
+    val photoId: UUID?,
 )
 
 internal class JournalViewModel(private val repository: ProjectsRepository) : ViewModel() {
     private val current = MutableStateFlow(JournalUiState(busy = false))
     val state = current.asStateFlow()
     private var pendingExport: ByteArray? = null
+    private var pendingPhotoExport: File? = null
+    private var photoImportJob: Job? = null
+
+    fun photoFile(photo: PhotoAttachment, thumbnail: Boolean) = repository.photoFile(photo, thumbnail)
+
+    fun clearPhotoImport() { current.value = current.value.copy(photoImport = null) }
+
+    fun importPhotos(projectId: UUID, resolver: ContentResolver, uris: List<Uri>) {
+        if (uris.isEmpty() || current.value.busy) return
+        val distinct = uris.distinct()
+        val files = distinct.take(PHOTO_BATCH_LIMIT)
+        val problems = mutableMapOf<PhotoImportProblem, Int>()
+        val excess = distinct.size - files.size
+        if (excess > 0) problems[PhotoImportProblem.LIMIT] = excess
+        current.value = current.value.copy(busy = true, problem = null, photoProgress = 0 to files.size, photoImport = null)
+        photoImportJob = viewModelScope.launch {
+            val original = current.value.projects.find { it.id == projectId }?.photos.orEmpty().map { it.id }.toSet()
+            var cancelled = false
+            try {
+                files.forEachIndexed { index, uri ->
+                    val problem = try {
+                        val projects = repository.addPhoto(projectId) {
+                            if (uri.scheme != ContentResolver.SCHEME_CONTENT) throw IOException()
+                            resolver.openInputStream(uri) ?: throw IOException()
+                        }
+                        current.value = current.value.copy(projects = projects)
+                        null
+                    } catch (error: PhotoImportException) {
+                        error.problem
+                    } catch (error: JournalException) {
+                        when (error.problem) {
+                            JournalProblem.LIMIT -> PhotoImportProblem.LIMIT
+                            JournalProblem.WRITE -> PhotoImportProblem.WRITE
+                            else -> PhotoImportProblem.READ
+                        }
+                    } catch (_: IOException) {
+                        PhotoImportProblem.READ
+                    } catch (_: SecurityException) {
+                        PhotoImportProblem.READ
+                    }
+                    if (problem != null) problems[problem] = (problems[problem] ?: 0) + 1
+                    current.value = current.value.copy(photoProgress = index + 1 to files.size)
+                }
+            } catch (_: CancellationException) {
+                cancelled = true
+            } finally {
+                withContext(NonCancellable) {
+                    val projects = if (cancelled) try {
+                        repository.read()
+                    } catch (_: JournalException) {
+                        current.value.projects
+                    } else current.value.projects
+                    val added = projects.find { it.id == projectId }?.photos.orEmpty().filter { it.id !in original }
+                    current.value = current.value.copy(projects = projects, busy = false, photoProgress = null,
+                        photoImport = PhotoImportResult(projectId, added.size, problems.toMap(), cancelled, added.singleOrNull()?.id))
+                }
+            }
+        }
+    }
+
+    fun cancelPhotoImport() { photoImportJob?.cancel() }
+
+    fun updatePhotoComment(projectId: UUID, photoId: UUID, comment: String, done: () -> Unit) =
+        mutate({ projects ->
+            projects.replace(projectId) { project ->
+                if (project.photos.none { it.id == photoId }) throw JournalException(JournalProblem.MISSING)
+                project.copy(photos = project.photos.map { if (it.id == photoId) it.copy(comment = comment.trim()) else it })
+            }
+        }, done)
+
+    fun removePhoto(projectId: UUID, photoId: UUID, done: () -> Unit) =
+        mutate({ projects ->
+            projects.replace(projectId) { it.copy(photos = it.photos.filterNot { photo -> photo.id == photoId }) }
+        }, done)
+
+    fun preparePhotoExport(projectId: UUID, photoId: UUID?, openPicker: () -> Unit) = operation(JournalProblem.WRITE) {
+        cancelPhotoExport()
+        withContext(NonCancellable) { pendingPhotoExport = repository.preparePhotoExport(projectId, photoId) }
+        try {
+            currentCoroutineContext().ensureActive()
+        } catch (error: CancellationException) {
+            cancelPhotoExport()
+            throw error
+        }
+        openPicker()
+    }
+
+    fun cancelPhotoExport() {
+        pendingPhotoExport?.delete()
+        pendingPhotoExport = null
+    }
+
+    fun writePhotoExport(resolver: ContentResolver, uri: Uri, done: (Boolean, Boolean) -> Unit) =
+        operation(JournalProblem.WRITE) {
+            val source = pendingPhotoExport ?: throw JournalException(JournalProblem.MISSING)
+            pendingPhotoExport = null
+            val result = try {
+                withContext(Dispatchers.IO) {
+                    require(uri.scheme == ContentResolver.SCHEME_CONTENT)
+                    try {
+                        (resolver.openOutputStream(uri, "wt") ?: throw IOException()).use { output ->
+                            source.inputStream().use { it.copyTo(output) }
+                        }
+                        true to false
+                    } catch (_: IOException) {
+                        false to !deleteIncompleteExport(resolver, uri)
+                    } catch (_: SecurityException) {
+                        false to !deleteIncompleteExport(resolver, uri)
+                    }
+                }
+            } finally {
+                source.delete()
+            }
+            done(result.first, result.second)
+        }
+
+    private fun deleteIncompleteExport(resolver: ContentResolver, uri: Uri): Boolean =
+        runCatching { DocumentsContract.deleteDocument(resolver, uri) }.getOrDefault(false)
+
+    override fun onCleared() { cancelPhotoExport() }
 
     init { reload() }
 
@@ -41,7 +176,7 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
     fun saveProject(project: AntennaProject, create: Boolean, done: (UUID) -> Unit) =
         mutate({ projects ->
             if (create) projects + project else projects.replace(project.id) {
-                project.copy(records = it.records, sweeps = it.sweeps)
+                project.copy(records = it.records, sweeps = it.sweeps, photos = it.photos)
             }
         }) { done(project.id) }
 
