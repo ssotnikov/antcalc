@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bandwidth_additional_tools">Импорт измерений VNA анализатора и расчет рабочей полосы по КСВ.</string>
+    <string name="bandwidth_additional_tools">Импорт измерений VNA анализатора и расчет рабочей полосы по КСВ</string>
     <string name="bandwidth_title">Рабочая полоса по КСВ</string>
     <string name="bandwidth_description">Границы и ширина полосы по выбранному порогу КСВ на трассе S1P.</string>
     <string name="bandwidth_source">Трасса S1P</string>

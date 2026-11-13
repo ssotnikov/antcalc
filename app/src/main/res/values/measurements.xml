@@ -68,5 +68,5 @@
     <string name="sweep_previous_frequency">Previous frequency</string>
     <string name="sweep_next_frequency">Next frequency</string>
     <string name="antenna_parameter_tools">Antenna parameter calculators</string>
-    <string name="antenna_parameter_tools_hint">Inverted-V dipole, Ground Plane (GP), and full-wave loop</string>
+    <string name="antenna_parameter_tools_hint">Inverted-V dipole, Ground Plane (GP), and full-wave loop (Quad, Delta Loop)</string>
 </resources>

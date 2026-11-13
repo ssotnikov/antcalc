@@ -1,7 +1,7 @@
 <resources>
     <string name="journal_ideal_quarter_monopole">Ideal λ/4 — monopole</string>
     <string name="journal_ideal_quarter_arm">Ideal λ/4 — each dipole arm</string>
-    <string name="journal_title">Projects and tuning journal</string>
+    <string name="journal_title">Projects and tuning journals</string>
     <string name="journal_tools_hint">Keep antenna calculations and compare measurements over time.</string>
     <string name="journal_projects">Projects</string>
     <string name="journal_history">Tuning journal</string>
@@ -88,7 +88,7 @@
     <string name="journal_r_label">Resistance R</string>
     <string name="journal_x_label">Reactance X</string>
     <string name="journal_test_frequency_label">SWR or impedance test frequency</string>
-    <string name="journal_help_workflow">Open Tools → Projects and tuning journal. Add a measurement or save a snapshot of the current sizing or tuning calculation. Keep setup and feedline notes with each measurement. Export a project as JSON to transfer it.</string>
+    <string name="journal_help_workflow">Open Tools → Projects and tuning journals. Add a measurement or save a snapshot of the current sizing or tuning calculation. Keep setup and feedline notes with each measurement. Export a project as JSON to transfer it.</string>
     <string name="journal_help_comparison">Select two records in the project. For an SWR comparison, use the same test frequency and connect the analyzer at the same point, such as directly at the antenna feed point. The resonant frequency can differ from the SWR test frequency.</string>
     <string name="journal_project_summary">%1$s, %2$s</string>
     <string name="journal_property">%1$s: %2$s</string>

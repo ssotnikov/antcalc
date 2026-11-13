@@ -1,7 +1,7 @@
 <resources>
     <string name="journal_ideal_quarter_monopole">Идеальная λ/4 — штырь</string>
     <string name="journal_ideal_quarter_arm">Идеальная λ/4 — каждое плечо диполя</string>
-    <string name="journal_title">Проекты и журнал подстройки</string>
+    <string name="journal_title">Проекты и журналы подстройки</string>
     <string name="journal_tools_hint">Сохраняйте расчеты антенн и сравнивайте измерения.</string>
     <string name="journal_projects">Проекты</string>
     <string name="journal_history">Журнал подстройки</string>
@@ -88,7 +88,7 @@
     <string name="journal_r_label">Сопротивление R</string>
     <string name="journal_x_label">Реактивность X</string>
     <string name="journal_test_frequency_label">Частота измерения КСВ или импеданса</string>
-    <string name="journal_help_workflow">Откройте «Инструменты» → «Проекты и журнал подстройки». Добавьте измерение или сохраните снимок текущего расчета размеров либо подстройки. Записывайте условия установки и данные фидера вместе с измерением. Чтобы перенести проект, экспортируйте его в JSON.</string>
+    <string name="journal_help_workflow">Откройте «Инструменты» → «Проекты и журналы подстройки». Добавьте измерение или сохраните снимок текущего расчета размеров либо подстройки. Записывайте условия установки и данные фидера вместе с измерением. Чтобы перенести проект, экспортируйте его в JSON.</string>
     <string name="journal_help_comparison">Выберите две записи в проекте. Для сравнения КСВ измеряйте его на одной частоте и подключайте анализатор в одной точке, например непосредственно у точки питания антенны. Резонансная частота может отличаться от частоты измерения КСВ.</string>
     <string name="journal_project_summary">%1$s, %2$s</string>
     <string name="journal_property">%1$s: %2$s</string>

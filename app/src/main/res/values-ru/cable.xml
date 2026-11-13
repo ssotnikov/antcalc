@@ -1,7 +1,7 @@
 <resources>
     <string name="cable_title">Электрическая длина кабеля</string>
     <string name="cable_screen_title">Длина кабеля</string>
-    <string name="cable_description">Расчет физической и электрической длины кабеля и фазовой задержки с учётом коэффициента скорости.</string>
+    <string name="cable_description">Расчет физической и электрической длины кабеля и фазовой задержки с учетом коэффициента скорости.</string>
     <string name="cable_direction">Рассчитать по</string>
     <string name="cable_from_angle">Угол → длина</string>
     <string name="cable_from_length">Длина → угол</string>
