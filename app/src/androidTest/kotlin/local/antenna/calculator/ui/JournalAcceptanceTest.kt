@@ -79,7 +79,7 @@ class JournalAcceptanceTest {
         val projects = compose.onNodeWithTag("journal-projects")
         val projectCard = hasTestTag("journal-project") and hasText(project)
         projects.performScrollToNode(projectCard)
-        compose.onNode(projectCard).performTouchInput { longClick() }
+        compose.onNode(projectCard).performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnLongClick)
         val actions = listOf(R.string.journal_edit_project, R.string.journal_duplicate, R.string.journal_export, R.string.journal_delete)
             .map { compose.onNodeWithText(compose.activity.getString(it)) }
         val actionPositions = actions.map { it.fetchSemanticsNode().boundsInRoot.top }
@@ -106,14 +106,22 @@ class JournalAcceptanceTest {
         click("open-journal")
         waitFor("journal-new-project")
         compose.onNodeWithTag("journal-new-project").performClick()
+        compose.onNodeWithTag("journal-antenna-image-MONOPOLE").assertIsDisplayed()
+        click("journal-type-FULL_WAVE_LOOP")
+        compose.onNodeWithTag("journal-antenna-image-FULL_WAVE_LOOP").performScrollTo().assertIsDisplayed()
+        click("journal-type-MONOPOLE")
         edit("journal-name", "Antenna types " + UUID.randomUUID().toString().take(6))
         edit("journal-installation", "Mast at 3 m")
         edit("journal-feedline", "RG-58, 5 m")
         click("journal-save")
         waitFor("journal-history")
+        compose.onNodeWithTag("journal-antenna-image-MONOPOLE").assertIsDisplayed()
         click("journal-add")
+        compose.onNodeWithTag("journal-antenna-image-MONOPOLE").assertIsDisplayed()
         val dipole = compose.onNodeWithTag("journal-record-antenna-SYMMETRIC_DIPOLE")
         dipole.performScrollTo().performClick().assertIsSelected()
+        compose.onNodeWithTag("journal-antenna-image-MONOPOLE").assertDoesNotExist()
+        compose.onNodeWithTag("journal-antenna-image-SYMMETRIC_DIPOLE").performScrollTo().assertIsDisplayed()
         click("journal-record-type-CALCULATION")
         dipole.performScrollTo().assertIsSelected()
         compose.onNodeWithTag("journal-installation").performScrollTo().assertTextContains("Mast at 3 m")
@@ -193,6 +201,7 @@ class JournalAcceptanceTest {
         edit("inverted-v-ANGLE", "90")
         compose.activityRule.scenario.recreate()
         waitFor("inverted-v-ANGLE")
+        compose.onNodeWithTag("back").performClick()
         compose.onNodeWithTag("back").performClick()
 
         click("open-journal")
@@ -350,7 +359,9 @@ class JournalAcceptanceTest {
         val example = hasText("First sweep")
         name.assert(example).performClick().assert(!example)
         val length = compose.onNodeWithTag("journal-length")
-        length.performScrollTo().performClick().assert(!hasText("98.3"))
+        length.performScrollTo()
+            .performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.RequestFocus)
+        length.assertIsFocused().assert(!hasText("98.3"))
         name.assert(example)
         click("journal-save-record")
         name.assertIsDisplayed()
@@ -563,6 +574,7 @@ class JournalAcceptanceTest {
     }
 
     private fun addRecord(name: String, resonance: String, swr: String, point: String) {
+        compose.onNodeWithTag("journal-history").performScrollToNode(hasTestTag("journal-add"))
         compose.onNodeWithTag("journal-add").performClick()
         edit("journal-record-name", name)
         edit("journal-resonance", resonance)

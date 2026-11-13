@@ -491,6 +491,7 @@ private fun ProjectHistory(
                     ProjectActionsMenu(actions && enabled, { actions = false }, onAction)
                 }
             }
+            JournalAntennaIllustration(project.antennaType, Modifier.padding(vertical = 8.dp))
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 for ((label, value) in presentation.projectDetails(project, includeNote = false)) {
                     Text(stringResource(R.string.journal_property, label, value),

@@ -1,0 +1,1 @@
+Projects and tuning logs now show antenna illustrations. The illustration updates when you change the antenna type in a project or log entry form.

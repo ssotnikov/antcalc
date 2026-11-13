@@ -73,6 +73,7 @@ internal fun ProjectForm(
         }
     }
     JournalColumn {
+        JournalAntennaIllustration(type)
         problem?.let { Text(stringResource(it.label()), color = MaterialTheme.colorScheme.error) }
         JournalTextField(title, R.string.journal_project_name, R.string.journal_example_name, "journal-name", enabled,
             modifier = Modifier.bringIntoViewRequester(titleLocation), limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.text.isBlank() })
@@ -174,6 +175,7 @@ internal fun RecordForm(
     } else null
     val presentation = JournalPresentation(LocalContext.current)
     JournalColumn {
+        JournalAntennaIllustration(antennaType)
         ChoicePicker(stringResource(R.string.journal_record), RecordType.entries, recordType,
             { stringResource(it.label) }, { if (enabled) { recordType = it; attempted = false } }, "journal-record-type")
         val nameExample = when (recordType) {
