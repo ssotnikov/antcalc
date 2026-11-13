@@ -1,1 +1,4 @@
-Clarified photo import errors. Import JPEG or PNG files up to 20 MB and 2048 pixels on the longest side.
+- The tuning journal has a Your photos section. Add photos, edit comments, or delete images.
+- Open photos full screen and pinch to zoom.
+- Export a single image or save all project photos and their comments in a ZIP file.
+- Import JPEG or PNG files up to 20 MB and 2048 pixels on the longest side. The app shows these limits if it cannot import an image.
