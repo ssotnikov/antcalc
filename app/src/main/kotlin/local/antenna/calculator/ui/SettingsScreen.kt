@@ -15,6 +15,7 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -29,9 +30,14 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
     val settings = state.draft.settings
     val context = LocalContext.current
     val website = stringResource(R.string.author_website_url)
+    val bannerImage = when (settings.language) {
+        AppLanguage.RUSSIAN -> R.drawable.lizaalert_banner_ru
+        AppLanguage.ENGLISH -> R.drawable.lizaalert_banner_en
+    }
     BoxWithConstraints(Modifier.widthIn(max = 680.dp).fillMaxSize()) {
         val viewportHeight = maxHeight
-        val bottomGap = (viewportHeight * 0.025f).coerceIn(12.dp, 24.dp)
+        val bannerLift = with(LocalDensity.current) { 20.toDp() }
+        val bottomGap = (viewportHeight * 0.025f).coerceIn(12.dp, 24.dp) + bannerLift
         Column(
             Modifier.fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -66,7 +72,7 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             }
             Spacer(Modifier.weight(1f))
             Image(
-                painter = painterResource(R.drawable.lizaalert_banner),
+                painter = painterResource(bannerImage),
                 contentDescription = stringResource(R.string.lizaalert_banner_description),
                 modifier = Modifier
                     .padding(top = 8.dp)

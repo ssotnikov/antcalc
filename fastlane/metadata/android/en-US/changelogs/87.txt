@@ -1,0 +1,1 @@
+Raised the LizaAlert banner by 20 pixels. The banner image now changes immediately when you switch languages in Settings.

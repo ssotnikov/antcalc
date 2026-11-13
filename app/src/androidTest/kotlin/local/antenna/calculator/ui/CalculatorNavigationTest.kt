@@ -104,8 +104,17 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         banner.performScrollTo().assertHasClickAction()
             .assertContentDescriptionEquals("ЛизаАлерт — открыть сайт поисково-спасательного отряда")
         assertTrue(banner.fetchSemanticsNode().positionInRoot.y > report.fetchSemanticsNode().positionInRoot.y)
+        fun bannerPixels(): IntArray {
+            val image = banner.captureToImage()
+            return IntArray(image.width * image.height).also { image.readPixels(it) }
+        }
+        val russianPixels = bannerPixels()
         compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
         banner.performScrollTo().assertContentDescriptionEquals("LizaAlert — open the search and rescue team website")
+        assertFalse("The rendered banner must change with the language", russianPixels.contentEquals(bannerPixels()))
+        compose.onNodeWithTag("language-RUSSIAN").performScrollTo().performClick()
+        banner.performScrollTo().assertContentDescriptionEquals("ЛизаАлерт — открыть сайт поисково-спасательного отряда")
+        assertArrayEquals(russianPixels, bannerPixels())
     }
 
     @Test fun settingsBannerUsesViewportHeightAndRemainsReachableWhenContentOverflows() {
@@ -133,7 +142,8 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
             }
             val bounds = viewport.getUnclippedBoundsInRoot()
             val bannerBounds = banner.getUnclippedBoundsInRoot()
-            assertEquals(gap, (bounds.bottom - bannerBounds.bottom).value, 1f)
+            val expectedGap = gap + with(compose.density) { 20.toDp().value }
+            assertEquals(expectedGap, (bounds.bottom - bannerBounds.bottom).value, 1f)
             assertTrue(bannerBounds.top >= report.getUnclippedBoundsInRoot().bottom)
         }
     }
