@@ -4,13 +4,12 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -51,7 +50,7 @@ internal fun CalculationScreen(
         onCopied()
     }
     val settings = state.draft.settings
-    val scroll = rememberSaveable(settings.section, saver = ScrollState.Saver) { ScrollState(0) }
+    val scroll = rememberScrollState()
     BoxWithConstraints(Modifier.widthIn(max = 1100.dp).fillMaxSize()) {
         val wide = maxWidth >= 840.dp
         Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(20.dp).testTag("calculator-scroll"), verticalArrangement = Arrangement.spacedBy(20.dp)) {

@@ -11,6 +11,7 @@
     <string name="trimming">Подстройка антенны</string>
     <string name="settings">Настройки</string>
     <string name="about">Справка</string>
+    <string name="lizaalert_banner_description">ЛизаАлерт — открыть сайт поисково-спасательного отряда</string>
     <string name="report_bug">Сообщить об ошибке</string>
     <string name="menu">Меню</string>
     <string name="back">Назад</string>

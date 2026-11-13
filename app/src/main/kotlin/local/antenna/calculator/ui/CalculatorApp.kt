@@ -485,7 +485,7 @@ private fun LocalizedCalculatorApp(
                                 )
                             }
                         } else {
-                            screenStates.SaveableStateProvider("calculator-results") {
+                            screenStates.SaveableStateProvider("calculator-results-${settings.section.name}") {
                                 CalculationScreen(state, onEvent, currentState, ::leaveInput,
                                     if (journal != null) ::openTransfer else null) {
                                     scope.launch { snackbar.showSnackbar(copiedMessage) }

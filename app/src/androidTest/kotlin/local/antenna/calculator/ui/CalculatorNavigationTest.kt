@@ -9,6 +9,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toPixelMap
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -64,6 +65,40 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         val after = node.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
         assertTrue("Vertical content should scroll", after > before)
         compose.onNodeWithTag("nav-SIZING").assertIsSelected()
+    }
+
+    @Test fun switchingCalculationsRestoresEachScrollPosition() {
+        start(fontScale = 2f)
+        val scroll = compose.onNodeWithTag("calculator-scroll")
+        fun position() = scroll.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        scroll.performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 300f) }
+        val sizing = position()
+        assertTrue(sizing > 0f)
+        trimming()
+        assertEquals(0f, position(), 0f)
+        scroll.performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 600f) }
+        val tuning = position()
+        assertTrue(tuning > sizing)
+        swipeCalculation(right = true)
+        compose.onNodeWithTag("nav-SIZING").assertIsSelected()
+        assertEquals(sizing, position(), 0f)
+        swipeCalculation(right = false)
+        compose.onNodeWithTag("nav-TRIMMING").assertIsSelected()
+        assertEquals(tuning, position(), 0f)
+        compose.onNodeWithTag("nav-SIZING").performClick()
+        assertEquals(sizing, position(), 0f)
+    }
+
+    @Test fun settingsShowsTheLocalizedLizaAlertLinkBelowBugReporting() {
+        start()
+        settings()
+        val banner = compose.onNodeWithTag("lizaalert-banner")
+        val report = compose.onNodeWithTag("report-bug")
+        banner.performScrollTo().assertHasClickAction()
+            .assertContentDescriptionEquals("ЛизаАлерт — открыть сайт поисково-спасательного отряда")
+        assertTrue(banner.fetchSemanticsNode().positionInRoot.y > report.fetchSemanticsNode().positionInRoot.y)
+        compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
+        banner.performScrollTo().assertContentDescriptionEquals("LizaAlert — open the search and rescue team website")
     }
 
     @Test fun swipesOnMenuPagesLeavePageAndCalculationUnchanged() {
