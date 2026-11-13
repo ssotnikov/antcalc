@@ -157,7 +157,6 @@ internal fun LazyListScope.journalPhotos(
                 OutlinedButton(onClick = actions.exportAll, enabled = enabled && project.photos.isNotEmpty(),
                     modifier = Modifier.testTag("journal-photo-export-all")) { Text(stringResource(R.string.photo_export_all)) }
             }
-            Text(stringResource(R.string.photo_formats), style = MaterialTheme.typography.bodySmall)
             if (project.photos.isEmpty()) Text(stringResource(R.string.photo_empty))
         }
     }

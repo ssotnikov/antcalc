@@ -6,7 +6,6 @@
     <string name="photo_count">%1$d of %2$d</string>
     <string name="photo_add">Add photos</string>
     <string name="photo_export_all">Export all</string>
-    <string name="photo_formats">JPEG/PNG formats (up to 20 MB)</string>
     <string name="photo_empty">Add photos of the antenna, mounting hardware, or feed point.</string>
     <string name="photo_no_comment">No comment</string>
     <string name="photo_comment">Comment</string>
