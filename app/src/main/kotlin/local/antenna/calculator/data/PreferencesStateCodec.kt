@@ -20,7 +20,11 @@ object PreferencesStateCodec {
             for (key in FieldKey.entries) {
                 val valueKey = longPreferencesKey("value.${key.name}")
                 state.values[key]?.let { this[valueKey] = it } ?: remove(valueKey)
-                this[stringPreferencesKey("unit.${key.name}")] = state.units.getValue(key)
+                val unitKey = stringPreferencesKey("unit.${key.name}")
+                val unit = state.units.getValue(key)
+                if (key == FieldKey.OTHER_ANTENNA_LENGTH && state.values[key] == null && unit == LengthUnit.MILLIMETERS.name)
+                    remove(unitKey)
+                else this[unitKey] = unit
             }
             val s = state.settings
             this[stringPreferencesKey("section")] = s.section.name
@@ -48,10 +52,14 @@ object PreferencesStateCodec {
             fun string(key: String) = requireNotNull(preferences[stringPreferencesKey(key)])
             val values = FieldKey.entries.mapNotNull { key ->
                 val value = preferences[longPreferencesKey("value.${key.name}")]
-                require(value != null || key == FieldKey.ACTUAL_LENGTH)
+                require(value != null || key.isLength)
                 value?.let { key to it }
             }.toMap()
-            val units = FieldKey.entries.associateWith { key -> string("unit.${key.name}") }
+            val units = FieldKey.entries.associateWith { key ->
+                val unit = preferences[stringPreferencesKey("unit.${key.name}")]
+                if (key == FieldKey.OTHER_ANTENNA_LENGTH && key !in values) unit ?: LengthUnit.MILLIMETERS.name
+                else requireNotNull(unit)
+            }
             val settings = CalculatorSettings(
                 section = Section.valueOf(string("section")), theme = AppTheme.valueOf(string("theme")),
                 antennaType = AntennaType.valueOf(string("antenna")),
@@ -66,7 +74,7 @@ object PreferencesStateCodec {
             val draft = state.toDraft()
             for (key in FieldKey.entries) {
                 if (key == FieldKey.FACTOR) require(units[key] == "FACTOR")
-                require(draft[key].state(key) is FieldState.Valid || key == FieldKey.ACTUAL_LENGTH && key !in values)
+                require(draft[key].state(key) is FieldState.Valid || key.isLength && key !in values)
             }
             return state
         } catch (error: UnsupportedSchemaException) {

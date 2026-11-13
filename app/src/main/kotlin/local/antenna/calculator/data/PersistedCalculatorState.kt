@@ -1,6 +1,7 @@
 package local.antenna.calculator.data
 
 import local.antenna.calculator.core.input.FieldState
+import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.core.units.*
 import local.antenna.calculator.state.*
 import java.math.BigDecimal
@@ -18,7 +19,7 @@ data class PersistedCalculatorState(
     val fullWaveLoop: FullWaveLoopDraft = FullWaveLoopDraft(),
 ) {
     fun advance(draft: CalculatorDraft): PersistedCalculatorState = copy(
-        values = values + draft.fields.mapNotNull { (key, field) ->
+        values = valuesForAntenna(draft.settings.antennaType) + draft.fields.mapNotNull { (key, field) ->
             when (val value = (field.state(key) as? FieldState.Valid)?.value) {
                 is Frequency -> key to value.hertz
                 is PhysicalLength -> key to value.nanometers
@@ -35,12 +36,22 @@ data class PersistedCalculatorState(
         fullWaveLoop = draft.fullWaveLoop.canonical(fullWaveLoop),
     )
 
+    // Keep the legacy slot tied to the selected antenna when retaining the last valid values.
+    private fun valuesForAntenna(type: AntennaType): Map<FieldKey, Long> =
+        if (settings.antennaType == type) values else values.mapKeys { (key, _) ->
+            when (key) {
+                FieldKey.ACTUAL_LENGTH -> FieldKey.OTHER_ANTENNA_LENGTH
+                FieldKey.OTHER_ANTENNA_LENGTH -> FieldKey.ACTUAL_LENGTH
+                else -> key
+            }
+        }
+
     fun toDraft(): CalculatorDraft = CalculatorDraft(FieldKey.entries.associateWith { key ->
         val unit = units.getValue(key)
         val value = values[key]
         val text = if (value == null) "" else when (key) {
             FieldKey.FACTOR -> BigDecimal.valueOf(value, 4).inputText()
-            FieldKey.ACTUAL_LENGTH -> PhysicalLength.ofNanometers(value).inUnit(LengthUnit.valueOf(unit)).inputText()
+            FieldKey.ACTUAL_LENGTH, FieldKey.OTHER_ANTENNA_LENGTH -> PhysicalLength.ofNanometers(value).inUnit(LengthUnit.valueOf(unit)).inputText()
             else -> Frequency.ofHertz(value).inUnit(FrequencyUnit.valueOf(unit)).inputText()
         }
         NumericDraft(text, unit)

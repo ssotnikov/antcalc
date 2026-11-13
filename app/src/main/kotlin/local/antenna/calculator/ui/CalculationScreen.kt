@@ -73,7 +73,10 @@ internal fun CalculationScreen(
                             FieldKey.TARGET to R.string.target_frequency,
                         )
                         HelpText(R.string.trimming_pending_fields)
-                        required.filter { (key, _) -> state.draft[key].state(key).validValue() == null }
+                        required.filter { (key, _) ->
+                            val field = if (key == FieldKey.ACTUAL_LENGTH) state.trimming.actualLength else state.draft[key]
+                            field.state(key).validValue() == null
+                        }
                             .forEach { (_, label) -> Text(stringResource(label), style = MaterialTheme.typography.bodyMedium) }
                     } else HelpText(R.string.result_pending)
                 }
@@ -116,8 +119,8 @@ private fun ResultPanel(group: ResultGroup) {
                 Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
             }
             group.rows.forEachIndexed { index, row ->
-                if (group.diagrams && index == 0) AntennaDiagram(dipole = false)
-                if (group.diagrams && index == 1) AntennaDiagram(dipole = true)
+                if (group.diagrams && row.label == R.string.radiator_length) AntennaDiagram(dipole = false)
+                if (group.diagrams && row.label == R.string.dipole_total) AntennaDiagram(dipole = true)
                 Column(Modifier.fillMaxWidth().testTag(row.tag).semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(stringResource(row.label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(row.value, style = if (index == 0) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,

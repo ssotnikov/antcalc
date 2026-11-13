@@ -19,7 +19,11 @@ enum class AppLanguage(val tag: String) {
         fun initial(): AppLanguage = forSystemLanguage(Locale.getDefault().language)
     }
 }
-enum class FieldKey { SIZING_FREQUENCY, FACTOR, ACTUAL_LENGTH, MEASURED, TARGET }
+enum class FieldKey {
+    SIZING_FREQUENCY, FACTOR, ACTUAL_LENGTH, MEASURED, TARGET, OTHER_ANTENNA_LENGTH;
+
+    val isLength: Boolean get() = this == ACTUAL_LENGTH || this == OTHER_ANTENNA_LENGTH
+}
 
 /** validationUnit retains an invalid field's interpretation across unit changes and restoration. */
 data class NumericDraft(
@@ -34,7 +38,7 @@ data class NumericDraft(
     fun factor(): FieldState<ShorteningFactor> = QuantityInput.shorteningFactor(text)
     fun state(key: FieldKey): FieldState<*> = when (key) {
         FieldKey.FACTOR -> factor()
-        FieldKey.ACTUAL_LENGTH -> length()
+        FieldKey.ACTUAL_LENGTH, FieldKey.OTHER_ANTENNA_LENGTH -> length()
         else -> frequency()
     }
     fun hasVisibleError(key: FieldKey): Boolean = when (state(key)) {
@@ -45,7 +49,7 @@ data class NumericDraft(
     fun edit(value: String) = copy(text = value.boundedNumericText(), validationUnit = unit)
     fun changeUnit(key: FieldKey, next: String): NumericDraft {
         require(key != FieldKey.FACTOR)
-        if (key == FieldKey.ACTUAL_LENGTH) LengthUnit.valueOf(next) else FrequencyUnit.valueOf(next)
+        if (key.isLength) LengthUnit.valueOf(next) else FrequencyUnit.valueOf(next)
         val value = (state(key) as? FieldState.Valid)?.value
         val converted = when (value) {
             is Frequency -> value.inUnit(FrequencyUnit.valueOf(next))
@@ -85,8 +89,16 @@ data class CalculatorDraft(
 ) {
     operator fun get(key: FieldKey): NumericDraft = fields.getValue(key)
     fun update(key: FieldKey, field: NumericDraft) = copy(fields = fields + (key to field))
+    fun changeSettings(next: CalculatorSettings): CalculatorDraft {
+        if (settings.antennaType == next.antennaType) return copy(settings = next)
+        val active = get(FieldKey.ACTUAL_LENGTH)
+        val other = get(FieldKey.OTHER_ANTENNA_LENGTH)
+        return copy(settings = next).update(FieldKey.ACTUAL_LENGTH, other.copy(focused = false))
+            .update(FieldKey.OTHER_ANTENNA_LENGTH, active.copy(focused = false))
+    }
+
     fun edit(key: FieldKey, text: String): CalculatorDraft {
-        val field = get(key).edit(text)
+        val field = get(key).edit(text).let { if (key.isLength) it.copy(checked = true) else it }
         val updated = update(key, field)
         val pairedKey = when (key) {
             FieldKey.SIZING_FREQUENCY -> FieldKey.TARGET
@@ -104,7 +116,7 @@ data class CalculatorDraft(
         fun defaults() = CalculatorDraft(FieldKey.entries.associateWith { key ->
             when (key) {
                 FieldKey.FACTOR -> NumericDraft("0,95", "FACTOR")
-                FieldKey.ACTUAL_LENGTH -> NumericDraft("", LengthUnit.MILLIMETERS.name)
+                FieldKey.ACTUAL_LENGTH, FieldKey.OTHER_ANTENNA_LENGTH -> NumericDraft("", LengthUnit.MILLIMETERS.name)
                 FieldKey.TARGET -> NumericDraft("155", FrequencyUnit.MEGAHERTZ.name)
                 else -> NumericDraft("145", FrequencyUnit.MEGAHERTZ.name)
             }
@@ -131,6 +143,20 @@ data class CalculatorUiState(
         return SizingUiState(frequency, factor, f?.let(::calculateIdealSizing),
             if (f != null && k != null) calculateSizing(SizingInput(f, k)) else null)
     }
+    fun measuredLength(type: AntennaType): PhysicalLength? {
+        val key = if (type == draft.settings.antennaType) FieldKey.ACTUAL_LENGTH else FieldKey.OTHER_ANTENNA_LENGTH
+        return draft[key].length().validValue()
+    }
+
+    fun trimmingProjection(type: AntennaType): TrimmingResult? =
+        measuredLength(type)?.let { calculateProjection(type, it) }
+
+    private fun calculateProjection(type: AntennaType, length: PhysicalLength): TrimmingResult? {
+        val measured = draft[FieldKey.MEASURED].frequency().validValue() ?: return null
+        val target = draft[FieldKey.TARGET].frequency().validValue() ?: return null
+        return calculateTrimming(TrimmingInput(length, measured, target, type))
+    }
+
     fun transferableSizingLength(): PhysicalLength? {
         val estimate = sizing.result ?: return null
         val meters = if (draft.settings.antennaType == AntennaType.MONOPOLE)
@@ -139,15 +165,19 @@ data class CalculatorUiState(
         return nanometers.takeIf { it in PhysicalLength.MIN_NANOMETERS..PhysicalLength.MAX_NANOMETERS }
             ?.let(PhysicalLength::ofNanometers)
     }
+    val suggestedTrimmingLength: NumericDraft? get() {
+        val field = draft[FieldKey.ACTUAL_LENGTH]
+        if (draft.settings.section != Section.TRIMMING || field.text.isNotBlank() || (field.focused && field.checked)) return null
+        val estimate = transferableSizingLength() ?: return null
+        return field.edit(estimate.inUnit(LengthUnit.valueOf(field.unit)).inputText())
+    }
+
     val trimming: TrimmingUiState get() {
-        val length = draft[FieldKey.ACTUAL_LENGTH]
+        val length = suggestedTrimmingLength ?: draft[FieldKey.ACTUAL_LENGTH]
         val measured = draft[FieldKey.MEASURED]
         val target = draft[FieldKey.TARGET]
-        val l = length.length().validValue()
-        val fm = measured.frequency().validValue()
-        val ft = target.frequency().validValue()
-        return TrimmingUiState(length, measured, target, if (l != null && fm != null && ft != null)
-            calculateTrimming(TrimmingInput(l, fm, ft, draft.settings.antennaType)) else null)
+        val result = length.length().validValue()?.let { calculateProjection(draft.settings.antennaType, it) }
+        return TrimmingUiState(length, measured, target, result)
     }
 }
 
@@ -163,7 +193,6 @@ sealed interface CalculatorEvent {
     data class Focus(val key: FieldKey, val focused: Boolean) : CalculatorEvent
     data class Check(val keys: Set<FieldKey>) : CalculatorEvent
     data class Settings(val value: CalculatorSettings) : CalculatorEvent
-    data object UseSizingLength : CalculatorEvent
     data object RetryStorage : CalculatorEvent
     /** Only dispatch after an explicit user action consenting to discard stored settings. */
     data object ResetStorage : CalculatorEvent

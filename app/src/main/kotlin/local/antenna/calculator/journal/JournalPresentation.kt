@@ -2,6 +2,8 @@ package local.antenna.calculator.journal
 
 import android.content.Context
 import local.antenna.calculator.ui.FrequencyNumberFormat
+import local.antenna.calculator.ui.formatLength
+import local.antenna.calculator.core.units.LengthUnit
 import java.text.NumberFormat
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -50,7 +52,7 @@ internal class JournalPresentation(private val context: Context) {
     }.format(value)
 
     fun frequency(hertz: Number): String = context.getString(R.string.value_unit, frequencies.megahertz(hertz), text(R.string.mhz))
-    fun length(nanometers: Long): String = withUnit(nanometers / 10_000_000.0, R.string.cm)
+    fun length(nanometers: Long): String = formatLength(context, nanometers / 1e9, LengthUnit.CENTIMETERS)
     private fun withUnit(value: Number, unit: Int) = context.getString(R.string.value_unit, number(value), text(unit))
 
     fun formatFields(details: List<Pair<String, String>>): String =
@@ -174,8 +176,8 @@ internal class JournalPresentation(private val context: Context) {
         if (label != null) return text(label)
         return when (metric.unit) {
         SnapshotUnit.HERTZ -> frequency(metric.value)
-        SnapshotUnit.NANOMETERS -> withUnit(metric.value / 10_000_000, R.string.cm)
-        SnapshotUnit.METERS -> withUnit(metric.value, R.string.m)
+        SnapshotUnit.NANOMETERS -> formatLength(context, metric.value / 1e9, LengthUnit.CENTIMETERS)
+        SnapshotUnit.METERS -> formatLength(context, metric.value, LengthUnit.METERS)
         SnapshotUnit.FACTOR -> number(metric.value)
         SnapshotUnit.DEGREES -> context.getString(R.string.inverted_v_degrees, number(metric.value))
         }

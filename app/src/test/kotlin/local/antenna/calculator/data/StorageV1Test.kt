@@ -50,7 +50,7 @@ class StorageV1Test {
         val wire = savedDraftV1()
         assertEquals(49, wire.size)
         val draft = requireNotNull(DraftCodec.decode(wire))
-        assertEquals(5, draft.fields.size)
+        assertEquals(6, draft.fields.size)
         assertEquals("145,", draft[FieldKey.SIZING_FREQUENCY].text)
         assertTrue(draft[FieldKey.SIZING_FREQUENCY].focused)
         assertTrue(draft[FieldKey.SIZING_FREQUENCY].checked)

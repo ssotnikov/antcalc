@@ -63,8 +63,7 @@ internal fun FullWaveLoopScreen(
         onEvent(CalculatorEvent.FullWaveLoop(change(currentState().draft.fullWaveLoop)))
     }
     fun length(meters: Double, unit: LengthUnit = draft.outputUnit): String =
-        resources.getString(R.string.loop_frequency_value,
-            number.format(meters * 1e9 / unit.nanometersPerUnit), resources.getString(unit.labelResource()))
+        formatLength(context, meters, unit)
     fun frequency(mhz: Double): String {
         val (value, unit) = when {
             mhz < 1 -> mhz * 1000 to FrequencyUnit.KILOHERTZ

@@ -14,10 +14,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
+import local.antenna.calculator.core.format.LengthFormatter
 import local.antenna.calculator.core.input.*
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.core.units.*
@@ -53,7 +59,13 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
             { stringResource(if (it == AntennaType.MONOPOLE) R.string.monopole else R.string.dipole) },
             { onEvent(CalculatorEvent.Settings(settings.copy(antennaType = it))) }, "antenna")
         AntennaDiagram(dipole = settings.antennaType == AntennaType.SYMMETRIC_DIPOLE)
-        NumericInput(FieldKey.ACTUAL_LENGTH, if (settings.antennaType == AntennaType.MONOPOLE) R.string.actual_length else R.string.dipole_actual_length, state, onEvent)
+        val lengthLabel = when {
+            state.suggestedTrimmingLength != null && settings.antennaType == AntennaType.MONOPOLE -> R.string.estimated_monopole_input
+            state.suggestedTrimmingLength != null -> R.string.estimated_dipole_input
+            settings.antennaType == AntennaType.MONOPOLE -> R.string.actual_length
+            else -> R.string.dipole_actual_length
+        }
+        NumericInput(FieldKey.ACTUAL_LENGTH, lengthLabel, state, onEvent)
         val estimate = state.sizing.result
         if (estimate != null) {
             val length = if (settings.antennaType == AntennaType.MONOPOLE) estimate.monopoleMeters else estimate.dipoleTotalMeters
@@ -63,16 +75,11 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
                 FrequencyUnit.valueOf(draft[FieldKey.TARGET].unit))
             Text(stringResource(R.string.trimming_initial_estimate, formatted, frequency), style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
-            if (draft[FieldKey.ACTUAL_LENGTH].text.isBlank() && state.transferableSizingLength() != null) {
-                TextButton(onClick = { onEvent(CalculatorEvent.UseSizingLength) }, enabled = state.editingEnabled) {
-                    Text(stringResource(R.string.use_sizing_length))
-                }
-            }
         }
         NumericInput(FieldKey.MEASURED, R.string.measured_frequency, state, onEvent)
         HelpText(R.string.resonance_note)
         NumericInput(FieldKey.TARGET, R.string.target_frequency, state, onEvent)
-        if (draft[FieldKey.ACTUAL_LENGTH].text.isEmpty()) HelpText(R.string.measured_length_required)
+        if (state.trimming.actualLength.text.isEmpty()) HelpText(R.string.measured_length_required)
     }
     ChoicePicker(stringResource(R.string.result_units), LengthUnit.entries,
         if (sizing) settings.sizingLengthUnit else settings.trimmingLengthUnit, { stringResource(it.labelResource()) },
@@ -81,7 +88,7 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
 
 @Composable
 private fun NumericInput(key: FieldKey, label: Int, state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit) {
-    val field = state.draft[key]
+    val field = if (key == FieldKey.ACTUAL_LENGTH) state.trimming.actualLength else state.draft[key]
     val error = inputErrorResource(key, field)
     val errorMessage = error?.let { stringResource(it) }
     val focusManager = LocalFocusManager.current
@@ -91,8 +98,22 @@ private fun NumericInput(key: FieldKey, label: Int, state: CalculatorUiState, on
     val (frequencyModifier, frequencyTransformation) = megahertzFieldPresentation(
         Modifier, field.unit == FrequencyUnit.MEGAHERTZ.name,
     )
+    val locale = LocalConfiguration.current.locales[0]
+    val roundedLength = if (key.isLength && !field.focused) field.length().validValue()?.let {
+        LengthFormatter.format(it, LengthUnit.valueOf(field.unit))
+    } else null
+    val lengthTransformation = roundedLength?.let { display ->
+        val number = if (locale.language == "ru") display.number else display.number.replace(',', '.')
+        VisualTransformation { raw ->
+            val shown = if (display.isBelowResolution) "< $number" else number
+            TransformedText(AnnotatedString(shown), object : OffsetMapping {
+                override fun originalToTransformed(offset: Int) = offset.coerceAtMost(shown.length)
+                override fun transformedToOriginal(offset: Int) = offset.coerceAtMost(raw.length)
+            })
+        }
+    }
     OutlinedTextField(value = field.text, onValueChange = { onEvent(CalculatorEvent.Edit(key, it)) },
-        visualTransformation = frequencyTransformation,
+        visualTransformation = lengthTransformation ?: frequencyTransformation,
         modifier = frequencyModifier.fillMaxWidth().testTag("field-${key.name}").semantics {
             if (errorMessage != null) error(errorMessage)
         }.focusRequester(requester).onFocusChanged {

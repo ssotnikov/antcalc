@@ -55,7 +55,7 @@
     <string name="large_change_note">Большое изменение: простая пропорция может быть неточной; проверьте конструкцию и измерьте повторно.</string>
     <string name="outside_length_note">Результат вне рабочего диапазона длин; применимость модели требует проверки. Размер не ограничен автоматически.</string>
     <string name="result_pending">Введите допустимые значения, чтобы увидеть результат.</string>
-    <string name="measured_length_required">Введите длину изготовленной антенны или подставьте расчетную длину для предварительной оценки.</string>
+    <string name="measured_length_required">Введите фактическую длину изготовленной антенны.</string>
     <string name="adjustment">Прогноз изменения длины</string>
     <string name="new_length">Оценка новой длины штыря</string>
     <string name="new_total">Оценка полной длины диполя</string>
@@ -209,6 +209,7 @@
     <string name="inverted_v_fundamental_help">Оценка по формуле f₁ ≈ k·c/(4L), где L — длина одного из двух равных плеч, k — коэффициент укорочения. На фактический резонанс влияют угол между плечами, высота подвеса и провод.</string>
     <string name="antenna_higher_modes_help">Высшие резонансы возможны вблизи частот, кратных основной в 3 и 5 раз. Используйте эти значения как ориентиры для прохода VNA в точке питания. Найдите частоты, где X близка к нулю, и отдельно проверьте R и КСВ.</string>
     <string name="sizing_antennas_description">Четвертьволновый штырь и полуволновый диполь с питанием в центре</string>
-    <string name="use_sizing_length">Подставить расчетную длину</string>
+    <string name="estimated_monopole_input">Фактическая длина штыря (оценка)</string>
+    <string name="estimated_dipole_input">Полная длина двух плеч (оценка)</string>
     <string name="trimming_pending_fields">Заполните или исправьте следующие поля, чтобы увидеть результат подстройки:</string>
 </resources>

@@ -10,9 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import local.antenna.calculator.core.units.FrequencyUnit
-import local.antenna.calculator.core.units.LengthUnit
-import local.antenna.calculator.core.units.inUnit
 import local.antenna.calculator.data.*
 import java.io.IOException
 
@@ -61,23 +58,14 @@ class CalculatorViewModel(
         if (!state.value.editingEnabled) return
         val draft = state.value.draft
         val updated = when (event) {
-            CalculatorEvent.UseSizingLength -> {
-                val field = draft[FieldKey.ACTUAL_LENGTH]
-                if (field.text.isNotBlank()) return
-                val length = state.value.transferableSizingLength() ?: return
-                val target = draft[FieldKey.TARGET]
-                val frequency = state.value.sizing.result?.input?.frequency ?: return
-                draft.edit(FieldKey.TARGET, frequency.inUnit(FrequencyUnit.valueOf(target.unit)).inputText())
-                    .edit(FieldKey.ACTUAL_LENGTH, length.inUnit(LengthUnit.valueOf(field.unit)).inputText())
-            }
             is CalculatorEvent.Edit -> draft.edit(event.key, event.text)
             is CalculatorEvent.ChangeUnit -> draft.update(event.key, draft[event.key].changeUnit(event.key, event.unit))
             is CalculatorEvent.Focus -> draft.update(event.key, draft[event.key].copy(
-                focused = event.focused, checked = draft[event.key].checked || !event.focused))
+                focused = event.focused, checked = draft[event.key].checked || (!event.focused && !event.key.isLength)))
             is CalculatorEvent.Check -> draft.copy(fields = draft.fields.mapValues { (key, field) ->
                 if (key in event.keys) field.copy(checked = true) else field
             })
-            is CalculatorEvent.Settings -> draft.copy(settings = event.value)
+            is CalculatorEvent.Settings -> draft.changeSettings(event.value)
             is CalculatorEvent.Matching -> draft.copy(matching = event.value)
             is CalculatorEvent.Cable -> draft.copy(cable = event.value)
             is CalculatorEvent.Feedline -> draft.copy(feedline = event.value)

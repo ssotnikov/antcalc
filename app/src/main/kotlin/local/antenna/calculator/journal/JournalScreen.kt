@@ -336,9 +336,9 @@ private fun AntennaProject.comparisonRejection(keys: List<String>): Int? {
     if (sweepCount == 1) {
         return R.string.journal_sweep_compare_select_manual.takeIf { records.single().measurement == null }
     }
+    if (records[0].antennaType != records[1].antennaType) return R.string.journal_reject_antenna_types
     val calculations = records.filter { it.calculation != null }
     if (calculations.isEmpty()) return null
-    if (records[0].antennaType != records[1].antennaType) return R.string.journal_reject_antenna_types
     if (calculations.size == 1) {
         val calculation = calculations.single()
         val measurement = records.first { it.measurement != null }

@@ -29,8 +29,6 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.math.BigDecimal
-import java.math.RoundingMode
 import local.antenna.calculator.R
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.InputError
@@ -250,18 +248,11 @@ private fun InvertedVResult.notice(): Int? = when {
 }
 
 private fun InvertedVResult.rows(context: Context, unit: LengthUnit) = listOf(
-    R.string.dipole_arm to formatInvertedVLength(context, armMeters, unit),
-    R.string.dipole_total to formatInvertedVLength(context, wireMeters, unit),
-    R.string.inverted_v_span to formatInvertedVLength(context, spanMeters, unit),
-    R.string.inverted_v_end_height to formatInvertedVLength(context, endHeightMeters, unit),
+    R.string.dipole_arm to formatLength(context, armMeters, unit),
+    R.string.dipole_total to formatLength(context, wireMeters, unit),
+    R.string.inverted_v_span to formatLength(context, spanMeters, unit),
+    R.string.inverted_v_end_height to formatLength(context, endHeightMeters, unit),
 )
-
-private fun formatInvertedVLength(context: Context, meters: Double, unit: LengthUnit): String {
-    val rounded = BigDecimal.valueOf(meters).movePointRight(9)
-        .divide(BigDecimal.valueOf(unit.nanometersPerUnit), 2, RoundingMode.HALF_UP)
-    val number = localizedNumber(context, rounded.toPlainString().replace('-', '−'))
-    return context.getString(R.string.value_unit, number, context.getString(unit.labelResource()))
-}
 
 private fun InvertedVDraft.copyText(context: Context): String? {
     val result = result() ?: return null
@@ -300,10 +291,10 @@ private fun InvertedVDiagram(result: InvertedVResult, unit: LengthUnit, context:
     val textMeasurer = rememberTextMeasurer()
     val description = stringResource(
         R.string.inverted_v_diagram_alt,
-        formatInvertedVLength(context, result.armMeters, unit),
-        formatInvertedVLength(context, result.apexMeters, unit),
-        formatInvertedVLength(context, result.endHeightMeters, unit),
-        formatInvertedVLength(context, result.spanMeters, unit),
+        formatLength(context, result.armMeters, unit),
+        formatLength(context, result.apexMeters, unit),
+        formatLength(context, result.endHeightMeters, unit),
+        formatLength(context, result.spanMeters, unit),
         localizedNumber(context, (result.angleTenths / 10.0).toString().removeSuffix(".0")),
     )
     Canvas(Modifier.fillMaxWidth().height(168.dp).testTag("inverted-v-diagram").semantics {

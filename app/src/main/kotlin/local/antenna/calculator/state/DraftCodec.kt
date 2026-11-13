@@ -23,12 +23,16 @@ object DraftCodec {
         val s = draft.settings
         addAll(listOf(s.section.name, s.theme.name, "false", s.antennaType.name,
             s.sizingLengthUnit.name, s.trimmingLengthUnit.name, "95", "95", s.language.name))
+        val other = draft[FieldKey.OTHER_ANTENNA_LENGTH]
+        if (other != NumericDraft("", LengthUnit.MILLIMETERS.name)) {
+            addAll(listOf(other.text.boundedNumericText(), other.unit, other.validationUnit, other.checked.toString(), "false"))
+        }
     }
 
     fun decode(values: ArrayList<String>?): CalculatorDraft? {
         if (values == null) return null
         return try {
-            require(values.size in (fieldsV1.size * 5 + 8)..(fieldsV1.size * 5 + 9))
+            require(values.size in setOf(fieldsV1.size * 5 + 8, fieldsV1.size * 5 + 9, fieldsV1.size * 5 + 14))
             var index = 0
             fun next() = values[index++]
             val fields = fieldsV1.associateWith { name ->
@@ -49,7 +53,14 @@ object DraftCodec {
             val trimmingUnit = LengthUnit.valueOf(next())
             repeat(2) { require(next().toInt() in retiredCoefficients) }
             val language = if (index < values.size) AppLanguage.valueOf(next()) else AppLanguage.initial()
-            CalculatorDraft(FieldKey.entries.associateWith { fields.getValue(it.name) },
+            val other = if (index < values.size) {
+                val field = NumericDraft(next().boundedNumericText(), next(), next(),
+                    next().toBooleanStrict(), next().toBooleanStrict())
+                LengthUnit.valueOf(field.unit)
+                LengthUnit.valueOf(field.validationUnit)
+                field
+            } else NumericDraft("", LengthUnit.MILLIMETERS.name)
+            CalculatorDraft(FieldKey.entries.associateWith { if (it == FieldKey.OTHER_ANTENNA_LENGTH) other else fields.getValue(it.name) },
                 CalculatorSettings(section, theme, antenna, sizingUnit, trimmingUnit, language))
         } catch (_: IllegalArgumentException) {
             null

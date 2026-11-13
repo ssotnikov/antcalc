@@ -44,7 +44,7 @@
     <string name="journal_calculation_input">Calculation inputs</string>
     <string name="journal_calculation_output">Calculation results</string>
     <string name="journal_choose_calc">Choose the current calculation to save with this record.</string>
-    <string name="journal_missing_calc">Complete the calculation first. For tuning, choose the same antenna type as in the project.</string>
+    <string name="journal_missing_calc">Complete the calculation for the selected antenna type first.</string>
     <string name="journal_model">Model %1$s, revision %2$d</string>
     <string name="journal_sizing_model">antenna sizing</string>
     <string name="journal_trim_model">antenna tuning</string>

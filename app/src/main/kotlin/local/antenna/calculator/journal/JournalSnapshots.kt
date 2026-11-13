@@ -23,7 +23,8 @@ internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, sectio
     if (!state.editingEnabled || type == AntennaType.FULL_WAVE_LOOP) return null
     return when (section) {
         Section.SIZING -> sizingSnapshot(state)?.let { it.copy(outputs = it.outputsForAntenna(type)) }
-        Section.TRIMMING -> state.trimming.result?.takeIf { it.input.antennaType == type }?.let { result ->
+        Section.TRIMMING -> (if (state.draft.settings.antennaType == type) state.trimming.result
+            else state.trimmingProjection(type))?.let { result ->
             CalculationSnapshot("trimming", 1, listOf(
                 snapshot("length", result.input.actualLength.nanometers, NANOMETERS),
                 snapshot("resonance", result.input.measuredFrequency.hertz, HERTZ),

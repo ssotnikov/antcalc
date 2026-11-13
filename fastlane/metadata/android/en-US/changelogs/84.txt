@@ -1,0 +1,1 @@
+Automatically fills the tuning length from the sizing estimate. Monopole and dipole measurements are kept separately and displayed with their corresponding sizing estimates.

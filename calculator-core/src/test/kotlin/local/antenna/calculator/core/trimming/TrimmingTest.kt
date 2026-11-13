@@ -25,8 +25,8 @@ class TrimmingTest {
         assertEquals(467.741935483871, result.newLengthMeters * 1000, 1e-6)
         assertEquals(-32.258064516129, result.deltaMeters * 1000, 1e-6)
         assertEquals(AdjustmentDirection.SHORTEN, result.direction)
-        assertEquals("467,7", LengthFormatter.format(result.newLengthMeters, LengthUnit.MILLIMETERS).number)
-        assertEquals("32,3", LengthFormatter.format(abs(result.deltaMeters), LengthUnit.MILLIMETERS).number)
+        assertEquals("468", LengthFormatter.format(result.newLengthMeters, LengthUnit.MILLIMETERS).number)
+        assertEquals("32", LengthFormatter.format(abs(result.deltaMeters), LengthUnit.MILLIMETERS).number)
     }
 
     @Test
@@ -35,7 +35,7 @@ class TrimmingTest {
         assertEquals(534.482758620690, result.newLengthMeters * 1000, 1e-6)
         assertEquals(34.482758620690, result.deltaMeters * 1000, 1e-6)
         assertEquals(AdjustmentDirection.LENGTHEN, result.direction)
-        assertEquals("34,5", LengthFormatter.format(result.deltaMeters, LengthUnit.MILLIMETERS).number)
+        assertEquals("34", LengthFormatter.format(result.deltaMeters, LengthUnit.MILLIMETERS).number)
     }
 
     @Test
@@ -52,7 +52,7 @@ class TrimmingTest {
         assertEquals(AdjustmentDirection.SHORTEN, result.direction)
         assertTrue(result.deltaMeters < 0.0)
         assertTrue(LengthFormatter.format(abs(result.deltaMeters), LengthUnit.MILLIMETERS).isBelowResolution)
-        assertEquals("500,0", LengthFormatter.format(result.newLengthMeters, LengthUnit.MILLIMETERS).number)
+        assertEquals("500", LengthFormatter.format(result.newLengthMeters, LengthUnit.MILLIMETERS).number)
     }
 
     @Test

@@ -37,11 +37,11 @@ internal fun GroundPlaneDiagram(layout: GroundPlaneResult.Layout, unit: LengthUn
     val angle = layout.angleTenths / 10f
     val description = stringResource(
         R.string.ground_plane_side_alt,
-        groundPlaneLength(context, layout.whipMeters, unit),
-        groundPlaneLength(context, layout.radialMeters, unit),
-        groundPlaneLength(context, layout.baseMeters, unit),
-        groundPlaneLength(context, layout.endHeightMeters, unit),
-        groundPlaneLength(context, layout.diameterMeters, unit),
+        formatLength(context, layout.whipMeters, unit),
+        formatLength(context, layout.radialMeters, unit),
+        formatLength(context, layout.baseMeters, unit),
+        formatLength(context, layout.endHeightMeters, unit),
+        formatLength(context, layout.diameterMeters, unit),
         localizedNumber(context, angle.toString().removeSuffix(".0")),
     )
 

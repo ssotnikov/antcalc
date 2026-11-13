@@ -34,9 +34,9 @@ class DipoleTrimmingTest {
     fun `each arm is derived before formatting the total`() {
         val result = calculateTrimming(input)
         val arm = requireNotNull(result.dipoleArmAdjustment)
-        assertEquals("64,5", LengthFormatter.format(abs(result.deltaMeters), LengthUnit.MILLIMETERS).number)
-        assertEquals("32,3", LengthFormatter.format(abs(arm.deltaMeters), LengthUnit.MILLIMETERS).number)
-        assertEquals("467,7", LengthFormatter.format(arm.newLengthMeters, LengthUnit.MILLIMETERS).number)
+        assertEquals("65", LengthFormatter.format(abs(result.deltaMeters), LengthUnit.MILLIMETERS).number)
+        assertEquals("32", LengthFormatter.format(abs(arm.deltaMeters), LengthUnit.MILLIMETERS).number)
+        assertEquals("468", LengthFormatter.format(arm.newLengthMeters, LengthUnit.MILLIMETERS).number)
         assertEquals(result.deltaMeters, arm.deltaMeters * 2, 0.0)
     }
 

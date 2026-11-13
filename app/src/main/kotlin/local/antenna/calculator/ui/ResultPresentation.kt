@@ -35,11 +35,11 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
     val summary = mutableListOf<String>()
     fun line(label: Int, value: String) = context.getString(R.string.label_value, context.getString(label), value)
     fun input(key: FieldKey, label: Int) {
-        val field = draft[key]
+        val field = if (key == FieldKey.ACTUAL_LENGTH) state.trimming.actualLength else draft[key]
         val text = localizedNumber(context, field.text.trim())
         val value = when (key) {
             FieldKey.FACTOR -> text
-            FieldKey.ACTUAL_LENGTH -> context.getString(R.string.value_unit, text, context.getString(LengthUnit.valueOf(field.unit).labelResource()))
+            FieldKey.ACTUAL_LENGTH -> field.length().validValue()?.let { formatLength(context, it.nanometers / 1e9, LengthUnit.valueOf(field.unit)) } ?: text
             else -> field.frequency().validValue()?.let {
                 context.frequencyWithUnit(it.hertz, FrequencyUnit.valueOf(field.unit))
             } ?: text
@@ -54,17 +54,34 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
             summary += context.getString(R.string.sizes)
             input(FieldKey.SIZING_FREQUENCY, R.string.frequency)
             input(FieldKey.FACTOR, R.string.factor)
-            val actualLength = draft[FieldKey.ACTUAL_LENGTH].length().validValue()
-            val actualRow = actualLength?.let {
-                val label = if (settings.antennaType == AntennaType.MONOPOLE)
-                    R.string.actual_length else R.string.dipole_actual_length
-                ResultRow(label, length(it.nanometers / 1e9), "sizing-actual-length")
-            }
-            groups += ResultGroup(R.string.physical_sizes, listOf(
+            fun measuredRow(type: AntennaType, label: Int, tag: String): ResultRow? =
+                state.measuredLength(type)?.let { ResultRow(label, length(it.nanometers / 1e9), tag) }
+            val monopole = state.trimmingProjection(AntennaType.MONOPOLE)
+            val dipole = state.trimmingProjection(AntennaType.SYMMETRIC_DIPOLE)
+            groups += ResultGroup(R.string.physical_sizes, listOfNotNull(
                 ResultRow(R.string.radiator_length, length(result.monopoleMeters), "monopole-result"),
+                measuredRow(AntennaType.MONOPOLE, R.string.actual_length, "sizing-actual-monopole"),
+                monopole?.let { ResultRow(R.string.new_length, length(it.newLengthMeters), "sizing-tuned-monopole") },
+                monopole?.let { ResultRow(R.string.adjustment,
+                    formatAdjustment(context, it.direction, abs(it.deltaMeters), unit), "sizing-tuned-monopole-delta") },
                 ResultRow(R.string.dipole_total, length(result.dipoleTotalMeters), "dipole-total"),
                 ResultRow(R.string.dipole_arm, length(result.dipoleArmMeters), "dipole-arm"),
-            ) + listOfNotNull(actualRow), listOf(R.string.approximate, R.string.conductor_note, R.string.sizing_note), diagrams = true)
+                measuredRow(AntennaType.SYMMETRIC_DIPOLE, R.string.dipole_actual_length, "sizing-actual-dipole"),
+                dipole?.let { ResultRow(R.string.new_total, length(it.newLengthMeters), "sizing-tuned-dipole") },
+                dipole?.dipoleArmAdjustment?.let { ResultRow(R.string.new_arm, length(it.newLengthMeters), "sizing-tuned-arm") },
+                dipole?.let { ResultRow(R.string.total_adjustment,
+                    formatAdjustment(context, it.direction, abs(it.deltaMeters), unit), "sizing-tuned-dipole-delta") },
+                dipole?.let { result -> result.dipoleArmAdjustment?.let { arm ->
+                    ResultRow(R.string.arm_adjustment, formatAdjustment(context, result.direction, abs(arm.deltaMeters), unit),
+                        "sizing-tuned-arm-delta")
+                } },
+                (monopole ?: dipole)?.let { ResultRow(R.string.measured_frequency,
+                    context.frequencyWithUnit(it.input.measuredFrequency.hertz, FrequencyUnit.valueOf(draft[FieldKey.MEASURED].unit)),
+                    "sizing-tuned-measured") },
+                (monopole ?: dipole)?.let { ResultRow(R.string.target_frequency,
+                    context.frequencyWithUnit(it.input.targetFrequency.hertz, FrequencyUnit.valueOf(draft[FieldKey.TARGET].unit)),
+                    "sizing-tuned-target") },
+            ), listOf(R.string.approximate, R.string.conductor_note, R.string.sizing_note), diagrams = true)
         }
         state.sizing.ideal?.let { ideal ->
             groups += ResultGroup(R.string.ideal_sizes, listOf(
@@ -115,9 +132,10 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
 }
 
 fun formatLength(context: Context, meters: Double, unit: LengthUnit): String {
-    val value = LengthFormatter.format(meters, unit)
+    val value = LengthFormatter.format(abs(meters), unit)
     val text = context.getString(R.string.value_unit, localizedNumber(context, value.number), context.getString(unit.labelResource()))
-    return if (value.isBelowResolution) context.getString(R.string.less_than, text) else text
+    val signed = if (meters < 0) "-$text" else text
+    return if (value.isBelowResolution) context.getString(R.string.less_than, signed) else signed
 }
 
 private fun formatAdjustment(context: Context, direction: AdjustmentDirection, meters: Double, unit: LengthUnit): String {

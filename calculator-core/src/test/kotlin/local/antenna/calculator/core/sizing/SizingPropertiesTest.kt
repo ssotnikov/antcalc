@@ -40,8 +40,8 @@ class SizingPropertiesTest {
     @Test
     fun `physical results preserve precision until formatted`() {
         val result = calculateSizing(SizingInput(Frequency.ofHertz(145_000_000)))
-        assertEquals("491,0", LengthFormatter.format(result.monopoleMeters, LengthUnit.MILLIMETERS).number)
-        assertEquals("982,1", LengthFormatter.format(result.dipoleTotalMeters, LengthUnit.MILLIMETERS).number)
+        assertEquals("491", LengthFormatter.format(result.monopoleMeters, LengthUnit.MILLIMETERS).number)
+        assertEquals("982", LengthFormatter.format(result.dipoleTotalMeters, LengthUnit.MILLIMETERS).number)
         assertEquals(0.982078741724138, result.dipoleTotalMeters, 1e-12)
     }
 

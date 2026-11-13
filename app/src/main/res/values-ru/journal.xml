@@ -44,7 +44,7 @@
     <string name="journal_calculation_input">Исходные данные расчета</string>
     <string name="journal_calculation_output">Результаты расчета</string>
     <string name="journal_choose_calc">Выберите текущий расчет, чтобы сохранить его в этой записи.</string>
-    <string name="journal_missing_calc">Сначала завершите расчет. Для подстройки выберите тот же тип антенны, что и в проекте.</string>
+    <string name="journal_missing_calc">Сначала завершите расчет для выбранного типа антенны.</string>
     <string name="journal_model">Модель %1$s, редакция %2$d</string>
     <string name="journal_sizing_model">расчет размеров</string>
     <string name="journal_trim_model">подстройка антенны</string>

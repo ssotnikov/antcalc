@@ -20,7 +20,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import java.text.NumberFormat
 import local.antenna.calculator.R
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.InputError
@@ -97,7 +96,7 @@ internal fun GroundPlaneScreen(
                     modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         val rows = result.rows().map { (label, value) ->
-                            label to groundPlaneLength(context, value, draft.lengthUnit)
+                            label to formatLength(context, value, draft.lengthUnit)
                         } + listOfNotNull(draft.estimatedFundamentalHertz()?.let {
                             R.string.antenna_fundamental_estimate to context.estimatedFundamentalFrequency(it)
                         })
@@ -242,14 +241,6 @@ private fun GroundPlaneResult.Layout.rows() = listOf(
     R.string.ground_plane_wire to wireMeters,
 )
 
-internal fun groundPlaneLength(context: Context, meters: Double, unit: LengthUnit): String {
-    val number = NumberFormat.getNumberInstance(context.resources.configuration.locales[0]).apply {
-        maximumFractionDigits = 2
-        isGroupingUsed = false
-    }
-    return "${number.format(meters * 1e9 / unit.nanometersPerUnit)} ${context.getString(unit.labelResource())}"
-}
-
 private fun GroundPlaneDraft.copyText(context: Context): String? {
     val layout = result() as? GroundPlaneResult.Layout ?: return null
     val lengthLabel = context.getString(lengthUnit.labelResource())
@@ -267,7 +258,7 @@ private fun GroundPlaneDraft.copyText(context: Context): String? {
             appendLine(context.getString(R.string.journal_property, context.getString(field.label()), displayed))
         }
         layout.rows().forEach { (label, value) ->
-            appendLine(context.getString(R.string.journal_property, context.getString(label), groundPlaneLength(context, value, lengthUnit)))
+            appendLine(context.getString(R.string.journal_property, context.getString(label), formatLength(context, value, lengthUnit)))
         }
         estimatedFundamentalHertz()?.let {
             appendLine(context.getString(R.string.journal_property, context.getString(R.string.antenna_fundamental_estimate),

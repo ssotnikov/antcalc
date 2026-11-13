@@ -1,0 +1,2 @@
+Sizing now shows tuning results. Lengths use whole millimeters or two decimals in centimeters and meters. Journal entries let you choose the antenna type for measurements and saved calculations.
+Settings now includes a LizaAlert banner. Sizing and tuning remember their scroll positions.

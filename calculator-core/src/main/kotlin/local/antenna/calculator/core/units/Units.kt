@@ -9,9 +9,9 @@ enum class FrequencyUnit(val hertzPerUnit: Long) {
 }
 
 enum class LengthUnit(val nanometersPerUnit: Long, val displayScale: Int) {
-    MILLIMETERS(1_000_000, 1),
+    MILLIMETERS(1_000_000, 0),
     CENTIMETERS(10_000_000, 2),
-    METERS(1_000_000_000, 4),
+    METERS(1_000_000_000, 2),
 }
 
 /** Exact decimal conversions for editable fields, never rounded to display precision. */

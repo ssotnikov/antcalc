@@ -92,18 +92,36 @@ class CalculatorViewModelTest {
         assertEquals(FrequencyUnit.KILOHERTZ.name, cold.state.value.trimming.target.unit)
     }
 
-    @Test fun transfersFullDipoleLengthInInputUnitsWithoutOverwritingMeasuredLength() = runTest {
-        val vm = model(); runCurrent()
-        vm.edit(FieldKey.SIZING_FREQUENCY, "145")
+    @Test fun tuningAutomaticallyUsesTheEstimateAndKeepsMeasurementsByAntenna() = runTest {
+        val repo = FakeRepository()
+        val vm = model(repo); runCurrent()
+        fun select(section: Section, type: AntennaType) = vm.onEvent(
+            CalculatorEvent.Settings(vm.state.value.draft.settings.copy(section = section, antennaType = type)),
+        )
+        vm.edit(FieldKey.SIZING_FREQUENCY, "146")
+        select(Section.TRIMMING, AntennaType.MONOPOLE)
+        assertEquals(0.4876760875, vm.state.value.trimming.actualLength.length().validValue()!!.nanometers / 1e9, 1e-9)
+        assertEquals("", vm.state.value.draft[FieldKey.ACTUAL_LENGTH].text)
+        vm.edit(FieldKey.ACTUAL_LENGTH, "475")
+
+        select(Section.TRIMMING, AntennaType.SYMMETRIC_DIPOLE)
         vm.onEvent(CalculatorEvent.ChangeUnit(FieldKey.ACTUAL_LENGTH, LengthUnit.CENTIMETERS.name))
-        vm.onEvent(CalculatorEvent.Settings(vm.state.value.draft.settings.copy(antennaType = AntennaType.SYMMETRIC_DIPOLE)))
-        vm.onEvent(CalculatorEvent.UseSizingLength)
-        assertEquals(982_078_742L, vm.state.value.trimming.actualLength.length().validValue()?.nanometers)
+        val expected = vm.state.value.sizing.result!!.dipoleTotalMeters
+        assertEquals(expected, vm.state.value.trimming.result!!.input.actualLength.nanometers / 1e9, 1e-9)
         vm.edit(FieldKey.ACTUAL_LENGTH, "97,5")
-        vm.edit(FieldKey.TARGET, "146")
-        vm.onEvent(CalculatorEvent.UseSizingLength)
-        assertEquals("97,5", vm.state.value.trimming.actualLength.text)
-        assertEquals("146", vm.state.value.sizing.frequency.text)
+        vm.edit(FieldKey.TARGET, "147")
+        select(Section.SIZING, AntennaType.SYMMETRIC_DIPOLE)
+        assertEquals("147", vm.state.value.sizing.frequency.text)
+        assertEquals(975_000_000L, vm.state.value.draft[FieldKey.ACTUAL_LENGTH].length().validValue()?.nanometers)
+        assertEquals(475_000_000L, vm.state.value.draft[FieldKey.OTHER_ANTENNA_LENGTH].length().validValue()?.nanometers)
+        assertEquals(vm.state.value.draft, DraftCodec.decode(DraftCodec.encode(vm.state.value.draft)))
+
+        vm.onEvent(CalculatorEvent.Background); runCurrent()
+        val stored = PreferencesStateCodec.decode(PreferencesStateCodec.encode(repo.stored)).toDraft()
+        assertEquals("97,5", stored[FieldKey.ACTUAL_LENGTH].text)
+        assertEquals("475", stored[FieldKey.OTHER_ANTENNA_LENGTH].text)
+        select(Section.TRIMMING, AntennaType.MONOPOLE)
+        assertEquals("475", vm.state.value.trimming.actualLength.text)
     }
 
     @Test fun defaultsAndImmediateSizing() = runTest {
@@ -114,7 +132,7 @@ class CalculatorViewModelTest {
         assertEquals(0.491039370862069, vm.state.value.sizing.result!!.monopoleMeters, 1e-12)
         assertEquals("", vm.state.value.trimming.actualLength.text)
         assertNull(vm.state.value.trimming.result)
-        assertEquals(5, vm.state.value.draft.fields.size)
+        assertEquals(6, vm.state.value.draft.fields.size)
         vm.edit(FieldKey.SIZING_FREQUENCY, "433")
         assertEquals(0.164435817032333, vm.state.value.sizing.result!!.monopoleMeters, 1e-12)
     }
@@ -176,8 +194,8 @@ class CalculatorViewModelTest {
 
     @Test fun dipoleAndSettingsRecalculateWithoutChangingOtherFields() = runTest {
         val vm = model(); runCurrent()
-        vm.edit(FieldKey.ACTUAL_LENGTH, "1000")
         vm.onEvent(CalculatorEvent.Settings(vm.state.value.draft.settings.copy(antennaType = AntennaType.SYMMETRIC_DIPOLE)))
+        vm.edit(FieldKey.ACTUAL_LENGTH, "1000")
         assertEquals(0.467741935483871, vm.state.value.trimming.result!!.dipoleArmAdjustment!!.newLengthMeters, 1e-12)
         assertEquals("145", vm.state.value.sizing.frequency.text)
     }
@@ -418,7 +436,7 @@ class CalculatorViewModelTest {
         repo.stored = PersistedCalculatorState.defaults().advance(draft)
         val previousValues = repo.stored.values
         val vm = model(repo); runCurrent()
-        assertEquals(5, vm.state.value.draft.fields.size)
+        assertEquals(6, vm.state.value.draft.fields.size)
         assertEquals(AppTheme.DARK, vm.state.value.draft.settings.theme)
         assertEquals("0,9539", vm.state.value.sizing.factor.text)
         advanceTimeBy(250); runCurrent()
@@ -430,7 +448,7 @@ class CalculatorViewModelTest {
         val repo = FakeRepository().apply { readError = IOException("disk") }
         val vm = model(repo, SavedStateHandle(mapOf(DraftCodec.KEY to saved)))
         runCurrent()
-        assertEquals(5, vm.state.value.draft.fields.size)
+        assertEquals(6, vm.state.value.draft.fields.size)
         assertEquals("145,", vm.state.value.sizing.frequency.text)
         assertTrue(vm.state.value.sizing.frequency.checked)
         assertNull(vm.state.value.sizing.result)

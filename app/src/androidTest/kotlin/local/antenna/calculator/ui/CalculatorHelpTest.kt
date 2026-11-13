@@ -72,7 +72,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
             assertFalse(text, text.contains("Частота"))
         }
         trimming()
-        field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertTextContains("Actual monopole length")
+        field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertTextContains("Actual monopole length", substring = true)
         edit(FieldKey.ACTUAL_LENGTH, "500")
         compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Decrease of 32.3 mm")
         compose.onNodeWithTag("menu").performClick()

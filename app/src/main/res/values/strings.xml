@@ -55,7 +55,7 @@
     <string name="large_change_note">Large adjustment: the simple ratio may be inaccurate. Check the construction and measure again.</string>
     <string name="outside_length_note">The result is outside the supported input length range; check whether the model applies. The result has not been clamped.</string>
     <string name="result_pending">Enter valid values to see the result.</string>
-    <string name="measured_length_required">Enter the length of your built antenna, or use the estimate as a starting point.</string>
+    <string name="measured_length_required">Enter the measured length of the antenna you built.</string>
     <string name="adjustment">Estimated length change</string>
     <string name="new_length">Estimated new monopole length</string>
     <string name="new_total">Estimated total dipole length</string>
@@ -255,6 +255,7 @@
     <string name="inverted_v_fundamental_help">The estimate uses f₁ ≈ k·c/(4L), where L is the length of one of the two equal arms and k is the shortening factor. The angle, height and conductor affect the actual resonance.</string>
     <string name="antenna_higher_modes_help">Higher modes may occur near 3× and 5× the fundamental. Use these multiples as starting points for a VNA sweep at the feed point. Check where X is close to zero, then check R and SWR separately.</string>
     <string name="sizing_antennas_description">Quarter-wave monopole and center-fed half-wave dipole</string>
-    <string name="use_sizing_length">Use the estimated length</string>
+    <string name="estimated_monopole_input">Actual monopole length (estimate)</string>
+    <string name="estimated_dipole_input">Total length of both arms (estimate)</string>
     <string name="trimming_pending_fields">Complete or correct these fields to see the tuning result:</string>
 </resources>

@@ -116,6 +116,7 @@ internal fun RecordForm(
 ) {
     val title = rememberTextFieldState()
     var recordType by rememberSaveable { mutableStateOf(RecordType.MEASUREMENT) }
+    var antennaType by rememberSaveable { mutableStateOf(project.antennaType) }
     var calculationSection by rememberSaveable { mutableStateOf(Section.SIZING) }
     var point by rememberSaveable { mutableStateOf(MeasurementPoint.UNSPECIFIED) }
     var timeText by rememberSaveable { mutableStateOf(OffsetDateTime.now().withNano(0).toString()) }
@@ -169,7 +170,7 @@ internal fun RecordForm(
         }
     }
     val preview = if (recordType == RecordType.CALCULATION) {
-        journalSnapshot(calculator, project.antennaType, calculationSection)
+        journalSnapshot(calculator, antennaType, calculationSection)
     } else null
     val presentation = JournalPresentation(LocalContext.current)
     JournalColumn {
@@ -182,6 +183,8 @@ internal fun RecordForm(
         JournalTextField(title, R.string.journal_name, nameExample, "journal-record-name", enabled,
             limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.text.isBlank() },
             modifier = Modifier.bringIntoViewRequester(titleLocation))
+        ChoicePicker(stringResource(R.string.antenna_type), AntennaType.entries, antennaType,
+            { stringResource(it.journalLabel()) }, { if (enabled) antennaType = it }, "journal-record-antenna")
         JournalDateTime(time, enabled) { timeText = it.toString() }
         if (recordType == RecordType.MEASUREMENT) {
             JournalNumberField(measuredLength, R.string.journal_measure_length, R.string.journal_example_length, "journal-length", enabled,
@@ -207,7 +210,7 @@ internal fun RecordForm(
             if (preview == null) {
                 Text(stringResource(R.string.journal_missing_calc), color = MaterialTheme.colorScheme.error)
             } else {
-                JournalDetails(presentation.snapshotDetails(preview, project.antennaType))
+                JournalDetails(presentation.snapshotDetails(preview, antennaType))
             }
         }
         JournalSuggestionField(installation, JournalSuggestion.INSTALLATION, enabled)
@@ -233,9 +236,9 @@ internal fun RecordForm(
                 JournalMeasurement(size, resonanceValue, testFrequencyValue, swrValue, resistanceValue, reactanceValue, point, referenceValue)
             } else null
             val snapshot = if (recordType == RecordType.CALCULATION) {
-                journalSnapshot(currentCalculator(), project.antennaType, calculationSection) ?: return@Button
+                journalSnapshot(currentCalculator(), antennaType, calculationSection) ?: return@Button
             } else null
-            onSave(JournalRecord(UUID.randomUUID(), title.text.toString().trim(), time, project.antennaType,
+            onSave(JournalRecord(UUID.randomUUID(), title.text.toString().trim(), time, antennaType,
                 note.text.toString(), installation.text.toString(), feedline.text.toString(), measurement, snapshot))
         }, enabled = enabled && (recordType == RecordType.MEASUREMENT || preview != null),
             modifier = Modifier.fillMaxWidth().testTag("journal-save-record")) { Text(stringResource(R.string.journal_save)) }

@@ -100,6 +100,30 @@ class JournalAcceptanceTest {
         compose.onNodeWithTag("open-journal").assertExists()
     }
 
+    @Test fun recordFormKeepsProjectFieldsAndShowsAntennaTypeForSavedCalculations() {
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-journal")
+        waitFor("journal-new-project")
+        compose.onNodeWithTag("journal-new-project").performClick()
+        edit("journal-name", "Antenna types " + UUID.randomUUID().toString().take(6))
+        edit("journal-installation", "Mast at 3 m")
+        edit("journal-feedline", "RG-58, 5 m")
+        click("journal-save")
+        waitFor("journal-history")
+        click("journal-add")
+        val dipole = compose.onNodeWithTag("journal-record-antenna-SYMMETRIC_DIPOLE")
+        dipole.performScrollTo().performClick().assertIsSelected()
+        click("journal-record-type-CALCULATION")
+        dipole.performScrollTo().assertIsSelected()
+        compose.onNodeWithTag("journal-installation").performScrollTo().assertTextContains("Mast at 3 m")
+        compose.onNodeWithTag("journal-feedline").performScrollTo().assertTextContains("RG-58, 5 m")
+        edit("journal-record-name", "Dipole sizing")
+        click("journal-save-record")
+        waitFor("journal-record-details")
+        compose.onNode(hasText("Симметричный диполь") or hasText("Symmetric dipole")).assertExists()
+    }
+
     @Test fun invertedVSnapshotPreservesTheGeometryAndProjectConditions() {
         val project = "Layout " + UUID.randomUUID().toString().take(6)
         val installation = "Central pole, level field"

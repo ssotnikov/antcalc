@@ -36,12 +36,12 @@ class CableAcceptanceTest {
     }
     @Test fun quarterWavePresetsAndUnitConversion() {
         prepare()
-        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("341,1 мм")
+        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("341 мм")
         compose.onNodeWithTag("cable-length-unit-METERS").performScrollTo().performClick()
-        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("0,3411 м")
+        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("0,34 м")
         compose.onNodeWithTag("cable-preset-180").performScrollTo().performClick()
         compose.onNodeWithTag("cable-ANGLE").assertTextContains("180")
-        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("0,6823 м")
+        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("0,68 м")
     }
     @Test fun zeroLengthInvalidInputAndIndependentDirections() {
         prepare()
@@ -50,7 +50,7 @@ class CableAcceptanceTest {
         compose.onNodeWithTag("cable-LENGTH").performScrollTo().performTextReplacement("0")
         compose.onNodeWithTag("cable-result-3").performScrollTo().assertTextContains("0 нс")
         compose.onNodeWithTag("cable-LENGTH").performScrollTo().performTextReplacement("0,25")
-        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("0,3 мм")
+        compose.onNodeWithTag("cable-result-0").performScrollTo().assertTextContains("< 1 мм")
         compose.onNodeWithTag("cable-LENGTH").performScrollTo().performTextReplacement("")
         compose.onNodeWithTag("cable-result-0").assertDoesNotExist()
         compose.onNodeWithTag("cable-copy").performScrollTo().assertIsNotEnabled()

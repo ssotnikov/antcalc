@@ -27,10 +27,10 @@ class CalculatorResultsTest : CalculatorUiFixture() {
 
     @Test fun initialSizingShowsPhysicalAndIdealDimensions() {
         start()
-        compose.onNodeWithTag("monopole-result").assertTextContains("491,0 мм")
-        compose.onNodeWithTag("dipole-total").assertTextContains("Полная длина диполя").assertTextContains("982,1 мм")
-        compose.onNodeWithTag("dipole-arm").assertTextContains("Длина одного плеча").assertTextContains("491,0 мм")
-        compose.onNodeWithTag("wavelength").assertTextContains("2067,5 мм")
+        compose.onNodeWithTag("monopole-result").assertTextContains("491 мм")
+        compose.onNodeWithTag("dipole-total").assertTextContains("Полная длина диполя").assertTextContains("982 мм")
+        compose.onNodeWithTag("dipole-arm").assertTextContains("Длина одного плеча").assertTextContains("491 мм")
+        compose.onNodeWithTag("wavelength").assertTextContains("2068 мм")
         compose.onNodeWithContentDescription("Lₐ — длина каждого из двух равных плеч. Полная длина Lᵈ равна 2Lₐ и исключает зазор питания.").assertExists()
     }
 
@@ -43,7 +43,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         compose.onNodeWithTag("output-unit-CENTIMETERS").performScrollTo().performClick()
         compose.onNodeWithTag("monopole-result").assertTextContains("49,10 см")
         compose.onNodeWithTag("output-unit-METERS").performClick()
-        compose.onNodeWithTag("monopole-result").assertTextContains("0,4910 м")
+        compose.onNodeWithTag("monopole-result").assertTextContains("0,49 м")
     }
 
     @Test fun factorErrorKeepsIdealAndFrequencyErrorHidesAllResults() {
@@ -61,41 +61,59 @@ class CalculatorResultsTest : CalculatorUiFixture() {
     @Test fun practicalTrimCoversShortenLengthenAndEqualFrequencies() {
         start(); trimming()
         edit(FieldKey.ACTUAL_LENGTH, "500")
-        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение на 32,3 мм")
-        compose.onNodeWithTag("new-length").assertTextContains("467,7 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение на 32 мм")
+        compose.onNodeWithTag("new-length").assertTextContains("468 мм")
         edit(FieldKey.MEASURED, "155"); edit(FieldKey.TARGET, "145")
-        compose.onNodeWithTag("adjustment").assertTextContains("Увеличение на 34,5 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Увеличение на 34 мм")
         edit(FieldKey.MEASURED, "145")
         compose.onNodeWithTag("adjustment").assertTextContains("Изменение не требуется")
+    }
+
+    @Test fun openingTuningFillsTheLengthAndSizingUpdatesBothProjections() {
+        start()
+        edit(FieldKey.SIZING_FREQUENCY, "146")
+        trimming()
+        field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertTextContains("488")
+        edit(FieldKey.ACTUAL_LENGTH, "475")
+        compose.onNodeWithTag("antenna-SYMMETRIC_DIPOLE").performScrollTo().performClick()
+        field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertTextContains("975")
+        edit(FieldKey.ACTUAL_LENGTH, "960")
+        edit(FieldKey.MEASURED, "145")
+        compose.onNodeWithTag("nav-SIZING").performClick()
+        compose.onNodeWithTag("sizing-actual-monopole").performScrollTo().assertTextContains("475 мм")
+        compose.onNodeWithTag("sizing-actual-dipole").performScrollTo().assertTextContains("960 мм")
+        compose.onNodeWithTag("sizing-tuned-monopole").performScrollTo().assertTextContains("472 мм")
+        compose.onNodeWithTag("sizing-tuned-dipole").performScrollTo().assertTextContains("953 мм")
+        compose.onNodeWithTag("sizing-tuned-arm").performScrollTo().assertTextContains("477 мм")
     }
 
     @Test fun dipoleShowsSeparateArmChangeAndCompleteClipboard() {
         start(); trimming()
         compose.onNodeWithTag("antenna-SYMMETRIC_DIPOLE").performScrollTo().performClick()
         edit(FieldKey.ACTUAL_LENGTH, "1000")
-        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение на 64,5 мм")
-        compose.onNodeWithTag("arm-adjustment").assertTextContains("Уменьшение на 32,3 мм")
-        compose.onNodeWithTag("new-length").assertTextContains("935,5 мм")
-        compose.onNodeWithTag("new-arm").assertTextContains("467,7 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение на 65 мм")
+        compose.onNodeWithTag("arm-adjustment").assertTextContains("Уменьшение на 32 мм")
+        compose.onNodeWithTag("new-length").assertTextContains("935 мм")
+        compose.onNodeWithTag("new-arm").assertTextContains("468 мм")
         val text = copy()
         listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная резонансная частота: 145,000 МГц",
-            "Целевая частота: 155,000 МГц", "Оценка полной длины диполя: 935,5 мм", "Изменение каждого плеча: Уменьшение на 32,3 мм",
-            "Оценка длины каждого плеча: 467,7 мм", "Приближённый расчет").forEach { assertTrue(text, text.contains(it)) }
+            "Целевая частота: 155,000 МГц", "Оценка полной длины диполя: 935 мм", "Изменение каждого плеча: Уменьшение на 32 мм",
+            "Оценка длины каждого плеча: 468 мм", "Приближённый расчет").forEach { assertTrue(text, text.contains(it)) }
     }
 
     @Test fun unusualAntennaLengthShowsWarningWithTheEstimate() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "1900")
         val warning = "Введённая длина отличается более чем на 25 %"
         compose.onNodeWithText(warning, substring = true).performScrollTo().assertIsDisplayed()
-        compose.onNodeWithTag("new-length").performScrollTo().assertTextContains("1777,4 мм")
+        compose.onNodeWithTag("new-length").performScrollTo().assertTextContains("1777 мм")
         val text = copy()
         assertTrue(text, text.contains(warning))
     }
 
     @Test fun smallNonzeroTrimRetainsDirection() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500"); edit(FieldKey.TARGET, "145,000001")
-        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение менее чем на 0,1 мм")
-        compose.onNodeWithTag("new-length").assertTextContains("500,0 мм")
+        compose.onNodeWithTag("adjustment").assertTextContains("Уменьшение менее чем на 1 мм")
+        compose.onNodeWithTag("new-length").assertTextContains("500 мм")
     }
 
     @Test fun deletingTargetImmediatelyHidesCommandAndDisablesCopyWithDelayedError() {
@@ -118,8 +136,8 @@ class CalculatorResultsTest : CalculatorUiFixture() {
     @Test fun mainSizingClipboardContainsContextPhysicalAndIdealValues() {
         start()
         val text = copy()
-        listOf("Частота: 145,000 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491,0 мм",
-            "Полная длина диполя: 982,1 мм", "Длина одного плеча: 491,0 мм", "Длина волны λ: 2067,5 мм", "Приближённый расчет")
+        listOf("Частота: 145,000 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491 мм",
+            "Полная длина диполя: 982 мм", "Длина одного плеча: 491 мм", "Длина волны λ: 2068 мм", "Приближённый расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 
@@ -144,7 +162,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500")
         val text = copy()
         listOf("Фактическая длина штыря: 500 мм", "Измеренная резонансная частота: 145,000 МГц", "Целевая частота: 155,000 МГц",
-            "Уменьшение на 32,3 мм", "Оценка новой длины штыря: 467,7 мм", "Приближённый расчет")
+            "Уменьшение на 32 мм", "Оценка новой длины штыря: 468 мм", "Приближённый расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 

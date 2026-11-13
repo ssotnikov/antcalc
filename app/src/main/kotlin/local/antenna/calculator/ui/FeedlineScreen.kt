@@ -32,6 +32,7 @@ import local.antenna.calculator.state.FeedlineDraft
 import local.antenna.calculator.state.boundedNumericText
 import java.math.BigDecimal
 import java.text.NumberFormat
+import local.antenna.calculator.core.units.LengthUnit
 
 private fun AttenuationUnit.label() = when (this) {
     AttenuationUnit.PER_100_METRES -> R.string.feedline_per_metres
@@ -267,7 +268,7 @@ private fun report(context: Context, draft: FeedlineDraft, profile: CableProfile
     val frequencyUnit = context.getString(draft.frequencyUnit.labelResource())
     val frequency = context.formatFrequency(requireNotNull(draft.hertz()), draft.frequencyUnit)
     appendLine(context.getString(R.string.feedline_frequency, frequencyUnit) + ": " + frequency)
-    appendLine(context.getString(R.string.feedline_length) + ": " + number(context, requireNotNull(draft.metres()), 32))
+    appendLine(context.getString(R.string.feedline_length) + ": " + number(context, requireNotNull(draft.metres()), LengthUnit.METERS.displayScale))
     draft.watts()?.let { appendLine(context.getString(R.string.feedline_power) + ": " + number(context, it, 32)) }
     val attenuation: BigDecimal = if (profile != null) profile.attenuation.getValue(requireNotNull(draft.hertz()))
         else requireNotNull(draft.manualAttenuation())
