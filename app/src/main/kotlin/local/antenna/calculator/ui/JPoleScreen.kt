@@ -14,6 +14,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
@@ -21,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -70,7 +73,7 @@ internal fun JPoleScreen(onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () 
         Image(painterResource(R.drawable.j_pole_antenna), stringResource(R.string.jpole_intro),
             Modifier.fillMaxWidth().height(180.dp))
         JPolePanel(R.string.jpole_theory) {
-            JPoleDiagram(R.string.jpole_theory, R.string.jpole_radiatorLabel, R.string.jpole_stubLabel)
+            JPoleDiagram(R.string.jpole_radiatorLabel, R.string.jpole_stubLabel)
             HelpText(R.string.jpole_radiatorExplanation)
             HelpText(R.string.jpole_matching)
         }
@@ -88,9 +91,13 @@ internal fun JPoleScreen(onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () 
         JPoleHeading(R.string.jpole_geometry)
         ChoicePicker(stringResource(R.string.loop_output_unit), LengthUnit.entries, unit,
             { stringResource(it.labelResource()) }, { unit = it }, "jpole-unit")
-        JPoleDiagram(R.string.jpole_overview, R.string.jpole_shield, R.string.jpole_core)
+        OutlinedCard(Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(12.dp)) {
+                JPoleHeading(R.string.jpole_overview)
+                JPoleDiagram(R.string.jpole_shield, R.string.jpole_core, showDimensions = true)
+            }
+        }
         HelpText(R.string.jpole_legend)
-        JPoleDiagram(R.string.jpole_feed, R.string.jpole_shield, R.string.jpole_core, detail = true)
         HelpText(R.string.jpole_feedLegend)
         if (result != null) {
             JPoleHeading(R.string.jpole_sizes)
@@ -101,11 +108,6 @@ internal fun JPoleScreen(onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () 
             }
         }
         JPolePanel(R.string.jpole_formulaTitle) { JPoleFormulaContent() }
-        JPolePanel(R.string.jpole_tuning) {
-            HelpText(R.string.jpole_choke)
-            HelpText(R.string.jpole_copperMeasure)
-            HelpText(R.string.jpole_copperBandwidth)
-        }
         JPolePanel(R.string.jpole_copperBuildTitle) {
             HelpText(R.string.jpole_copperBuildScope)
             JPoleHeading(R.string.jpole_copperMaterialsTitle)
@@ -169,14 +171,13 @@ private fun JPoleHeading(label: Int) {
 @Composable
 private fun JPolePanel(label: Int, content: @Composable ColumnScope.() -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    OutlinedCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(horizontal = 12.dp, vertical = 4.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            TextButton(onClick = { expanded = !expanded }) {
-                Text(stringResource(if (expanded) R.string.jpole_collapse else R.string.jpole_expand, stringResource(label)),
-                    color = MaterialTheme.colorScheme.secondary)
-            }
-            if (expanded) content()
+    val state = stringResource(if (expanded) R.string.jpole_expanded else R.string.jpole_collapsed)
+    Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        TextButton(onClick = { expanded = !expanded }, modifier = Modifier.semantics { stateDescription = state },
+            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)) {
+            Text(stringResource(label), color = MaterialTheme.colorScheme.primary)
         }
+        if (expanded) content()
     }
 }
 
@@ -240,46 +241,54 @@ private fun JPoleTableRow(cells: List<String>) {
 }
 
 @Composable
-private fun JPoleDiagram(title: Int, left: Int, right: Int, detail: Boolean = false) {
-    val label = stringResource(title)
-    val metal = MaterialTheme.colorScheme.secondary
-    val contact = MaterialTheme.colorScheme.primary
-    val guide = MaterialTheme.colorScheme.outline
+private fun JPoleDiagram(left: Int, right: Int, showDimensions: Boolean = false) {
+    val label = stringResource(if (showDimensions) R.string.jpole_overview else R.string.jpole_theory)
+    val colors = MaterialTheme.colorScheme
+    val gold = if (colors.surface.luminance() < 0.5f) Color(0xFFF7C879) else Color(0xFFA35400)
+    val metal = colors.secondary
+    val matchingSection = if (showDimensions) metal else gold
+    val guide = colors.outline
     val textStyle = MaterialTheme.typography.labelMedium.copy(color = metal)
     val measurer = rememberTextMeasurer()
-    OutlinedCard(Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(12.dp)) {
-            JPoleHeading(title)
-            Canvas(Modifier.fillMaxWidth().height(if (detail) 112.dp else 176.dp)
-                .semantics { contentDescription = label }) {
-                val longX = size.width * .42f
-                val shortX = size.width * .60f
-                val base = size.height * .84f
-                val tap = size.height * .69f
-                val shortTop = size.height * if (detail) .12f else .56f
-                drawLine(metal, Offset(longX, size.height * .12f), Offset(longX, base), 4.dp.toPx())
-                drawLine(metal, Offset(longX, base), Offset(shortX, base), 4.dp.toPx())
-                drawLine(metal, Offset(shortX, base), Offset(shortX, shortTop), 4.dp.toPx())
-                drawLine(contact, Offset(size.width * .24f, tap), Offset(longX, tap), 2.dp.toPx())
-                drawLine(contact, Offset(shortX, tap), Offset(size.width * .77f, tap), 2.dp.toPx())
-                drawCircle(contact, 4.dp.toPx(), Offset(longX, tap))
-                drawCircle(contact, 4.dp.toPx(), Offset(shortX, tap))
-                if (detail) {
-                    drawLine(guide, Offset(longX, base + 9.dp.toPx()), Offset(shortX, base + 9.dp.toPx()))
-                    drawLine(guide, Offset(size.width * .84f, tap), Offset(size.width * .84f, base))
-                    drawLine(guide, Offset(shortX, tap), Offset(size.width * .84f, tap))
-                    drawLine(guide, Offset(shortX, base), Offset(size.width * .84f, base))
-                    drawText(measurer, "S", topLeft = Offset((longX + shortX) / 2, base + 10.dp.toPx()), style = textStyle)
-                    drawText(measurer, "A", topLeft = Offset(size.width * .86f, (base + tap) / 2), style = textStyle)
-                } else {
-                    drawText(measurer, "Lᵣ ≈ kλ/2", topLeft = Offset(0f, size.height * .30f), style = textStyle)
-                    drawText(measurer, "Lₛ ≈ kλ/4", topLeft = Offset(shortX + 8.dp.toPx(), size.height * .50f), style = textStyle)
+    Column {
+        Canvas(Modifier.fillMaxWidth().height(200.dp)
+            .semantics { contentDescription = label }) {
+            val longX = size.width * .42f
+            val shortX = size.width * .60f
+            val base = size.height * .76f
+            val tap = size.height * .58f
+            val shortTop = size.height * .44f
+            val sectionTop = if (showDimensions) base else shortTop
+            drawLine(if (showDimensions) metal else colors.primary,
+                Offset(longX, size.height * .12f), Offset(longX, sectionTop), 4.dp.toPx())
+            if (!showDimensions) {
+                drawLine(matchingSection, Offset(longX, sectionTop), Offset(longX, base), 4.dp.toPx())
+            }
+            drawLine(matchingSection, Offset(longX, base), Offset(shortX, base), 4.dp.toPx())
+            drawLine(matchingSection, Offset(shortX, base), Offset(shortX, shortTop), 4.dp.toPx())
+            if (showDimensions) {
+                val spacingY = base + 10.dp.toPx()
+                drawLine(guide, Offset(longX, spacingY), Offset(shortX, spacingY))
+                for (x in listOf(longX, shortX)) {
+                    drawLine(guide, Offset(x, base), Offset(x, spacingY))
                 }
+                drawLine(guide, Offset(size.width * .84f, tap), Offset(size.width * .84f, base))
+                drawLine(guide, Offset(shortX, tap), Offset(size.width * .84f, tap))
+                drawLine(guide, Offset(shortX, base), Offset(size.width * .84f, base))
+                val spacingLabel = measurer.measure("S", textStyle)
+                drawText(spacingLabel, topLeft = Offset((longX + shortX - spacingLabel.size.width) / 2, spacingY))
+                drawText(measurer, "A", topLeft = Offset(size.width * .86f, (base + tap) / 2), style = textStyle)
+                drawLine(gold, Offset(size.width * .24f, tap), Offset(longX, tap), 2.dp.toPx())
+                drawLine(gold, Offset(shortX, tap), Offset(size.width * .77f, tap), 2.dp.toPx())
+                drawCircle(gold, 4.dp.toPx(), Offset(longX, tap))
+                drawCircle(gold, 4.dp.toPx(), Offset(shortX, tap))
             }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(stringResource(left), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
-                Text(stringResource(right), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
-            }
+            drawText(measurer, "Lᵣ ≈ kλ/2", topLeft = Offset(0f, size.height * .25f), style = textStyle)
+            drawText(measurer, "Lₛ ≈ kλ/4", topLeft = Offset(shortX + 8.dp.toPx(), size.height * .30f), style = textStyle)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text(stringResource(left), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+            Text(stringResource(right), Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
         }
     }
 }

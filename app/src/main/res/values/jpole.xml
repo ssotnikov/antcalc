@@ -9,7 +9,6 @@
     <string name="jpole_factorHint" formatted="false">The shortening factor k adjusts the radiator and matching stub lengths. A value of 0.95 makes their calculated lengths 5% shorter.</string>
     <string name="jpole_geometry">Dimensioned drawing</string>
     <string name="jpole_overview">Overview</string>
-    <string name="jpole_feed">Feedpoint detail</string>
     <string name="jpole_sizes">Calculated dimensions</string>
     <string name="jpole_formulaTitle">Calculation formulas</string>
     <string name="jpole_formulaScope">These formulas give starting dimensions. Check geometry and matching on the assembled antenna.</string>
@@ -22,7 +21,6 @@
     <string name="jpole_formulaExamplesTitle">Starting dimensions at k = 0.95</string>
     <string name="jpole_formulaExamplesHint">Wavelength is in metres and antenna dimensions are in millimetres. On narrow screens, scroll sideways to see all columns.</string>
     <string name="jpole_formulaFrequencyColumn">f, MHz</string>
-    <string name="jpole_tuning">Feed and tuning</string>
     <string name="jpole_copperBuildTitle">Copper pipe construction</string>
     <string name="jpole_copperBuildScope">A separate 2 m example for 145.000 MHz. The dimensions below are starting values for the copper build.</string>
     <string name="jpole_copperMaterialsTitle">Materials</string>
@@ -47,7 +45,7 @@
     <string name="jpole_coaxialTitle">Coaxial cable</string>
     <string name="jpole_coaxialDescription">A quarter-wave section of coax with a velocity factor of 0.66 is about 341 mm long at 145 MHz. Use the actual cable’s velocity factor and refine dimensions by measuring the assembled antenna.</string>
     <string name="jpole_copy">Copy dimensions</string>
-    <string name="jpole_refs">Design reference</string>
+    <string name="jpole_refs">Antenna construction reference</string>
     <string name="jpole_title">J-pole antenna</string>
     <string name="jpole_long">H · Long element</string>
     <string name="jpole_stub">B · Short element</string>
@@ -61,8 +59,8 @@
     <string name="jpole_radiatorExplanation">The upper part of the long element forms a radiator about λ/2 long.</string>
     <string name="jpole_shield">Shield</string>
     <string name="jpole_core">Centre conductor</string>
-    <string name="jpole_expand">▸ %1$s</string>
-    <string name="jpole_collapse">▾ %1$s</string>
+    <string name="jpole_expanded">Expanded</string>
+    <string name="jpole_collapsed">Collapsed</string>
     <string name="jpole_step">%1$d. %2$s</string>
     <string name="jpole_formula_equations">λ ≈ 299.8 / f\nLᵣ ≈ k × 149.9 / f\nLₛ ≈ k × 74.95 / f\nLₜ = Lᵣ + Lₛ</string>
     <string name="jpole_references">J-pole antennas</string>
@@ -96,5 +94,4 @@
     <string name="jpole_feedLegend">A is the feed tap height above the shorting bar. S is the distance between element centrelines.</string>
     <string name="jpole_default_frequency">146.000</string>
     <string name="jpole_default_factor">0.95</string>
-    <string name="jpole_choke">Fit a 1:1 choke at the feedpoint to suppress common-mode current. Choose a choke suitable for the operating frequency.</string>
 </resources>

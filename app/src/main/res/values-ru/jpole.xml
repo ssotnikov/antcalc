@@ -9,7 +9,6 @@
     <string name="jpole_factorHint" formatted="false">Коэффициент k корректирует длины излучателя и шлейфа. Значение 0,95 уменьшает их расчетные длины на 5 %.</string>
     <string name="jpole_geometry">Размерная схема</string>
     <string name="jpole_overview">Общий вид</string>
-    <string name="jpole_feed">Узел питания</string>
     <string name="jpole_sizes">Расчетные размеры</string>
     <string name="jpole_formulaTitle">Формулы расчета</string>
     <string name="jpole_formulaScope">Формулы дают начальные размеры. Геометрию и согласование уточняют измерением собранной антенны.</string>
@@ -22,7 +21,6 @@
     <string name="jpole_formulaExamplesTitle">Начальные размеры при k = 0,95</string>
     <string name="jpole_formulaExamplesHint">Длина волны указана в метрах, размеры антенны — в миллиметрах. На узком экране таблицу можно прокрутить вбок.</string>
     <string name="jpole_formulaFrequencyColumn">f, МГц</string>
-    <string name="jpole_tuning">Подключение и настройка</string>
     <string name="jpole_copperBuildTitle">Сборка из медной трубы</string>
     <string name="jpole_copperBuildScope">Отдельный пример для диапазона 2 м на частоте 145,000 МГц. Ниже приведены начальные размеры медной конструкции.</string>
     <string name="jpole_copperMaterialsTitle">Материалы</string>
@@ -47,7 +45,7 @@
     <string name="jpole_coaxialTitle">Из коаксиального кабеля</string>
     <string name="jpole_coaxialDescription">Четвертьволновой отрезок коаксиала на 145 МГц при VF = 0,66 имеет длину около 341 мм. Используйте VF конкретного кабеля и уточняйте размеры измерением собранной антенны.</string>
     <string name="jpole_copy">Копировать размеры</string>
-    <string name="jpole_refs">Материал по конструкции</string>
+    <string name="jpole_refs">Справочник по конструкции антенны</string>
     <string name="jpole_title">J-антенна</string>
     <string name="jpole_long">H · Длинная ветвь</string>
     <string name="jpole_stub">B · Короткая ветвь</string>
@@ -61,8 +59,8 @@
     <string name="jpole_radiatorExplanation">Верхний участок длинной ветви — излучатель длиной около λ/2.</string>
     <string name="jpole_shield">Оплётка</string>
     <string name="jpole_core">Центральная жила</string>
-    <string name="jpole_expand">▸ %1$s</string>
-    <string name="jpole_collapse">▾ %1$s</string>
+    <string name="jpole_expanded">Развернуто</string>
+    <string name="jpole_collapsed">Свернуто</string>
     <string name="jpole_step">%1$d. %2$s</string>
     <string name="jpole_formula_equations">λ ≈ 299,8 / f\nLᵣ ≈ k × 149,9 / f\nLₛ ≈ k × 74,95 / f\nLₜ = Lᵣ + Lₛ</string>
     <string name="jpole_references">J-антенна</string>
@@ -76,5 +74,4 @@
     <string name="jpole_feedLegend">A — высота отвода над перемычкой. S — расстояние между осями ветвей.</string>
     <string name="jpole_default_frequency">146,000</string>
     <string name="jpole_default_factor">0,95</string>
-    <string name="jpole_choke">Установите дроссель 1:1 у точки питания для подавления синфазного тока. Подберите дроссель под рабочую частоту.</string>
 </resources>
