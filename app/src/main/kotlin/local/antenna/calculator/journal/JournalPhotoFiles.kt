@@ -22,7 +22,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 internal const val PHOTO_BATCH_LIMIT = 8
-internal enum class PhotoImportProblem { FORMAT, DAMAGED, LIMIT, READ, WRITE }
+internal enum class PhotoImportProblem { FORMAT, DAMAGED, LIMIT, QUOTA, READ, WRITE }
 internal class PhotoImportException(problem: PhotoImportProblem) : IOException() {
     val problem = problem
 }
@@ -43,17 +43,12 @@ internal class JournalPhotoFiles(directory: File) {
         ensureDirectory(imageDirectory)
         val decoded = decode(source, photo.format)
         try {
-            val saved = scale(decoded, 2048)
+            save(decoded, image(photo), photo.format)
+            val thumbnail = scale(decoded, 384)
             try {
-                save(saved, image(photo), photo.format)
-                val thumbnail = scale(saved, 384)
-                try {
-                    save(thumbnail, image(photo, true), photo.format)
-                } finally {
-                    if (thumbnail !== saved) thumbnail.recycle()
-                }
+                save(thumbnail, image(photo, true), photo.format)
             } finally {
-                if (saved !== decoded) saved.recycle()
+                if (thumbnail !== decoded) thumbnail.recycle()
             }
         } finally {
             decoded.recycle()
@@ -195,14 +190,11 @@ internal class JournalPhotoFiles(directory: File) {
         val width = options.outWidth
         val height = options.outHeight
         if (width <= 0 || height <= 0 || options.outMimeType != format.mimeType) fail(PhotoImportProblem.DAMAGED)
-        if (width > 12_000 || height > 12_000 || width.toLong() * height > 64_000_000) fail(PhotoImportProblem.LIMIT)
-        var sample = 1
-        while ((width + sample - 1L) / sample * ((height + sample - 1L) / sample) > 5_000_000) sample *= 2
+        if (width > 2048 || height > 2048) fail(PhotoImportProblem.LIMIT)
         val orientation = ExifInterface(file).getAttributeInt(
             ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL,
         )
         val bitmap = BitmapFactory.decodeFile(file.path, BitmapFactory.Options().apply {
-            inSampleSize = sample
             inPreferredConfig = Bitmap.Config.ARGB_8888
         }) ?: fail(PhotoImportProblem.DAMAGED)
         val matrix = Matrix()

@@ -60,14 +60,14 @@ internal class ProjectsRepository(
             mutex.withLock {
                 val projects = readLocked()
                 val project = projects.find { it.id == projectId } ?: throw JournalException(JournalProblem.MISSING)
-                if (project.photos.size >= PhotoAttachment.MAX_PER_PROJECT) throw PhotoImportException(PhotoImportProblem.LIMIT)
+                if (project.photos.size >= PhotoAttachment.MAX_PER_PROJECT) throw PhotoImportException(PhotoImportProblem.QUOTA)
                 val source = photoFiles.stageSource(open)
                 try {
                     val photo = PhotoAttachment(UUID.randomUUID(), UUID.randomUUID(), photoFiles.format(source), OffsetDateTime.now())
                     try {
                         photoFiles.import(photo, source)
                         currentCoroutineContext().ensureActive()
-                        if (!photoFiles.withinQuota()) throw PhotoImportException(PhotoImportProblem.LIMIT)
+                        if (!photoFiles.withinQuota()) throw PhotoImportException(PhotoImportProblem.QUOTA)
                         val result = projects.map { if (it.id == projectId) it.copy(photos = it.photos + photo) else it }
                         writeLocked(result, usePhotoStore = true)
                         result

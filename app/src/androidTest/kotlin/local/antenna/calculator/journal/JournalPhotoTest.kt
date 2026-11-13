@@ -34,10 +34,11 @@ class JournalPhotoTest {
         repo.update { listOf(project) }
         val store = File(directory, "projects.json")
         assertEquals(1, JSONObject(store.readText()).getInt("schemaVersion"))
-        val original = image(Bitmap.CompressFormat.PNG)
+        val original = image(Bitmap.CompressFormat.PNG, width = 2048)
         val saved = repo.addPhoto(project.id) { original.inputStream() }.single()
         val photo = saved.photos.single().copy(comment = "Крепление <в сборе>")
         val png = BitmapFactory.decodeFile(repo.photoFile(photo, false).path)
+        assertEquals(2048, png.width)
         assertEquals(0x70, png.getPixel(0, 0) ushr 24)
         png.recycle()
         repo.update { listOf(saved.copy(photos = listOf(photo))) }
@@ -112,7 +113,10 @@ class JournalPhotoTest {
             bytes.copyOf(bytes.size - 4) to PhotoImportProblem.DAMAGED,
             animated to PhotoImportProblem.FORMAT,
             ByteArray(20 * 1024 * 1024 + 1) to PhotoImportProblem.LIMIT,
+            image(Bitmap.CompressFormat.PNG, width = 2049).readBytes() to PhotoImportProblem.LIMIT,
+            image(Bitmap.CompressFormat.PNG, height = 2049).readBytes() to PhotoImportProblem.LIMIT,
         )
+        original.writeBytes(bytes)
         for ((input, problem) in cases) {
             val error = runCatching { repo.addPhoto(project.id) { input.inputStream() } }.exceptionOrNull()
             assertEquals(problem, (error as PhotoImportException).problem)

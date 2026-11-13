@@ -74,9 +74,13 @@ internal fun rememberJournalPhotoActions(
     LaunchedEffect(state.photoImport) {
         val result = state.photoImport ?: return@LaunchedEffect
         val message = buildList {
-            add(resources.getString(R.string.photo_added, result.added))
+            if (result.added > 0 || result.cancelled) add(resources.getString(R.string.photo_added, result.added))
             if (result.cancelled) add(resources.getString(R.string.photo_cancelled))
-            result.problems.forEach { (problem, count) -> add(resources.getString(problem.label(), count)) }
+            result.problems.entries.groupBy { it.key.label() }.forEach { (label, problems) ->
+                val message = if (label == R.string.photo_problem_image) resources.getString(label)
+                else resources.getString(label, problems.sumOf { it.value })
+                add(message)
+            }
         }.joinToString("\n")
         model.clearPhotoImport()
         onMessage(message)
@@ -328,9 +332,8 @@ private fun finishPhotoExport(model: JournalViewModel, context: android.content.
 }
 
 private fun PhotoImportProblem.label(): Int = when (this) {
-    PhotoImportProblem.FORMAT -> R.string.photo_problem_format
-    PhotoImportProblem.DAMAGED -> R.string.photo_problem_damaged
-    PhotoImportProblem.LIMIT -> R.string.photo_problem_limit
+    PhotoImportProblem.FORMAT, PhotoImportProblem.DAMAGED, PhotoImportProblem.LIMIT -> R.string.photo_problem_image
+    PhotoImportProblem.QUOTA -> R.string.photo_problem_quota
     PhotoImportProblem.READ -> R.string.photo_problem_read
     PhotoImportProblem.WRITE -> R.string.photo_problem_write
 }

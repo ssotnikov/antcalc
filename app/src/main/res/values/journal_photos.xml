@@ -29,9 +29,8 @@
     <string name="photo_cancelled">Processing of the remaining files was cancelled</string>
     <string name="photo_import_title">Adding photos</string>
     <string name="photo_import_progress">Processed %1$d of %2$d</string>
-    <string name="photo_problem_format">Unsupported format: %1$d</string>
-    <string name="photo_problem_damaged">Damaged image: %1$d</string>
-    <string name="photo_problem_limit">Size, photo count, or storage limit exceeded: %1$d</string>
+    <string name="photo_problem_image">The image format is unsupported or the image is too large. Choose a JPEG or PNG up to 20 MB and 2048 pixels on its longest side</string>
+    <string name="photo_problem_quota">Photo count or storage limit exceeded: %1$d</string>
     <string name="photo_problem_read">Could not read files: %1$d</string>
     <string name="photo_problem_write">Could not save photos: %1$d</string>
     <string name="photo_actions">Photo actions</string>

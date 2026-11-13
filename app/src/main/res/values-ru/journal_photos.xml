@@ -29,9 +29,8 @@
     <string name="photo_cancelled">Обработка оставшихся файлов отменена</string>
     <string name="photo_import_title">Добавление фотографий</string>
     <string name="photo_import_progress">Обработано %1$d из %2$d</string>
-    <string name="photo_problem_format">Неподдерживаемый формат: %1$d</string>
-    <string name="photo_problem_damaged">Повреждённое изображение: %1$d</string>
-    <string name="photo_problem_limit">Превышен лимит размера, количества фото или места: %1$d</string>
+    <string name="photo_problem_image">Неподдерживаемый формат изображения, либо изображение слишком большое. Загрузите jpeg или png размером не больше 20Мб и разрешением не больше 2048 пикселей</string>
+    <string name="photo_problem_quota">Превышен лимит количества фото или места: %1$d</string>
     <string name="photo_problem_read">Не удалось прочитать файлы: %1$d</string>
     <string name="photo_problem_write">Не удалось сохранить фото: %1$d</string>
     <string name="photo_actions">Действия с фото</string>

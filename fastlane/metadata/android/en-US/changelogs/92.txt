@@ -1,0 +1,1 @@
+Clarified photo import errors. Import JPEG or PNG files up to 20 MB and 2048 pixels on the longest side.

@@ -59,7 +59,7 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
         val files = distinct.take(PHOTO_BATCH_LIMIT)
         val problems = mutableMapOf<PhotoImportProblem, Int>()
         val excess = distinct.size - files.size
-        if (excess > 0) problems[PhotoImportProblem.LIMIT] = excess
+        if (excess > 0) problems[PhotoImportProblem.QUOTA] = excess
         current.value = current.value.copy(busy = true, problem = null, photoProgress = 0 to files.size, photoImport = null)
         photoImportJob = viewModelScope.launch {
             val original = current.value.projects.find { it.id == projectId }?.photos.orEmpty().map { it.id }.toSet()
@@ -77,7 +77,7 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
                         error.problem
                     } catch (error: JournalException) {
                         when (error.problem) {
-                            JournalProblem.LIMIT -> PhotoImportProblem.LIMIT
+                            JournalProblem.LIMIT -> PhotoImportProblem.QUOTA
                             JournalProblem.WRITE -> PhotoImportProblem.WRITE
                             else -> PhotoImportProblem.READ
                         }
