@@ -54,7 +54,7 @@
     <string name="large_change_note">Large adjustment: the simple ratio may be inaccurate. Check the construction and measure again.</string>
     <string name="outside_length_note">The result is outside the supported input length range; check whether the model applies. The result has not been clamped.</string>
     <string name="result_pending">Enter valid values to see the result.</string>
-    <string name="measured_length_required">Enter the actual length of the antenna you built. A theoretical length is not substituted here.</string>
+    <string name="measured_length_required">Enter the length of your built antenna, or use the estimate as a starting point.</string>
     <string name="adjustment">Estimated length change</string>
     <string name="new_length">Estimated new monopole length</string>
     <string name="new_total">Estimated total dipole length</string>
@@ -216,7 +216,7 @@
     <string name="source_smith_grigorov_description">A description and table of contents for I. N. Grigorov’s 2008 book on antenna tuning and matching.</string>
     <string name="source_smith_tz_lab_description">Enter R + jX and build a network from components and line sections to see how impedance, SWR and reflection change.</string>
     <string name="source_smith_radioskot_description">An interactive chart and a worked example of compensating reactance for a 15 + j25 Ω load at 144 MHz.</string>
-    <string name="trimming_initial_estimate">Initial length estimate from sizing: %1$s</string>
+    <string name="trimming_initial_estimate">Initial length estimate from sizing: %1$s at %2$s</string>
     <string name="ground_plane_title">Ground Plane Antenna</string>
     <string name="ground_plane_intro">Calculate starting lengths for the whip and four radials. Estimate the radial span and the height of the radial ends above ground.</string>
     <string name="ground_plane_definition">A ground-plane antenna is a quarter-wave vertical antenna with radials, also known as a grounded monopole.</string>
@@ -249,4 +249,11 @@
     <string name="references_smith_video">Videos and demonstrations</string>
     <string name="references_smith_practical">Articles and books</string>
     <string name="references_smith_interactive">Interactive tools</string>
+    <string name="antenna_fundamental_estimate">Estimated fundamental frequency</string>
+    <string name="ground_plane_fundamental_help">The estimate uses f₁ ≈ k·c/(4L), where L is the whip length and k is its shortening factor. Radial length and slope, the mount and the surroundings affect the actual resonance.</string>
+    <string name="inverted_v_fundamental_help">The estimate uses f₁ ≈ k·c/(4L), where L is the length of one of the two equal arms and k is the shortening factor. The angle, height and conductor affect the actual resonance.</string>
+    <string name="antenna_higher_modes_help">Higher modes may occur near 3× and 5× the fundamental. Use these multiples as starting points for a VNA sweep at the feed point. Check where X is close to zero, then check R and SWR separately.</string>
+    <string name="sizing_antennas_description">Quarter-wave monopole and center-fed half-wave dipole</string>
+    <string name="use_sizing_length">Use the estimated length</string>
+    <string name="trimming_pending_fields">Complete or correct these fields to see the tuning result:</string>
 </resources>

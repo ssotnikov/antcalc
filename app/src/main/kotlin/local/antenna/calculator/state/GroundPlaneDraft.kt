@@ -7,6 +7,7 @@ import local.antenna.calculator.core.input.QuantityInput
 import local.antenna.calculator.core.layout.GroundPlaneResult
 import local.antenna.calculator.core.layout.groundPlaneLayout
 import local.antenna.calculator.core.sizing.SizingInput
+import local.antenna.calculator.core.sizing.estimateQuarterWaveFrequencyHertz
 import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.FrequencyUnit
 import local.antenna.calculator.core.units.LengthUnit
@@ -29,7 +30,7 @@ data class GroundPlaneDraft(
     val visibleFields: List<GroundPlaneField>
         get() = when (mode) {
             GroundPlaneMode.ESTIMATED -> listOf(GroundPlaneField.FREQUENCY, GroundPlaneField.WHIP_FACTOR, GroundPlaneField.RADIAL_FACTOR)
-            GroundPlaneMode.MANUAL -> listOf(GroundPlaneField.WHIP, GroundPlaneField.RADIAL)
+            GroundPlaneMode.MANUAL -> listOf(GroundPlaneField.WHIP, GroundPlaneField.RADIAL, GroundPlaneField.WHIP_FACTOR)
         } + listOf(GroundPlaneField.HEIGHT, GroundPlaneField.ANGLE)
 
     fun number(field: GroundPlaneField): FieldState<Long> {
@@ -63,6 +64,13 @@ data class GroundPlaneDraft(
             display(field, value(field) ?: checkNotNull(previous.value(field)))
         },
     )
+
+    fun estimatedFundamentalHertz(): Double? {
+        if (mode != GroundPlaneMode.MANUAL) return null
+        val whip = value(GroundPlaneField.WHIP) ?: return null
+        val factor = value(GroundPlaneField.WHIP_FACTOR) ?: return null
+        return estimateQuarterWaveFrequencyHertz(PhysicalLength.ofNanometers(whip), ShorteningFactor.ofTenThousandths(factor.toInt()))
+    }
 
     fun result(): GroundPlaneResult? {
         val height = value(GroundPlaneField.HEIGHT) ?: return null

@@ -92,6 +92,20 @@ class CalculatorViewModelTest {
         assertEquals(FrequencyUnit.KILOHERTZ.name, cold.state.value.trimming.target.unit)
     }
 
+    @Test fun transfersFullDipoleLengthInInputUnitsWithoutOverwritingMeasuredLength() = runTest {
+        val vm = model(); runCurrent()
+        vm.edit(FieldKey.SIZING_FREQUENCY, "145")
+        vm.onEvent(CalculatorEvent.ChangeUnit(FieldKey.ACTUAL_LENGTH, LengthUnit.CENTIMETERS.name))
+        vm.onEvent(CalculatorEvent.Settings(vm.state.value.draft.settings.copy(antennaType = AntennaType.SYMMETRIC_DIPOLE)))
+        vm.onEvent(CalculatorEvent.UseSizingLength)
+        assertEquals(982_078_742L, vm.state.value.trimming.actualLength.length().validValue()?.nanometers)
+        vm.edit(FieldKey.ACTUAL_LENGTH, "97,5")
+        vm.edit(FieldKey.TARGET, "146")
+        vm.onEvent(CalculatorEvent.UseSizingLength)
+        assertEquals("97,5", vm.state.value.trimming.actualLength.text)
+        assertEquals("146", vm.state.value.sizing.frequency.text)
+    }
+
     @Test fun defaultsAndImmediateSizing() = runTest {
         val vm = model(); runCurrent()
         assertFalse(vm.state.value.loading)

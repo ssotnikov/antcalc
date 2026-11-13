@@ -2,8 +2,10 @@ package local.antenna.calculator.core.layout
 
 import local.antenna.calculator.core.sizing.SizingInput
 import local.antenna.calculator.core.sizing.calculateSizing
+import local.antenna.calculator.core.sizing.estimateQuarterWaveFrequencyHertz
 import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.PhysicalLength
+import local.antenna.calculator.core.units.ShorteningFactor
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -25,6 +27,13 @@ class InvertedVTest {
         assertEquals(-1.5, invertedVLayout(arm, 1_000_000_000, 1200).endHeightMeters, 1e-9)
         assertEquals(0.0, invertedVLayout(arm, 2_500_000_000, 1200).endHeightMeters, 0.0)
         assertTrue(invertedVLayout(arm, 2_499_999_999, 1200).endHeightMeters < 0)
+    }
+
+    @Test fun estimatesFundamentalFromMeasuredQuarterWaveLength() {
+        val factor = ShorteningFactor.DEFAULT
+        assertEquals(14_240_141.755, estimateQuarterWaveFrequencyHertz(arm, factor), 0.001)
+        val whip = PhysicalLength.ofNanometers(500_000_000)
+        assertEquals(142_401_417.55, estimateQuarterWaveFrequencyHertz(whip, factor), 0.001)
     }
 
     @Test fun changingAngleDoesNotModifyTheSizingEstimate() {

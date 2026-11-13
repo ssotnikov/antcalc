@@ -126,8 +126,9 @@ internal fun SwrBandwidthScreen(
         if (active != null && trace != null && result != null && threshold != null) {
             item {
                 val points = trace.sweep.points
-                val selected = cursor.takeIf { it.isFinite() }?.let(trace.sweep::nearestIndex)?.let(points::get)
-                val frequency = selected?.hertz ?: result.minimum?.hertz ?: points.first().hertz
+                val requested = cursor.takeIf { it.isFinite() } ?: result.minimum?.hertz ?: points.first().hertz
+                val selected = points[trace.sweep.nearestIndex(requested) ?: 0]
+                val frequency = selected.hertz
                 BandwidthHeading(R.string.bandwidth_chart)
                 MeasurementChart(listOf(active), SweepMetric.SWR, frequency, active.first, bandwidth = result) {
                     cursor = it.coerceIn(points.first().hertz, points.last().hertz)
@@ -138,6 +139,14 @@ internal fun SwrBandwidthScreen(
                         .background(bandColor.copy(alpha = BandwidthFillAlpha)).border(1.dp, bandColor))
                     Text(stringResource(R.string.bandwidth_chart_hint), style = MaterialTheme.typography.bodySmall)
                 }
+                val bandIndex = result.bands.indexOfFirst { frequency in it.lower.hertz..it.upper.hertz }
+                val swr = selected.swr
+                val status = when {
+                    swr == null -> stringResource(R.string.bandwidth_cursor_no_data)
+                    bandIndex >= 0 -> stringResource(R.string.bandwidth_cursor_in_band, bandIndex + 1)
+                    else -> stringResource(R.string.bandwidth_cursor_above)
+                }
+                Text(formatter.selectedPoint(selected.hertz, swr, status), Modifier.testTag("bandwidth-selected-point"))
             }
             item {
                 BandwidthHeading(R.string.bandwidth_intervals)
@@ -210,6 +219,9 @@ private class BandwidthPresentation(
         frequency(trace.sweep.points.first().hertz), frequency(trace.sweep.points.last().hertz), trace.sweep.points.size)
 
     fun minimum(label: Int, minimum: SwrMinimum) = text(label, format.measurement(minimum.swr), frequency(minimum.hertz))
+
+    fun selectedPoint(hertz: Double, swr: Double?, status: String) =
+        text(R.string.bandwidth_cursor_readout, frequency(hertz), format.measurement(swr), status)
 
     private fun bandFrequency(hertz: Double) = text(R.string.sweep_mhz, format.bandMegahertz(hertz))
 

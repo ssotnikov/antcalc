@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bandwidth_additional_tools">Импорт измерений анализатора и расчет рабочей полосы по КСВ.</string>
+    <string name="bandwidth_additional_tools">Импорт измерений VNA анализатора и расчет рабочей полосы по КСВ.</string>
     <string name="bandwidth_title">Рабочая полоса по КСВ</string>
     <string name="bandwidth_description">Границы и ширина полосы по выбранному порогу КСВ на трассе S1P.</string>
     <string name="bandwidth_source">Трасса S1P</string>
@@ -41,4 +41,8 @@
     <string name="bandwidth_scope">Рабочая полоса по КСВ характеризует согласование в точке измерения. Для оценки эффективности антенны нужны отдельные измерения. Допустимые частоты передачи определяются условиями лицензии.</string>
     <string name="bandwidth_show_formula">Показать формулу</string>
     <string name="bandwidth_hide_formula">Скрыть формулу</string>
+    <string name="bandwidth_cursor_readout">%1$s · КСВ %2$s · %3$s</string>
+    <string name="bandwidth_cursor_no_data">Нет данных</string>
+    <string name="bandwidth_cursor_in_band">В интервале №%1$d</string>
+    <string name="bandwidth_cursor_above">Выше порога</string>
 </resources>

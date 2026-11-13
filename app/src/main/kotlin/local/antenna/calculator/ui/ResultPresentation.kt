@@ -54,11 +54,17 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
             summary += context.getString(R.string.sizes)
             input(FieldKey.SIZING_FREQUENCY, R.string.frequency)
             input(FieldKey.FACTOR, R.string.factor)
+            val actualLength = draft[FieldKey.ACTUAL_LENGTH].length().validValue()
+            val actualRow = actualLength?.let {
+                val label = if (settings.antennaType == AntennaType.MONOPOLE)
+                    R.string.actual_length else R.string.dipole_actual_length
+                ResultRow(label, length(it.nanometers / 1e9), "sizing-actual-length")
+            }
             groups += ResultGroup(R.string.physical_sizes, listOf(
                 ResultRow(R.string.radiator_length, length(result.monopoleMeters), "monopole-result"),
                 ResultRow(R.string.dipole_total, length(result.dipoleTotalMeters), "dipole-total"),
                 ResultRow(R.string.dipole_arm, length(result.dipoleArmMeters), "dipole-arm"),
-            ), listOf(R.string.approximate, R.string.conductor_note, R.string.sizing_note), diagrams = true)
+            ) + listOfNotNull(actualRow), listOf(R.string.approximate, R.string.conductor_note, R.string.sizing_note), diagrams = true)
         }
         state.sizing.ideal?.let { ideal ->
             groups += ResultGroup(R.string.ideal_sizes, listOf(

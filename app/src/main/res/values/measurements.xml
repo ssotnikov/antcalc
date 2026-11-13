@@ -5,7 +5,7 @@
     <string name="sweep_smith_legend">Tap the chart or drag along the active trace to select a measured frequency. Each trace uses its own reference impedance Z₀.</string>
     <string name="sweep_smith_outside">Samples with |S11| greater than 1 fall outside the chart. Their values are available in the measurement table.</string>
     <string name="additional_tools">Additional tools</string>
-    <string name="sweep_tool_title">Import analyzer measurements</string>
+    <string name="sweep_tool_title">Import VNA measurements</string>
     <string name="sweep_tool_description">Import S1P files and plot SWR and impedance. Compare two measurements.</string>
     <string name="sweep_title">S1P measurements</string>
     <string name="sweep_files">Measurement files</string>

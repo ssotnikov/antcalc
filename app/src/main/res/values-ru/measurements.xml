@@ -5,7 +5,7 @@
     <string name="sweep_smith_legend">Нажмите на диаграмму или проведите пальцем вдоль активной трассы, чтобы выбрать измеренную частоту. Для каждой трассы используется своё опорное сопротивление Z₀.</string>
     <string name="sweep_smith_outside">Точки с |S11| больше 1 лежат за пределами диаграммы. Их значения доступны в таблице измерений.</string>
     <string name="additional_tools">Дополнительные инструменты</string>
-    <string name="sweep_tool_title">Импорт измерений анализатора</string>
+    <string name="sweep_tool_title">Импорт измерений VNA анализатора</string>
     <string name="sweep_tool_description">Импорт файлов S1P, построение графиков КСВ и импеданса. Сравнение двух измерений.</string>
     <string name="sweep_title">Измерения S1P</string>
     <string name="sweep_files">Файлы измерений</string>

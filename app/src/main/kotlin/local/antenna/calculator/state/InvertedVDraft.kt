@@ -7,6 +7,7 @@ import local.antenna.calculator.core.input.QuantityInput
 import local.antenna.calculator.core.layout.InvertedVResult
 import local.antenna.calculator.core.layout.invertedVLayout
 import local.antenna.calculator.core.sizing.SizingInput
+import local.antenna.calculator.core.sizing.estimateQuarterWaveFrequencyHertz
 import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.FrequencyUnit
 import local.antenna.calculator.core.units.LengthUnit
@@ -59,6 +60,13 @@ data class InvertedVDraft(
         val hertz = value(InvertedVField.FREQUENCY) ?: return null
         val factor = value(InvertedVField.FACTOR) ?: return null
         return SizingInput(Frequency.ofHertz(hertz), ShorteningFactor.ofTenThousandths(factor.toInt()))
+    }
+
+    fun estimatedFundamentalHertz(): Double? {
+        if (mode != InvertedVMode.MEASURED) return null
+        val arm = value(InvertedVField.ARM) ?: return null
+        val factor = value(InvertedVField.FACTOR) ?: return null
+        return estimateQuarterWaveFrequencyHertz(PhysicalLength.ofNanometers(arm), ShorteningFactor.ofTenThousandths(factor.toInt()))
     }
 
     fun result(): InvertedVResult? {

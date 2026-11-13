@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
@@ -11,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -19,6 +22,10 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
+import local.antenna.calculator.core.trimming.AntennaType
+import local.antenna.calculator.state.FieldKey
+import local.antenna.calculator.state.Section
+import local.antenna.calculator.state.validValue
 import local.antenna.calculator.state.CalculatorEvent
 import local.antenna.calculator.state.CalculatorUiState
 
@@ -49,9 +56,28 @@ internal fun CalculationScreen(
         val wide = maxWidth >= 840.dp
         Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(20.dp).testTag("calculator-scroll"), verticalArrangement = Arrangement.spacedBy(20.dp)) {
             StorageNotice(state, onEvent)
+            if (settings.section == Section.SIZING) {
+                Image(
+                    painterResource(R.drawable.sizing_antennas),
+                    contentDescription = stringResource(R.string.sizing_antennas_description),
+                    modifier = Modifier.fillMaxWidth().heightIn(max = 200.dp).clip(MaterialTheme.shapes.large),
+                )
+            }
             val inputs: @Composable ColumnScope.() -> Unit = { CalculatorInputs(state, onEvent) }
             val results: @Composable ColumnScope.() -> Unit = {
-                if (presentation.groups.isEmpty()) HelpText(R.string.result_pending)
+                if (presentation.groups.isEmpty()) {
+                    if (settings.section == Section.TRIMMING) {
+                        val required = listOf(
+                            FieldKey.ACTUAL_LENGTH to if (settings.antennaType == AntennaType.MONOPOLE)
+                                R.string.actual_length else R.string.dipole_actual_length,
+                            FieldKey.MEASURED to R.string.measured_frequency,
+                            FieldKey.TARGET to R.string.target_frequency,
+                        )
+                        HelpText(R.string.trimming_pending_fields)
+                        required.filter { (key, _) -> state.draft[key].state(key).validValue() == null }
+                            .forEach { (_, label) -> Text(stringResource(label), style = MaterialTheme.typography.bodyMedium) }
+                    } else HelpText(R.string.result_pending)
+                }
                 presentation.groups.forEach { ResultPanel(it) }
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     if (onSaveToProject != null) {

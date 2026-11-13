@@ -54,6 +54,12 @@ internal fun Context.formatFrequency(hertz: Long, unit: FrequencyUnit): String {
 internal fun Context.frequencyWithUnit(hertz: Long, unit: FrequencyUnit): String =
     getString(R.string.value_unit, formatFrequency(hertz, unit), getString(unit.labelResource()))
 
+internal fun Context.estimatedFundamentalFrequency(hertz: Double): String {
+    val format = FrequencyNumberFormat(resources.configuration.locales[0])
+    val value = if (hertz < 1_000) format.megahertz(hertz) else format.estimatedMegahertz(hertz)
+    return getString(R.string.sweep_mhz, value)
+}
+
 // Keep draft text and its cursor positions intact while editing.
 private val completeInput = Regex("[0-9]+(?:[.,][0-9]+)?|[.,][0-9]+")
 

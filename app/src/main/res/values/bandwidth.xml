@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bandwidth_additional_tools">Import analyzer measurements and find the SWR bandwidth.</string>
+    <string name="bandwidth_additional_tools">Import VNA measurements and find the SWR bandwidth.</string>
     <string name="bandwidth_title">SWR bandwidth</string>
     <string name="bandwidth_description">Find the band edges and bandwidth at a chosen SWR threshold from an S1P sweep.</string>
     <string name="bandwidth_source">S1P sweep</string>
@@ -41,4 +41,8 @@
     <string name="bandwidth_scope">SWR bandwidth describes matching at the measurement plane. Antenna efficiency requires separate measurements. Follow your license conditions for permitted transmit frequencies.</string>
     <string name="bandwidth_show_formula">Show formula</string>
     <string name="bandwidth_hide_formula">Hide formula</string>
+    <string name="bandwidth_cursor_readout">%1$s · SWR %2$s · %3$s</string>
+    <string name="bandwidth_cursor_no_data">No data</string>
+    <string name="bandwidth_cursor_in_band">In interval %1$d</string>
+    <string name="bandwidth_cursor_above">Above threshold</string>
 </resources>

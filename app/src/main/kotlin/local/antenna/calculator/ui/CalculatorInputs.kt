@@ -55,14 +55,19 @@ fun CalculatorInputs(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Uni
         AntennaDiagram(dipole = settings.antennaType == AntennaType.SYMMETRIC_DIPOLE)
         NumericInput(FieldKey.ACTUAL_LENGTH, if (settings.antennaType == AntennaType.MONOPOLE) R.string.actual_length else R.string.dipole_actual_length, state, onEvent)
         val estimate = state.sizing.result
-        val target = draft[FieldKey.TARGET].frequency()
-        if (estimate != null && target is FieldState.Valid &&
-            target.value == estimate.input.frequency) {
+        if (estimate != null) {
             val length = if (settings.antennaType == AntennaType.MONOPOLE) estimate.monopoleMeters else estimate.dipoleTotalMeters
             val unit = LengthUnit.valueOf(draft[FieldKey.ACTUAL_LENGTH].unit)
             val formatted = formatLength(context, length, unit)
-            Text(stringResource(R.string.trimming_initial_estimate, formatted), style = MaterialTheme.typography.bodyMedium,
+            val frequency = context.frequencyWithUnit(estimate.input.frequency.hertz,
+                FrequencyUnit.valueOf(draft[FieldKey.TARGET].unit))
+            Text(stringResource(R.string.trimming_initial_estimate, formatted, frequency), style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (draft[FieldKey.ACTUAL_LENGTH].text.isBlank() && state.transferableSizingLength() != null) {
+                TextButton(onClick = { onEvent(CalculatorEvent.UseSizingLength) }, enabled = state.editingEnabled) {
+                    Text(stringResource(R.string.use_sizing_length))
+                }
+            }
         }
         NumericInput(FieldKey.MEASURED, R.string.measured_frequency, state, onEvent)
         HelpText(R.string.resonance_note)

@@ -96,10 +96,15 @@ internal fun GroundPlaneScreen(
                 Surface(color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large,
                     modifier = Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        result.rows().forEach { (label, value) ->
+                        val rows = result.rows().map { (label, value) ->
+                            label to groundPlaneLength(context, value, draft.lengthUnit)
+                        } + listOfNotNull(draft.estimatedFundamentalHertz()?.let {
+                            R.string.antenna_fundamental_estimate to context.estimatedFundamentalFrequency(it)
+                        })
+                        rows.forEach { (label, value) ->
                             Column(Modifier.semantics(mergeDescendants = true) {}) {
                                 Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
-                                Text(groundPlaneLength(context, value, draft.lengthUnit), style = MaterialTheme.typography.titleLarge,
+                                Text(value, style = MaterialTheme.typography.titleLarge,
                                     color = MaterialTheme.colorScheme.primary)
                             }
                         }
@@ -130,6 +135,8 @@ internal fun GroundPlaneScreen(
             Text(stringResource(if (details) R.string.matching_less else R.string.inverted_v_details))
         }
         if (details) {
+            HelpText(R.string.ground_plane_fundamental_help)
+            HelpText(R.string.antenna_higher_modes_help)
             FormulaPlate(R.string.ground_plane_estimated, R.drawable.formula_ground_plane_lengths,
                 R.string.ground_plane_model_alt, "ground-plane-length-formula")
             FormulaPlate(R.string.ground_plane_radius, R.drawable.formula_ground_plane_footprint,
@@ -261,6 +268,10 @@ private fun GroundPlaneDraft.copyText(context: Context): String? {
         }
         layout.rows().forEach { (label, value) ->
             appendLine(context.getString(R.string.journal_property, context.getString(label), groundPlaneLength(context, value, lengthUnit)))
+        }
+        estimatedFundamentalHertz()?.let {
+            appendLine(context.getString(R.string.journal_property, context.getString(R.string.antenna_fundamental_estimate),
+                context.estimatedFundamentalFrequency(it)))
         }
         if (layout.endHeightMeters == 0.0) appendLine(context.getString(R.string.ground_plane_contact))
         append(context.getString(R.string.ground_plane_limits))

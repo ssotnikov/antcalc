@@ -1,0 +1,1 @@
+Added a transparent monopole and dipole illustration. Transfer sizing estimates to tuning and see the entered length alongside the estimate. Tuning names inputs that need attention. The SWR chart shows the selected point, and Ground Plane and Inverted V estimate the fundamental frequency. Renamed VNA import.

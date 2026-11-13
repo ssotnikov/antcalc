@@ -1,0 +1,1 @@
+The SWR bandwidth chart shows the selected frequency, SWR and interval status. Ground Plane and Inverted V estimate the fundamental frequency from measured lengths. Renamed the VNA measurement import card.

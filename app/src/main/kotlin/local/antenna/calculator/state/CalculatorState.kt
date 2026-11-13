@@ -6,6 +6,7 @@ import local.antenna.calculator.core.trimming.*
 import local.antenna.calculator.core.units.*
 import java.math.BigDecimal
 import java.util.Locale
+import kotlin.math.roundToLong
 
 enum class Section { SIZING, TRIMMING, TOOLS }
 enum class AppTheme { SYSTEM, LIGHT, DARK }
@@ -130,6 +131,14 @@ data class CalculatorUiState(
         return SizingUiState(frequency, factor, f?.let(::calculateIdealSizing),
             if (f != null && k != null) calculateSizing(SizingInput(f, k)) else null)
     }
+    fun transferableSizingLength(): PhysicalLength? {
+        val estimate = sizing.result ?: return null
+        val meters = if (draft.settings.antennaType == AntennaType.MONOPOLE)
+            estimate.monopoleMeters else estimate.dipoleTotalMeters
+        val nanometers = (meters * 1e9).roundToLong()
+        return nanometers.takeIf { it in PhysicalLength.MIN_NANOMETERS..PhysicalLength.MAX_NANOMETERS }
+            ?.let(PhysicalLength::ofNanometers)
+    }
     val trimming: TrimmingUiState get() {
         val length = draft[FieldKey.ACTUAL_LENGTH]
         val measured = draft[FieldKey.MEASURED]
@@ -154,6 +163,7 @@ sealed interface CalculatorEvent {
     data class Focus(val key: FieldKey, val focused: Boolean) : CalculatorEvent
     data class Check(val keys: Set<FieldKey>) : CalculatorEvent
     data class Settings(val value: CalculatorSettings) : CalculatorEvent
+    data object UseSizingLength : CalculatorEvent
     data object RetryStorage : CalculatorEvent
     /** Only dispatch after an explicit user action consenting to discard stored settings. */
     data object ResetStorage : CalculatorEvent

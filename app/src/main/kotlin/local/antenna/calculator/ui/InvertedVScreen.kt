@@ -77,6 +77,7 @@ internal fun InvertedVScreen(
         )
         if (draft.mode == InvertedVMode.MEASURED) {
             InvertedVInput(draft, ARM) { edit { d -> d.edit(ARM, it) } }
+            InvertedVInput(draft, FACTOR) { edit { d -> d.edit(FACTOR, it) } }
         } else {
             InvertedVInput(draft, FREQUENCY) { edit { d -> d.edit(FREQUENCY, it) } }
             ChoicePicker(
@@ -100,7 +101,9 @@ internal fun InvertedVScreen(
         if (result == null) {
             HelpText(R.string.inverted_v_pending)
         } else {
-            val rows = result.rows(context, draft.lengthUnit)
+            val rows = result.rows(context, draft.lengthUnit) + listOfNotNull(draft.estimatedFundamentalHertz()?.let {
+                R.string.antenna_fundamental_estimate to context.estimatedFundamentalFrequency(it)
+            })
             InvertedVDiagram(result, draft.lengthUnit, context)
             Surface(
                 shape = MaterialTheme.shapes.large,
@@ -159,6 +162,8 @@ internal fun InvertedVScreen(
             FormulaPlate(R.string.inverted_v_end_height, R.drawable.formula_inverted_v_height,
                 R.string.inverted_v_height_alt, "inverted-v-height-formula")
             HelpText(R.string.inverted_v_details_text)
+            HelpText(R.string.inverted_v_fundamental_help)
+            HelpText(R.string.antenna_higher_modes_help)
         }
         val source = if (russian) R.string.source_inverted_v_ru_title else R.string.source_inverted_v_en_title
         val address = stringResource(if (russian) R.string.source_inverted_v_ru_url else R.string.source_inverted_v_en_url)
@@ -272,12 +277,16 @@ private fun InvertedVDraft.copyText(context: Context): String? {
             add(line(R.string.factor, input(FACTOR)))
         } else {
             add(line(R.string.dipole_arm, withUnit(input(ARM), lengthUnit.labelResource())))
+            value(FACTOR)?.let { add(line(R.string.factor, input(FACTOR))) }
         }
         add(line(R.string.inverted_v_height, withUnit(input(HEIGHT), lengthUnit.labelResource())))
         add(line(R.string.inverted_v_angle, context.getString(R.string.inverted_v_degrees, input(ANGLE))))
         add("")
         add(context.getString(R.string.inverted_v_geometry))
         result.rows(context, lengthUnit).forEach { (label, value) -> add(line(label, value)) }
+        estimatedFundamentalHertz()?.let {
+            add(line(R.string.antenna_fundamental_estimate, context.estimatedFundamentalFrequency(it)))
+        }
         result.notice()?.let { add(context.getString(it)) }
         add("")
         add(context.getString(R.string.inverted_v_formula_alt))

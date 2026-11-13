@@ -1,8 +1,16 @@
 package local.antenna.calculator.core.sizing
 
 import local.antenna.calculator.core.units.Frequency
+import local.antenna.calculator.core.units.PhysicalLength
+import local.antenna.calculator.core.units.ShorteningFactor
 
 private const val SPEED_OF_LIGHT_METERS_PER_SECOND = 299_792_458.0
+
+/** Inverts the shortened quarter-wave model for a whip or one arm of a center-fed dipole. */
+fun estimateQuarterWaveFrequencyHertz(length: PhysicalLength, factor: ShorteningFactor): Double {
+    val meters = length.nanometers / 1e9
+    return (factor.tenThousandths / 10_000.0) * SPEED_OF_LIGHT_METERS_PER_SECOND / (4 * meters)
+}
 
 /**
  * Free-space reference geometry, with every length expressed in meters.
