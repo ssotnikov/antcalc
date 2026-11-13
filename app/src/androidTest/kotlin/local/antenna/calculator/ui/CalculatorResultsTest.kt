@@ -87,6 +87,32 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         compose.onNodeWithTag("sizing-tuned-arm").performScrollTo().assertTextContains("477 мм")
     }
 
+    @Test fun dipoleLengthEditsRefreshSizingTuningCardWithoutChangingStartingDimensions() {
+        start()
+        edit(FieldKey.SIZING_FREQUENCY, "162")
+        edit(FieldKey.FACTOR, "0,92")
+        compose.onNodeWithTag("output-unit-CENTIMETERS").performScrollTo().performClick()
+        trimming()
+        compose.onNodeWithTag("antenna-SYMMETRIC_DIPOLE").performScrollTo().performClick()
+        edit(FieldKey.MEASURED, "145")
+
+        for ((actualCm, projectedTotal, projectedArm) in listOf(
+            Triple(100, "89,51 см", "44,75 см"),
+            Triple(120, "107,41 см", "53,70 см"),
+        )) {
+            edit(FieldKey.ACTUAL_LENGTH, (actualCm * 10).toString())
+            compose.onNodeWithTag("nav-SIZING").performClick()
+            compose.onNodeWithText("Прогноз по данным подстройки").performScrollTo().assertIsDisplayed()
+            compose.onNodeWithTag("sizing-actual-dipole").assertTextContains("$actualCm,00 см")
+            compose.onNodeWithTag("sizing-actual-arm").assertTextContains("${actualCm / 2},00 см")
+            compose.onNodeWithTag("sizing-tuned-dipole").assertTextContains(projectedTotal)
+            compose.onNodeWithTag("sizing-tuned-arm").assertTextContains(projectedArm)
+            compose.onNodeWithTag("dipole-total").assertTextContains("85,13 см")
+            compose.onNodeWithTag("dipole-arm").assertTextContains("42,56 см")
+            trimming()
+        }
+    }
+
     @Test fun dipoleShowsSeparateArmChangeAndCompleteClipboard() {
         start(); trimming()
         compose.onNodeWithTag("antenna-SYMMETRIC_DIPOLE").performScrollTo().performClick()

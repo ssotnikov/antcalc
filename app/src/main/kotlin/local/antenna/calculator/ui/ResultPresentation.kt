@@ -54,34 +54,40 @@ fun presentResults(context: Context, state: CalculatorUiState): ResultPresentati
             summary += context.getString(R.string.sizes)
             input(FieldKey.SIZING_FREQUENCY, R.string.frequency)
             input(FieldKey.FACTOR, R.string.factor)
-            fun measuredRow(type: AntennaType, label: Int, tag: String): ResultRow? =
-                state.measuredLength(type)?.let { ResultRow(label, length(it.nanometers / 1e9), tag) }
-            val monopole = state.trimmingProjection(AntennaType.MONOPOLE)
-            val dipole = state.trimmingProjection(AntennaType.SYMMETRIC_DIPOLE)
-            groups += ResultGroup(R.string.physical_sizes, listOfNotNull(
+            groups += ResultGroup(R.string.physical_sizes, listOf(
                 ResultRow(R.string.radiator_length, length(result.monopoleMeters), "monopole-result"),
-                measuredRow(AntennaType.MONOPOLE, R.string.actual_length, "sizing-actual-monopole"),
-                monopole?.let { ResultRow(R.string.new_length, length(it.newLengthMeters), "sizing-tuned-monopole") },
-                monopole?.let { ResultRow(R.string.adjustment,
-                    formatAdjustment(context, it.direction, abs(it.deltaMeters), unit), "sizing-tuned-monopole-delta") },
                 ResultRow(R.string.dipole_total, length(result.dipoleTotalMeters), "dipole-total"),
                 ResultRow(R.string.dipole_arm, length(result.dipoleArmMeters), "dipole-arm"),
-                measuredRow(AntennaType.SYMMETRIC_DIPOLE, R.string.dipole_actual_length, "sizing-actual-dipole"),
-                dipole?.let { ResultRow(R.string.new_total, length(it.newLengthMeters), "sizing-tuned-dipole") },
-                dipole?.dipoleArmAdjustment?.let { ResultRow(R.string.new_arm, length(it.newLengthMeters), "sizing-tuned-arm") },
-                dipole?.let { ResultRow(R.string.total_adjustment,
-                    formatAdjustment(context, it.direction, abs(it.deltaMeters), unit), "sizing-tuned-dipole-delta") },
-                dipole?.let { result -> result.dipoleArmAdjustment?.let { arm ->
-                    ResultRow(R.string.arm_adjustment, formatAdjustment(context, result.direction, abs(arm.deltaMeters), unit),
-                        "sizing-tuned-arm-delta")
-                } },
-                (monopole ?: dipole)?.let { ResultRow(R.string.measured_frequency,
-                    context.frequencyWithUnit(it.input.measuredFrequency.hertz, FrequencyUnit.valueOf(draft[FieldKey.MEASURED].unit)),
-                    "sizing-tuned-measured") },
-                (monopole ?: dipole)?.let { ResultRow(R.string.target_frequency,
-                    context.frequencyWithUnit(it.input.targetFrequency.hertz, FrequencyUnit.valueOf(draft[FieldKey.TARGET].unit)),
-                    "sizing-tuned-target") },
             ), listOf(R.string.approximate, R.string.conductor_note, R.string.sizing_note), diagrams = true)
+        }
+        val measuredMonopole = state.measuredLength(AntennaType.MONOPOLE)
+        val measuredDipole = state.measuredLength(AntennaType.SYMMETRIC_DIPOLE)
+        val monopole = state.trimmingProjection(AntennaType.MONOPOLE)
+        val dipole = state.trimmingProjection(AntennaType.SYMMETRIC_DIPOLE)
+        val dipoleArm = dipole?.dipoleArmAdjustment
+        val projection = monopole ?: dipole
+        val tuningRows = listOfNotNull(
+            projection?.let { ResultRow(R.string.measured_frequency,
+                context.frequencyWithUnit(it.input.measuredFrequency.hertz, FrequencyUnit.valueOf(draft[FieldKey.MEASURED].unit)),
+                "sizing-tuned-measured") },
+            projection?.let { ResultRow(R.string.target_frequency,
+                context.frequencyWithUnit(it.input.targetFrequency.hertz, FrequencyUnit.valueOf(draft[FieldKey.TARGET].unit)),
+                "sizing-tuned-target") },
+            measuredMonopole?.let { ResultRow(R.string.actual_length, length(it.nanometers / 1e9), "sizing-actual-monopole") },
+            monopole?.let { ResultRow(R.string.new_length, length(it.newLengthMeters), "sizing-tuned-monopole") },
+            monopole?.let { ResultRow(R.string.adjustment,
+                formatAdjustment(context, it.direction, abs(it.deltaMeters), unit), "sizing-tuned-monopole-delta") },
+            measuredDipole?.let { ResultRow(R.string.dipole_actual_length, length(it.nanometers / 1e9), "sizing-actual-dipole") },
+            measuredDipole?.let { ResultRow(R.string.actual_dipole_arm, length(it.nanometers / 2e9), "sizing-actual-arm") },
+            dipole?.let { ResultRow(R.string.new_total, length(it.newLengthMeters), "sizing-tuned-dipole") },
+            dipoleArm?.let { ResultRow(R.string.new_arm, length(it.newLengthMeters), "sizing-tuned-arm") },
+            dipole?.let { ResultRow(R.string.total_adjustment,
+                formatAdjustment(context, it.direction, abs(it.deltaMeters), unit), "sizing-tuned-dipole-delta") },
+            dipoleArm?.let { ResultRow(R.string.arm_adjustment,
+                formatAdjustment(context, dipole.direction, abs(it.deltaMeters), unit), "sizing-tuned-arm-delta") },
+        )
+        if (tuningRows.isNotEmpty()) {
+            groups += ResultGroup(R.string.sizing_tuning_projection, tuningRows, listOf(R.string.trimming_note))
         }
         state.sizing.ideal?.let { ideal ->
             groups += ResultGroup(R.string.ideal_sizes, listOf(

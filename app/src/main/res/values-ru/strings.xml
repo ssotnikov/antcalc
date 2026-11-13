@@ -38,6 +38,8 @@
     <string name="monopole">Штырь</string>
     <string name="dipole">Симметричный диполь</string>
     <string name="physical_sizes">Оценка начальных размеров</string>
+    <string name="sizing_tuning_projection">Прогноз по данным подстройки</string>
+    <string name="actual_dipole_arm">Фактическая длина одного плеча</string>
     <string name="ideal_sizes">Идеальные геометрические размеры</string>
     <string name="radiator_length">Четвертьволновый штырь</string>
     <string name="dipole_total">Полная длина диполя</string>

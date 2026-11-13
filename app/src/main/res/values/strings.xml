@@ -38,6 +38,8 @@
     <string name="monopole">Monopole</string>
     <string name="dipole">Symmetric dipole</string>
     <string name="physical_sizes">Estimated starting dimensions</string>
+    <string name="sizing_tuning_projection">Tuning estimate</string>
+    <string name="actual_dipole_arm">Measured length of one arm</string>
     <string name="ideal_sizes">Ideal geometric dimensions</string>
     <string name="radiator_length">Quarter-wave monopole</string>
     <string name="dipole_total">Total dipole length</string>
