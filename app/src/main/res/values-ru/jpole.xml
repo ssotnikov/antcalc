@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="jpole_intro">Начальные размеры J-антенны и положение точки питания.</string>
+    <string name="jpole_theory">Как работает J-антенна</string>
+    <string name="jpole_radiator">L · Участок излучателя</string>
+    <string name="jpole_matching">Нижняя двухпроводная секция длиной около λ/4 помогает согласовать излучатель с фидером 50 Ом. При перемещении отвода меняется входной импеданс.</string>
+    <string name="jpole_summary">Вертикальный излучатель с двухпроводной согласующей секцией, замкнутой снизу.</string>
+    <string name="jpole_frequencyHint">Укажите частоту, на которую хотите настроить антенну. Начальное значение — 146,000 МГц.</string>
+    <string name="jpole_factorHint" formatted="false">Коэффициент k корректирует длины излучателя и шлейфа. Значение 0,95 уменьшает их расчетные длины на 5 %.</string>
+    <string name="jpole_geometry">Размерная схема</string>
+    <string name="jpole_overview">Общий вид</string>
+    <string name="jpole_feed">Узел питания</string>
+    <string name="jpole_sizes">Расчетные размеры</string>
+    <string name="jpole_formulaTitle">Формулы расчета</string>
+    <string name="jpole_formulaScope">Формулы дают начальные размеры. Геометрию и согласование уточняют измерением собранной антенны.</string>
+    <string name="jpole_radiatorLabel">Излучатель (L на схеме)</string>
+    <string name="jpole_stubLabel">Согласующая секция (B на схеме)</string>
+    <string name="jpole_formulaUnits">Частота f — в МГц, длины — в метрах.</string>
+    <string name="jpole_spacingEstimate">Межосевое расстояние S ≈ (0,01–0,03)λ. В справочном примере принято S = 0,025λ.</string>
+    <string name="jpole_tapEstimate">Начальная высота отвода h ≈ 0,022λ (A на схеме). Положение уточняют по измерениям КСВ и импеданса.</string>
+    <string name="jpole_shorteningEstimate">Коэффициент k зависит от геометрии. В справочном примере k ≈ 0,95 для медной трубы Ø12–15 мм и k ≈ 0,97 для тонкого провода. Для ленточной линии нужны размеры её конструкции.</string>
+    <string name="jpole_formulaExamplesTitle">Начальные размеры при k = 0,95</string>
+    <string name="jpole_formulaExamplesHint">Длина волны указана в метрах, размеры антенны — в миллиметрах. На узком экране таблицу можно прокрутить вбок.</string>
+    <string name="jpole_formulaFrequencyColumn">f, МГц</string>
+    <string name="jpole_tuning">Подключение и настройка</string>
+    <string name="jpole_copperBuildTitle">Сборка из медной трубы</string>
+    <string name="jpole_copperBuildScope">Отдельный пример для диапазона 2 м на частоте 145,000 МГц. Ниже приведены начальные размеры медной конструкции.</string>
+    <string name="jpole_copperMaterialsTitle">Материалы</string>
+    <string name="jpole_copperMaterials">Медная труба наружным диаметром 12–15 мм, два уголка 90°, короткая вставка для перемычки, заглушка для короткой ветви, разъём SO-239 или N, пластиковая или стеклопластиковая опора, термоусадка и герметик.</string>
+    <string name="jpole_copperCut">Подготовьте длинную ветвь около 1470 мм и короткую около 490 мм. Оставьте небольшой запас для подстройки. При разметке трубы учтите глубину посадки в фитинги.</string>
+    <string name="jpole_copperJoin">Соедините ветви снизу уголками и вставкой. В собранной антенне расстояние между осями ветвей должно быть около 50 мм.</string>
+    <string name="jpole_copperFeed">Подключите оплётку к длинной ветви, центральную жилу — к короткой. Начните примерно с 45 мм над нижней перемычкой. Сделайте оба контакта подвижными на время настройки.</string>
+    <string name="jpole_copperChoke">У точки питания установите дроссель 1:1 для подавления токов по внешней стороне оплётки. Подберите феррит или конструкцию дросселя для 145 МГц.</string>
+    <string name="jpole_copperMount">Закрепите антенну на непроводящей опоре и выдержите расстояние от крупных металлических предметов.</string>
+    <string name="jpole_copperSeal">После настройки закрепите и герметизируйте контакты. Защитите соединения меди с алюминием от влаги.</string>
+    <string name="jpole_copperTuningTitle">Настройка</string>
+    <string name="jpole_copperMeasure">Измерьте КСВ и, если доступно, импеданс на установленной антенне. Перемещайте оба контакта вместе небольшими шагами, каждый раз повторяя измерение.</string>
+    <string name="jpole_copperAdjust">При необходимости корректируйте длину излучателя небольшими шагами. Если конструкция позволяет перемещать перемычку, проверяйте результат после её смещения отдельно.</string>
+    <string name="jpole_copperBandwidth">Измерьте рабочую полосу готовой антенны. На неё влияют диаметр труб, крепление и окружение.</string>
+    <string name="jpole_constructionVariantsTitle">Варианты конструкции</string>
+    <string name="jpole_twinLeadTitle">Из ленточного кабеля 300 Ом</string>
+    <string name="jpole_twinLeadDescription">Лёгкую антенну DK7ZB можно свернуть для переноски. Размеры A / B / C по его схеме: 137 см / 42 см / 30 мм на 145 МГц и 45,7 см / 14 см / 20 мм на 435 МГц.</string>
+    <string name="jpole_slimJimDescription">Вариант J-антенны с двумя параллельными проводниками в излучающей части, соединёнными сверху. Ориентир по общей длине — около 1,5 м для диапазона 2 м и 0,5 м для 70 см. Точные размеры зависят от материала и геометрии.</string>
+    <string name="jpole_superJDescription">Коллинеарная конструкция из двух излучающих секций с фазирующим шлейфом. Усиление и диаграмма направленности зависят от конструкции и установки.</string>
+    <string name="jpole_dualBandTitle">Двухдиапазонная 2 м / 70 см</string>
+    <string name="jpole_dualBandDescription">У J-антенны на 145 МГц КСВ на третьей гармонике, около 435 МГц, может быть приемлемым, а диаграмма излучения в вертикальной плоскости меняется. Open Stub J-Pole — пример отдельной конструкции для двух диапазонов.</string>
+    <string name="jpole_coaxialTitle">Из коаксиального кабеля</string>
+    <string name="jpole_coaxialDescription">Четвертьволновой отрезок коаксиала на 145 МГц при VF = 0,66 имеет длину около 341 мм. Используйте VF конкретного кабеля и уточняйте размеры измерением собранной антенны.</string>
+    <string name="jpole_copy">Копировать размеры</string>
+    <string name="jpole_refs">Материал по конструкции</string>
+    <string name="jpole_title">J-антенна</string>
+    <string name="jpole_long">H · Длинная ветвь</string>
+    <string name="jpole_stub">B · Короткая ветвь</string>
+    <string name="jpole_spacing">S · Расстояние между осями</string>
+    <string name="jpole_tap">A · Высота отвода</string>
+    <string name="jpole_frequency">Частота, МГц</string>
+    <string name="jpole_factor">Коэффициент укорочения k</string>
+    <string name="jpole_frequencyError">Введите частоту от 0,100 до 6000,000 МГц с точностью до 1 Гц.</string>
+    <string name="jpole_factorError">Введите k от 0,0001 до 1 (до четырёх знаков после запятой).</string>
+    <string name="jpole_copyProject">Копировать в проект</string>
+    <string name="jpole_radiatorExplanation">Верхний участок длинной ветви — излучатель длиной около λ/2.</string>
+    <string name="jpole_shield">Оплётка</string>
+    <string name="jpole_core">Центральная жила</string>
+    <string name="jpole_expand">▸ %1$s</string>
+    <string name="jpole_collapse">▾ %1$s</string>
+    <string name="jpole_step">%1$d. %2$s</string>
+    <string name="jpole_formula_equations">λ ≈ 299,8 / f\nLᵣ ≈ k × 149,9 / f\nLₛ ≈ k × 74,95 / f\nLₜ = Lᵣ + Lₛ</string>
+    <string name="jpole_references">J-антенна</string>
+    <string name="jpole_ref_part1">Принцип работы и геометрия стандартной модели на 146 МГц.</string>
+    <string name="jpole_ref_part3">Влияние диаметра проводников и расстояния между ветвями.</string>
+    <string name="jpole_ref_eax">Сборка из медных труб на 145 МГц, подвижные контакты и измерение КСВ.</string>
+    <string name="jpole_ref_cqham">Принцип J-согласования и варианты конструкции.</string>
+    <string name="jpole_ref_sv">Чертежи и настройка отдельной конструкции из медной трубы.</string>
+    <string name="jpole_ref_wireman">Лёгкие конструкции из провода и ленточной линии.</string>
+    <string name="jpole_legend">H и B отсчитываются от оси нижней перемычки. L — участок длинной ветви выше конца короткой. Схема вне масштаба.</string>
+    <string name="jpole_feedLegend">A — высота отвода над перемычкой. S — расстояние между осями ветвей.</string>
+    <string name="jpole_default_frequency">146,000</string>
+    <string name="jpole_default_factor">0,95</string>
+    <string name="jpole_choke">Установите дроссель 1:1 у точки питания для подавления синфазного тока. Подберите дроссель под рабочую частоту.</string>
+</resources>

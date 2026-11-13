@@ -50,6 +50,7 @@ internal fun AntennaParameterToolsScreen(
     onOpenInvertedV: () -> Unit,
     onOpenGroundPlane: () -> Unit,
     onOpenFullWaveLoop: () -> Unit,
+    onOpenJPole: () -> Unit,
 ) {
     val scroll = rememberScrollState()
     Column(
@@ -60,6 +61,7 @@ internal fun AntennaParameterToolsScreen(
         ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV, showChevron = true)
         ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane, showChevron = true)
         ToolCard(R.string.loop_title, R.string.loop_intro, "open-full-wave-loop", onOpenFullWaveLoop, showChevron = true)
+        ToolCard(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole, showChevron = true)
     }
 }
 

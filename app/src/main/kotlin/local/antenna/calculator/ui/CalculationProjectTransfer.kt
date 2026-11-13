@@ -44,6 +44,7 @@ private enum class TransferSource(val model: String, val title: Int, val frequen
     TRIMMING("trimming", R.string.trimming, "target"),
     INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
     GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
+    J_POLE("j_pole", R.string.jpole_title, "frequency"),
     FULL_WAVE_LOOP("full_wave_loop", R.string.loop_title, "loop_frequency"),
 }
 
@@ -57,6 +58,7 @@ internal class PendingProjectCalculation(
     val needsAntennaChoice get() = source == TransferSource.SIZING
     val isInvertedV get() = source == TransferSource.INVERTED_V
     val isGroundPlane get() = source == TransferSource.GROUND_PLANE
+    val isJPole get() = source == TransferSource.J_POLE
     val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
     val title get() = source.title
     val target = (if (isFullWaveLoop) snapshot.outputs else snapshot.inputs)
@@ -69,6 +71,7 @@ internal class PendingProjectCalculation(
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
+            TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
             TransferSource.INVERTED_V -> outputLengthNanometers("dipole_total")

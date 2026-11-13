@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="jpole_intro">Estimate J-pole dimensions and the starting feed tap position.</string>
+    <string name="jpole_theory">How a J-pole works</string>
+    <string name="jpole_radiator">L · Radiating section</string>
+    <string name="jpole_matching">The lower two-wire section is about λ/4 long and helps match the radiator to a 50 Ω feedline. Moving the feed taps changes the input impedance.</string>
+    <string name="jpole_summary">A vertical radiator with a two-wire matching section shorted at the bottom.</string>
+    <string name="jpole_frequencyHint">Enter the frequency you want to tune the antenna to. The default is 146.000 MHz.</string>
+    <string name="jpole_factorHint" formatted="false">The shortening factor k adjusts the radiator and matching stub lengths. A value of 0.95 makes their calculated lengths 5% shorter.</string>
+    <string name="jpole_geometry">Dimensioned drawing</string>
+    <string name="jpole_overview">Overview</string>
+    <string name="jpole_feed">Feedpoint detail</string>
+    <string name="jpole_sizes">Calculated dimensions</string>
+    <string name="jpole_formulaTitle">Calculation formulas</string>
+    <string name="jpole_formulaScope">These formulas give starting dimensions. Check geometry and matching on the assembled antenna.</string>
+    <string name="jpole_radiatorLabel">Radiator (L in the drawing)</string>
+    <string name="jpole_stubLabel">Matching section (B in the drawing)</string>
+    <string name="jpole_formulaUnits">Enter f in MHz. Lengths are in metres.</string>
+    <string name="jpole_spacingEstimate">Centre-to-centre spacing S ≈ (0.01–0.03)λ. The reference example uses S = 0.025λ.</string>
+    <string name="jpole_tapEstimate">Starting feed tap height h ≈ 0.022λ (A in the drawing). Refine the position using SWR and impedance measurements.</string>
+    <string name="jpole_shorteningEstimate">The shortening factor k depends on the geometry. The reference example uses k ≈ 0.95 for 12–15 mm copper pipe and k ≈ 0.97 for thin wire. Twin-lead designs use their own dimensions.</string>
+    <string name="jpole_formulaExamplesTitle">Starting dimensions at k = 0.95</string>
+    <string name="jpole_formulaExamplesHint">Wavelength is in metres and antenna dimensions are in millimetres. On narrow screens, scroll sideways to see all columns.</string>
+    <string name="jpole_formulaFrequencyColumn">f, MHz</string>
+    <string name="jpole_tuning">Feed and tuning</string>
+    <string name="jpole_copperBuildTitle">Copper pipe construction</string>
+    <string name="jpole_copperBuildScope">A separate 2 m example for 145.000 MHz. The dimensions below are starting values for the copper build.</string>
+    <string name="jpole_copperMaterialsTitle">Materials</string>
+    <string name="jpole_copperMaterials">Copper pipe with a 12–15 mm outside diameter, two 90° elbows, a short piece for the shorting bar, a cap for the short element, an SO-239 or N connector, a plastic or fibreglass support, heat-shrink tubing and sealant.</string>
+    <string name="jpole_copperCut">Prepare a long element of about 1470 mm and a short element of about 490 mm. Leave a little extra for tuning and account for how far the pipe seats in each fitting.</string>
+    <string name="jpole_copperJoin">Join the elements at the bottom with the elbows and shorting bar. Aim for about 50 mm between the element centrelines after assembly.</string>
+    <string name="jpole_copperFeed">Connect the coax shield to the long element and the centre conductor to the short one. Start about 45 mm above the shorting bar. Use adjustable contacts for tuning.</string>
+    <string name="jpole_copperChoke">Fit a 1:1 choke at the feedpoint to suppress current on the outside of the coax shield. Choose ferrite or a choke design suitable for 145 MHz.</string>
+    <string name="jpole_copperMount">Mount the antenna on a non-conductive support and keep it clear of large metal objects.</string>
+    <string name="jpole_copperSeal">Secure and weatherproof the contacts after tuning. Keep moisture away from copper-to-aluminium joints.</string>
+    <string name="jpole_copperTuningTitle">Tuning</string>
+    <string name="jpole_copperMeasure">Measure SWR and, if available, impedance with the antenna mounted. Move both contacts together in small steps and repeat the measurement after each adjustment.</string>
+    <string name="jpole_copperAdjust">If needed, adjust the radiator length in small steps. If the design has a movable shorting bar, measure the effect of moving it separately.</string>
+    <string name="jpole_copperBandwidth">Measure the finished antenna’s usable bandwidth. Pipe diameter, mounting and nearby objects all affect it.</string>
+    <string name="jpole_constructionVariantsTitle">Construction variants</string>
+    <string name="jpole_twinLeadTitle">300 Ω twin-lead</string>
+    <string name="jpole_twinLeadDescription">DK7ZB’s lightweight antenna rolls up for transport. The A / B / C dimensions in his drawing are 137 cm / 42 cm / 30 mm at 145 MHz and 45.7 cm / 14 cm / 20 mm at 435 MHz.</string>
+    <string name="jpole_slimJimDescription">A J-pole variant with two parallel conductors joined at the top of the radiator. Overall length is roughly 1.5 m for the 2 m band and 0.5 m for the 70 cm band. Exact dimensions depend on the materials and geometry.</string>
+    <string name="jpole_superJDescription">A collinear design with two radiating sections and a phasing stub. Gain and radiation pattern depend on the design and installation.</string>
+    <string name="jpole_dualBandTitle">Dual-band 2 m / 70 cm</string>
+    <string name="jpole_dualBandDescription">A 145 MHz J-pole may show acceptable SWR near its third harmonic at 435 MHz, while its elevation pattern changes. The Open Stub J-Pole is an example designed for both bands.</string>
+    <string name="jpole_coaxialTitle">Coaxial cable</string>
+    <string name="jpole_coaxialDescription">A quarter-wave section of coax with a velocity factor of 0.66 is about 341 mm long at 145 MHz. Use the actual cable’s velocity factor and refine dimensions by measuring the assembled antenna.</string>
+    <string name="jpole_copy">Copy dimensions</string>
+    <string name="jpole_refs">Design reference</string>
+    <string name="jpole_title">J-pole antenna</string>
+    <string name="jpole_long">H · Long element</string>
+    <string name="jpole_stub">B · Short element</string>
+    <string name="jpole_spacing">S · Centre spacing</string>
+    <string name="jpole_tap">A · Feed tap height</string>
+    <string name="jpole_frequency">Frequency, MHz</string>
+    <string name="jpole_factor">Shortening factor k</string>
+    <string name="jpole_frequencyError">Enter a frequency from 0.100 to 6000.000 MHz with up to six decimal places.</string>
+    <string name="jpole_factorError">Enter k from 0.0001 to 1 with up to four decimal places.</string>
+    <string name="jpole_copyProject">Copy to project</string>
+    <string name="jpole_radiatorExplanation">The upper part of the long element forms a radiator about λ/2 long.</string>
+    <string name="jpole_shield">Shield</string>
+    <string name="jpole_core">Centre conductor</string>
+    <string name="jpole_expand">▸ %1$s</string>
+    <string name="jpole_collapse">▾ %1$s</string>
+    <string name="jpole_step">%1$d. %2$s</string>
+    <string name="jpole_formula_equations">λ ≈ 299.8 / f\nLᵣ ≈ k × 149.9 / f\nLₛ ≈ k × 74.95 / f\nLₜ = Lᵣ + Lₛ</string>
+    <string name="jpole_references">J-pole antennas</string>
+    <string name="jpole_ref_part1">Operating principle and the geometry of the standard 146 MHz model.</string>
+    <string name="jpole_ref_part3">How conductor diameter and element spacing affect matching.</string>
+    <string name="jpole_ref_eax">A 145 MHz copper-pipe build with adjustable contacts and SWR measurements.</string>
+    <string name="jpole_ref_cqham">J matching and construction variants.</string>
+    <string name="jpole_ref_sv">Drawings and adjustment notes for a separate copper-pipe design.</string>
+    <string name="jpole_ref_wireman">Lightweight wire and twin-lead construction examples.</string>
+    <string name="jpole_source_cebik" translatable="false">https://antenna2.github.io/cebik/content/vhf/jp1.html</string>
+    <string name="jpole_source_part3" translatable="false">https://antenna2.github.io/cebik/content/vhf/jp3.html</string>
+    <string name="jpole_source_eax" translatable="false">https://eax.me/2020/2020-01-20-j-pole-antenna.html</string>
+    <string name="jpole_source_cqham" translatable="false">https://www.cqham.ru/ant86_30.htm</string>
+    <string name="jpole_source_sv" translatable="false">https://www.qsl.net/s/sv1ui/2mjpole/index.html</string>
+    <string name="jpole_source_wireman" translatable="false">https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm</string>
+    <string name="jpole_source_slim" translatable="false">https://antenna2.github.io/cebik/content/vhf/sj.html</string>
+    <string name="jpole_source_super" translatable="false">https://antenna2.github.io/cebik/content/vhf/jp4.html</string>
+    <string name="jpole_source_open" translatable="false">https://nt1k.com/open-stub-j-pole-project-completed-many-times/</string>
+    <string name="jpole_link_cebik" translatable="false">L. B. Cebik · J-Poles Part 1</string>
+    <string name="jpole_link_part3" translatable="false">L. B. Cebik · J-Poles Part 3</string>
+    <string name="jpole_link_eax" translatable="false">Самодельная J-антенна на 145 МГц из медных труб</string>
+    <string name="jpole_link_cqham" translatable="false">УКВ антенны с J-согласованием</string>
+    <string name="jpole_link_sv" translatable="false">2m J-pole antenna using standard European copper pipe</string>
+    <string name="jpole_link_wireman" translatable="false">DK7ZB · Wireman J-Poles</string>
+    <string name="jpole_link_slim" translatable="false">L. B. Cebik · What is a Slim Jim?</string>
+    <string name="jpole_link_super" translatable="false">L. B. Cebik · J-Poles Part 4</string>
+    <string name="jpole_link_open" translatable="false">NT1K · Open Stub J-Pole</string>
+    <string name="jpole_slim" translatable="false">Slim Jim</string>
+    <string name="jpole_super" translatable="false">Super-J</string>
+    <string name="jpole_legend">H and B are measured from the centreline of the shorting bar. L is the part above the short element. Drawing not to scale.</string>
+    <string name="jpole_feedLegend">A is the feed tap height above the shorting bar. S is the distance between element centrelines.</string>
+    <string name="jpole_default_frequency">146.000</string>
+    <string name="jpole_default_factor">0.95</string>
+    <string name="jpole_choke">Fit a 1:1 choke at the feedpoint to suppress common-mode current. Choose a choke suitable for the operating frequency.</string>
+</resources>

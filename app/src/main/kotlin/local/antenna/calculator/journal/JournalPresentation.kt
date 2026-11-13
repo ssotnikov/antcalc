@@ -19,6 +19,7 @@ import local.antenna.calculator.core.trimming.AntennaType
 internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.MONOPOLE -> R.string.monopole
     AntennaType.SYMMETRIC_DIPOLE -> R.string.dipole
+    AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
 }
 
@@ -91,6 +92,7 @@ internal class JournalPresentation(private val context: Context) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
                 "ground_plane" -> text(R.string.ground_plane_title)
+                "j_pole" -> text(R.string.jpole_title)
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 else -> s.model
@@ -143,6 +145,11 @@ internal class JournalPresentation(private val context: Context) {
         "loop_feed" -> text(R.string.loop_feed)
         "loop_factor" -> text(R.string.loop_factor)
         "loop_frequency" -> text(R.string.loop_calculated_frequency)
+        "jpole_long" -> text(R.string.jpole_long)
+        "jpole_stub" -> text(R.string.jpole_stub)
+        "jpole_radiator" -> text(R.string.jpole_radiator)
+        "jpole_spacing" -> text(R.string.jpole_spacing)
+        "jpole_tap" -> text(R.string.jpole_tap)
         "loop_perimeter" -> text(R.string.loop_perimeter)
         "loop_side" -> text(R.string.loop_side)
         "loop_width" -> text(R.string.loop_width)

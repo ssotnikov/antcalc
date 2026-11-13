@@ -22,6 +22,15 @@ private val cableDatasheetAddress = Regex(
     """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
 )
 private val additionalSourceAddresses = setOf(
+    "https://antenna2.github.io/cebik/content/vhf/jp1.html",
+    "https://antenna2.github.io/cebik/content/vhf/jp3.html",
+    "https://eax.me/2020/2020-01-20-j-pole-antenna.html",
+    "https://www.cqham.ru/ant86_30.htm",
+    "https://www.qsl.net/s/sv1ui/2mjpole/index.html",
+    "https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm",
+    "https://antenna2.github.io/cebik/content/vhf/sj.html",
+    "https://antenna2.github.io/cebik/content/vhf/jp4.html",
+    "https://nt1k.com/open-stub-j-pole-project-completed-many-times/",
     "https://www.radioman.ru/shem/anteny/an-kvad.php",
     "https://gef79.narod.ru/Shem/Antens/119.htm",
     "https://ra1ohx.ru/publ/antenny_kv/antenna_delta_loop_diapazona_20_metrov/1-1-0-549",

@@ -23,6 +23,14 @@ internal data class ReferenceGroup(
 )
 
 internal val referenceGroups = listOf(
+    ReferenceGroup(R.string.jpole_references, listOf(
+        TechnicalReference("jpole-cebik", R.string.jpole_link_cebik, R.string.jpole_ref_part1, R.string.jpole_source_cebik, "L. B. Cebik · W4RNL", AppLanguage.ENGLISH),
+        TechnicalReference("jpole-part3", R.string.jpole_link_part3, R.string.jpole_ref_part3, R.string.jpole_source_part3, "L. B. Cebik · W4RNL", AppLanguage.ENGLISH),
+        TechnicalReference("jpole-eax", R.string.jpole_link_eax, R.string.jpole_ref_eax, R.string.jpole_source_eax, "eax.me", AppLanguage.RUSSIAN),
+        TechnicalReference("jpole-cqham", R.string.jpole_link_cqham, R.string.jpole_ref_cqham, R.string.jpole_source_cqham, "RU3ARJ · CQHAM", AppLanguage.RUSSIAN),
+        TechnicalReference("jpole-sv", R.string.jpole_link_sv, R.string.jpole_ref_sv, R.string.jpole_source_sv, "SV1UI", AppLanguage.ENGLISH),
+        TechnicalReference("jpole-wireman", R.string.jpole_link_wireman, R.string.jpole_ref_wireman, R.string.jpole_source_wireman, "DK7ZB", AppLanguage.ENGLISH),
+    )),
     ReferenceGroup(R.string.references_fundamentals, listOf(
         TechnicalReference("nist", R.string.source_nist, R.string.source_nist_description, R.string.source_nist_url, "NIST", AppLanguage.ENGLISH),
         TechnicalReference("itu", R.string.source_itu, R.string.source_itu_description, R.string.source_itu_url, "МСЭ / ITU", AppLanguage.RUSSIAN, "§ 4.3"),

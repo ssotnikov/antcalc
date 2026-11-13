@@ -20,7 +20,7 @@ import local.antenna.calculator.state.validValue
 import local.antenna.calculator.core.layout.LoopModel
 
 internal fun journalSnapshot(state: CalculatorUiState, type: AntennaType, section: Section): CalculationSnapshot? {
-    if (!state.editingEnabled || type == AntennaType.FULL_WAVE_LOOP) return null
+    if (!state.editingEnabled || type !in AntennaType.straightConductors) return null
     return when (section) {
         Section.SIZING -> sizingSnapshot(state)?.let { it.copy(outputs = it.outputsForAntenna(type)) }
         Section.TRIMMING -> (if (state.draft.settings.antennaType == type) state.trimming.result
