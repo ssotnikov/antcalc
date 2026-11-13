@@ -6,7 +6,6 @@
     <string name="photo_count">%1$d из %2$d</string>
     <string name="photo_add">Добавить фото</string>
     <string name="photo_export_all">Экспортировать все</string>
-    <string name="photo_empty">Добавьте фото антенны, крепления или точки питания.</string>
     <string name="photo_no_comment">Без комментария</string>
     <string name="photo_comment">Комментарий</string>
     <string name="photo_description">Фото проекта, добавлено %1$s</string>
