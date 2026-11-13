@@ -7,6 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -193,6 +194,7 @@ internal fun JournalPhotoDetail(
     var discard by rememberSaveable(photo.id) { mutableStateOf(false) }
     var delete by rememberSaveable(photo.id) { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
+    var fullscreen by rememberSaveable(photo.id) { mutableStateOf(false) }
     val file = model.photoFile(photo, false)
     val jpeg = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("image/jpeg")) {
         finishPhotoExport(model, context, it, onMessage)
@@ -204,7 +206,10 @@ internal fun JournalPhotoDetail(
     JournalColumn {
         val date = presentation.date(photo.addedAt)
         StoredPhoto(file, stringResource(R.string.photo_description, date),
-            Modifier.fillMaxWidth().height(260.dp))
+            Modifier.fillMaxWidth().height(260.dp),
+            onOpen = { fullscreen = true },
+            fullscreen = fullscreen,
+            onClose = { fullscreen = false })
         Text(date, style = MaterialTheme.typography.bodySmall)
         JournalHeading(stringResource(R.string.photo_comment), MaterialTheme.colorScheme.secondary)
         Text(photo.comment.ifBlank { stringResource(R.string.photo_no_comment) }, Modifier.testTag("journal-photo-comment"))
@@ -277,7 +282,10 @@ internal fun JournalPhotoDetail(
 }
 
 @Composable
-private fun StoredPhoto(file: File, description: String?, modifier: Modifier) {
+private fun StoredPhoto(
+    file: File, description: String?, modifier: Modifier, onOpen: (() -> Unit)? = null,
+    fullscreen: Boolean = false, onClose: () -> Unit = {},
+) {
     var ready by remember(file) { mutableStateOf(false) }
     var bitmap by remember(file) { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(file) {
@@ -287,7 +295,13 @@ private fun StoredPhoto(file: File, description: String?, modifier: Modifier) {
     val image = bitmap
     if (image == null) Box(modifier, contentAlignment = Alignment.Center) {
         if (ready) Text(stringResource(R.string.photo_unavailable), style = MaterialTheme.typography.bodySmall)
-    } else Image(image, description, modifier, contentScale = ContentScale.Fit)
+    } else {
+        val preview = if (onOpen == null) modifier else modifier
+            .testTag("journal-photo-preview")
+            .clickable(onClickLabel = stringResource(R.string.photo_fullscreen), onClick = onOpen)
+        Image(image, description, preview, contentScale = ContentScale.Fit)
+        if (fullscreen) FullscreenJournalPhoto(image, description, onClose)
+    }
 }
 
 private fun launchPhotoPicker(model: JournalViewModel, launch: () -> Unit) {

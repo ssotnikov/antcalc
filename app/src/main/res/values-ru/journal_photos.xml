@@ -1,4 +1,6 @@
 <resources>
+    <string name="photo_fullscreen">Открыть на весь экран</string>
+    <string name="photo_zoom_level">Масштаб %1$d%%</string>
     <string name="photo_section">Ваши фото</string>
     <string name="photo_title">Фото проекта</string>
     <string name="photo_count">%1$d из %2$d</string>
