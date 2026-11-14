@@ -14,6 +14,7 @@
     <string name="lizaalert_banner_description">LizaAlert — open the search and rescue team website</string>
     <string name="report_bug">Report a bug</string>
     <string name="menu">Menu</string>
+    <string name="scroll_to_top">Scroll to top</string>
     <string name="back">Back</string>
     <string name="frequency">Frequency</string>
     <string name="measured_frequency">Measured resonant frequency</string>

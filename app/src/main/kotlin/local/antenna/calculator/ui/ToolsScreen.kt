@@ -2,7 +2,6 @@ package local.antenna.calculator.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -26,8 +25,9 @@ internal fun ToolsScreen(
     onOpenJournal: (() -> Unit)? = null,
     onOpenFeedline: (() -> Unit)? = null,
     onOpenAdditional: (() -> Unit)? = null,
+    onOpenConstruction: (() -> Unit)? = null,
 ) {
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Box(Modifier.widthIn(max = 680.dp).fillMaxSize().testTag("tools-viewport")) {
         Column(Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp).testTag("tools-cards"),
@@ -39,9 +39,23 @@ internal fun ToolsScreen(
             if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             ToolCard(R.string.antenna_parameter_tools, R.string.antenna_parameter_tools_hint,
                 "open-antenna-parameter-tools", onOpenAntennaCalculations, showChevron = true)
+            if (onOpenConstruction != null) ToolCard(R.string.construction_title, R.string.construction_hint,
+                "open-antenna-construction", onOpenConstruction, showChevron = true)
             if (onOpenAdditional != null) ToolCard(R.string.additional_tools, R.string.bandwidth_additional_tools,
                 "open-additional-tools", onOpenAdditional, showChevron = true, highlighted = true)
         }
+    }
+}
+
+@Composable
+internal fun AntennaConstructionScreen(onOpenYagi: () -> Unit) {
+    val scroll = rememberPageScrollState()
+    Column(
+        Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
+            .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
+    ) {
+        ToolCard(R.string.construction_yagi_card_title, R.string.construction_yagi_intro,
+            "open-construction-yagi", onOpenYagi, showChevron = true)
     }
 }
 
@@ -51,8 +65,9 @@ internal fun AntennaParameterToolsScreen(
     onOpenGroundPlane: () -> Unit,
     onOpenFullWaveLoop: () -> Unit,
     onOpenJPole: () -> Unit,
+    onOpenYagi: () -> Unit,
 ) {
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp).testTag("antenna-parameter-tools"),
@@ -61,13 +76,14 @@ internal fun AntennaParameterToolsScreen(
         ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV, showChevron = true)
         ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane, showChevron = true)
         ToolCard(R.string.loop_title, R.string.loop_intro, "open-full-wave-loop", onOpenFullWaveLoop, showChevron = true)
+        ToolCard(R.string.yagi_title, R.string.yagi_tool, "open-yagi-calculator", onOpenYagi, showChevron = true)
         ToolCard(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole, showChevron = true)
     }
 }
 
 @Composable
 internal fun AdditionalToolsScreen(onOpenMeasurements: () -> Unit, onOpenBandwidth: () -> Unit) {
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),

@@ -45,6 +45,7 @@ private enum class TransferSource(val model: String, val title: Int, val frequen
     INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
     GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
     J_POLE("j_pole", R.string.jpole_title, "frequency"),
+    YAGI("yagi_r3udk", R.string.yagi_title, "frequency"),
     FULL_WAVE_LOOP("full_wave_loop", R.string.loop_title, "loop_frequency"),
 }
 
@@ -53,11 +54,13 @@ internal class PendingProjectCalculation(
     private val projectId: UUID = UUID.randomUUID(),
     val recordId: UUID = UUID.randomUUID(),
     private val time: OffsetDateTime = OffsetDateTime.now(),
+    private val note: String = "",
 ) {
     private val source = TransferSource.entries.first { it.model == snapshot.model }
     val needsAntennaChoice get() = source == TransferSource.SIZING
     val isInvertedV get() = source == TransferSource.INVERTED_V
     val isGroundPlane get() = source == TransferSource.GROUND_PLANE
+    val isYagi get() = source == TransferSource.YAGI
     val isJPole get() = source == TransferSource.J_POLE
     val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
     val title get() = source.title
@@ -71,6 +74,7 @@ internal class PendingProjectCalculation(
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
+            TransferSource.YAGI -> return null
             TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
@@ -89,7 +93,7 @@ internal class PendingProjectCalculation(
         AntennaProject(projectId, name, type, target, initialLength(type))
 
     fun record(type: AntennaType, title: String) =
-        JournalRecord(recordId, title, time, type, calculation = snapshot.copy(outputs = snapshot.outputsForAntenna(type)))
+        JournalRecord(recordId, title, time, type, note = note, calculation = snapshot.copy(outputs = snapshot.outputsForAntenna(type)))
 
     companion object {
         fun capture(state: CalculatorUiState, section: Section, type: AntennaType): PendingProjectCalculation? {
@@ -102,6 +106,7 @@ internal class PendingProjectCalculation(
                 pending?.let {
                     Bundle().apply {
                         putByteArray("snapshot", JournalJson.encodePendingSnapshot(it.snapshot))
+                        putString("note", it.note)
                         putString("project", it.projectId.toString())
                         putString("record", it.recordId.toString())
                         putString("time", it.time.toString())
@@ -115,6 +120,7 @@ internal class PendingProjectCalculation(
                         UUID.fromString(bundle.getString("project")),
                         UUID.fromString(bundle.getString("record")),
                         OffsetDateTime.parse(bundle.getString("time")),
+                        bundle.getString("note").orEmpty(),
                     )
                 }.getOrNull()
             },
@@ -177,7 +183,7 @@ internal fun TransferNewProject(
             "project-transfer-name", !status.busy, modifier = Modifier.bringIntoViewRequester(nameLocation),
             limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { invalidAttempts > 0 && name.text.isBlank() })
         TransferSummary(pending, type)
-        if (pending.initialLength(type) == null) HelpText(R.string.project_transfer_length_outside_range)
+        if (!pending.isYagi && pending.initialLength(type) == null) HelpText(R.string.project_transfer_length_outside_range)
         Text(stringResource(R.string.project_transfer_first_entry), style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary)
         JournalDetails(JournalPresentation(LocalContext.current).snapshotDetails(pending.snapshot, type))

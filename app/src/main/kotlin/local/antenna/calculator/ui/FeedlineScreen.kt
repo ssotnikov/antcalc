@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -92,7 +91,7 @@ internal fun FeedlineScreen(
         onEvent(CalculatorEvent.Feedline(change(currentState().draft.feedline)))
 
     Column(
-        Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp)
+        Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState()).padding(20.dp)
             .testTag("feedline-scroll"),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {

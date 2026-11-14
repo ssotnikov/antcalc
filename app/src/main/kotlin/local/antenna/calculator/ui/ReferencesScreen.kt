@@ -1,7 +1,6 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -19,7 +18,7 @@ import local.antenna.calculator.state.AppLanguage
 
 @Composable
 internal fun ReferencesScreen(language: AppLanguage) {
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null)

@@ -33,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import java.util.UUID
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.BindPageScrollToTop
+import local.antenna.calculator.ui.rememberPageLazyListState
+import local.antenna.calculator.ui.rememberPageScrollState
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.state.CalculatorUiState
 import local.antenna.calculator.ui.AppAlertDialog
@@ -385,7 +388,7 @@ private fun ProjectList(
     onNew: () -> Unit, onOpen: (UUID) -> Unit, onImport: () -> Unit,
     onAction: (AntennaProject, ProjectAction) -> Unit,
 ) {
-    val scroll = rememberLazyListState()
+    val scroll = rememberPageLazyListState()
     LazyColumn(
         Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("journal-projects"),
         state = scroll, overscrollEffect = null, contentPadding = PaddingValues(16.dp),
@@ -454,6 +457,7 @@ private fun ProjectHistory(
     onOpenSweeps: ((SweepComparison) -> Unit)?,
     onRemoveSweeps: (SweepComparison) -> Unit,
 ) {
+    BindPageScrollToTop(scroll)
     var actions by remember { mutableStateOf(false) }
     val records = remember(project.records) { project.records.sortedWith(journalChronology.reversed()) }
     val sweeps = project.sweeps.asReversed().distinctBy { it.selectionKey() }
@@ -613,7 +617,7 @@ private fun JournalSelectionCheckbox(
 
 @Composable
 internal fun JournalColumn(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
-    Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+    Column(modifier.fillMaxSize().verticalScroll(rememberPageScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
 }
 

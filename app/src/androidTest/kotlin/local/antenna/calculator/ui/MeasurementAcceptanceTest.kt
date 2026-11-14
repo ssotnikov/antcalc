@@ -42,6 +42,24 @@ class MeasurementAcceptanceTest {
         compose.onNodeWithTag("open-additional-tools").assertExists()
     }
 
+    @Test fun yagiArticleLinkOpensMeasurementsAndReturnsToTheSamePosition() {
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-antenna-construction").performScrollTo().performClick()
+        compose.onNodeWithTag("open-construction-yagi").performClick()
+        val list = compose.onNodeWithTag("yagi-guide")
+        val check = "yagi-section-CHECK"
+        list.performScrollToNode(hasTestTag(check))
+        compose.onNodeWithTag(check).performClick()
+        val linkText = hasText("145", substring = true) and hasText("S1P", substring = true)
+        list.performScrollToNode(linkText)
+        val link = compose.onNode(linkText)
+        link.assertIsDisplayed().performFirstLinkClick()
+        waitFor("measurement-screen")
+        compose.onNodeWithTag("back").performClick()
+        link.assertIsDisplayed()
+    }
+
     @SdkSuppress(minSdkVersion = Build.VERSION_CODES.Q)
     @Test fun importsTwoTracesAndFailedReplacementKeepsPreviouslyVerifiedTrace() {
         val resolver = compose.activity.contentResolver

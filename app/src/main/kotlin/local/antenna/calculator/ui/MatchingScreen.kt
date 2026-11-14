@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -91,7 +90,7 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
     val appName = stringResource(R.string.app_name)
     var details by rememberSaveable { mutableStateOf(false) }
     fun change(value: MatchingDraft) { onEvent(CalculatorEvent.Matching(value)) }
-    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp).testTag("matching-scroll"),
+    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState()).padding(20.dp).testTag("matching-scroll"),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StorageNotice(state, onEvent)
         ChoicePicker(stringResource(R.string.matching_source), MatchingMode.entries, draft.mode,

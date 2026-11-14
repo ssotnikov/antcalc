@@ -3,7 +3,6 @@ package local.antenna.calculator.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardActions
@@ -89,7 +88,7 @@ internal fun ProjectPicker(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (status.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
-        val scroll = rememberLazyListState()
+        val scroll = rememberPageLazyListState()
         LazyColumn(
             Modifier.weight(1f).fillMaxWidth().cardListBounce(scroll.isScrollInProgress)
                 .selectableGroup().testTag("project-transfer-project-list"),

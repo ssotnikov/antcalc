@@ -23,6 +23,10 @@ internal data class ReferenceGroup(
 )
 
 internal val referenceGroups = listOf(
+    ReferenceGroup(R.string.references_yagi, listOf(
+        TechnicalReference("yagi-dg7ybn", R.string.source_yagi_dg7ybn, R.string.source_yagi_dg7ybn_description,
+            R.string.source_yagi_dg7ybn_url, "DG7YBN", AppLanguage.ENGLISH),
+    )),
     ReferenceGroup(R.string.jpole_references, listOf(
         TechnicalReference("jpole-cebik", R.string.jpole_link_cebik, R.string.jpole_ref_part1, R.string.jpole_source_cebik, "L. B. Cebik · W4RNL", AppLanguage.ENGLISH),
         TechnicalReference("jpole-part3", R.string.jpole_link_part3, R.string.jpole_ref_part3, R.string.jpole_source_part3, "L. B. Cebik · W4RNL", AppLanguage.ENGLISH),

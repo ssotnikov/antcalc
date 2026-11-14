@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="construction_title">Antenna construction</string>
+    <string name="construction_hint">Dimensions, materials and assembly notes for specific antenna designs</string>
+    <string name="construction_yagi_title">Yagi-Uda antenna</string>
+    <string name="construction_yagi_card_title">@string/construction_yagi_title</string>
+    <string name="construction_yagi_intro">A portable four-element Yagi for 145 MHz, with thin metal rods, a PVC boom and removable elements.</string>
+    <string name="construction_yagi_geometry">Layout and dimensions</string>
+    <string name="construction_yagi_geometry_note">Positions are measured along the boom from the reflector. Use Ø25 mm electrical conduit for the boom. The published build uses Ø2.4 mm aluminium rods and discusses alternatives in the Ø2–3 mm range.</string>
+    <string name="construction_yagi_element">Element</string>
+    <string name="construction_yagi_position">Position, mm</string>
+    <string name="construction_yagi_length">Length, mm</string>
+    <string name="construction_yagi_reflector">Reflector</string>
+    <string name="construction_yagi_driven">Driven element</string>
+    <string name="construction_yagi_director_1">Director 1</string>
+    <string name="construction_yagi_director_2">Director 2</string>
+    <string name="construction_yagi_outline_alt">From left to right along the boom: reflector, split driven element and two directors. The arrow points towards the directors. Dimensions are listed below.</string>
+    <string name="construction_yagi_materials">Materials, fasteners and STL files</string>
+    <string name="construction_yagi_tools">Prepare a drill with 5 and 6 mm bits, a soldering iron, a pipe cutter or fine-tooth saw, a heat gun, pliers, side cutters, 8 and 10 mm spanners, a tape measure and a pencil.</string>
+    <string name="construction_yagi_hardware">Allow at least 1.5 m of PVC conduit, about 1.5 m of RG‑58 A/U or C/U, five or more rigid rods, two tinned ring terminals with 5–6 mm holes, a right-angle SO‑239 connector, adhesive heat-shrink tubing and hot-melt glue. Have two 25–40 mm clamps for the rear mount and two 20–32 mm clamps for the centre mount. The hardware list calls for two M6×50 and two M6×30 bolts, one M5×30 bolt, five M5×20 bolts plus a spare, two M6 wing nuts and spare M5 and M6 nuts and washers. Stainless hardware is preferred.</string>
+    <string name="construction_yagi_print">The source supplies STL files for the rear and centre mast mounts, element holders, choke and cable holders, drip guard, knobs, pins and end caps. The driven-element and choke mounts have mirrored parts. PETG is recommended. The article also describes how the prototype used glass-filled ABS. Open the source article for the files and their terms.</string>
+    <string name="construction_yagi_mounts_title">Prepare the mounts</string>
+    <string name="construction_yagi_mounts">Fit the captive bolts and nuts to the printed parts. The rear bracket uses the M6 hardware, the centre bracket an M5×30 bolt, and the element holders M5×20 bolts. Use the centre mount with a nonconductive support. See the source photos for fastener orientation and assembly of the two rear bracket halves.</string>
+    <string name="construction_yagi_elements_title">Prepare the elements</string>
+    <string name="construction_yagi_elements">Cut the directors to length and mark the centres. The article starts the driven element with a 995 mm blank, halves it and bends each half to fit its mount. The drawing lists 990 mm for the finished element. A reflector longer than the available rod can be joined with a crimped aluminium sleeve. The removable two-piece alternative depends on consistent electrical contact at the joint. Protect copper-coated steel against corrosion if used.</string>
+    <string name="construction_yagi_feed_title">Prepare the feedline</string>
+    <string name="construction_yagi_feed_alt">The coax centre conductor and shield connect to different halves of the split driven element.</string>
+    <string name="construction_yagi_feed">Solder the two ring terminals to the coax, one to the centre conductor and one to the shield, then seal the prepared end. The build uses nine turns of RG‑58 on the boom near the feedpoint. Route the cable towards the rear mount with slack. Slide on the connector cover and heat-shrink pieces before soldering the SO‑239 connector. Secure the connector in its bracket with the drip guard.</string>
+    <string name="construction_yagi_assembly_title">Assemble on the boom</string>
+    <string name="construction_yagi_assembly">Slide the mounts onto the tube and place the elements at the positions in the table. Loosen the knobs to fit or remove elements. Keep the rods centred, retain the cable in its holders and place the rear mast bracket roughly 20 cm behind the reflector. Leave the element mounts movable for the first measurement.</string>
+    <string name="construction_yagi_check_title">Check with a NanoVNA</string>
+    <string name="construction_yagi_check">Check the connections before transmitting. Before drilling the boom, measure SWR and impedance near 145 MHz in the intended mounting configuration. The source shows the author’s measurements. In AntCalc, you can open an exported S1P trace with the “%1$s” tool.</string>
+    <string name="construction_yagi_finish_title">Secure and pack the antenna</string>
+    <string name="construction_yagi_finish">After checking the measurements, drill through the holder holes and secure the holders with the printed pins. Leave only 1–1.5 mm of pin protruding inside the tube so that the elements can be stored in it. Fit the short front cap and the tethered rear cap. Remove the centre clamps when they are unused.</string>
+    <string name="construction_yagi_variants_title">Other versions</string>
+    <string name="construction_yagi_variants">The source also includes drawings for three to six elements, a seven-element version and notes on reusing the mounting system for other bands and dual-band builds. Use the dimensions from the drawing for the chosen version.</string>
+    <string name="construction_yagi_source_title">Source and rights</string>
+    <string name="construction_yagi_source_link">LizaAlert Wiki · Building a Yagi-Uda antenna (Russian)</string>
+    <string name="construction_yagi_full_article">Full article</string>
+    <string name="construction_yagi_export_models">Save STL files as ZIP</string>
+    <string name="construction_yagi_export_failed">Could not save the STL archive</string>
+    <string name="construction_yagi_article_image">Illustration from the article</string>
+    <string name="construction_yagi_rights">Source publication © 2 April 2026, LizaAlert Wiki. The article, illustrations and STL files are included with permission from the author (R3UDK). The author (R3UDK) retains the rights to these materials. See the original for terms of further use.</string>
+    <string name="references_yagi">Yagi–Uda antennas</string>
+    <string name="source_yagi_dg7ybn">YBN 2-5m: design and element dimensions</string>
+    <string name="source_yagi_dg7ybn_description">Five-element 2 m Yagi, with dimension tables for different element diameters and boom mounting methods, plus radiation pattern and SWR plots.</string>
+    <string name="source_yagi_dg7ybn_url" translatable="false">https://www.dg7ybn.de/144MHz/144_5elem.htm</string>
+</resources>

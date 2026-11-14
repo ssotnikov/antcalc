@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.rememberPageScrollState
 import local.antenna.calculator.core.measurements.S11Point
 import local.antenna.calculator.ui.SmithSweepGraphic
 
@@ -130,7 +130,7 @@ internal fun MeasurementScreen(
         }
     }
 
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(scroll).padding(20.dp).testTag("measurement-screen"),
         verticalArrangement = Arrangement.spacedBy(14.dp),

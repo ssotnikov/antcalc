@@ -6,7 +6,6 @@ import android.content.Context
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -101,7 +100,7 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
     val focus = LocalFocusManager.current
     var details by rememberSaveable { mutableStateOf(false) }
     fun change(value: CableDraft) = onEvent(CalculatorEvent.Cable(value))
-    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp).testTag("cable-scroll"),
+    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState()).padding(20.dp).testTag("cable-scroll"),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StorageNotice(state, onEvent)
         ChoicePicker(stringResource(R.string.cable_direction), CableMode.entries, draft.mode, { stringResource(it.label()) },

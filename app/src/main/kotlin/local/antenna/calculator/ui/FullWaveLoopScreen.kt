@@ -7,7 +7,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -74,7 +73,7 @@ internal fun FullWaveLoopScreen(
             frequencyNumbers.inUnit(value, unit), resources.getString(unit.labelResource()))
     }
 
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(scroll).padding(20.dp)
             .testTag("full-wave-loop-screen"),

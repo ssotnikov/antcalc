@@ -10,7 +10,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,6 +29,7 @@ import androidx.core.content.edit
 import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.rememberPageLazyListState
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.PositiveDecimalParser
 import local.antenna.calculator.core.measurements.*
@@ -78,7 +78,7 @@ internal fun SwrBandwidthScreen(
     val failed = stringResource(R.string.bandwidth_copy_failed)
     val title = stringResource(R.string.bandwidth_title)
 
-    val listState = rememberLazyListState()
+    val listState = rememberPageLazyListState()
     LazyColumn(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(listState.isScrollInProgress).testTag("bandwidth-screen"),
         state = listState,

@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -50,7 +49,7 @@ internal fun CalculationScreen(
         onCopied()
     }
     val settings = state.draft.settings
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     BoxWithConstraints(Modifier.widthIn(max = 1100.dp).fillMaxSize()) {
         val wide = maxWidth >= 840.dp
         Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(20.dp).testTag("calculator-scroll"), verticalArrangement = Arrangement.spacedBy(20.dp)) {

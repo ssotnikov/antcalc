@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -52,7 +51,7 @@ internal fun GroundPlaneScreen(
     }
 
     Column(
-        Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState())
+        Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberPageScrollState())
             .padding(20.dp).testTag("ground-plane-screen"),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {

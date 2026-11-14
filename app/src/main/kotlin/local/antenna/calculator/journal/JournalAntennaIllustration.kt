@@ -20,6 +20,7 @@ import local.antenna.calculator.core.trimming.AntennaType
 @Composable
 internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = Modifier) {
     val painter = when (type) {
+        AntennaType.YAGI -> painterResource(R.drawable.yagi_r3_hero)
         AntennaType.J_POLE -> painterResource(R.drawable.j_pole_antenna)
         AntennaType.FULL_WAVE_LOOP -> painterResource(R.drawable.full_wave_loop_square)
         AntennaType.MONOPOLE, AntennaType.SYMMETRIC_DIPOLE -> {

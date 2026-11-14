@@ -5,7 +5,6 @@ import android.content.ClipboardManager
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -68,7 +67,7 @@ internal fun JPoleScreen(onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () 
     val title = stringResource(R.string.jpole_title)
     val reportRows = result?.rows().orEmpty()
 
-    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberScrollState())
+    Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
         .padding(20.dp).testTag("jpole-screen"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Image(painterResource(R.drawable.j_pole_antenna), stringResource(R.string.jpole_intro),
             Modifier.fillMaxWidth().height(180.dp))
@@ -258,10 +257,11 @@ private fun JPoleDiagram(left: Int, right: Int, showDimensions: Boolean = false)
             val shortX = size.width * .60f
             val base = size.height * .76f
             val tap = size.height * .58f
+            val longTop = size.height * .12f
             val shortTop = size.height * .44f
             val sectionTop = if (showDimensions) base else shortTop
             drawLine(if (showDimensions) metal else colors.primary,
-                Offset(longX, size.height * .12f), Offset(longX, sectionTop), 4.dp.toPx())
+                Offset(longX, longTop), Offset(longX, sectionTop), 4.dp.toPx())
             if (!showDimensions) {
                 drawLine(matchingSection, Offset(longX, sectionTop), Offset(longX, base), 4.dp.toPx())
             }
@@ -273,14 +273,27 @@ private fun JPoleDiagram(left: Int, right: Int, showDimensions: Boolean = false)
                 for (x in listOf(longX, shortX)) {
                     drawLine(guide, Offset(x, base), Offset(x, spacingY))
                 }
-                drawLine(guide, Offset(size.width * .84f, tap), Offset(size.width * .84f, base))
-                drawLine(guide, Offset(shortX, tap), Offset(size.width * .84f, tap))
-                drawLine(guide, Offset(shortX, base), Offset(size.width * .84f, base))
+                fun heightDimension(mark: String, branchX: Float, dimensionX: Float, top: Float, bottom: Float) {
+                    val layout = measurer.measure(mark, textStyle)
+                    val textTop = (top + bottom - layout.size.height) / 2
+                    val gap = 2.dp.toPx()
+                    drawLine(guide, Offset(branchX, top), Offset(dimensionX, top))
+                    drawLine(guide, Offset(branchX, bottom), Offset(dimensionX, bottom))
+                    if (textTop - gap > top) {
+                        drawLine(guide, Offset(dimensionX, top), Offset(dimensionX, textTop - gap))
+                        drawLine(guide, Offset(dimensionX, textTop + layout.size.height + gap), Offset(dimensionX, bottom))
+                    }
+                    drawText(layout, topLeft = Offset(dimensionX - layout.size.width / 2f, textTop))
+                }
+
+                heightDimension("H", longX, size.width * .12f, longTop, base)
+                heightDimension("L", longX, size.width * .28f, longTop, shortTop)
+                heightDimension("B", shortX, size.width * .91f, shortTop, base)
+                heightDimension("A", shortX, size.width * .75f, tap, base)
                 val spacingLabel = measurer.measure("S", textStyle)
                 drawText(spacingLabel, topLeft = Offset((longX + shortX - spacingLabel.size.width) / 2, spacingY))
-                drawText(measurer, "A", topLeft = Offset(size.width * .86f, (base + tap) / 2), style = textStyle)
                 drawLine(gold, Offset(size.width * .24f, tap), Offset(longX, tap), 2.dp.toPx())
-                drawLine(gold, Offset(shortX, tap), Offset(size.width * .77f, tap), 2.dp.toPx())
+                drawLine(gold, Offset(shortX, tap), Offset(size.width * .70f, tap), 2.dp.toPx())
                 drawCircle(gold, 4.dp.toPx(), Offset(longX, tap))
                 drawCircle(gold, 4.dp.toPx(), Offset(shortX, tap))
             }

@@ -38,11 +38,24 @@ class WebSourcesTest {
             "https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf",
             "https://ssotnikov.pro",
             "https://lizaalert.org/",
+            "https://www.dg7ybn.de/144MHz/144_5elem.htm",
+            LIZAALERT_YAGI_URL,
             "https://github.com/ssotnikov/antcalc/issues/new",
             "https://github.com/ssotnikov/antcalc/releases",
             "https://github.com/ssotnikov/antcalc/releases/tag/github-direct-v1.7.0",
             "https://t.me/ssotnikov",
         )) assertEquals(url, validatedSourceAddress(url))
+    }
+
+    @Test fun yagiProfilesUseApprovedSourcesAndUniqueStableIds() {
+        val profiles = YagiProfile.entries
+        assertEquals(7, profiles.map { it.id }.distinct().size)
+        assertEquals(7, profiles.map { it.image }.distinct().size)
+        for (profile in profiles) {
+            assertEquals(profile.original, validatedSourceAddress(profile.original))
+            profile.terms?.let { assertEquals(it, validatedSourceAddress(it)) }
+            assertTrue(profile.hz.zipWithNext().all { (first, second) -> first < second })
+        }
     }
 
     @Test fun unsafeOrAmbiguousUrisFailClosed() {
@@ -51,6 +64,8 @@ class WebSourcesTest {
             "https://www.arrl.org@evil.example/", "https://evil.example@www.arrl.org/",
             "https://www.arrl.org:8443/", "https://www.arrl.org\\@evil.example/", "https://www.arrl.org /",
             "http://lizaalert.org/", "https://lizaalert.org.evil.example/", LIZAALERT_URL + "?next=unexpected",
+            "https://www.dg7ybn.de/144MHz/144_5elem.htm?next=unexpected", "https://www.dg7ybn.de/other.htm",
+            LIZAALERT_YAGI_URL + "?next=unexpected", "https://wiki.app.lizaalert.ru/s/unapproved",
             "https://ssotnikov.pro.evil.example/", "https://ssotnikov.pro@evil.example/", "http://ssotnikov.pro",
             "https://www.youtube.com/watch?v=unapproved", "https://www.antenna-theory.com/other",
             "https://www.antenna-theory.com/tutorial/smith/chart.php?utm_source=unexpected",

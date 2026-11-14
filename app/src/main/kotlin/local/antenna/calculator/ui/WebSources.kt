@@ -22,6 +22,14 @@ private val cableDatasheetAddress = Regex(
     """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
 )
 private val additionalSourceAddresses = setOf(
+    "https://www.dg7ybn.de/144MHz/144_5elem.htm",
+    LIZAALERT_YAGI_URL,
+    "https://www.dg7ybn.de/",
+    "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm",
+    "https://dk7zb.darc.de/",
+    "https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm",
+    "https://dk7zb.darc.de/70cm/5.htm",
+    "https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm",
     "https://antenna2.github.io/cebik/content/vhf/jp1.html",
     "https://antenna2.github.io/cebik/content/vhf/jp3.html",
     "https://eax.me/2020/2020-01-20-j-pole-antenna.html",
@@ -50,6 +58,7 @@ private val additionalSourceAddresses = setOf(
 
 internal const val GITHUB_RELEASES_URL = "https://github.com/ssotnikov/antcalc/releases"
 internal const val LIZAALERT_URL = "https://lizaalert.org/"
+internal const val LIZAALERT_YAGI_URL = "https://wiki.app.lizaalert.ru/s/8a0ac7fb-4e86-4453-8778-5a45f9f0ca3e"
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
 private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
 internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"

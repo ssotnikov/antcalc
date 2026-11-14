@@ -74,6 +74,75 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         compose.onNodeWithTag("nav-SIZING").assertIsSelected()
     }
 
+    @Test fun tappingTitleResetsOnlyTheCurrentScreenScroll() {
+        start(fontScale = 2f)
+        val scroll = compose.onNodeWithTag("calculator-scroll")
+        val title = compose.onNodeWithTag("screen-title")
+        fun position() = scroll.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        fun scrollDown() {
+            scroll.performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 380f) }
+            assertTrue(position() > 0f)
+        }
+
+        scrollDown()
+        val sizingPosition = position()
+        trimming()
+        scrollDown()
+        title.performClick()
+        assertEquals(0f, position(), 0f)
+        compose.onNodeWithTag("nav-SIZING").performClick()
+        assertEquals(sizingPosition, position(), 0f)
+
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-antenna-construction").performScrollTo().performClick()
+        compose.onNodeWithTag("open-construction-yagi").performClick()
+        val list = compose.onNodeWithTag("yagi-guide")
+        val geometry = compose.onNodeWithTag("yagi-section-GEOMETRY")
+        list.performScrollToNode(hasTestTag("yagi-section-MATERIALS"))
+        compose.onNodeWithTag("yagi-section-MATERIALS").performClick()
+        list.performScrollToNode(hasText("Сохранить STL в ZIP"))
+        val export = compose.onNodeWithText("Сохранить STL в ZIP")
+        export.assertIsDisplayed()
+        geometry.assertIsNotDisplayed()
+        title.performClick()
+        geometry.assertIsDisplayed()
+    }
+
+    @Test fun menuPagesReturnToTheOriginAndRestoreScroll() {
+        start(fontScale = 2f)
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-cable").performScrollTo().performClick()
+        val cable = compose.onNodeWithTag("cable-scroll")
+        cable.performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 420f) }
+        fun position() = cable.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        val saved = position()
+        assertTrue(saved > 0f)
+        for (tag in listOf("open-settings", "open-about", "open-references")) {
+            compose.onNodeWithTag("menu").performClick()
+            compose.onNodeWithTag(tag).performClick()
+            cable.assertDoesNotExist()
+            back()
+            assertEquals(saved, position(), 0f)
+        }
+
+        settings()
+        val settingsScroll = compose.onNodeWithTag("settings-scroll")
+        settingsScroll.performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 160f) }
+        val settingsPosition = settingsScroll.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
+        assertTrue(settingsPosition > 0f)
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-about").performClick()
+        compose.onNodeWithTag("menu").performClick()
+        compose.onNodeWithTag("open-references").performClick()
+        back()
+        compose.onNodeWithTag("screen-title").assertTextEquals("Справка")
+        back()
+        assertEquals(settingsPosition, settingsScroll.fetchSemanticsNode()
+            .config[SemanticsProperties.VerticalScrollAxisRange].value(), 0f)
+        back()
+        assertEquals(saved, position(), 0f)
+    }
+
     @Test fun switchingCalculationsRestoresEachScrollPosition() {
         start(fontScale = 2f)
         val scroll = compose.onNodeWithTag("calculator-scroll")

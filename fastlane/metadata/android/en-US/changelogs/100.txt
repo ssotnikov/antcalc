@@ -1,0 +1,2 @@
+Yagi–Uda calculator for the R3UDK design: element dimensions, boom marking, a cut list and saving to a project.
+Reference profiles for six additional designs, with illustrations, sources and usage terms.

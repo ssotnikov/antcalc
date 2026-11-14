@@ -1,0 +1,734 @@
+[
+  {
+    "type": "heading",
+    "text": "Building a Yagi–Uda Antenna"
+  },
+  {
+    "type": "heading",
+    "text": "A four-element build for 145 MHz using 2–3 mm diameter elements"
+  },
+  {
+    "type": "image",
+    "path": "images/00.jpg",
+    "text": "Layout of the four-element Yagi. The figures above the rods give their lengths in millimetres. The figures below give their positions along the boom, measured from the reflector. Ø25 denotes the 25 mm boom diameter. Wind nine turns of coax for the choke.",
+    "aspectRatio": 1.5
+  },
+  {
+    "type": "heading",
+    "text": "Materials and equipment"
+  },
+  {
+    "type": "heading",
+    "text": "Tools and supplies"
+  },
+  {
+    "type": "text",
+    "text": "Drill or powered screwdriver"
+  },
+  {
+    "type": "text",
+    "text": "Soldering iron"
+  },
+  {
+    "type": "text",
+    "text": "Fine-tooth hacksaw for plastic, angle grinder, or pipe cutter and knife"
+  },
+  {
+    "type": "text",
+    "text": "Heat gun (a hair dryer will do in a pinch)"
+  },
+  {
+    "type": "text",
+    "text": "Pliers, preferably round-nose pliers or a multitool"
+  },
+  {
+    "type": "text",
+    "text": "Side cutters"
+  },
+  {
+    "type": "text",
+    "text": "Adhesive-lined heat-shrink tubing (9/3 mm)"
+  },
+  {
+    "type": "text",
+    "text": "Hot-melt glue"
+  },
+  {
+    "type": "text",
+    "text": "6 mm and 5 mm drill bits"
+  },
+  {
+    "type": "text",
+    "text": "8 mm and 10 mm spanners"
+  },
+  {
+    "type": "text",
+    "text": "Tape measure"
+  },
+  {
+    "type": "text",
+    "text": "Pencil"
+  },
+  {
+    "type": "heading",
+    "text": "Set of 3D-printed parts"
+  },
+  {
+    "type": "image",
+    "path": "images/01.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "1. Mast mount with UHF connector, part 1 (1)"
+  },
+  {
+    "type": "text",
+    "text": "2. Mast mount with UHF connector, part 2 (1)"
+  },
+  {
+    "type": "text",
+    "text": "3. Centre mast mount (1)"
+  },
+  {
+    "type": "text",
+    "text": "4. Cable clip (3)"
+  },
+  {
+    "type": "text",
+    "text": "5. Director and reflector holder (3)"
+  },
+  {
+    "type": "text",
+    "text": "6. Driven-element holder (1, print a mirrored part as well)"
+  },
+  {
+    "type": "text",
+    "text": "7. Choke holder (1, print a mirrored part as well)"
+  },
+  {
+    "type": "text",
+    "text": "8. Drip guard (1)"
+  },
+  {
+    "type": "text",
+    "text": "9. Thumbscrew knob (6)"
+  },
+  {
+    "type": "text",
+    "text": "10. Retaining pin (4)"
+  },
+  {
+    "type": "text",
+    "text": "11. UHF connector cover (1)"
+  },
+  {
+    "type": "text",
+    "text": "STL files to print (English descriptions correspond to the original filenames in the ZIP):"
+  },
+  {
+    "type": "text",
+    "text": "1 × Choke holder V2 (1шт держатель катушки V2.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Narrow split Yagi mount 5 (1шт Крепление ВК 5 Узкий разрезной.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Yagi drip guard 2 (1шт КапельникВК2.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Folding driven-element holder for thin rods 6 (1шт крепление_вибратора_под_тонкий_элемент_складной_6.STL)"
+  },
+  {
+    "type": "text",
+    "text": "3 × Cable clip (3шт держатель кабеля.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Yagi mount 7-1 with UHF connector (1шт Крепление ВК 7-1 разьемом UHF.STL)"
+  },
+  {
+    "type": "text",
+    "text": "5 × Retaining pin (5шт штифт.STL)"
+  },
+  {
+    "type": "text",
+    "text": "3 × Director and reflector holder for thin rods 6 (3шт крепление_директора_рефлектора_под_тонкий_элемент_6.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Yagi mount 7-2 with UHF connector (1шт Крепление ВК 7-2 разьемом UHF.STL)"
+  },
+  {
+    "type": "text",
+    "text": "6 × M5 thumbscrew knob V3-2 (6шт барашек М5 V3-2.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Rear end cap (1шт Пробка торцовая задняя.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Yagi connector cover 2 (1шт крышечка для разьема вк 2.STL)"
+  },
+  {
+    "type": "text",
+    "text": "1 × Front end cap (1шт Пробка торцовая передняя.STL)"
+  },
+  {
+    "type": "text",
+    "text": "PETG is recommended. The prototype used glass-filled ABS. It is RF-transparent, but the glass fibre made it unpleasant to handle, so the printed parts were painted. The paint also had to be checked for RF transparency."
+  },
+  {
+    "type": "heading",
+    "text": "Fasteners"
+  },
+  {
+    "type": "image",
+    "path": "images/15.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "1. M6 × 50 mm bolt (2)"
+  },
+  {
+    "type": "text",
+    "text": "2. M6 × 30 mm bolt (2)"
+  },
+  {
+    "type": "text",
+    "text": "3. M5 × 30 mm bolt (1)"
+  },
+  {
+    "type": "text",
+    "text": "4. M5 × 20 mm bolt (5 plus 1 spare)"
+  },
+  {
+    "type": "text",
+    "text": "5. M6 wing nut (2)"
+  },
+  {
+    "type": "text",
+    "text": "6. M6 nut (at least 4, plus spares)"
+  },
+  {
+    "type": "text",
+    "text": "7. M6 washer (at least 4, plus spares)"
+  },
+  {
+    "type": "text",
+    "text": "8. M5 nut (at least 6, plus spares)"
+  },
+  {
+    "type": "text",
+    "text": "9. M5 washer (at least 2, plus spares)"
+  },
+  {
+    "type": "text",
+    "text": "Stainless steel is strongly recommended for all fasteners."
+  },
+  {
+    "type": "heading",
+    "text": "25 mm PVC electrical conduit, at least 1.5 m long"
+  },
+  {
+    "type": "image",
+    "path": "images/16.png",
+    "text": "",
+    "aspectRatio": 2.1649484536082473
+  },
+  {
+    "type": "heading",
+    "text": "Aluminium welding filler rods (at least 5). Choose the stiffest rods you can find."
+  },
+  {
+    "type": "text",
+    "text": "This build uses 2.4 mm aluminium welding filler rods. The elements can also be made from solid copper wire (4–6 mm² cross-section) or other metal rods 2–3 mm in diameter. Protect copper-coated steel welding rods against corrosion if you use them. The steel can corrode through the copper coating."
+  },
+  {
+    "type": "image",
+    "path": "images/17.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "heading",
+    "text": "Key-tightened hose clamps (two 25–40 mm clamps for the rear mast mount and two 20–32 mm clamps for the centre mount)"
+  },
+  {
+    "type": "image",
+    "path": "images/18.png",
+    "text": "",
+    "aspectRatio": 1.7777777777777777
+  },
+  {
+    "type": "heading",
+    "text": "Ring terminals (two, 5–6 mm inside diameter) and a right-angle SO-239 UHF connector (one)"
+  },
+  {
+    "type": "text",
+    "text": "Pre-tinned ring terminals are preferable. If using bare copper terminals, tin them all over."
+  },
+  {
+    "type": "text",
+    "text": "Choose a connector with an internal thread for RG-58. The printed cover is designed for this connector style, which fits without crimping."
+  },
+  {
+    "type": "image",
+    "path": "images/19.png",
+    "text": "",
+    "aspectRatio": 1.0
+  },
+  {
+    "type": "image",
+    "path": "images/20.png",
+    "text": "",
+    "aspectRatio": 1.0
+  },
+  {
+    "type": "heading",
+    "text": "1.5 m of RG-58 A/U or RG-58 C/U coaxial cable"
+  },
+  {
+    "type": "image",
+    "path": "images/21.png",
+    "text": "",
+    "aspectRatio": 1.0793103448275863
+  },
+  {
+    "type": "heading",
+    "text": "Assembly"
+  },
+  {
+    "type": "text",
+    "text": "If a bolt is a tight fit in a printed part, clean up the hole with a drill bit of the appropriate size."
+  },
+  {
+    "type": "image",
+    "path": "images/22.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Mast mount"
+  },
+  {
+    "type": "text",
+    "text": "If needed, warm the part slightly with a heat gun and press in the M6 × 30 mm bolts. A nut and washers on the opposite side can help draw the bolts into place."
+  },
+  {
+    "type": "image",
+    "path": "images/23.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Mating half of the mast mount"
+  },
+  {
+    "type": "text",
+    "text": "Press in the M6 nuts in the same way."
+  },
+  {
+    "type": "image",
+    "path": "images/24.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Fit the M6 × 50 mm bolts with M6 washers."
+  },
+  {
+    "type": "image",
+    "path": "images/25.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Join the two halves of the mount with M6 wing nuts and washers."
+  },
+  {
+    "type": "image",
+    "path": "images/26.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/27.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Centre mount for attaching the boom to an RF-transparent support, such as a fishing pole or a stick"
+  },
+  {
+    "type": "text",
+    "text": "Press in the M5 nut, then fit the M5 × 30 mm bolt and washer."
+  },
+  {
+    "type": "image",
+    "path": "images/28.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Thumbscrew knobs"
+  },
+  {
+    "type": "text",
+    "text": "Press in the M5 nuts by drawing them in with a bolt and washer from the opposite side."
+  },
+  {
+    "type": "image",
+    "path": "images/29.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Director and reflector holders"
+  },
+  {
+    "type": "text",
+    "text": "Press in the M5 × 20 mm bolts."
+  },
+  {
+    "type": "image",
+    "path": "images/30.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Driven-element holder"
+  },
+  {
+    "type": "text",
+    "text": "Press in the M5 × 20 mm bolts."
+  },
+  {
+    "type": "image",
+    "path": "images/31.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Make the two directors, the driven element and the reflector from the rods. Use the dimensions in the drawing at the start of the article."
+  },
+  {
+    "type": "text",
+    "text": "Cut the directors to length."
+  },
+  {
+    "type": "text",
+    "text": "For the driven element, start with a full 995 mm rod. Cut it in half and bend both pieces to fit the holder. Use round-nose pliers, or clamp two spare M6 bolts and bend the rod around them as shown."
+  },
+  {
+    "type": "image",
+    "path": "images/32.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/33.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/34.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Once the element is fitted, measure it and file it to the required length."
+  },
+  {
+    "type": "text",
+    "text": "Reflector"
+  },
+  {
+    "type": "text",
+    "text": "This is probably the trickiest part. The stock rods are shorter than the reflector, so you need to extend one. There are several ways to do this:"
+  },
+  {
+    "type": "text",
+    "text": "Take an aluminium rivet with a 2.4 mm mandrel. Remove the mandrel, cut off the head and use the resulting tube to join the two reflector sections. Crimp the tube with crimping pliers."
+  },
+  {
+    "type": "image",
+    "path": "images/35.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/36.jpg",
+    "text": "",
+    "aspectRatio": 1.6143497757847534
+  },
+  {
+    "type": "text",
+    "text": "Ask a TIG welder to join two rods, then file the result to size. They’ll probably charge for a couple of kilos’ worth."
+  },
+  {
+    "type": "image",
+    "path": "images/37.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "You can also make the reflector in two pieces. The author (R3UDK) advises against it because the result can vary from one assembly to the next, depending on how firmly the pieces contact each other. An M5 washer under the knob may improve contact."
+  },
+  {
+    "type": "image",
+    "path": "images/38.png",
+    "text": "",
+    "aspectRatio": 1.7777777777777777
+  },
+  {
+    "type": "image",
+    "path": "images/39.png",
+    "text": "",
+    "aspectRatio": 1.7777777777777777
+  },
+  {
+    "type": "text",
+    "text": "Solder the coax to the ring terminals and tin the terminals all over."
+  },
+  {
+    "type": "image",
+    "path": "images/40.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Seal the stripped end of the coax with hot-melt glue."
+  },
+  {
+    "type": "image",
+    "path": "images/41.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Wind nine turns of coax and secure the coil with its holder."
+  },
+  {
+    "type": "image",
+    "path": "images/42.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Run the coax along the boom and mark the length, leaving enough slack to avoid pulling it tight. Cut it ~~and solder on the connector~~. Slide on a piece of heat-shrink tubing, then the cover (part 11 in the first illustration), then a second piece of heat-shrink tubing. Solder the connector on last. Cover the soldered joint with heat-shrink tubing."
+  },
+  {
+    "type": "image",
+    "path": "images/43.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Fit the cover, hold it in place with the second piece of tubing and apply heat."
+  },
+  {
+    "type": "image",
+    "path": "images/44.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "The cover fits tightly and stays in place."
+  },
+  {
+    "type": "text",
+    "text": "Assemble the antenna as shown in the drawing. The upper figures give element lengths. The lower figures mark positions along the boom."
+  },
+  {
+    "type": "image",
+    "path": "images/45.jpg",
+    "text": "",
+    "aspectRatio": 1.5
+  },
+  {
+    "type": "text",
+    "text": "To fit the elements, loosen the knobs and slide the rods into the holders. Marking the midpoint of each rod makes it quick to centre during assembly."
+  },
+  {
+    "type": "text",
+    "text": "Slide on the centre mount first. Then slide the director holders, driven-element holder, choke holder and reflector holder onto the boom from its ends. Avoid snapping the holders over the tube, as the plastic may crack. Fit and secure the elements. Use a tape measure to mark their approximate positions, then attach the swivel mast mount at the end, about 20 cm from the reflector. Wind the coax and secure it with the choke holder and cable clips. Fit the connector into the mast mount and tighten its nut with the drip guard in place."
+  },
+  {
+    "type": "image",
+    "path": "images/46.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/47.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/48.jpg",
+    "text": "Add heat-shrink markers to make the elements easy to tell apart during assembly.",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/49.jpg",
+    "text": "Scribe or mark each element at its midpoint, for example with a marker, so you can quickly centre it in its holder.",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/50.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/51.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Check the antenna with a NanoVNA."
+  },
+  {
+    "type": "image",
+    "path": "images/52.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "image",
+    "path": "images/53.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Once the measurements are satisfactory, fix the holders in place on the boom."
+  },
+  {
+    "type": "text",
+    "text": "Use the holes in the holders as guides to drill through the boom, then insert the printed pins. Trim the protruding part of each pin with side cutters. Set the insertion depth so the pins project only 1–1.5 mm into the tube. This leaves room to store the elements inside the boom for transport."
+  },
+  {
+    "type": "image",
+    "path": "images/54.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Fit the end caps to the boom. The short cap goes at the front and the long, tethered cap goes at the rear."
+  },
+  {
+    "type": "image",
+    "path": "images/55.jpg",
+    "text": "",
+    "aspectRatio": 1.7780938833570412
+  },
+  {
+    "type": "text",
+    "text": "Secure the antenna to the mast with the key-tightened hose clamps."
+  },
+  {
+    "type": "image",
+    "path": "images/56.jpg",
+    "text": "",
+    "aspectRatio": 1.3333333333333333
+  },
+  {
+    "type": "text",
+    "text": "Remove the centre-mount clamps when they are not in use."
+  },
+  {
+    "type": "heading",
+    "text": "Finished antenna"
+  },
+  {
+    "type": "image",
+    "path": "images/57.jpg",
+    "text": "",
+    "aspectRatio": 1.3333333333333333
+  },
+  {
+    "type": "divider"
+  },
+  {
+    "type": "text",
+    "text": "This construction method can also be used for Yagis on other bands and for dual-band designs. The number of printed parts will vary."
+  },
+  {
+    "type": "text",
+    "text": "The following drawings show builds for other bands and element counts:"
+  },
+  {
+    "type": "text",
+    "text": "Three to six elements"
+  },
+  {
+    "type": "image",
+    "path": "images/58.png",
+    "text": "",
+    "aspectRatio": 1.3989071038251366
+  },
+  {
+    "type": "text",
+    "text": "Seven elements"
+  },
+  {
+    "type": "image",
+    "path": "images/59.png",
+    "text": "",
+    "aspectRatio": 1.3333333333333333
+  },
+  {
+    "type": "divider"
+  },
+  {
+    "type": "text",
+    "text": "All materials are provided exclusively for non-commercial use."
+  },
+  {
+    "type": "text",
+    "text": "The 3D-printable models are the intellectual property of the author (R3UDK)."
+  },
+  {
+    "type": "text",
+    "text": "Commercial use and copying of the materials are prohibited."
+  },
+  {
+    "type": "text",
+    "text": "© 2 April 2026"
+  }
+]

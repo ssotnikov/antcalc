@@ -2,7 +2,6 @@ package local.antenna.calculator.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -21,7 +20,7 @@ import local.antenna.calculator.core.trimming.AdjustmentDirection
 
 @Composable
 fun HelpScreen() {
-    val scroll = rememberScrollState()
+    val scroll = rememberPageScrollState()
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(20.dp)) {

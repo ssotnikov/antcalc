@@ -2,6 +2,7 @@ package local.antenna.calculator.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -18,6 +19,9 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import java.util.UUID
 import kotlinx.coroutines.launch
@@ -37,7 +41,7 @@ import local.antenna.calculator.measurements.MeasurementViewModel
 import local.antenna.calculator.measurements.SwrBandwidthScreen
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,8 +56,11 @@ internal fun CalculatorApp(
         Box(Modifier.fillMaxSize().background(Color(0xFF101D26)))
         return
     }
+    val scrollToTop = remember { PageScrollToTop() }
     LocalizedContent(state.draft.settings.language) {
-        LocalizedCalculatorApp(state, onEvent, journal, measurements, currentState)
+        CompositionLocalProvider(LocalPageScrollToTop provides scrollToTop) {
+            LocalizedCalculatorApp(state, onEvent, journal, measurements, scrollToTop, currentState)
+        }
     }
 }
 
@@ -64,12 +71,14 @@ private fun LocalizedCalculatorApp(
     onEvent: (CalculatorEvent) -> Unit,
     journal: JournalViewModel?,
     measurements: MeasurementViewModel?,
+    scrollToTop: PageScrollToTop,
     currentState: () -> CalculatorUiState,
 ) {
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
-    var referencesBackPage by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
+    var menuParents by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var menu by remember { mutableStateOf(false) }
     var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
+    var constructionParent by rememberSaveable { mutableStateOf(Page.ANTENNA_CONSTRUCTION) }
     var bandwidthFromMeasurements by rememberSaveable { mutableStateOf(false) }
     var bandwidthEntrySlot by rememberSaveable { mutableStateOf<Int?>(null) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
@@ -96,6 +105,7 @@ private fun LocalizedCalculatorApp(
             sweepTransferId != null -> Page.MEASUREMENTS
             pending?.isInvertedV == true -> Page.INVERTED_V
             pending?.isGroundPlane == true -> Page.GROUND_PLANE
+            pending?.isYagi == true -> Page.YAGI_CALCULATOR
             pending?.isJPole == true -> Page.J_POLE
             pending?.isFullWaveLoop == true -> Page.FULL_WAVE_LOOP
             else -> Page.CALCULATOR
@@ -115,9 +125,13 @@ private fun LocalizedCalculatorApp(
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
         when (page) {
-            Page.REFERENCES -> page = referencesBackPage
-            Page.ANTENNA_PARAMETER_TOOLS, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
-            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.SETTINGS, Page.ABOUT, Page.REFERENCES -> {
+                page = menuParents.lastOrNull()?.let(Page::valueOf) ?: Page.CALCULATOR
+                menuParents = ArrayList(menuParents.dropLast(1))
+            }
+            Page.ANTENNA_PARAMETER_TOOLS, Page.ANTENNA_CONSTRUCTION, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
+            Page.CONSTRUCTION_YAGI -> page = constructionParent
+            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.YAGI_CALCULATOR -> page = Page.ANTENNA_PARAMETER_TOOLS
             Page.MEASUREMENTS -> page = measurementsParent
             Page.SWR_BANDWIDTH -> page = if (bandwidthFromMeasurements) Page.MEASUREMENTS else Page.ADDITIONAL_TOOLS
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
@@ -178,9 +192,11 @@ private fun LocalizedCalculatorApp(
             }
         }
     }
-    fun openReferences() {
-        referencesBackPage = page
-        page = Page.REFERENCES
+    fun openMenuPage(destination: Page) {
+        menu = false
+        if (destination == page) return
+        menuParents = ArrayList(menuParents + page.name)
+        page = destination
     }
     val transferring = page == Page.TRANSFER_TYPE || page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW
     LaunchedEffect(transferring, pending) {
@@ -202,12 +218,16 @@ private fun LocalizedCalculatorApp(
     LaunchedEffect(sweepTransferId, measurementState?.busy, sweepTraces.isEmpty()) {
         if (sweepTransferId != null && measurementState?.busy == false && sweepTraces.isEmpty()) finishTransfer()
     }
-    LaunchedEffect(page) { if (page != Page.MEASUREMENTS) measurements?.cancelImport() }
+    LaunchedEffect(page, menuParents) {
+        if (page != Page.MEASUREMENTS && Page.MEASUREMENTS.name !in menuParents) measurements?.cancelImport()
+    }
     BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
         val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
         val title = when (page) {
+            Page.ANTENNA_CONSTRUCTION -> R.string.construction_title
+            Page.CONSTRUCTION_YAGI -> R.string.construction_yagi_title
             Page.ANTENNA_PARAMETER_TOOLS -> R.string.antenna_parameter_tools
             Page.ADDITIONAL_TOOLS -> R.string.additional_tools
             Page.MEASUREMENTS -> R.string.sweep_title
@@ -222,6 +242,7 @@ private fun LocalizedCalculatorApp(
             Page.INVERTED_V -> R.string.inverted_v_title
             Page.GROUND_PLANE -> R.string.ground_plane_title
             Page.FULL_WAVE_LOOP -> R.string.loop_title
+            Page.YAGI_CALCULATOR -> R.string.yagi_title
             Page.J_POLE -> R.string.jpole_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
             Page.TRANSFER_PICKER -> if (sweepTransferId != null) R.string.sweep_save else R.string.project_transfer_title
@@ -237,7 +258,23 @@ private fun LocalizedCalculatorApp(
             modifier = Modifier.fillMaxSize().imePadding(),
             contentWindowInsets = WindowInsets.safeDrawing,
             topBar = {
-                TopAppBar(title = { Text(stringResource(title), style = MaterialTheme.typography.titleLarge) },
+                TopAppBar(title = {
+                    val action = scrollToTop.action
+                    val titleClick = if (action != null) {
+                        Modifier.clickable(
+                            onClickLabel = stringResource(R.string.scroll_to_top),
+                            role = Role.Button,
+                            onClick = action,
+                        )
+                    } else Modifier
+                    Box(
+                        Modifier.fillMaxWidth().heightIn(min = 48.dp).then(titleClick)
+                            .testTag("screen-title").semantics { heading() },
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        Text(stringResource(title), style = MaterialTheme.typography.titleLarge)
+                    }
+                },
                     expandedHeight = 64.dp * LocalDensity.current.fontScale,
                     navigationIcon = {
                         if (page != Page.CALCULATOR) IconButton(onClick = ::goBack,
@@ -251,11 +288,10 @@ private fun LocalizedCalculatorApp(
                                 menu = true
                             }, modifier = Modifier.testTag("menu")) { Icon(painterResource(R.drawable.ic_menu), stringResource(R.string.menu)) }
                             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-                                DropdownMenuItem(text = { Text(stringResource(R.string.settings)) }, onClick = { menu = false; page = Page.SETTINGS }, modifier = Modifier.testTag("open-settings"))
-                                DropdownMenuItem(text = { Text(stringResource(R.string.about)) }, onClick = { menu = false; page = Page.ABOUT }, modifier = Modifier.testTag("open-about"))
+                                DropdownMenuItem(text = { Text(stringResource(R.string.settings)) }, onClick = { openMenuPage(Page.SETTINGS) }, modifier = Modifier.testTag("open-settings"))
+                                DropdownMenuItem(text = { Text(stringResource(R.string.about)) }, onClick = { openMenuPage(Page.ABOUT) }, modifier = Modifier.testTag("open-about"))
                                 DropdownMenuItem(text = { Text(stringResource(R.string.references_title)) }, onClick = {
-                                    menu = false
-                                    if (page != Page.REFERENCES) openReferences()
+                                    openMenuPage(Page.REFERENCES)
                                 }, modifier = Modifier.testTag("open-references"))
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.contact_author)) },
@@ -280,7 +316,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -318,6 +354,24 @@ private fun LocalizedCalculatorApp(
                             onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
                             onOpenFullWaveLoop = { leaveInput(); page = Page.FULL_WAVE_LOOP },
                             onOpenJPole = { leaveInput(); page = Page.J_POLE },
+                            onOpenYagi = { leaveInput(); page = Page.YAGI_CALCULATOR },
+                        )
+                    }
+                    Page.ANTENNA_CONSTRUCTION -> screenStates.SaveableStateProvider("antenna-construction") {
+                        AntennaConstructionScreen {
+                            constructionParent = Page.ANTENNA_CONSTRUCTION
+                            page = Page.CONSTRUCTION_YAGI
+                        }
+                    }
+                    Page.CONSTRUCTION_YAGI -> screenStates.SaveableStateProvider("construction-yagi") {
+                        YagiConstructionScreen(
+                            onOpenMeasurements = measurements?.let { model ->
+                                {
+                                    measurementsParent = Page.CONSTRUCTION_YAGI
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
+                            },
                         )
                     }
                     Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
@@ -366,15 +420,23 @@ private fun LocalizedCalculatorApp(
                             },
                         ) { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
-                    Page.SETTINGS -> SettingsScreen(state, onEvent) { page = Page.ABOUT }
-                    Page.ABOUT -> HelpScreen()
-                    Page.REFERENCES -> ReferencesScreen(settings.language)
-                    Page.MATCHING -> MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    Page.SETTINGS -> screenStates.SaveableStateProvider("settings-${menuParents.size}") {
+                        SettingsScreen(state, onEvent) { openMenuPage(Page.ABOUT) }
+                    }
+                    Page.ABOUT -> screenStates.SaveableStateProvider("help-${menuParents.size}") { HelpScreen() }
+                    Page.REFERENCES -> screenStates.SaveableStateProvider("references-${menuParents.size}") { ReferencesScreen(settings.language) }
+                    Page.MATCHING -> screenStates.SaveableStateProvider("matching") {
+                        MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    }
                     Page.SMITH_CHART -> screenStates.SaveableStateProvider("smith-chart") {
                         SmithChartScreen { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
-                    Page.CABLE -> CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
-                    Page.FEEDLINE -> FeedlineScreen(state, currentState, onEvent) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    Page.CABLE -> screenStates.SaveableStateProvider("cable") {
+                        CableScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    }
+                    Page.FEEDLINE -> screenStates.SaveableStateProvider("feedline") {
+                        FeedlineScreen(state, currentState, onEvent) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                    }
                     Page.INVERTED_V -> screenStates.SaveableStateProvider("inverted-v") {
                         val chooseProject = if (journal != null) ::openInvertedVTransfer else null
                         InvertedVScreen(state, onEvent, currentState, chooseProject) { message ->
@@ -386,6 +448,27 @@ private fun LocalizedCalculatorApp(
                         GroundPlaneScreen(state, onEvent, currentState, chooseProject) {
                             scope.launch { snackbar.showSnackbar(copiedMessage) }
                         }
+                    }
+                    Page.YAGI_CALCULATOR -> screenStates.SaveableStateProvider("yagi-calculator") {
+                        YagiCalculatorScreen(
+                            onGuide = {
+                                leaveInput()
+                                constructionParent = Page.YAGI_CALCULATOR
+                                page = Page.CONSTRUCTION_YAGI
+                            },
+                            onMeasurements = measurements?.let { model ->
+                                {
+                                    leaveInput()
+                                    measurementsParent = Page.YAGI_CALCULATOR
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
+                            },
+                            onSave = if (journal == null) null else { snapshot, note ->
+                                startTransfer(PendingProjectCalculation(snapshot, note = note), AntennaType.YAGI)
+                            },
+                            onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
+                        )
                     }
                     Page.J_POLE -> screenStates.SaveableStateProvider("j-pole") {
                         JPoleScreen(if (journal == null) null else { snapshot ->
@@ -488,6 +571,7 @@ private fun LocalizedCalculatorApp(
                                     onOpenCable = { leaveInput(); page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
                                     onOpenAdditional = measurements?.let { { leaveInput(); page = Page.ADDITIONAL_TOOLS } },
+                                    onOpenConstruction = { leaveInput(); page = Page.ANTENNA_CONSTRUCTION },
                                     onOpenAntennaCalculations = { leaveInput(); page = Page.ANTENNA_PARAMETER_TOOLS },
                                     onOpenJournal = journal?.let { { leaveInput(); linkedProjectId = null; journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
                                 )
