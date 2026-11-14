@@ -22,6 +22,8 @@ private val cableDatasheetAddress = Regex(
     """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
 )
 private val additionalSourceAddresses = setOf(
+    "https://www.mdpi.com/1996-1073/14/21/7042",
+    "https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf",
     "https://www.dg7ybn.de/144MHz/144_5elem.htm",
     LIZAALERT_YAGI_URL,
     "https://www.dg7ybn.de/",

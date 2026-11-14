@@ -37,6 +37,19 @@
     <string name="matching_balance_accepted">The load accepts 88.89 %</string>
     <string name="matching_balance_reflected">Reflection accounts for 11.11 %</string>
     <string name="matching_balance_help">This example is at the load reference plane. With 100 W incident, the load accepts 88.89 W and reflects 11.11 W. Return loss (RL) is the ratio of incident to reflected power (9.54 dB). Mismatch loss (ML) is the reduction in accepted power caused by reflection (0.51 dB). Cable attenuation is calculated separately. Accepted power includes power dissipated within the load.</string>
+    <string name="matching_pa_title">How the load affects transmitter power</string>
+    <string name="matching_pa_intro">At an SWR of 2:1, mismatch loss is 0.51 dB at fixed incident power. A mismatch can also cause the transmitter to reduce the incident power. In that case, the power accepted by the antenna can drop by more than 0.51 dB compared with matched operation. The impedance at the transmitter output, the electrical length of the feed line, and the transmitter protection can all affect the result.</string>
+    <string name="matching_pa_model">In this example, the amplifier delivers 100 W into 50 Ω. The RMS limits at the load are about 1.414 A and 70.71 V. The current is limited by the lower of the current limit and the voltage limit divided by |Z|. The power delivered to the load is I² × R, where R is the resistive part of the impedance.</string>
+    <string name="matching_pa_load">Load, Ω</string>
+    <string name="matching_pa_swr">SWR at Z₀ = 50 Ω</string>
+    <string name="matching_pa_limit">What limits power</string>
+    <string name="matching_pa_power">Load power, W</string>
+    <string name="matching_pa_limit_both">Both limits reached</string>
+    <string name="matching_pa_limit_current">Current at 1.414 A</string>
+    <string name="matching_pa_limit_voltage">Voltage at 70.71 V, current falls to 0.71 A</string>
+    <string name="matching_pa_limit_complex">Both limits reached, R = 40 Ω</string>
+    <string name="matching_pa_result">The 25 Ω load is limited by current, and the 100 Ω load is limited by voltage. Each receives 50 W, down 3.01 dB from the matched load. The 40 + j30 Ω load receives 80 W at the same SWR. These values already account for mismatch.</string>
+    <string name="matching_pa_link_budget">If the power accepted by the transmitting antenna is halved, received power drops by 3.01 dB as long as the transmitting antenna gain toward the receiver, the receiving system, and the propagation conditions stay the same. SWR alone cannot predict actual transmitter output or received signal level.</string>
     <string name="matching_formula_gamma_alt">Gamma equals load impedance minus reference impedance, divided by their sum.</string>
     <string name="matching_formula_swr_alt">SWR equals one plus the magnitude of gamma, divided by one minus its magnitude.</string>
     <string name="matching_formula_rl_alt">Return loss equals minus twenty times the base-ten logarithm of the magnitude of gamma.</string>

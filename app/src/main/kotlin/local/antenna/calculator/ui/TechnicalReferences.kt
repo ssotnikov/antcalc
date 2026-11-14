@@ -61,6 +61,8 @@ internal val referenceGroups = listOf(
         TechnicalReference("kadamm", R.string.source_kadamm, R.string.source_kadamm_description, R.string.source_kadamm_url, "КАДАММ", AppLanguage.RUSSIAN),
         TechnicalReference("rohde", R.string.source_rohde, R.string.source_rohde_description, R.string.source_rohde_url, "Rohde & Schwarz", AppLanguage.ENGLISH, "§ 8"),
         TechnicalReference("reflection", R.string.source_reflection, R.string.source_reflection_description, R.string.source_reflection_url, "Analog Devices", AppLanguage.ENGLISH),
+        TechnicalReference("pa-current-mode", R.string.source_pa_current_mode, R.string.source_pa_current_mode_description, R.string.source_pa_current_mode_url, "Energies", AppLanguage.ENGLISH),
+        TechnicalReference("friis", R.string.source_friis, R.string.source_friis_description, R.string.source_friis_url, "CCSDS · NASA NTRS", AppLanguage.ENGLISH, "§ 4.3.5.1 · PDF"),
     )),
     ReferenceGroup(R.string.references_smith, listOf(
         TechnicalReference("smith-antenna-theory", R.string.source_smith_antenna_theory, R.string.source_smith_antenna_theory_description, R.string.source_smith_antenna_theory_url, "Antenna-Theory", AppLanguage.ENGLISH),

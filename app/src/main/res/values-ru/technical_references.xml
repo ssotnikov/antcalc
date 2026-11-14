@@ -8,6 +8,10 @@
     <string name="references_five_eighths">Вертикальные антенны 5/8 λ</string>
     <string name="references_tuning">Подстройка и измерения</string>
     <string name="references_matching">КСВ и отражение</string>
+    <string name="source_pa_current_mode">Исследование токовых режимов ВЧ-усилителей, разделы 2 и 4</string>
+    <string name="source_pa_current_mode_description">Модель полевого транзистора как управляемого источника тока и пример расчета ВЧ-усилителя с настроенной нагрузкой.</string>
+    <string name="source_friis">Уравнение радиолинии Friis, отчёт CCSDS</string>
+    <string name="source_friis_description">Раздел отчета о связи мощности передачи и приема, усиления антенн и расстояния в свободном пространстве.</string>
     <string name="references_cable">Электрическая длина кабеля</string>
     <string name="source_itu_description">Начальные размеры в метрах и схемы полуволнового диполя и четвертьволнового штыря.</string>
     <string name="source_nasa_description">Руководство проекта Radio JOVE объясняет концевой эффект и показывает устройство проволочного диполя.</string>

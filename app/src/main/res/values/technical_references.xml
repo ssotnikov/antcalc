@@ -8,6 +8,12 @@
     <string name="references_five_eighths">5/8-wave verticals</string>
     <string name="references_tuning">Tuning and measurements</string>
     <string name="references_matching">SWR and reflection</string>
+    <string name="source_pa_current_mode">Current-mode RF power amplifiers, sections 2 and 4</string>
+    <string name="source_pa_current_mode_description">A controlled current-source model for a FET and a worked example of a tuned-load RF power amplifier.</string>
+    <string name="source_pa_current_mode_url" translatable="false">https://www.mdpi.com/1996-1073/14/21/7042</string>
+    <string name="source_friis">Friis transmission equation, CCSDS report</string>
+    <string name="source_friis_description">How transmitted and received power relate to antenna gain and distance in free space.</string>
+    <string name="source_friis_url" translatable="false">https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf</string>
     <string name="references_cable">Cable electrical length</string>
     <string name="source_itu" translatable="false">Применяемые антенны</string>
     <string name="source_itu_url" translatable="false">https://www.itu.int/dms_pub/itu-d/opb/hdb/D-HDB-WET-2007-PDF-R.pdf#page=115</string>
