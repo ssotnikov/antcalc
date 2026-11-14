@@ -1,8 +1,6 @@
 package local.antenna.calculator.ui
 
 import android.graphics.BitmapFactory
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -11,14 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -31,9 +25,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import java.io.IOException
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import local.antenna.calculator.R
 import org.json.JSONArray
@@ -47,38 +39,6 @@ internal fun yagiArticleBlocks(): JSONArray {
     val articleFile = if (LocalConfiguration.current.locales[0].language == "ru") "article.json" else "article-en.json"
     return remember(assets, articleFile) {
         assets.open("$ARTICLE_ROOT/$articleFile").bufferedReader().use { JSONArray(it.readText()) }
-    }
-}
-
-@Composable
-internal fun YagiStlExport() {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var exportFailed by remember { mutableStateOf(false) }
-    val export = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
-        if (uri != null) scope.launch {
-            exportFailed = withContext(Dispatchers.IO) {
-                try {
-                    val target = context.contentResolver.openOutputStream(uri) ?: throw IOException()
-                    target.use { output -> context.assets.open("$ARTICLE_ROOT/models.zip").use { it.copyTo(output) } }
-                    false
-                } catch (_: IOException) {
-                    true
-                } catch (_: SecurityException) {
-                    true
-                }
-            }
-        }
-    }
-
-    TextButton(onClick = {
-        exportFailed = false
-        export.launch("yagi-lizaalert-stl.zip")
-    }) {
-        Text(stringResource(R.string.construction_yagi_export_models))
-    }
-    if (exportFailed) {
-        Text(stringResource(R.string.construction_yagi_export_failed), color = MaterialTheme.colorScheme.error)
     }
 }
 

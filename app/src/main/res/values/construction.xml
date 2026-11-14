@@ -37,10 +37,9 @@
     <string name="construction_yagi_source_title">Source and rights</string>
     <string name="construction_yagi_source_link">LizaAlert Wiki · Building a Yagi-Uda antenna (Russian)</string>
     <string name="construction_yagi_full_article">Full article</string>
-    <string name="construction_yagi_export_models">Save STL files as ZIP</string>
-    <string name="construction_yagi_export_failed">Could not save the STL archive</string>
+    <string name="construction_yagi_download_models">Download STL files from the original article</string>
     <string name="construction_yagi_article_image">Illustration from the article</string>
-    <string name="construction_yagi_rights">Source publication © 2 April 2026, LizaAlert Wiki. The article, illustrations and STL files are included with permission from the author (R3UDK). The author (R3UDK) retains the rights to these materials. See the original for terms of further use.</string>
+    <string name="construction_yagi_rights">Source publication © 2 April 2026, LizaAlert Wiki. The article and illustrations are included with permission from the author (R3UDK). The author (R3UDK) retains the rights to these materials. See the original for terms of further use.</string>
     <string name="references_yagi">Yagi–Uda antennas</string>
     <string name="source_yagi_dg7ybn">YBN 2-5m: design and element dimensions</string>
     <string name="source_yagi_dg7ybn_description">Five-element 2 m Yagi, with dimension tables for different element diameters and boom mounting methods, plus radiation pattern and SWR plots.</string>

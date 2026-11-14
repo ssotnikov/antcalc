@@ -37,10 +37,9 @@
     <string name="construction_yagi_source_title">Источник и права</string>
     <string name="construction_yagi_source_link">Вики «ЛизаАлерт» · Изготовление антенны «Волновой канал»</string>
     <string name="construction_yagi_full_article">Полная статья</string>
-    <string name="construction_yagi_export_models">Сохранить STL в ZIP</string>
-    <string name="construction_yagi_export_failed">Не удалось сохранить архив STL</string>
+    <string name="construction_yagi_download_models">Скачать STL из оригинальной статьи</string>
     <string name="construction_yagi_article_image">Иллюстрация из статьи</string>
-    <string name="construction_yagi_rights">Публикация в вики «ЛизаАлерт» © 2 апреля 2026 г. Статья, иллюстрации и STL включены с разрешения автора (R3UDK). Права на эти материалы сохраняются за автором (R3UDK). Условия их дальнейшего использования указаны в оригинале.</string>
+    <string name="construction_yagi_rights">Публикация в вики «ЛизаАлерт» © 2 апреля 2026 г. Статья и иллюстрации включены с разрешения автора (R3UDK). Права на эти материалы сохраняются за автором (R3UDK). Условия их дальнейшего использования указаны в оригинале.</string>
     <string name="references_yagi">Волновой канал Яги — Уда</string>
     <string name="source_yagi_dg7ybn">YBN 2-5m: конструкция и размеры элементов</string>
     <string name="source_yagi_dg7ybn_description">Пятиэлементная Яги на 2 м с таблицами размеров для разных диаметров элементов и способов крепления к траверсе. Приведены диаграммы направленности и графики КСВ.</string>

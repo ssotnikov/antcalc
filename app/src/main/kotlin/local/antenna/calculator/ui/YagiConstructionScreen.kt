@@ -97,7 +97,11 @@ internal fun YagiConstructionScreen(onOpenMeasurements: (() -> Unit)?) {
                 items(section.blocks.toList(), key = { it }) { index ->
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         YagiArticleBlock(blocks.getJSONObject(index))
-                        if (index == 30) YagiStlExport()
+                        if (index == 30) {
+                            TextButton(onClick = { openSourceWithFeedback(context, LIZAALERT_YAGI_URL) }) {
+                                Text(stringResource(R.string.construction_yagi_download_models))
+                            }
+                        }
                     }
                 }
             }
