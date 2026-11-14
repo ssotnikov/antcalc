@@ -1,3 +1,5 @@
+<img src="fastlane/metadata/android/en-US/images/icon.png" width="96" height="96" alt="Antenna Calculator">
+
 # Antenna Calculator · Антенный калькулятор
 
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84)
