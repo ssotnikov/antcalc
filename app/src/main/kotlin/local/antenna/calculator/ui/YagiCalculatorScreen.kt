@@ -7,10 +7,14 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -24,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
+import kotlinx.coroutines.flow.drop
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.CalculationSnapshot
 import local.antenna.calculator.core.journal.SnapshotUnit
@@ -67,6 +72,7 @@ private val rowLabels = listOf(R.string.construction_yagi_reflector, R.string.co
     R.string.construction_yagi_director_1, R.string.construction_yagi_director_2)
 private val decimal = Regex("(?:[0-9]{1,4}(?:[.,][0-9]{1,3})?|[.,][0-9]{1,3})")
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun YagiCalculatorScreen(
     onGuide: () -> Unit,
@@ -84,9 +90,17 @@ internal fun YagiCalculatorScreen(
     var unit by remember {
         mutableStateOf(LengthUnit.entries.firstOrNull { it.name == prefs.getString("unit", null) } ?: LengthUnit.MILLIMETERS)
     }
-    var draft by remember {
-        mutableStateOf(inputFields.indices.map { prefs.getString("r3udk_$it", "")?.take(24).orEmpty() })
+    val allowance = rememberTextFieldState(prefs.getString("r3udk_0", "").orEmpty().take(24))
+    val rear = rememberTextFieldState(prefs.getString("r3udk_1", "").orEmpty().take(24))
+    val front = rememberTextFieldState(prefs.getString("r3udk_2", "").orEmpty().take(24))
+    val fields = listOf(allowance, rear, front)
+    val draft = fields.map { it.text.toString() }
+    LaunchedEffect(prefs, allowance, rear, front) {
+        snapshotFlow { fields.map { it.text.toString() } }.drop(1).collect { entries ->
+            prefs.edit { entries.forEachIndexed { index, value -> putString("r3udk_$index", value) } }
+        }
     }
+    val exampleColor = inputExampleColor()
     val values = draft.map { raw ->
         raw.trim().takeIf(decimal::matches)?.replace(',', '.')?.toDoubleOrNull()?.takeIf { it in 0.0..1000.0 }
     }
@@ -116,15 +130,22 @@ internal fun YagiCalculatorScreen(
             YagiTable(unit)
             YagiHeading(R.string.yagi_cuts)
             inputFields.forEachIndexed { index, label ->
-                OutlinedTextField(draft[index], { value ->
-                    if (value.length <= 24) {
-                        draft = draft.toMutableList().also { it[index] = value }
-                        prefs.edit { putString("r3udk_$index", value) }
-                    }
-                }, modifier = Modifier.fillMaxWidth().testTag("yagi-input-$index"),
-                    label = { Text(stringResource(label)) }, isError = errors[index], singleLine = true,
+                var focused by remember { mutableStateOf(false) }
+                OutlinedTextField(
+                    state = fields[index],
+                    label = { Text(stringResource(label)) },
+                    labelPosition = TextFieldLabelPosition.Attached(alwaysMinimize = true),
+                    placeholder = if (focused) null else {
+                        { Text(if (index == 0) "0" else "20", color = exampleColor) }
+                    },
+                    inputTransformation = InputTransformation { if (length > 24) revertAllChanges() },
+                    lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    supportingText = if (errors[index]) {{ Text(stringResource(R.string.yagi_invalid)) }} else null)
+                    isError = errors[index],
+                    supportingText = if (errors[index]) {{ Text(stringResource(R.string.yagi_invalid)) }} else null,
+                    modifier = Modifier.fillMaxWidth().testTag("yagi-input-$index")
+                        .onFocusChanged { focused = it.isFocused },
+                )
             }
             YagiProperty(R.string.yagi_span, yagiLength(context, R3udkYagi.elements.last().positionMm, unit))
             if (cut != null) {
@@ -176,7 +197,7 @@ private fun YagiProfilePicker(
     profile: YagiProfile, label: (YagiProfile) -> String, select: (YagiProfile) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         YagiHeading(R.string.yagi_profile)
         Box(Modifier.fillMaxWidth()) {
             OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth().testTag("yagi-profile")) {

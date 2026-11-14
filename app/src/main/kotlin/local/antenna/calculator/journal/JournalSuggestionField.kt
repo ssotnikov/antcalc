@@ -14,8 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
+import local.antenna.calculator.ui.inputExampleColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -90,11 +89,7 @@ internal fun JournalTextField(
 ) {
     val supporting = error ?: hint
     var focused by remember { mutableStateOf(false) }
-    val placeholderColor = if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) {
-        Color(0xFF7A8993)
-    } else {
-        Color(0xFF68727C)
-    }
+    val placeholderColor = inputExampleColor()
     OutlinedTextField(
         state = state,
         enabled = enabled,

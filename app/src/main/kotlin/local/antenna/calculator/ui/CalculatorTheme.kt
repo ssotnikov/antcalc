@@ -4,6 +4,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import local.antenna.calculator.state.AppTheme
 
 private val LightColors = lightColorScheme(
@@ -29,6 +30,10 @@ private val DarkColors = darkColorScheme(
     surfaceContainerLow = Color(0xFF172932), surfaceContainer = Color(0xFF1B303C),
     outline = Color(0xFF8BA2AC), outlineVariant = Color(0xFF3F535D),
 )
+
+@Composable
+internal fun inputExampleColor(): Color =
+    if (MaterialTheme.colorScheme.surface.luminance() < 0.5f) Color(0xFF7A8993) else Color(0xFF68727C)
 
 @Composable
 fun CalculatorTheme(theme: AppTheme, content: @Composable () -> Unit) {
