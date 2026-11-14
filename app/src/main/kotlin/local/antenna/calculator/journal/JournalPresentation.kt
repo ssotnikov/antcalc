@@ -15,11 +15,14 @@ import local.antenna.calculator.core.layout.LoopModel
 import local.antenna.calculator.core.layout.LoopShape
 import local.antenna.calculator.ui.loopLabel
 import local.antenna.calculator.core.journal.*
+import local.antenna.calculator.ui.SlimJimProfile
+import local.antenna.calculator.ui.connectionText
 import local.antenna.calculator.core.trimming.AntennaType
 
 internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.MONOPOLE -> R.string.monopole
     AntennaType.SYMMETRIC_DIPOLE -> R.string.dipole
+    AntennaType.SLIM_JIM -> R.string.slim_jim_title
     AntennaType.YAGI -> R.string.yagi_title
     AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
@@ -90,7 +93,8 @@ internal class JournalPresentation(private val context: Context) {
     }
 
     fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> = buildList {
-            val label = when (s.model) {
+            val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
+            val label = profile?.let { text(it.title) } ?: when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
                 "ground_plane" -> text(R.string.ground_plane_title)
@@ -104,6 +108,12 @@ internal class JournalPresentation(private val context: Context) {
             for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
             for (metric in s.outputsForAntenna(type)) {
                 add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type) to metricValue(metric))
+            }
+            if (profile != null) {
+                add(text(R.string.slim_jim_construction) to text(profile.material))
+                add(text(R.string.slim_jim_diagram) to text(profile.connectionText()))
+                add(text(R.string.slim_jim_sizes) to text(profile.explanation))
+                add(text(R.string.slim_jim_source) to text(profile.sourceUrl))
             }
             for (warning in s.warnings) {
                 val message = when (warning) {
@@ -148,6 +158,19 @@ internal class JournalPresentation(private val context: Context) {
         "loop_feed" -> text(R.string.loop_feed)
         "loop_factor" -> text(R.string.loop_factor)
         "loop_frequency" -> text(R.string.loop_calculated_frequency)
+        "slim_jim_height" -> text(R.string.slim_jim_height)
+        "slim_jim_stub" -> text(R.string.slim_jim_stub)
+        "slim_jim_return" -> text(R.string.slim_jim_return)
+        "slim_jim_gap" -> text(R.string.slim_jim_gap)
+        "slim_jim_spacing" -> text(R.string.slim_jim_spacing)
+        "slim_jim_tap" -> text(R.string.slim_jim_tap)
+        "slim_jim_line_stock" -> text(R.string.slim_jim_line_stock)
+        "slim_jim_gap_start" -> text(R.string.slim_jim_gap_start)
+        "slim_jim_gap_end" -> text(R.string.slim_jim_gap_end)
+        "slim_jim_slimtenna_height" -> text(R.string.slim_jim_slimtenna_height)
+        "slim_jim_separate_stub" -> text(R.string.slim_jim_separate_stub)
+        "slim_jim_stub_vf" -> text(R.string.slim_jim_stub_vf)
+        "slim_jim_wire_stock" -> text(R.string.slim_jim_wire_stock)
         "jpole_long" -> text(R.string.jpole_long)
         "jpole_stub" -> text(R.string.jpole_stub)
         "jpole_radiator" -> text(R.string.jpole_radiator)

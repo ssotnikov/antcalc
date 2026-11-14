@@ -26,6 +26,62 @@ import org.junit.runner.RunWith
 class JournalAcceptanceTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
+    @Test fun slimJimCanCancelCreateAndAppendWithoutChangingItsGeometry() {
+        val title = "Slim Jim " + UUID.randomUUID().toString().take(6)
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-antenna-parameter-tools")
+        click("open-slim-jim")
+
+        click("slim-jim-save")
+        compose.onNodeWithTag("back").performClick()
+        compose.onNodeWithTag("slim-jim-screen").assertExists()
+
+        click("slim-jim-save")
+        compose.onNodeWithTag("project-transfer-create").performClick()
+        click("project-transfer-save-new")
+        compose.onNodeWithTag("project-transfer-name").assertIsDisplayed()
+        edit("project-transfer-name", title)
+        click("project-transfer-save-new")
+        waitFor("slim-jim-save")
+
+        val project = savedProject(title)
+        assertEquals(AntennaType.SLIM_JIM, project.antennaType)
+        assertEquals(145_000_000L, project.target?.hertz)
+        assertNull(project.initialLength)
+        val calculation = requireNotNull(project.records.single().calculation)
+
+        click("slim-jim-save")
+        val row = hasTestTag("project-transfer-project") and hasText(title)
+        compose.onNodeWithTag("project-transfer-project-list").performScrollToNode(row)
+        compose.onNode(row).performClick()
+        compose.onNodeWithTag("project-transfer-confirm-project").performClick()
+        waitFor("slim-jim-save")
+        assertEquals(listOf(calculation, calculation), savedProject(title).records.map { it.calculation })
+    }
+
+    @Test fun slimJimRestoresPositionAfterHelpAndVnaMeasurements() {
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-antenna-parameter-tools")
+        click("open-slim-jim")
+        val copy = compose.onNodeWithTag("slim-jim-copy").performScrollTo()
+        val position = copy.fetchSemanticsNode().boundsInRoot.top
+        for (menuItem in listOf("open-settings", "open-about", "open-references")) {
+            compose.onNodeWithTag("menu").performClick()
+            compose.onNodeWithTag(menuItem).performClick()
+            compose.onNodeWithTag("back").performClick()
+            assertEquals(position, copy.fetchSemanticsNode().boundsInRoot.top, 1f)
+        }
+        val tuning = compose.onNodeWithTag("slim-jim-tuning")
+        tuning.performScrollTo().performClick()
+        val measurements = compose.onNodeWithTag("slim-jim-open-measurements")
+        measurements.performScrollTo().performClick()
+        compose.onNodeWithTag("measurement-screen").assertExists()
+        compose.onNodeWithTag("back").performClick()
+        measurements.assertIsDisplayed()
+    }
+
     @Test fun journalKeepsDraftAndComparesRecordsAfterRecreation() {
         val project = "Dipole " + UUID.randomUUID().toString().take(6)
         compose.waitUntil(15_000) { compose.onAllNodesWithTag("nav-TOOLS").fetchSemanticsNodes().isNotEmpty() }

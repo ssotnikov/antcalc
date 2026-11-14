@@ -117,7 +117,7 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         fun position() = cable.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
         val saved = position()
         assertTrue(saved > 0f)
-        for (tag in listOf("open-settings", "open-about", "open-references")) {
+        for (tag in listOf("open-settings", "open-about", "open-references", "open-licenses")) {
             compose.onNodeWithTag("menu").performClick()
             compose.onNodeWithTag(tag).performClick()
             cable.assertDoesNotExist()

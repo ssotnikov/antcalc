@@ -1,0 +1,103 @@
+<resources>
+    <string name="slim_jim_author" translatable="false">Jose I. Calderon (DU1ANV)</string>
+    <string name="slim_jim_title" translatable="false">Slim Jim</string>
+    <string name="slim_jim_du1anv" translatable="false">DU1ANV · Build the Slim JIM Antenna</string>
+    <string name="slim_jim_m0ukd" translatable="false">M0UKD · Slim Jim and J Pole calculator</string>
+    <string name="slim_jim_cebik" translatable="false">W4RNL · What Is a Slim Jim?</string>
+    <string name="slim_jim_kx4o" translatable="false">KX4O · Slim Jim vs. Traditional J-pole Antenna</string>
+    <string name="slim_jim_card">Dimensions and feed points for Slim Jim designs on selected bands.</string>
+    <string name="slim_jim_intro">A vertical antenna with a folded half-wave radiator and a quarter-wave matching stub.</string>
+    <string name="slim_jim_construction">Construction</string>
+    <string name="slim_jim_profile">DU1ANV · wire Slim Jim</string>
+    <string name="slim_jim_material">Bare AWG 12 copper wire</string>
+    <string name="slim_jim_diagram">Antenna diagram</string>
+    <string name="slim_jim_diagram_description">Slim Jim: top jumper, continuous left leg, gap in the right leg, bottom short and two feed contacts.</string>
+    <string name="slim_jim_connections">Yellow marks the gap and the feed contacts. Connect the centre conductor to the continuous leg and the braid to the leg with the gap, both at height h above the bottom short. Diagram not to scale.</string>
+    <string name="slim_jim_sizes">Construction dimensions</string>
+    <string name="slim_jim_height">Height from bottom short to top jumper</string>
+    <string name="slim_jim_stub">Stub height from bottom</string>
+    <string name="slim_jim_return">Return-leg projection from top to gap</string>
+    <string name="slim_jim_gap">Gap between wire ends</string>
+    <string name="slim_jim_spacing">Centre-to-centre conductor spacing</string>
+    <string name="slim_jim_tap">Initial feed height from bottom</string>
+    <string name="slim_jim_wire_stock">Wire stock length from DU1ANV’s materials list</string>
+    <string name="slim_jim_projection">L3 is the calculated vertical projection: 1496 − 498 − 25 = 973 mm. The article gives a rough length of about 99 cm. DU1ANV formed the bends around a 12.7 mm jig. After bending, mark the free end for a 25 mm gap (E). The wire length depends on the bends.</string>
+    <string name="slim_jim_theory">How Slim Jim works</string>
+    <string name="slim_jim_theory_text">The top jumper joins the two radiator legs. The matching stub is shorted at the bottom. Moving both feed contacts along the stub changes the input impedance.</string>
+    <string name="slim_jim_tuning">Feeding and tuning</string>
+    <string name="slim_jim_tuning_text">Use insulating spacers to hold the spacing and gap. To match the feed line, move both contacts together in steps of about 5 mm and check SWR. When the resonance was well below the target, DU1ANV shortened the upper radiator while maintaining gap E. Measure SWR and impedance in the final mounting position. The PVC enclosure shifted the author’s result down in frequency. Repeat the sweep after fitting the enclosure or changing the feed line.</string>
+    <string name="slim_jim_reference">Reference calculation</string>
+    <string name="slim_jim_reference_text">M0UKD estimate: λ = c/f, B = kλ/2, C = kλ/4, D = kλ/40, E = λ/100, A = B + C + E. At 145 MHz and k = 0.96, A ≈ 150.93 cm and D ≈ 4.96 cm. Here k is the element shortening factor. The author uses 0.96 for bare copper or aluminium. M0UKD measures between the nearest metal surfaces. DU1ANV’s spacing S is centre to centre.</string>
+    <string name="slim_jim_source">Design source</string>
+    <string name="slim_jim_ref_build">Wire construction, coax connections and the author’s SWR measurements.</string>
+    <string name="slim_jim_ref_formula">Starting dimensions and the effect of conductor and matching-section geometry.</string>
+    <string name="slim_jim_ref_theory">Comparison of J-pole variants and an explanation of the folded radiator.</string>
+    <string name="slim_jim_ref_measure">Measured and modelled radiation patterns for Slim Jim and J-pole.</string>
+    <string name="slim_jim_du1anv_url" translatable="false">https://www.qsl.net/n1ea/slimjim_du1anv.pdf</string>
+    <string name="slim_jim_m0ukd_url" translatable="false">https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/</string>
+    <string name="slim_jim_cebik_url" translatable="false">https://antenna2.github.io/cebik/content/vhf/sj.html</string>
+    <string name="slim_jim_kx4o_url" translatable="false">https://www.hamradio.me/antennas/slimjim-vs-traditional-j-pole-antenna.html</string>
+    <string name="slim_jim_wire_ru_title" translatable="false">2-метровая полуволновая антенна</string>
+    <string name="slim_jim_wire_ru_summary" translatable="false">Проволочная антенна на 145 МГц с диэлектрическими распорками и подстройкой точки питания.</string>
+    <string name="slim_jim_wire_ru_url" translatable="false">https://radio3rt.ru/2-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2%D0%B0%D1%8F-%D0%BF%D0%BE%D0%BB%D1%83%D0%B2%D0%BE%D0%BB%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0/</string>
+    <string name="slim_jim_portable_ru_title" translatable="false">Аварийная антенна КВ и УКВ</string>
+    <string name="slim_jim_portable_ru_summary" translatable="false">Походный вариант из 300-омной ленты. Размеры на схеме и в таблице требуют сверки.</string>
+    <string name="slim_jim_portable_ru_url" translatable="false">https://radio3rt.ru/%D0%B0%D0%B2%D0%B0%D1%80%D0%B8%D0%B9%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-%D0%BA%D0%B2-%D0%B8-%D1%83%D0%BA%D0%B2/</string>
+    <string name="slim_jim_10m_ru_title" translatable="false">Антенна Slim Jim для диапазона 10 метров</string>
+    <string name="slim_jim_10m_ru_summary" translatable="false">Конструкция на 28,500 МГц из щелевой линии 450 Ом. Заготовка 7,48 м. По схеме G0KYA нижняя кромка выреза находится в 2,31 м от низа, просвет — 6 см, отвод питания — 13 см от низа. Точку питания уточняют по измерениям.</string>
+    <string name="slim_jim_10m_ru_url" translatable="false">https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-slim-jim-%D0%B4%D0%BB%D1%8F-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD%D0%B0-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/</string>
+    <string name="slim_jim_10m_en_title" translatable="false">10m Slim Jim antenna</string>
+    <string name="slim_jim_10m_en_summary">A 28.500 MHz design using 450-ohm window line. Start with 7.48 m of line. In G0KYA’s drawing, the 6 cm gap starts 2.31 m from the bottom. The initial feed point is 13 cm from the bottom. Adjust it using measurements.</string>
+    <string name="slim_jim_10m_en_url" translatable="false">https://www.infotechcomms.co.uk/downloads/10m_Slim_Jim.pdf</string>
+    <string name="slim_jim_20m_ru_title" translatable="false">Модификация антенны Slim Jim для 20 м «4X4 Slimtenna»</string>
+    <string name="slim_jim_20m_ru_summary" translatable="false">Алюминиевый вертикал с отдельным согласующим шлейфом из 300-омной линии.</string>
+    <string name="slim_jim_20m_ru_url" translatable="false">https://radio3rt.ru/%D0%BC%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D1%8B-slim-jim-%D0%B4%D0%BB%D1%8F-20-%D0%BC-4x4-slimtenna/</string>
+    <string name="slim_jim_20m_en_title" translatable="false">The 4X4 Slimtenna</string>
+    <string name="slim_jim_20m_en_summary">A 20 m vertical with a separate matching stub made from 300-ohm twin lead.</string>
+    <string name="slim_jim_20m_en_url" translatable="false">https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59</string>
+    <string name="jpole_10m_ru_title" translatable="false">Антенна J-вертикал на диапазон 10 метров</string>
+    <string name="jpole_10m_ru_summary" translatable="false">Две конструкции EI9GQ с четвертьволновым коаксиальным шлейфом и отводом питания.</string>
+    <string name="jpole_10m_ru_url" translatable="false">https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-j-%D0%B2%D0%B5%D1%80%D1%82%D0%B8%D0%BA%D0%B0%D0%BB-%D0%BD%D0%B0-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/</string>
+    <string name="jpole_10m_en_title" translatable="false">J-vertical Antenna for 10 meters band</string>
+    <string name="jpole_10m_en_summary">Two EI9GQ builds with a quarter-wave coaxial matching section and a feed tap.</string>
+    <string name="jpole_10m_en_url" translatable="false">https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band</string>
+    <string name="slim_jim_center_lead">Centre</string>
+    <string name="slim_jim_braid_lead">Braid</string>
+    <string name="slim_jim_revision">Revision %1$d</string>
+    <string name="slim_jim_band">Band</string>
+    <string name="slim_jim_band_2m">2 m</string>
+    <string name="slim_jim_band_70cm">70 cm</string>
+    <string name="slim_jim_band_4m">4 m</string>
+    <string name="slim_jim_band_6m">6 m</string>
+    <string name="slim_jim_band_10m">10 m</string>
+    <string name="slim_jim_band_20m">20 m</string>
+    <string name="slim_jim_m0ukd_estimate">M0UKD · estimated dimensions</string>
+    <string name="slim_jim_bare_metal">Bare copper or aluminium</string>
+    <string name="slim_jim_line_450">450-ohm ladder line</string>
+    <string name="slim_jim_moonraker">Moonraker 450-ohm window line</string>
+    <string name="slim_jim_g0kya_article">G0KYA · 10 m Slim Jim and scaling notes</string>
+    <string name="slim_jim_g0kya_profile">G0KYA · published starting dimensions</string>
+    <string name="slim_jim_g0kya_scaled">G0KYA · scaled estimate</string>
+    <string name="slim_jim_m0ukd_formula">λ = c/f, B = kλ/2, C = kλ/4, D = kλ/40, E = λ/100, A = B + C + E. Here k is the element shortening factor. The dimensions use the nearest metal surfaces. Set the conductor spacing to suit the build or the dimensions of the ladder line. D is the initial feed height for adjustment.</string>
+    <string name="slim_jim_g0kya_dimensions">The 7.48 m starting blank is based on the OH2EUU build. The cut-out and 13 cm feed height are from the G0KYA drawing. The upper edge is 2.31 + 0.06 = 2.37 m from the bottom. The final height of the G0KYA build is unspecified.</string>
+    <string name="slim_jim_g0kya_formula">Scale each starting dimension from 28.5 MHz by 28.5 / 51 ≈ 0.559, as suggested by G0KYA. The scaled blank is a starting length. Use the same type of line and adjust the antenna after installation.</string>
+    <string name="slim_jim_line_stock">Starting length of window line</string>
+    <string name="slim_jim_gap_start">Bottom to lower edge of cut-out</string>
+    <string name="slim_jim_gap_end">Bottom to upper edge of cut-out</string>
+    <string name="slim_jim_slimtenna_profile">4X4LH · 4X4 Slimtenna</string>
+    <string name="slim_jim_slimtenna_material">Telescopic aluminium elements with a separate 300-ohm matching line</string>
+    <string name="slim_jim_slimtenna_height">Height of the published antenna</string>
+    <string name="slim_jim_separate_stub">Physical length of the separate matching line</string>
+    <string name="slim_jim_stub_vf">Matching-line velocity factor VF</string>
+    <string name="slim_jim_slimtenna_formula">λ = c/f. The separate quarter-wave matching line has a physical length L = VF · λ/4. The height comes from the published 20 m build. Use the design drawing for assembly and find the feed taps by measurement.</string>
+    <string name="slim_jim_slimtenna_connections">H is the overall height and L is the length of the separate matching section. 1 — Connect one wire to the longer element and leave the other open. 2 — Short the far end of the line. 3 — Connect the feed through a 1:1 balun at the taps. Diagram not to scale.</string>
+    <string name="slim_jim_other_connections">Yellow marks the gap and the feed contacts. The centre conductor connects to the continuous leg and the braid to the leg with the gap. Diagram not to scale.</string>
+    <string name="slim_jim_other_tuning">Check SWR and impedance in the final mounting position. Adjust the feed point to suit the actual line and surroundings, then measure again.</string>
+    <string name="slim_jim_g0kya_article_url" translatable="false">https://g0kya.blogspot.com/2011/08/10m-slim-jim-antenna.html</string>
+    <string name="slim_jim_band_marine">Marine VHF</string>
+    <string name="slim_jim_slimtenna_intro">Two telescoping aluminium elements joined at the top, with a separate matching section made from 300-ohm twin lead.</string>
+    <string name="slim_jim_slimtenna_tuning">The author starts with both feed taps about 1 m (40 in) from the shorted end. Move the taps together to find the lowest SWR on the installed antenna, then secure the connections.</string>
+    <string name="slim_jim_m0ukd_spacing">F is the distance between the nearest metal surfaces. Set it to suit the construction or the chosen line.</string>
+    <string name="slim_jim_m0ukd_diagram">Slim Jim with integrated matching section. A is the height, B the radiator, C the stub, D the feed height, E the gap and F the clear spacing between conductors.</string>
+    <string name="slim_jim_window_diagram">Slim Jim made from window line. L2 and L2 + E are the heights of the lower and upper cut-out edges from the bottom. E is the gap and h is the feed height.</string>
+</resources>

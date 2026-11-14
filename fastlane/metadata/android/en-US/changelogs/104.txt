@@ -1,0 +1,1 @@
+Slim Jim now offers band selection, dimensions from published designs and formulas, and saving the selected design to a project. Each construction now has its own diagram, including the separate 20 m Slimtenna matching section. The app menu includes Licenses. The Yagi build guide can export its STL files as a ZIP.

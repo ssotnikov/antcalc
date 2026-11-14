@@ -1,0 +1,1 @@
+Added the DU1ANV 145 MHz wire Slim Jim with a dimensioned diagram, wiring, tuning guidance and project export.

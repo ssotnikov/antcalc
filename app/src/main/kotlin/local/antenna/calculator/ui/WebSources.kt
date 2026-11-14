@@ -21,7 +21,25 @@ private val directReleaseAddress = Regex(
 private val cableDatasheetAddress = Regex(
     """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
 )
+internal const val SLIM_JIM_DU1ANV_URL = "https://www.qsl.net/n1ea/slimjim_du1anv.pdf"
+internal const val SLIM_JIM_M0UKD_URL = "https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/"
+internal const val SLIM_JIM_KX4O_URL = "https://www.hamradio.me/antennas/slimjim-vs-traditional-j-pole-antenna.html"
+internal const val SLIM_JIM_CEBIK_URL = "https://antenna2.github.io/cebik/content/vhf/sj.html"
+
 private val additionalSourceAddresses = setOf(
+    "https://radio3rt.ru/2-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2%D0%B0%D1%8F-%D0%BF%D0%BE%D0%BB%D1%83%D0%B2%D0%BE%D0%BB%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0/",
+    "https://radio3rt.ru/%D0%B0%D0%B2%D0%B0%D1%80%D0%B8%D0%B9%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-%D0%BA%D0%B2-%D0%B8-%D1%83%D0%BA%D0%B2/",
+    "https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-slim-jim-%D0%B4%D0%BB%D1%8F-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD%D0%B0-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/",
+    "https://www.infotechcomms.co.uk/downloads/10m_Slim_Jim.pdf",
+    "https://g0kya.blogspot.com/2011/08/10m-slim-jim-antenna.html",
+    "https://radio3rt.ru/%D0%BC%D0%BE%D0%B4%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D1%8B-slim-jim-%D0%B4%D0%BB%D1%8F-20-%D0%BC-4x4-slimtenna/",
+    "https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf",
+    "https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-j-%D0%B2%D0%B5%D1%80%D1%82%D0%B8%D0%BA%D0%B0%D0%BB-%D0%BD%D0%B0-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/",
+    "https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band",
+    "https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59",
+    SLIM_JIM_DU1ANV_URL,
+    SLIM_JIM_M0UKD_URL,
+    SLIM_JIM_KX4O_URL,
     "https://www.mdpi.com/1996-1073/14/21/7042",
     "https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf",
     "https://www.dg7ybn.de/144MHz/144_5elem.htm",
@@ -38,7 +56,7 @@ private val additionalSourceAddresses = setOf(
     "https://www.cqham.ru/ant86_30.htm",
     "https://www.qsl.net/s/sv1ui/2mjpole/index.html",
     "https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm",
-    "https://antenna2.github.io/cebik/content/vhf/sj.html",
+    SLIM_JIM_CEBIK_URL,
     "https://antenna2.github.io/cebik/content/vhf/jp4.html",
     "https://nt1k.com/open-stub-j-pole-project-completed-many-times/",
     "https://www.radioman.ru/shem/anteny/an-kvad.php",

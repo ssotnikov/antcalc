@@ -9,6 +9,19 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 
 @RunWith(AndroidJUnit4::class)
 class CalculatorToolsUiTest : CalculatorUiFixture() {
+    @Test fun jPoleCableExampleReturnsToConstructionVariants() {
+        start()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
+        compose.onNodeWithTag("open-jpole").performScrollTo().performClick()
+        compose.onNodeWithText("Варианты конструкции", substring = true).performScrollTo().performClick()
+        compose.onNodeWithText("Длина кабеля").performScrollTo().performClick()
+        compose.onNodeWithTag("cable-copy").assertExists()
+        back()
+        compose.onNodeWithTag("screen-title").assertTextContains("J-антенна")
+        compose.onNodeWithText("Длина кабеля").assertIsDisplayed()
+    }
+
     @Test fun cableEnglishDarkLargeTextKeepsActionsReachable() {
         val draft = CalculatorDraft.defaults()
         start(draft.copy(settings = draft.settings.copy(language = AppLanguage.ENGLISH, theme = AppTheme.DARK)), fontScale = 2f)

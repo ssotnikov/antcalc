@@ -14,7 +14,8 @@ enum class AntennaType {
     /** A closed full-wave wire loop. */
     FULL_WAVE_LOOP,
     J_POLE,
-    YAGI;
+    YAGI,
+    SLIM_JIM;
 
     companion object {
         val straightConductors = listOf(MONOPOLE, SYMMETRIC_DIPOLE)
@@ -122,7 +123,7 @@ private fun calculateWarnings(input: TrimmingInput): Set<TrimmingWarning> = buil
     val reference = when (input.antennaType) {
         AntennaType.MONOPOLE -> ideal.monopoleMeters
         AntennaType.SYMMETRIC_DIPOLE -> ideal.dipoleTotalMeters
-        AntennaType.FULL_WAVE_LOOP, AntennaType.J_POLE, AntennaType.YAGI -> error("Trimming requires a straight-conductor antenna")
+        AntennaType.FULL_WAVE_LOOP, AntennaType.J_POLE, AntennaType.YAGI, AntennaType.SLIM_JIM -> error("Trimming requires a straight-conductor antenna")
     } * (ShorteningFactor.DEFAULT.tenThousandths / 10_000.0)
     val ratio = input.actualLength.nanometers / 1_000_000_000.0 / reference
     if (ratio < .75 || ratio > 1.25) add(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL)

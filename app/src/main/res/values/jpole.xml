@@ -43,7 +43,7 @@
     <string name="jpole_dualBandTitle">Dual-band 2 m / 70 cm</string>
     <string name="jpole_dualBandDescription">A 145 MHz J-pole may show acceptable SWR near its third harmonic at 435 MHz, while its elevation pattern changes. The Open Stub J-Pole is an example designed for both bands.</string>
     <string name="jpole_coaxialTitle">Coaxial cable</string>
-    <string name="jpole_coaxialDescription">A quarter-wave section of coax with a velocity factor of 0.66 is about 341 mm long at 145 MHz. Use the actual cable’s velocity factor and refine dimensions by measuring the assembled antenna.</string>
+    <string name="jpole_coaxialDescription">A quarter-wave section of coax with a velocity factor of 0.66 is about 341 mm long at 145 MHz. In the EI9GQ 10 m example, at 28.500 MHz with VF = 0.80 the starting length is about 2.10 m. Use the velocity factor of the matching cable and adjust the feed tap on the assembled antenna.</string>
     <string name="jpole_copy">Copy dimensions</string>
     <string name="jpole_refs">Antenna construction reference</string>
     <string name="jpole_title">J-pole antenna</string>

@@ -44,6 +44,7 @@ private enum class TransferSource(val model: String, val title: Int, val frequen
     TRIMMING("trimming", R.string.trimming, "target"),
     INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
     GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
+    SLIM_JIM("slim_jim", R.string.slim_jim_title, "frequency"),
     J_POLE("j_pole", R.string.jpole_title, "frequency"),
     YAGI("yagi_r3udk", R.string.yagi_title, "frequency"),
     FULL_WAVE_LOOP("full_wave_loop", R.string.loop_title, "loop_frequency"),
@@ -56,11 +57,16 @@ internal class PendingProjectCalculation(
     private val time: OffsetDateTime = OffsetDateTime.now(),
     private val note: String = "",
 ) {
-    private val source = TransferSource.entries.first { it.model == snapshot.model }
+    private val source = if (SlimJimProfile.entries.any { it.model == snapshot.model }) {
+        TransferSource.SLIM_JIM
+    } else {
+        TransferSource.entries.first { it.model == snapshot.model }
+    }
     val needsAntennaChoice get() = source == TransferSource.SIZING
     val isInvertedV get() = source == TransferSource.INVERTED_V
     val isGroundPlane get() = source == TransferSource.GROUND_PLANE
     val isYagi get() = source == TransferSource.YAGI
+    val isSlimJim get() = source == TransferSource.SLIM_JIM
     val isJPole get() = source == TransferSource.J_POLE
     val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
     val title get() = source.title
@@ -72,9 +78,11 @@ internal class PendingProjectCalculation(
     val recommendedLengthNanometers get() = if (source == TransferSource.TRIMMING)
         outputLengthNanometers("new_length") else null
 
+    val hasInitialLength get() = !isYagi && !isSlimJim
+
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
-            TransferSource.YAGI -> return null
+            TransferSource.YAGI, TransferSource.SLIM_JIM -> return null
             TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
@@ -183,7 +191,7 @@ internal fun TransferNewProject(
             "project-transfer-name", !status.busy, modifier = Modifier.bringIntoViewRequester(nameLocation),
             limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { invalidAttempts > 0 && name.text.isBlank() })
         TransferSummary(pending, type)
-        if (!pending.isYagi && pending.initialLength(type) == null) HelpText(R.string.project_transfer_length_outside_range)
+        if (pending.hasInitialLength && pending.initialLength(type) == null) HelpText(R.string.project_transfer_length_outside_range)
         Text(stringResource(R.string.project_transfer_first_entry), style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary)
         JournalDetails(JournalPresentation(LocalContext.current).snapshotDetails(pending.snapshot, type))

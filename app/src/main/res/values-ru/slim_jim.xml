@@ -1,0 +1,71 @@
+<resources>
+    <string name="slim_jim_card">Размеры и точки питания конструкций Slim Jim для разных диапазонов.</string>
+    <string name="slim_jim_intro">Вертикальная антенна со складчатым полуволновым излучателем и четвертьволновым согласующим шлейфом.</string>
+    <string name="slim_jim_construction">Конструкция</string>
+    <string name="slim_jim_profile">DU1ANV · проволочная Slim Jim</string>
+    <string name="slim_jim_material">Медная жила AWG 12 без изоляции</string>
+    <string name="slim_jim_diagram">Общий вид</string>
+    <string name="slim_jim_diagram_description">Slim Jim: верхняя перемычка, непрерывная левая ветвь, разрыв правой ветви, нижняя перемычка и два контакта питания.</string>
+    <string name="slim_jim_connections">Жёлтым выделены разрыв и контакты питания. Центральную жилу подключайте к непрерывной ветви, оплётку — к ветви с разрывом. Оба контакта находятся на высоте h от нижней перемычки. Схема вне масштаба.</string>
+    <string name="slim_jim_sizes">Размеры конструкции</string>
+    <string name="slim_jim_height">Высота от нижней до верхней перемычки</string>
+    <string name="slim_jim_stub">Высота шлейфа от низа</string>
+    <string name="slim_jim_return">Проекция обратной ветви от верха до разрыва</string>
+    <string name="slim_jim_gap">Просвет между торцами</string>
+    <string name="slim_jim_spacing">Межосевой разнос проводников</string>
+    <string name="slim_jim_tap">Начальная высота контактов от низа</string>
+    <string name="slim_jim_wire_stock">Длина заготовки по списку материалов DU1ANV</string>
+    <string name="slim_jim_projection">L3 — расчетная вертикальная проекция: 1496 − 498 − 25 = 973 мм. В статье приведена приближенная длина около 99 см. DU1ANV формовал изгибы на оправке диаметром 12,7 мм. После сгибания разметьте свободный конец по просвету E = 25 мм. Длина провода зависит от изгибов.</string>
+    <string name="slim_jim_theory">Как работает Slim Jim</string>
+    <string name="slim_jim_theory_text">Верхняя перемычка соединяет две ветви излучателя. Шлейф замкнут снизу. Перемещение обоих контактов вдоль шлейфа меняет входной импеданс.</string>
+    <string name="slim_jim_tuning">Подключение и настройка</string>
+    <string name="slim_jim_tuning_text">Зафиксируйте разнос и просвет диэлектрическими распорками. Для согласования с фидером перемещайте оба контакта вместе шагами около 5 мм и проверяйте КСВ. Если резонанс заметно ниже целевой частоты, DU1ANV укорачивал верхнюю излучающую часть с сохранением просвета E. Измеряйте КСВ и импеданс в рабочем положении. У автора ПВХ-кожух сместил частоту вниз. Повторите измерение после монтажа кожуха или изменения фидера.</string>
+    <string name="slim_jim_reference">Справочный расчет размеров</string>
+    <string name="slim_jim_reference_text">Ориентир M0UKD: λ = c/f, B = kλ/2, C = kλ/4, D = kλ/40, E = λ/100, A = B + C + E. При 145 МГц и k = 0,96 получаются A ≈ 150,93 см и D ≈ 4,96 см. Здесь k — коэффициент укорочения элементов. Значение 0,96 автор использует для голой меди или алюминия. Размеры M0UKD отсчитываются между ближайшими поверхностями металла. В профиле DU1ANV разнос S измеряется между осями.</string>
+    <string name="slim_jim_source">Источник конструкции</string>
+    <string name="slim_jim_ref_build">Проволочная конструкция, подключение коаксиала и измерения КСВ автора.</string>
+    <string name="slim_jim_ref_formula">Начальные размеры и влияние геометрии проводников и шлейфа.</string>
+    <string name="slim_jim_ref_theory">Сравнение вариантов J-антенны и объяснение работы складчатого излучателя.</string>
+    <string name="slim_jim_ref_measure">Измеренные и расчётные диаграммы направленности Slim Jim и J-антенны.</string>
+    <string name="slim_jim_10m_en_summary">@string/slim_jim_10m_ru_summary</string>
+    <string name="slim_jim_20m_en_summary">Вертикал на 20 м с отдельным согласующим шлейфом. Статья в английском приложении, с. V–XI.</string>
+    <string name="jpole_10m_en_summary">Две конструкции EI9GQ с четвертьволновым коаксиальным шлейфом. Англоязычная перепечатка.</string>
+    <string name="slim_jim_center_lead">Жила</string>
+    <string name="slim_jim_braid_lead">Оплетка</string>
+    <string name="slim_jim_revision">Ревизия %1$d</string>
+    <string name="slim_jim_band">Диапазон</string>
+    <string name="slim_jim_band_2m">2 м</string>
+    <string name="slim_jim_band_70cm">70 см</string>
+    <string name="slim_jim_band_4m">4 м</string>
+    <string name="slim_jim_band_6m">6 м</string>
+    <string name="slim_jim_band_10m">10 м</string>
+    <string name="slim_jim_band_20m">20 м</string>
+    <string name="slim_jim_m0ukd_estimate">M0UKD · расчетные размеры</string>
+    <string name="slim_jim_bare_metal">Медь или алюминий без изоляции</string>
+    <string name="slim_jim_line_450">Двухпроводная линия 450 Ом</string>
+    <string name="slim_jim_moonraker">Щелевая линия Moonraker 450 Ом</string>
+    <string name="slim_jim_g0kya_article">G0KYA · Slim Jim на 10 м и пересчет размеров</string>
+    <string name="slim_jim_g0kya_profile">G0KYA · опубликованные начальные размеры</string>
+    <string name="slim_jim_g0kya_scaled">G0KYA · оценка с масштабированием</string>
+    <string name="slim_jim_m0ukd_formula">λ = c/f, B = kλ/2, C = kλ/4, D = kλ/40, E = λ/100, A = B + C + E. Здесь k — коэффициент укорочения элементов. Размеры отсчитываются между ближайшими поверхностями металла. Разнос выбирают по конструкции или размеру двухпроводной линии. D — начальная высота отвода для подстройки.</string>
+    <string name="slim_jim_g0kya_dimensions">Начальная длина заготовки 7,48 м взята из сборки OH2EUU. Размеры выреза и высота отвода 13 см — из чертежа G0KYA. Верхняя кромка выреза находится на высоте 2,31 + 0,06 = 2,37 м. Итоговая высота антенны G0KYA в статье не указана.</string>
+    <string name="slim_jim_g0kya_formula">По совету G0KYA умножьте начальные размеры на 28,5 / 51 ≈ 0,559. Расчетная длина заготовки служит ориентиром. Используйте тот же тип линии и подстройте антенну после установки.</string>
+    <string name="slim_jim_line_stock">Начальная длина заготовки из щелевой линии</string>
+    <string name="slim_jim_gap_start">От низа до нижней кромки выреза</string>
+    <string name="slim_jim_gap_end">От низа до верхней кромки выреза</string>
+    <string name="slim_jim_slimtenna_profile">4X4LH · 4X4 Slimtenna</string>
+    <string name="slim_jim_slimtenna_material">Телескопические алюминиевые элементы и отдельная согласующая линия 300 Ом</string>
+    <string name="slim_jim_slimtenna_height">Высота антенны по публикации</string>
+    <string name="slim_jim_separate_stub">Физическая длина отдельного согласующего шлейфа</string>
+    <string name="slim_jim_stub_vf">Коэффициент скорости VF шлейфа</string>
+    <string name="slim_jim_slimtenna_formula">λ = c/f. Физическая длина отдельного четвертьволнового шлейфа L = VF · λ/4. Высота взята из опубликованной конструкции на 20 м. Схему сборки смотрите в статье, точки отвода подбирайте по измерениям.</string>
+    <string name="slim_jim_slimtenna_connections">H — полная высота, L — длина отдельного шлейфа. 1 — Подключите один проводник к длинной ветви, второй оставьте разомкнутым. 2 — Замкните дальний конец линии. 3 — Подключите фидер к отводам через балун 1:1. Схема вне масштаба.</string>
+    <string name="slim_jim_other_connections">Желтым выделены разрыв и контакты питания. Центральная жила подключается к непрерывной ветви, оплетка — к ветви с разрывом. Схема вне масштаба.</string>
+    <string name="slim_jim_other_tuning">Измерьте КСВ и импеданс в рабочем положении. Подберите точку питания с учетом фактической линии и окружения, затем повторите измерения.</string>
+    <string name="slim_jim_band_marine">Морской УКВ</string>
+    <string name="slim_jim_slimtenna_intro">Две телескопические алюминиевые ветви соединены сверху. Для согласования используется отдельный отрезок двухпроводной линии 300 Ом.</string>
+    <string name="slim_jim_slimtenna_tuning">Автор начинает с отводов примерно в 1 м (40 дюймов) от замкнутого конца. Перемещайте оба отвода вместе до минимума КСВ на установленной антенне, затем зафиксируйте соединения.</string>
+    <string name="slim_jim_m0ukd_spacing">F — расстояние между ближайшими поверхностями проводников. Выберите его по конструкции или размерам двухпроводной линии.</string>
+    <string name="slim_jim_m0ukd_diagram">Slim Jim со встроенным шлейфом. A — высота, B — излучатель, C — шлейф, D — высота отвода, E — разрыв, F — просвет между проводниками.</string>
+    <string name="slim_jim_window_diagram">Slim Jim из щелевой линии. L2 и L2 + E — высоты нижней и верхней кромок выреза от низа. E — просвет, h — высота отвода.</string>
+</resources>

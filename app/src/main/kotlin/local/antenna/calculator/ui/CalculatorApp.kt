@@ -41,7 +41,7 @@ import local.antenna.calculator.measurements.MeasurementViewModel
 import local.antenna.calculator.measurements.SwrBandwidthScreen
 
 // Keep ABOUT as the persisted route identifier for Help.
-private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
+private enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +77,7 @@ private fun LocalizedCalculatorApp(
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menuParents by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var menu by remember { mutableStateOf(false) }
+    var cableParent by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
     var constructionParent by rememberSaveable { mutableStateOf(Page.ANTENNA_CONSTRUCTION) }
     var bandwidthFromMeasurements by rememberSaveable { mutableStateOf(false) }
@@ -106,6 +107,7 @@ private fun LocalizedCalculatorApp(
             pending?.isInvertedV == true -> Page.INVERTED_V
             pending?.isGroundPlane == true -> Page.GROUND_PLANE
             pending?.isYagi == true -> Page.YAGI_CALCULATOR
+            pending?.isSlimJim == true -> Page.SLIM_JIM
             pending?.isJPole == true -> Page.J_POLE
             pending?.isFullWaveLoop == true -> Page.FULL_WAVE_LOOP
             else -> Page.CALCULATOR
@@ -125,13 +127,14 @@ private fun LocalizedCalculatorApp(
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
         when (page) {
-            Page.SETTINGS, Page.ABOUT, Page.REFERENCES -> {
+            Page.SETTINGS, Page.ABOUT, Page.REFERENCES, Page.LICENSES -> {
                 page = menuParents.lastOrNull()?.let(Page::valueOf) ?: Page.CALCULATOR
                 menuParents = ArrayList(menuParents.dropLast(1))
             }
             Page.ANTENNA_PARAMETER_TOOLS, Page.ANTENNA_CONSTRUCTION, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
             Page.CONSTRUCTION_YAGI -> page = constructionParent
-            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.YAGI_CALCULATOR -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.YAGI_CALCULATOR -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.CABLE -> page = cableParent
             Page.MEASUREMENTS -> page = measurementsParent
             Page.SWR_BANDWIDTH -> page = if (bandwidthFromMeasurements) Page.MEASUREMENTS else Page.ADDITIONAL_TOOLS
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
@@ -235,6 +238,7 @@ private fun LocalizedCalculatorApp(
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
             Page.REFERENCES -> R.string.references_title
+            Page.LICENSES -> R.string.licenses_title
             Page.MATCHING -> R.string.matching_title
             Page.SMITH_CHART -> R.string.smith_title
             Page.CABLE -> R.string.cable_screen_title
@@ -243,6 +247,7 @@ private fun LocalizedCalculatorApp(
             Page.GROUND_PLANE -> R.string.ground_plane_title
             Page.FULL_WAVE_LOOP -> R.string.loop_title
             Page.YAGI_CALCULATOR -> R.string.yagi_title
+            Page.SLIM_JIM -> R.string.slim_jim_title
             Page.J_POLE -> R.string.jpole_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
             Page.TRANSFER_PICKER -> if (sweepTransferId != null) R.string.sweep_save else R.string.project_transfer_title
@@ -294,6 +299,11 @@ private fun LocalizedCalculatorApp(
                                     openMenuPage(Page.REFERENCES)
                                 }, modifier = Modifier.testTag("open-references"))
                                 DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.licenses_title)) },
+                                    onClick = { openMenuPage(Page.LICENSES) },
+                                    modifier = Modifier.testTag("open-licenses"),
+                                )
+                                DropdownMenuItem(
                                     text = { Text(stringResource(R.string.contact_author)) },
                                     onClick = { menu = false; openAuthorContact(context) },
                                     modifier = Modifier.testTag("contact-author"),
@@ -316,7 +326,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -353,6 +363,7 @@ private fun LocalizedCalculatorApp(
                             onOpenInvertedV = { leaveInput(); page = Page.INVERTED_V },
                             onOpenGroundPlane = { leaveInput(); page = Page.GROUND_PLANE },
                             onOpenFullWaveLoop = { leaveInput(); page = Page.FULL_WAVE_LOOP },
+                            onOpenSlimJim = { leaveInput(); page = Page.SLIM_JIM },
                             onOpenJPole = { leaveInput(); page = Page.J_POLE },
                             onOpenYagi = { leaveInput(); page = Page.YAGI_CALCULATOR },
                         )
@@ -425,6 +436,7 @@ private fun LocalizedCalculatorApp(
                     }
                     Page.ABOUT -> screenStates.SaveableStateProvider("help-${menuParents.size}") { HelpScreen() }
                     Page.REFERENCES -> screenStates.SaveableStateProvider("references-${menuParents.size}") { ReferencesScreen(settings.language) }
+                    Page.LICENSES -> screenStates.SaveableStateProvider("licenses-${menuParents.size}") { LicensesScreen() }
                     Page.MATCHING -> screenStates.SaveableStateProvider("matching") {
                         MatchingScreen(state, onEvent, currentState) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     }
@@ -470,10 +482,30 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
+                    Page.SLIM_JIM -> screenStates.SaveableStateProvider("slim-jim") {
+                        SlimJimScreen(
+                            onSave = if (journal == null) null else { snapshot ->
+                                startTransfer(PendingProjectCalculation(snapshot), AntennaType.SLIM_JIM)
+                            },
+                            onMeasurements = measurements?.let { model ->
+                                {
+                                    leaveInput()
+                                    measurementsParent = Page.SLIM_JIM
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
+                            },
+                            onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
+                        )
+                    }
                     Page.J_POLE -> screenStates.SaveableStateProvider("j-pole") {
-                        JPoleScreen(if (journal == null) null else { snapshot ->
-                            startTransfer(PendingProjectCalculation(snapshot), AntennaType.J_POLE)
-                        }) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                        JPoleScreen(
+                            onSave = if (journal == null) null else { snapshot ->
+                                startTransfer(PendingProjectCalculation(snapshot), AntennaType.J_POLE)
+                            },
+                            onOpenCable = { leaveInput(); cableParent = Page.J_POLE; page = Page.CABLE },
+                            onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
+                        )
                     }
                     Page.FULL_WAVE_LOOP -> screenStates.SaveableStateProvider("full-wave-loop") {
                         val chooseProject = if (journal != null) ::openFullWaveLoopTransfer else null
@@ -568,7 +600,7 @@ private fun LocalizedCalculatorApp(
                                 ToolsScreen(
                                     onOpenSmithChart = { leaveInput(); page = Page.SMITH_CHART },
                                     onOpenMatching = { leaveInput(); page = Page.MATCHING },
-                                    onOpenCable = { leaveInput(); page = Page.CABLE },
+                                    onOpenCable = { leaveInput(); cableParent = Page.CALCULATOR; page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
                                     onOpenAdditional = measurements?.let { { leaveInput(); page = Page.ADDITIONAL_TOOLS } },
                                     onOpenConstruction = { leaveInput(); page = Page.ANTENNA_CONSTRUCTION },

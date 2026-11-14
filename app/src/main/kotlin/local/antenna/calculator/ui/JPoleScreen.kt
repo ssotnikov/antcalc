@@ -51,7 +51,11 @@ private fun JPoleDimensions.rows() = listOf(
 )
 
 @Composable
-internal fun JPoleScreen(onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () -> Unit) {
+internal fun JPoleScreen(
+    onSave: ((CalculationSnapshot) -> Unit)?,
+    onOpenCable: () -> Unit,
+    onCopied: () -> Unit,
+) {
     val initialFrequency = stringResource(R.string.jpole_default_frequency)
     val initialFactor = stringResource(R.string.jpole_default_factor)
     var frequencyText by rememberSaveable { mutableStateOf(initialFrequency) }
@@ -124,6 +128,11 @@ internal fun JPoleScreen(onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () 
             JPoleVariant(R.string.jpole_super, R.string.jpole_superJDescription, R.string.jpole_source_super)
             JPoleVariant(R.string.jpole_dualBandTitle, R.string.jpole_dualBandDescription, R.string.jpole_source_open)
             JPoleVariant(R.string.jpole_coaxialTitle, R.string.jpole_coaxialDescription)
+            val russian = resources.configuration.locales[0].language == "ru"
+            val sourceTitle = if (russian) R.string.jpole_10m_ru_title else R.string.jpole_10m_en_title
+            val sourceUrl = stringResource(if (russian) R.string.jpole_10m_ru_url else R.string.jpole_10m_en_url)
+            TextButton(onClick = { openSourceWithFeedback(context, sourceUrl) }) { Text(stringResource(sourceTitle)) }
+            TextButton(onClick = onOpenCable) { Text(stringResource(R.string.cable_screen_title)) }
         }
         if (onSave != null) {
             Button(enabled = result != null, modifier = Modifier.fillMaxWidth().testTag("jpole-save"), onClick = {
