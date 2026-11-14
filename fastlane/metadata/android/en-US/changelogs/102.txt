@@ -1,0 +1,1 @@
+The Yagi–Uda calculator adds space above the design selector and shows muted examples in the allowance and boom clearance fields.

@@ -1,0 +1,1 @@
+SWR and reflection now explains how the load affects transmitter power, with a comparison table. The Yagi–Uda guide links to the original article for STL downloads.
