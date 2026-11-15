@@ -107,6 +107,12 @@ class WebSourcesTest {
         assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/unapproved"))
     }
 
+    @Test fun privacyPolicyPermitsOnlyThePublishedAddress() {
+        assertEquals(PRIVACY_POLICY_URL, validatedSourceAddress(PRIVACY_POLICY_URL))
+        assertNull(validatedSourceAddress(PRIVACY_POLICY_URL + "?extra=1"))
+        assertNull(validatedSourceAddress("https://antcalc.ssotnikov.pro/"))
+    }
+
     @Test fun unsafeOrAmbiguousUrisFailClosed() {
         for (url in listOf("", "http://www.arrl.org/", "javascript:alert(1)", "file:///sdcard/test",
             "content://www.arrl.org/test", "intent://www.arrl.org/", "https://www.arrl.org.evil.example/",

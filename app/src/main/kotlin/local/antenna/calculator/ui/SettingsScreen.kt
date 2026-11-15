@@ -76,6 +76,9 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                             }
                         }
                     }
+                    TextButton(onClick = { openSourceWithFeedback(context, PRIVACY_POLICY_URL) }) {
+                        Text(stringResource(R.string.privacy_policy))
+                    }
                 }
                 Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
                 HorizontalDivider()

@@ -91,6 +91,7 @@ internal const val GITHUB_RELEASES_URL = "https://github.com/ssotnikov/antcalc/r
 internal const val LIZAALERT_URL = "https://lizaalert.org/"
 internal const val LIZAALERT_YAGI_URL = "https://wiki.app.lizaalert.ru/s/8a0ac7fb-4e86-4453-8778-5a45f9f0ca3e"
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
+internal const val PRIVACY_POLICY_URL = "https://antcalc.ssotnikov.pro/privacy/"
 private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
 internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"
 
@@ -123,6 +124,7 @@ internal fun validatedSourceAddress(address: String): String? {
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
     if (url == authorSupportPaymentUrl) return url
+    if (url == PRIVACY_POLICY_URL) return url
     return when (url) {
         BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
         else -> url.takeIf { it in additionalSourceAddresses || it in moxonSourceAddresses || it in hb9cvSourceAddresses ||
