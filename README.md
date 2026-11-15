@@ -121,7 +121,7 @@
 В русскоязычном интерфейсе GitHub Direct кнопка «Поддержать автора» в настройках и одноимённый пункт меню открывают страницу добровольного перевода через СБП в Ozon Банке.
 
 [GitHub Issues](https://github.com/ssotnikov/antcalc/issues) ·
-[ssotnikov.pro](https://ssotnikov.pro) ·
+[antcalc.ssotnikov.pro](https://antcalc.ssotnikov.pro) ·
 [ssotnikov@gmail.com](mailto:ssotnikov@gmail.com)
 
 ## English
@@ -236,7 +236,7 @@ To report a bug, choose Report a bug from the menu or Settings. To reach the aut
 In the Russian interface of the GitHub Direct build, «Поддержать автора» in Settings and the app menu opens Ozon Bank’s page for voluntary transfers via the Faster Payments System (SBP).
 
 [GitHub Issues](https://github.com/ssotnikov/antcalc/issues) ·
-[ssotnikov.pro](https://ssotnikov.pro) ·
+[antcalc.ssotnikov.pro](https://antcalc.ssotnikov.pro) ·
 [ssotnikov@gmail.com](mailto:ssotnikov@gmail.com)
 
 
