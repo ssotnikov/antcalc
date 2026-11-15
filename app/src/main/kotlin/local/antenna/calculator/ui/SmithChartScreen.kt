@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import local.antenna.calculator.R
 import local.antenna.calculator.core.matching.*
-import local.antenna.calculator.state.boundedNumericText
 
 private enum class SmithField(val label: Int, val kind: MatchingField, val range: ClosedFloatingPointRange<Double>) {
     REFERENCE(R.string.smith_reference, MatchingField.REFERENCE, 10.0..300.0),
@@ -171,7 +170,7 @@ internal fun SmithChartScreen(notify: (String) -> Unit) {
 private fun SmithInput(field: SmithField, text: String, value: Double?, edit: (String) -> Unit) {
     val context = LocalContext.current
     OutlinedTextField(
-        value = text, onValueChange = { edit(it.boundedNumericText()) },
+        value = text, onValueChange = { if (it.acceptsDecimalEdit(signed = field.kind.signed)) edit(it) },
         label = { Text(stringResource(field.label)) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = if (field.kind.signed) KeyboardType.Text else KeyboardType.Decimal),
         isError = value == null,

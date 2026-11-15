@@ -29,7 +29,7 @@
 ### Возможности
 
 - **Размеры и подстройка.** Рассчитывайте начальную длину штыря и диполя и оценивайте изменение длины по измеренному резонансу.
-- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда и Моксон. Для Моксона также доступен расчёт размеров по частоте и диаметру.
+- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона также доступен расчёт размеров по частоте и диаметру. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
 - **Конструирование.** Иллюстрированное руководство по сборке четырёхэлементной Яги — Уда.
 - **КСВ и диаграмма Смита.** Пересчитывайте КСВ, отражение и возвратные потери. Изучайте влияние нагрузки на мощность передатчика и перемещайте маркеры на интерактивной диаграмме.
 - **Фидер.** Рассчитывайте электрическую длину, задержку и затухание кабеля по встроенному каталогу или своим данным.
@@ -88,6 +88,30 @@
 - **Tim (G5OLD / M7TSU/P)** — [10 m Lightweight Moxon](https://www.printables.com/model/768035-10m-lightweight-moxon?lang=de). Печатные детали — CC BY 4.0.
 - **Barry Shaffer** — [YAMA 2.0](https://github.com/barryshaffer/YAMA). Репозиторий конструкции — GPL-3.0.
 
+#### Материалы по HB9CV
+
+- **Рудольф Баумгартнер (HB9CV)** — [Антенна HB9CV (чешский перевод авторского руководства)](https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm)
+- **Мартин Штайер (DK7ZB)** — [HB9CV на 2, 6 и 10 м, FUNKAMATEUR 12/1997](https://dk7zb.darc.de/Download/hb9cv.pdf) · [Двухэлементная HB9CV, чертежи и формулы](https://dk7zb.darc.de/HB9CV/Details-HB9CV.htm). Коммерческое использование конструкций требует разрешения автора. [Условия DK7ZB](https://dk7zb.darc.de/)
+- **Л. Б. Себик (W4RNL)** — [The HB9CV Phased Array and Gain Comparisons](https://antenna2.github.io/cebik/content/phase/hb.html)
+- **Мик Сеньор (G4EFO)** — [HB9CV: Theory Meets Practice, Ham Radio Today, апрель 1987](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1987-04.pdf#page=19)
+- **М. Хэдли (G4JXX)** — [Антенна для ЧМ на 10 м, Ham Radio Today, июль 1983](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1983-07.pdf)
+- **DK2TX** — [Разборная HB9CV на 28 МГц](https://www.darc.de/fileadmin/filemounts/distrikte/b/ortsverbaende/08/Vortraege/HB9CV.pdf)
+- **PA0TAX** — [HB9CV на 10, 15 и 20 м, CQ-PA, 1989](https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1989/page148/index.html)
+- **Годфрид (PD0DDR)** — [Самодельная HB9CV на 2 м, CQ-PA, 1990](https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1990/page649/index.html)
+- **DL1DOW** — [Самодельные HB9CV на 2 м и 70 см](https://dl1dow.de/artikel/hb9cv/d_hb9cv_start.htm)
+- **Кабэ Мицуру (JG0SXC)** — [Разборная HB9CV на 50 МГц](https://www.ne.jp/asahi/dx/jg0sxc/ant/hb9cv.html). Автор сохраняет все права на оригинальную публикацию.
+- **Юки Симидзу (JO2ASQ)** — [Облегчённая HB9CV на 50 МГц](https://www.fbnews.jp/201308/rensai/jo2asq_idouunyou_benrigoods_05_01.html)
+- **DL2NET / OH4JZJ** — [Двухэлементная HB9CV на 435 МГц](https://www.qsl.net/oh4jzj/hb9cv.htm)
+- **DL2NET / OH4JZJ по конструкции DC7BJ** — [HB9CV+3 на 431 и 435 МГц](https://www.qsl.net/oh4jzj/hb9cv3.htm)
+- **Аккерман (DH2PA)** — [HB9CV на 23 см](https://dh2pa.darc.de/projekte/HB9CV_23cm.pdf)
+- **Жан-Поль (F1LVT)** — [Складная HB9CV для УВЧ](https://f1lvt.com/files/543-AntHB9CVpliante.138.pdf) · [Чертёж печатной платы HB9CV](https://www.f1lvt.com/files/544-HB9CV.139.pdf)
+- **Томислав Барич, Хрвое Главаш, Лиляна Радованович** — [HB9CV на 446 МГц, моделирование и измерения, IIZS 2025](https://scindeks-clanci.ceon.rs/data/pdf/proc-0070/2025/proc-00702503181B.pdf)
+- **Карл Ротхаммель (DM2ABK)** — [Новые радиолюбительские антенны, «Радио» № 11, 1965](https://djvu.online/file/bKBAEzad3ouHk)
+- **А. Снесарев (UW3BJ)** — [Антенна с активным рефлектором, «Радио» № 9, 1968](https://www.rlocman.ru/shem/schematics.html?di=4994)
+- **Ф. Козлов (UA4LK)** — [Об антенне с активным рефлектором, «Радио» № 9, 1972](https://www.rlocman.ru/shem/schematics.html?di=4942)
+- **«Радио-Дизайн» / Break magazyn** — [Направленная двухэлементная HB9CV, «Радио-Дизайн» № 1, 1998](https://www.rlocman.ru/shem/schematics.html?di=4949)
+- **Игорь Гончаренко (DL2KQ / EU1TT)** — [Направленная из двух диполей, раздел 9.2.2](https://dl2kq.de/ant/kniga/922.htm)
+
 Права на оригинальные конструкции и материалы сохраняются за их авторами и правообладателями. Условия коммерческого и некоммерческого использования определяются правообладателями и указаны в оригинальных публикациях.
 
 ### Обратная связь
@@ -120,7 +144,7 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 ### Features
 
 - **Antenna sizing and tuning.** Estimate monopole and dipole lengths and work out how much to adjust an antenna using its measured resonance.
-- **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda and Moxon design catalogs. The Moxon calculator also gives dimensions by frequency and conductor diameter.
+- **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda, Moxon and HB9CV design catalogs. The Moxon calculator also gives dimensions by frequency and conductor diameter. Drag to rotate the antenna model and double-tap to view it full-screen.
 - **Antenna construction.** An illustrated guide to building a four-element Yagi–Uda.
 - **SWR and Smith chart.** Convert between SWR, reflection and return loss. Explore how the load affects transmitter power and drag markers on the interactive chart.
 - **Feedlines.** Calculate cable electrical length, delay and attenuation using the built-in cable catalog or your own data.
@@ -178,6 +202,30 @@ The project draws on materials from the following authors and publishers.
 - **3dMikL** — [Antena Moxon 868 MHz](https://www.printables.com/model/1682076-antena-moxon-868-mhz). The printable model is marked Public Domain.
 - **Tim (G5OLD / M7TSU/P)** — [10 m Lightweight Moxon](https://www.printables.com/model/768035-10m-lightweight-moxon?lang=de). The printed parts are licensed under CC BY 4.0.
 - **Barry Shaffer** — [YAMA 2.0](https://github.com/barryshaffer/YAMA). The construction repository is licensed under GPL-3.0.
+
+#### HB9CV sources
+
+- **Rudolf Baumgartner (HB9CV)** — [The HB9CV Beam Antenna (Czech translation)](https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm)
+- **Martin Steyer (DK7ZB)** — [HB9CV Antennas for 2, 6 and 10 m, FUNKAMATEUR 12/1997](https://dk7zb.darc.de/Download/hb9cv.pdf) · [The Two-Element HB9CV Beam, Drawings and Formulas](https://dk7zb.darc.de/HB9CV/Details-HB9CV.htm). Commercial use of the designs requires the author's permission. [DK7ZB’s terms](https://dk7zb.darc.de/)
+- **L. B. Cebik (W4RNL)** — [The HB9CV Phased Array and Gain Comparisons](https://antenna2.github.io/cebik/content/phase/hb.html)
+- **Mick Senior (G4EFO)** — [HB9CV: Theory Meets Practice, Ham Radio Today, April 1987](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1987-04.pdf#page=19)
+- **M. Hadley (G4JXX)** — [A Simple Beam for 10 Metre FM, Ham Radio Today, July 1983](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1983-07.pdf)
+- **DK2TX** — [Demountable 28 MHz HB9CV](https://www.darc.de/fileadmin/filemounts/distrikte/b/ortsverbaende/08/Vortraege/HB9CV.pdf)
+- **PA0TAX** — [HB9CV for 10, 15 and 20 m, CQ-PA, 1989](https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1989/page148/index.html)
+- **Godfried (PD0DDR)** — [Build Your Own 2 m HB9CV, CQ-PA, 1990](https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1990/page649/index.html)
+- **DL1DOW** — [Homebrew HB9CV Antennas for 2 m and 70 cm](https://dl1dow.de/artikel/hb9cv/d_hb9cv_start.htm)
+- **Mitsuru Kabe (JG0SXC)** — [Demountable HB9CV for 50 MHz](https://www.ne.jp/asahi/dx/jg0sxc/ant/hb9cv.html). The author reserves all rights to the original publication.
+- **Yuki Shimizu (JO2ASQ)** — [Lightweight 50 MHz HB9CV](https://www.fbnews.jp/201308/rensai/jo2asq_idouunyou_benrigoods_05_01.html)
+- **DL2NET / OH4JZJ** — [Two-Element HB9CV for 435 MHz](https://www.qsl.net/oh4jzj/hb9cv.htm)
+- **DL2NET / OH4JZJ, based on the DC7BJ design** — [HB9CV+3 for 431 and 435 MHz](https://www.qsl.net/oh4jzj/hb9cv3.htm)
+- **Ackermann (DH2PA)** — [HB9CV for 23 cm](https://dh2pa.darc.de/projekte/HB9CV_23cm.pdf)
+- **Jean-Paul (F1LVT)** — [Foldable UHF HB9CV Antenna](https://f1lvt.com/files/543-AntHB9CVpliante.138.pdf) · [HB9CV PCB Drawing](https://www.f1lvt.com/files/544-HB9CV.139.pdf)
+- **Tomislav Barić, Hrvoje Glavaš, Ljiljana Radovanović** — [HB9CV at 446 MHz, Simulation and Measurements, IIZS 2025](https://scindeks-clanci.ceon.rs/data/pdf/proc-0070/2025/proc-00702503181B.pdf)
+- **Karl Rothammel (DM2ABK)** — [New Amateur Radio Antennas, Radio No. 11, 1965 (Russian edition)](https://djvu.online/file/bKBAEzad3ouHk)
+- **A. Snesarev (UW3BJ)** — [Antenna with a Driven Reflector, Radio No. 9, 1968 (Russian original)](https://www.rlocman.ru/shem/schematics.html?di=4994)
+- **F. Kozlov (UA4LK)** — [On an Antenna with a Driven Reflector, Radio No. 9, 1972 (Russian original)](https://www.rlocman.ru/shem/schematics.html?di=4942)
+- **Radio-Dizain / Break magazyn** — [Two-Element Directional HB9CV, Radio-Dizain No. 1, 1998 (Russian edition)](https://www.rlocman.ru/shem/schematics.html?di=4949)
+- **Igor Goncharenko (DL2KQ / EU1TT)** — [Two-Dipole Beam, Section 9.2.2 (Russian original)](https://dl2kq.de/ant/kniga/922.htm)
 
 The authors and other rights holders retain the rights to the original designs and materials. See the original publications for their terms of commercial and non-commercial use.
 

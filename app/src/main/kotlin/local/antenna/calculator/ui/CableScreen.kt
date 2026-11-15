@@ -150,7 +150,7 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
                 Modifier, key == CableField.FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
             )
-            OutlinedTextField(draft.fields.getValue(key), { change(currentState().draft.cable.edit(key, it)) },
+            OutlinedTextField(draft.fields.getValue(key), { if (it.acceptsDecimalEdit()) change(currentState().draft.cable.edit(key, it)) },
                 label = { Text(stringResource(key.label()) + suffix) }, enabled = state.editingEnabled,
                 visualTransformation = frequencyTransformation,
                 modifier = fieldModifier.fillMaxWidth().testTag("cable-${key.name}").semantics { if (visible) error(message) }.onFocusChanged {

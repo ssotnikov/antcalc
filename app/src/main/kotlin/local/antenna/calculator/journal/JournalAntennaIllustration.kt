@@ -18,6 +18,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.ui.MoxonAntennaArt
 import local.antenna.calculator.ui.MoxonView
+import local.antenna.calculator.ui.RotatingAntenna
 
 @Composable
 internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = Modifier) {
@@ -25,7 +26,12 @@ internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = 
         MoxonAntennaArt(MoxonView.GENERIC, null, modifier.testTag("journal-antenna-image-MOXON"))
         return
     }
+    if (type == AntennaType.HB9CV) {
+        RotatingAntenna("hb-0", "HB9CV", modifier.fillMaxWidth().height(144.dp).testTag("journal-antenna-image-HB9CV"), interactive = false)
+        return
+    }
     val painter = when (type) {
+        AntennaType.HB9CV -> error("HB9CV is drawn directly")
         AntennaType.MOXON -> error("Moxon is drawn directly")
         AntennaType.SLIM_JIM -> painterResource(R.drawable.slim_jim_antenna)
         AntennaType.YAGI -> painterResource(R.drawable.yagi_r3_hero)

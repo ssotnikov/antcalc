@@ -33,6 +33,7 @@ internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.SYMMETRIC_DIPOLE -> R.string.dipole
     AntennaType.SLIM_JIM -> R.string.slim_jim_title
     AntennaType.MOXON -> R.string.moxon_title
+    AntennaType.HB9CV -> R.string.hb9cv_title
     AntennaType.YAGI -> R.string.yagi_title
     AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
@@ -115,7 +116,7 @@ internal class JournalPresentation(private val context: Context) {
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
-                else -> yagi?.label ?: moxon?.name ?: s.model
+                else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
             for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
@@ -152,6 +153,28 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = when (key) {
         "frequency" -> text(R.string.frequency)
+        "hb9cv_r" -> "R"
+        "hb9cv_s" -> "S"
+        "hb9cv_spacing" -> "A"
+        "hb9cv_rtap" -> "RS"
+        "hb9cv_stap" -> "SS"
+        "hb9cv_gap" -> "h"
+        "hb9cv_boom" -> text(R.string.hb9cv_boom)
+        "hb9cv_position_r" -> text(R.string.hb9cv_position_r)
+        "hb9cv_position_s" -> text(R.string.hb9cv_position_s)
+        "hb9cv_branch_r", "hb9cv_rear_cable" -> text(R.string.hb9cv_branch_r)
+        "hb9cv_branch_s", "hb9cv_front_cable" -> text(R.string.hb9cv_branch_s)
+        "hb9cv_rear" -> text(R.string.hb9cv_rear)
+        "hb9cv_front" -> text(R.string.hb9cv_front)
+        "hb9cv_boom_width" -> text(R.string.hb9cv_boom_width)
+        "hb9cv_tip" -> text(R.string.hb9cv_tip)
+        "hb9cv_center" -> text(R.string.hb9cv_center)
+        "hb9cv_center_cut" -> text(R.string.hb9cv_center_pair)
+        "hb9cv_overlap" -> text(R.string.hb9cv_overlap)
+        "hb9cv_cut_r" -> text(R.string.hb9cv_cut_r)
+        "hb9cv_cut_s" -> text(R.string.hb9cv_cut_s)
+        "hb9cv_vf" -> "VF"
+        "hb9cv_allowance" -> text(R.string.hb9cv_allowance)
         "moxon_band" -> text(R.string.moxon_band)
         "moxon_diameter" -> text(R.string.moxon_diameter)
         "moxon_allowance" -> text(R.string.moxon_allowance)

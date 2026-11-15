@@ -16,7 +16,8 @@ enum class AntennaType {
     J_POLE,
     YAGI,
     SLIM_JIM,
-    MOXON;
+    MOXON,
+    HB9CV;
 
     companion object {
         val straightConductors = listOf(MONOPOLE, SYMMETRIC_DIPOLE)
@@ -124,7 +125,7 @@ private fun calculateWarnings(input: TrimmingInput): Set<TrimmingWarning> = buil
     val reference = when (input.antennaType) {
         AntennaType.MONOPOLE -> ideal.monopoleMeters
         AntennaType.SYMMETRIC_DIPOLE -> ideal.dipoleTotalMeters
-        AntennaType.FULL_WAVE_LOOP, AntennaType.J_POLE, AntennaType.YAGI, AntennaType.SLIM_JIM, AntennaType.MOXON -> error("Trimming requires a straight-conductor antenna")
+        AntennaType.FULL_WAVE_LOOP, AntennaType.J_POLE, AntennaType.YAGI, AntennaType.SLIM_JIM, AntennaType.MOXON, AntennaType.HB9CV -> error("Trimming requires a straight-conductor antenna")
     } * (ShorteningFactor.DEFAULT.tenThousandths / 10_000.0)
     val ratio = input.actualLength.nanometers / 1_000_000_000.0 / reference
     if (ratio < .75 || ratio > 1.25) add(TrimmingWarning.LENGTH_DIFFERS_FROM_MODEL)

@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.JournalLimits
 import local.antenna.calculator.data.CableCatalog
+import local.antenna.calculator.ui.decimalInputTransformation
 
 internal enum class JournalSuggestion(val label: Int, val example: Int, val tag: String, val options: List<Int>) {
     INSTALLATION(R.string.journal_installation, R.string.journal_example_installation, "journal-installation", listOf(
@@ -86,6 +87,7 @@ internal fun JournalTextField(
     hint: Int? = null,
     numeric: Boolean = keyboard == KeyboardType.Decimal,
     megahertz: Boolean = false,
+    signed: Boolean = false,
 ) {
     val supporting = error ?: hint
     var focused by remember { mutableStateOf(false) }
@@ -103,7 +105,7 @@ internal fun JournalTextField(
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
         outputTransformation = megahertzOutputTransformation(megahertz && !focused),
         inputTransformation = if (numeric) {
-            InputTransformation { if (length > limit) replace(limit, length, "!") }
+            decimalInputTransformation(signed = signed, limit = limit)
         } else InputTransformation.maxLength(limit),
         lineLimits = if (multiline) TextFieldLineLimits.MultiLine(maxHeightInLines = 4) else TextFieldLineLimits.SingleLine,
         modifier = modifier.fillMaxWidth().testTag(tag).onFocusChanged { focused = it.isFocused },

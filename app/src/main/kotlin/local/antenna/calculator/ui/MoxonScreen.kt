@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -151,7 +152,9 @@ internal fun MoxonScreen(
             .padding(20.dp).testTag("moxon-screen"),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        MoxonAntennaArt(published?.view ?: MoxonView.GENERIC, dimensions)
+        RotatingAntenna(published?.id ?: "moxon-estimate", stringResource(R.string.moxon_image),
+            Modifier.fillMaxWidth().height(154.dp).testTag("moxon-art-${(published?.view ?: MoxonView.GENERIC).name}"),
+            geometry = remember(calculating, dimensions) { dimensions?.takeIf { calculating }?.let(::moxonVector) })
         HelpText(published?.description ?: R.string.moxon_intro)
         ChoicePicker(stringResource(R.string.moxon_mode), listOf(false, true), calculating,
             { stringResource(if (it) R.string.moxon_calculate else R.string.moxon_published) },
@@ -335,7 +338,7 @@ private fun MoxonDisclosure(label: Int, content: @Composable () -> Unit) {
 private fun MoxonInput(
     text: String, label: Int, tag: String, error: Boolean, errorLabel: Int = R.string.moxon_invalid, onChange: (String) -> Unit,
 ) {
-    OutlinedTextField(text, { onChange(it.boundedNumericText()) },
+    OutlinedTextField(text, { if (it.acceptsDecimalEdit()) onChange(it) },
         label = { Text(stringResource(label)) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), isError = error,
         supportingText = if (error) {{ Text(stringResource(errorLabel)) }} else null,

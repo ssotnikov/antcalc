@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.graphics.Paint
 import android.content.ClipboardManager
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -24,7 +23,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.KeyboardType
@@ -80,10 +78,11 @@ internal fun FullWaveLoopScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         StorageNotice(state, onEvent)
-        Image(
-            painterResource(if (square) R.drawable.full_wave_loop_square else R.drawable.full_wave_loop_triangle),
+        RotatingAntenna(
+            "loop-${draft.shape.name}",
             stringResource(if (square) R.string.loop_square_image else R.string.loop_triangle_image),
             Modifier.fillMaxWidth().height(180.dp).testTag(if (square) "loop-square-image" else "loop-triangle-image"),
+            remember(draft.shape, draft.feed) { loopVector(draft.shape, draft.feed) },
         )
         HelpText(R.string.loop_intro)
         ChoicePicker(stringResource(R.string.loop_shape), LoopShape.entries, draft.shape,
@@ -241,7 +240,7 @@ private fun LoopInput(
     )
     OutlinedTextField(
         visualTransformation = frequencyTransformation,
-        value = raw, onValueChange = { onEdit(field, it) }, enabled = enabled, singleLine = true,
+        value = raw, onValueChange = { if (it.acceptsDecimalEdit()) onEdit(field, it) }, enabled = enabled, singleLine = true,
         label = { Text(stringResource(field.loopLabel())) },
         supportingText = issue?.let { { Text(it) } },
         isError = issue != null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

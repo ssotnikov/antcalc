@@ -1,0 +1,9 @@
+<resources>
+    <string name="antenna_view_expand">Открыть антенну на весь экран</string>
+    <string name="antenna_view_close">Закрыть полноэкранный просмотр антенны</string>
+    <string name="antenna_view_left">Повернуть влево</string>
+    <string name="antenna_view_right">Повернуть вправо</string>
+    <string name="antenna_view_up">Наклонить вверх</string>
+    <string name="antenna_view_down">Наклонить вниз</string>
+    <string name="antenna_view_reset">Сбросить ракурс</string>
+</resources>

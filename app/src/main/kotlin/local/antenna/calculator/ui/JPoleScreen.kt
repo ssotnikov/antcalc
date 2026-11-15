@@ -3,7 +3,6 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -18,7 +17,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -38,7 +36,6 @@ import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.FrequencyUnit
 import local.antenna.calculator.core.units.LengthUnit
 import local.antenna.calculator.core.units.ShorteningFactor
-import local.antenna.calculator.state.boundedNumericText
 import local.antenna.calculator.state.validValue
 
 private fun JPoleDimensions.rows() = listOf(
@@ -73,8 +70,7 @@ internal fun JPoleScreen(
 
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
         .padding(20.dp).testTag("jpole-screen"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        Image(painterResource(R.drawable.j_pole_antenna), stringResource(R.string.jpole_intro),
-            Modifier.fillMaxWidth().height(180.dp))
+        RotatingAntenna("jpole", stringResource(R.string.jpole_title))
         JPolePanel(R.string.jpole_theory) {
             JPoleDiagram(R.string.jpole_radiatorLabel, R.string.jpole_stubLabel)
             HelpText(R.string.jpole_radiatorExplanation)
@@ -165,7 +161,7 @@ private fun jPoleSnapshot(frequency: Frequency, factor: ShorteningFactor, result
 
 @Composable
 private fun JPoleInput(value: String, label: String, hint: Int, error: Int?, tag: String, update: (String) -> Unit) {
-    OutlinedTextField(value, { update(it.boundedNumericText()) },
+    OutlinedTextField(value, { if (it.acceptsDecimalEdit()) update(it) },
         modifier = Modifier.fillMaxWidth().testTag(tag), label = { Text(label) },
         singleLine = true, isError = error != null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         supportingText = { Text(stringResource(error ?: hint)) })

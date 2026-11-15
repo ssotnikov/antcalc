@@ -1,0 +1,566 @@
+[
+  {
+    "id": "dk7zb",
+    "name": "DK7ZB · 6 м · ступенчатые элементы",
+    "r": 3000,
+    "s": 2770,
+    "spacing": 750,
+    "rTap": 450,
+    "sTap": 430,
+    "gap": 5,
+    "description": "Ступенчатые алюминиевые элементы на квадратной траверсе. Фазовая линия из жилы RG-213 с диэлектриком лежит на проставках.",
+    "dimensions": [
+      [
+        "Конденсатор в точке X",
+        "30 пФ",
+        "Capacitor at X",
+        "30 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "Алюминиевая траверса, 25 × 25 × 2 мм",
+        "780 мм",
+        "Aluminum boom, 25 × 25 × 2 mm",
+        "780 mm"
+      ],
+      [
+        "Центральные трубы, Ø16 × 1 мм",
+        "2 × 1000 мм",
+        "Center tubes, Ø16 × 1 mm",
+        "2 × 1000 mm"
+      ],
+      [
+        "Концы R, Ø12 × 1 мм",
+        "2 × 1200 мм",
+        "R end tubes, Ø12 × 1 mm",
+        "2 × 1200 mm"
+      ],
+      [
+        "Концы S, Ø12 × 1 мм",
+        "2 × 1050 мм",
+        "S end tubes, Ø12 × 1 mm",
+        "2 × 1050 mm"
+      ],
+      [
+        "Посадка на стык R / S",
+        "200 / 165 мм",
+        "Insertion at each R / S joint",
+        "200 / 165 mm"
+      ],
+      [
+        "Линия из жилы RG-213 в диэлектрике",
+        "По маршруту рис. 1–2",
+        "RG-213 center conductor and dielectric",
+        "Follow the route in figures 1–2"
+      ]
+    ],
+    "url": "https://dk7zb.darc.de/Download/hb9cv.pdf",
+    "nameEn": "DK7ZB · 6 m · stepped elements",
+    "descriptionEn": "Stepped aluminum elements on a square boom. The RG-213 center conductor and its dielectric are held away from the metal by spacers."
+  },
+  {
+    "id": "pd0ddr",
+    "name": "PD0DDR · 2 м · медная траверса",
+    "r": 1030,
+    "s": 960,
+    "spacing": 250,
+    "gap": "15–20 мм",
+    "description": "Пружинные стальные элементы, медная траверса с Т-фитингом и гнутая фазовая перемычка.",
+    "dimensions": [
+      [
+        "Подстроечный конденсатор",
+        "40 пФ",
+        "Trimmer",
+        "40 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "Пружинная сталь R / S",
+        "1030 / 960 мм",
+        "Spring-steel R / S",
+        "1030 / 960 mm"
+      ],
+      [
+        "Медная трубка Ø12 мм",
+        "260 мм, распилить на две равные части",
+        "Copper tube, Ø12 mm",
+        "260 mm, cut into two equal pieces"
+      ],
+      [
+        "Медный Т-фитинг, внутренний Ø12 мм",
+        "1 шт.",
+        "Copper tee, Ø12 mm inside",
+        "1 pcs."
+      ],
+      [
+        "Стальная перемычка, Ø1,5–2 мм",
+        "550 мм до гибки",
+        "Steel phasing rod, Ø1.5–2 mm",
+        "550 mm before bending"
+      ],
+      [
+        "Разъём и распорка",
+        "SO-239 и пластиковая проставка",
+        "Connector and spacer",
+        "SO-239 and plastic spacer"
+      ]
+    ],
+    "url": "https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1990/page649/index.html",
+    "nameEn": "PD0DDR · 2 m · copper boom",
+    "descriptionEn": "Spring-steel elements, a copper boom with a tee, and a bent phasing rod."
+  },
+  {
+    "id": "jg0sxc",
+    "name": "JG0SXC · 6 м · разборная",
+    "r": 2980,
+    "s": 2850,
+    "spacing": 750,
+    "description": "Разборные алюминиевые секции с внутренними втулками, два гамма-стержня и двухпроводная линия 300 Ом.",
+    "dimensions": [
+      [
+        "Стартовая частота автора",
+        "50,25 МГц",
+        "Starting frequency",
+        "50.25 MHz"
+      ],
+      [
+        "Размах R / S после подстройки",
+        "2970 / 2800 мм",
+        "R / S span after adjustment",
+        "2970 / 2800 mm"
+      ],
+      [
+        "Гамма-стержень",
+        "500 мм",
+        "Gamma rod",
+        "500 mm"
+      ]
+    ],
+    "cuts": [
+      [
+        "Секции R, алюминий Ø8 мм",
+        "4 × 500 и 2 × 490 мм",
+        "R sections, Ø8 mm aluminum",
+        "4 × 500 и 2 × 490 mm"
+      ],
+      [
+        "Секции S, алюминий Ø8 мм",
+        "4 × 500 и 2 × 425 мм",
+        "S sections, Ø8 mm aluminum",
+        "4 × 500 и 2 × 425 mm"
+      ],
+      [
+        "Втулки, Ø6 мм",
+        "10 × 40 мм",
+        "Sleeves, Ø6 mm",
+        "10 × 40 mm"
+      ],
+      [
+        "Траверса, алюминий Ø16 мм",
+        "800 мм",
+        "Aluminum boom, Ø16 mm",
+        "800 mm"
+      ],
+      [
+        "Гамма-стержни, Ø4 мм",
+        "2 × 500 мм",
+        "Gamma rods, Ø4 mm",
+        "2 × 500 mm"
+      ],
+      [
+        "Линия 300 Ом",
+        "Подрезка по месту",
+        "300 Ω twin-lead",
+        "Trim to fit"
+      ]
+    ],
+    "url": "https://www.ne.jp/asahi/dx/jg0sxc/ant/hb9cv.html",
+    "nameEn": "JG0SXC · 6 m · portable",
+    "descriptionEn": "Removable aluminum sections, inner sleeves, two gamma rods and a 300 Ω twin-lead."
+  },
+  {
+    "id": "g4jxx",
+    "name": "G4JXX · 10 м FM · из двух CB-диполей",
+    "r": 4980,
+    "s": 4400,
+    "spacing": 1240,
+    "rTap": 1000,
+    "sTap": 1000,
+    "gap": 10,
+    "description": "Два донорских CB-диполя после подрезки, круглая траверса и широкая полоса фазовой линии.",
+    "dimensions": [
+      [
+        "Частота авторского варианта",
+        "около 29,5 МГц",
+        "Author’s operating frequency",
+        "about 29.5 MHz"
+      ],
+      [
+        "Конденсатор после подстройки",
+        "60 пФ",
+        "Final capacitor",
+        "60 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "Донорские CB-диполи",
+        "2 шт.",
+        "Donor CB dipoles",
+        "2 pcs."
+      ],
+      [
+        "Готовый размах R / S",
+        "4980 / 4400 мм",
+        "Final R / S span",
+        "4980 / 4400 mm"
+      ],
+      [
+        "Траверса, Ø25 мм",
+        "1350 мм",
+        "Round boom, Ø25 mm",
+        "1350 mm"
+      ],
+      [
+        "Полоса фазовой линии, 8 × 1,5 мм",
+        "3265 мм до гибки",
+        "Phasing strip, 8 × 1.5 mm",
+        "3265 mm before bending"
+      ]
+    ],
+    "url": "https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1983-07.pdf",
+    "nameEn": "G4JXX · 10 m FM · two CB dipoles",
+    "descriptionEn": "Two trimmed CB dipoles, a round boom, and a flat strip for the phasing line."
+  },
+  {
+    "id": "dk2tx",
+    "name": "DK2TX · 10 м · разборная",
+    "gap": 30,
+    "description": "Квадратные телескопические трубы с установочными метками, фигурные пластины и разъёмная фазовая линия.",
+    "dimensions": [
+      [
+        "Установочные частоты",
+        "28 и 29,7 МГц",
+        "Setup frequencies",
+        "28 and 29.7 MHz"
+      ],
+      [
+        "Метки на вставках R, от внешнего конца",
+        "1638 и 1486 мм",
+        "R insert marks from the outer end",
+        "1638 and 1486 mm"
+      ],
+      [
+        "Метки на вставках S, от внешнего конца",
+        "1445 и 1303 мм",
+        "S insert marks from the outer end",
+        "1445 and 1303 mm"
+      ],
+      [
+        "Подстроечный конденсатор",
+        "5–50 пФ",
+        "Trimmer",
+        "5–50 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "Траверса, алюминий 20 × 20 × 1,5 мм",
+        "1 × 1286 мм",
+        "Aluminum boom, 20 × 20 × 1.5 mm",
+        "1 × 1286 mm"
+      ],
+      [
+        "Наружные трубы, 20 × 20 × 1,5 мм",
+        "2 × 2000 мм",
+        "Outer tubes, 20 × 20 × 1.5 mm",
+        "2 × 2000 mm"
+      ],
+      [
+        "Внутренние трубы, 15 × 15 × 1,5 мм",
+        "4 × 2000 мм",
+        "Inner tubes, 15 × 15 × 1.5 mm",
+        "4 × 2000 mm"
+      ],
+      [
+        "Фигурные пластины, алюминий 2,5 мм",
+        "3 × 120 × 70 мм, до обработки",
+        "Shaped brackets, 2.5 mm aluminum",
+        "3 × 120 × 70 mm, before shaping"
+      ],
+      [
+        "Прижимные рамки, алюминий 6 мм",
+        "30 × 32 мм, чертёж на с. 13",
+        "Clamps, 6 mm aluminum",
+        "30 × 32 mm, drawing on p. 13"
+      ],
+      [
+        "Разъёмная фазовая линия",
+        "По месту через проставки",
+        "Detachable phasing line",
+        "Fit through the spacers"
+      ]
+    ],
+    "url": "https://www.darc.de/fileadmin/filemounts/distrikte/b/ortsverbaende/08/Vortraege/HB9CV.pdf",
+    "nameEn": "DK2TX · 10 m · portable",
+    "descriptionEn": "Square telescoping tubes with setup marks, shaped brackets and a detachable phasing line."
+  },
+  {
+    "id": "dow-portable",
+    "name": "DL1DOW · 2 м · складная",
+    "r": 1030,
+    "s": 950,
+    "description": "Четыре складные телескопические штанги на двух изолированных алюминиевых профилях.",
+    "dimensions": [
+      [
+        "Готовые штанги R / S",
+        "505,5 / 465,5 мм каждая",
+        "Finished R / S rods",
+        "505.5 / 465.5 mm each"
+      ],
+      [
+        "Триммер",
+        "30 пФ",
+        "Trimmer",
+        "30 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "П-образные профили 10 × 20 мм",
+        "2 × 300 мм",
+        "U-channels, 10 × 20 mm",
+        "2 × 300 mm"
+      ],
+      [
+        "Телескопические штанги R и S",
+        "По 2 шт.",
+        "Telescoping rods R and S",
+        "2 of each"
+      ],
+      [
+        "Изоляторы",
+        "2 × 4 выступа, 2 шт.",
+        "Insulators",
+        "2 × 4 studs, 2 pcs."
+      ],
+      [
+        "Разъём",
+        "BNC",
+        "Connector",
+        "BNC"
+      ]
+    ],
+    "url": "https://dl1dow.de/artikel/hb9cv/d_hb9cv_start.htm",
+    "nameEn": "DL1DOW · 2 m · folding",
+    "descriptionEn": "Four hinged telescoping rods on two insulated aluminum rails."
+  },
+  {
+    "id": "dow-weather",
+    "name": "DL1DOW · 2 м · всепогодная",
+    "r": 1030,
+    "s": 950,
+    "description": "Четыре съёмных прутка в отдельных держателях и два разнесённых профиля траверсы.",
+    "dimensions": [
+      [
+        "Триммер",
+        "30 пФ",
+        "Trimmer",
+        "30 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "П-образные профили 10 × 20 мм",
+        "2 × 300 мм",
+        "U-channels, 10 × 20 mm",
+        "2 × 300 mm"
+      ],
+      [
+        "Заготовки двух половин R",
+        "2 × 534 мм",
+        "R half-elements",
+        "2 × 534 mm"
+      ],
+      [
+        "Заготовки двух половин S",
+        "2 × 494 мм",
+        "S half-elements",
+        "2 × 494 mm"
+      ],
+      [
+        "Держатели элементов",
+        "4 шт., лист HB9CV_F_3",
+        "Element holders",
+        "4 pcs., drawing HB9CV_F_3"
+      ],
+      [
+        "Изоляторы",
+        "2 × 8 выступов, 2 шт.",
+        "Insulators",
+        "2 × 8 studs, 2 pcs."
+      ],
+      [
+        "Разъём",
+        "BNC",
+        "Connector",
+        "BNC"
+      ]
+    ],
+    "url": "https://dl1dow.de/artikel/hb9cv/d_hb9cv_start.htm",
+    "nameEn": "DL1DOW · 2 m · weatherproof",
+    "descriptionEn": "Four removable rods and their holders on two separate boom rails."
+  },
+  {
+    "id": "dow-70",
+    "name": "DL1DOW · 70 см · компактная",
+    "r": 334,
+    "s": 298,
+    "description": "Компактная траверса из двух изолированных профилей с короткими элементами на винтовых соединениях.",
+    "dimensions": [
+      [
+        "Триммер",
+        "15 пФ",
+        "Trimmer",
+        "15 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "П-образные профили 10 × 20 мм",
+        "2 × 111 мм",
+        "U-channels, 10 × 20 mm",
+        "2 × 111 mm"
+      ],
+      [
+        "Заготовки двух половин R",
+        "2 × 157,5 мм",
+        "R half-elements",
+        "2 × 157.5 mm"
+      ],
+      [
+        "Заготовки двух половин S",
+        "2 × 139,5 мм",
+        "S half-elements",
+        "2 × 139.5 mm"
+      ],
+      [
+        "Изоляторы",
+        "2 × 3 выступа, 2 шт.",
+        "Insulators",
+        "2 × 3 studs, 2 pcs."
+      ],
+      [
+        "Разъём",
+        "BNC",
+        "Connector",
+        "BNC"
+      ]
+    ],
+    "url": "https://dl1dow.de/artikel/hb9cv/d_hb9cv_start.htm",
+    "nameEn": "DL1DOW · 70 cm · compact",
+    "descriptionEn": "Two insulated boom rails with short screw-mounted elements."
+  },
+  {
+    "id": "uw3bj",
+    "name": "UW3BJ · 14,15 МГц",
+    "f": 14.15,
+    "r": 10520,
+    "s": 9680,
+    "spacing": 2650,
+    "rTap": 1430,
+    "sTap": 1310,
+    "gap": 120,
+    "description": "Составные трубы с регулируемой посадкой. Две коаксиальные ветви на 150 Ом сходятся у тройника.",
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4994",
+    "nameEn": "UW3BJ · 14.15 MHz",
+    "descriptionEn": "Nested tubes and two 150 Ω coaxial phasing branches."
+  },
+  {
+    "id": "radio",
+    "name": "«Радио-Дизайн» · 14,15 МГц",
+    "f": 14.15,
+    "r": 10600,
+    "s": 9740,
+    "spacing": 2650,
+    "rTap": 1430,
+    "sTap": 1330,
+    "gap": 120,
+    "e": 2700,
+    "rear": 2250,
+    "description": "Два элемента, два гамма-отвода и коаксиальное фазирование. Можно выбрать цельные или составные элементы.",
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4949",
+    "nameEn": "Radio Design · 14.15 MHz",
+    "descriptionEn": "Two active elements with gamma taps and coaxial phasing. Choose one-piece or sectional elements."
+  },
+  {
+    "id": "radio",
+    "name": "«Радио-Дизайн» · 21,18 МГц",
+    "f": 21.18,
+    "r": 7080,
+    "s": 6520,
+    "spacing": 1770,
+    "rTap": 950,
+    "sTap": 890,
+    "gap": 90,
+    "e": 1820,
+    "rear": 1500,
+    "description": "Два элемента, два гамма-отвода и коаксиальное фазирование. Можно выбрать цельные или составные элементы.",
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4949",
+    "nameEn": "Radio Design · 21.18 MHz",
+    "descriptionEn": "Two active elements with gamma taps and coaxial phasing. Choose one-piece or sectional elements."
+  },
+  {
+    "id": "radio",
+    "name": "«Радио-Дизайн» · 27,6 МГц",
+    "f": 27.6,
+    "r": 5330,
+    "s": 5110,
+    "spacing": 1360,
+    "rTap": 750,
+    "sTap": 700,
+    "gap": 60,
+    "e": 1410,
+    "rear": 1140,
+    "description": "Два элемента, два гамма-отвода и коаксиальное фазирование. Можно выбрать цельные или составные элементы.",
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4949",
+    "nameEn": "Radio Design · 27.6 MHz",
+    "descriptionEn": "Two active elements with gamma taps and coaxial phasing. Choose one-piece or sectional elements."
+  },
+  {
+    "id": "radio",
+    "name": "«Радио-Дизайн» · 28,5 МГц",
+    "f": 28.5,
+    "r": 5260,
+    "s": 4840,
+    "spacing": 1320,
+    "rTap": 710,
+    "sTap": 660,
+    "gap": 60,
+    "e": 1370,
+    "rear": 1100,
+    "description": "Два элемента, два гамма-отвода и коаксиальное фазирование. Можно выбрать цельные или составные элементы.",
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4949",
+    "nameEn": "Radio Design · 28.5 MHz",
+    "descriptionEn": "Two active elements with gamma taps and coaxial phasing. Choose one-piece or sectional elements."
+  },
+  {
+    "id": "radio",
+    "name": "«Радио-Дизайн» · 144,7 МГц",
+    "f": 144.7,
+    "r": 1060,
+    "s": 980,
+    "spacing": 258,
+    "rTap": 142,
+    "sTap": 132,
+    "gap": 11,
+    "e": 260,
+    "rear": 216,
+    "description": "Два элемента, два гамма-отвода и коаксиальное фазирование. Можно выбрать цельные или составные элементы.",
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4949",
+    "nameEn": "Radio Design · 144.7 MHz",
+    "descriptionEn": "Two active elements with gamma taps and coaxial phasing. Choose one-piece or sectional elements."
+  }
+]

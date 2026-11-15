@@ -4,10 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
@@ -19,7 +17,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -133,7 +130,8 @@ internal fun YagiCalculatorScreen(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
             .padding(20.dp).testTag("yagi-calculator"), verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Image(painterResource(profile.image), profileLabel(profile), Modifier.fillMaxWidth().height(160.dp))
+        RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile),
+            Modifier.fillMaxWidth().height(160.dp))
         YagiProfilePicker(profile, profileLabel) { selected ->
             val previousId = profile.id
             prefs.edit {
@@ -169,7 +167,7 @@ internal fun YagiCalculatorScreen(
                 placeholder = if (focused) null else {
                     { Text(if (index == 0) "0" else "20", color = exampleColor) }
                 },
-                inputTransformation = InputTransformation { if (length > 24) revertAllChanges() },
+                inputTransformation = decimalInputTransformation(limit = 24),
                 lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = errors[index],

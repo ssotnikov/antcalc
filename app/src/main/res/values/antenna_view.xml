@@ -1,0 +1,9 @@
+<resources>
+    <string name="antenna_view_expand">Open full-screen antenna view</string>
+    <string name="antenna_view_close">Close full-screen antenna view</string>
+    <string name="antenna_view_left">Rotate left</string>
+    <string name="antenna_view_right">Rotate right</string>
+    <string name="antenna_view_up">Tilt up</string>
+    <string name="antenna_view_down">Tilt down</string>
+    <string name="antenna_view_reset">Reset view</string>
+</resources>

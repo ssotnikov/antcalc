@@ -1,0 +1,44 @@
+<resources>
+    <string name="hb9cv_title">Антенна HB9CV</string>
+    <string name="hb9cv_intro">Конструкции HB9CV, размеры и ведомости раскроя.</string>
+    <string name="hb9cv_diagram">Схема конструкции</string>
+    <string name="hb9cv_symbols">R — задний элемент, S — передний элемент, A — разнос осей, X — точка питания. Схема вне масштаба.</string>
+    <string name="hb9cv_symbols_taps">R — задний элемент, S — передний элемент, A — разнос осей, RS и SS — отводы, X — точка питания. Схема вне масштаба.</string>
+    <string name="hb9cv_published">Размеры из публикации</string>
+    <string name="hb9cv_tip">Добавка длины от наконечника, мм</string>
+    <string name="hb9cv_custom">Параметры своей сборки</string>
+    <string name="hb9cv_rear">Вылет со стороны R, мм</string>
+    <string name="hb9cv_front">Вылет со стороны S, мм</string>
+    <string name="hb9cv_boom_width">Диаметр или ширина траверсы, мм</string>
+    <string name="hb9cv_boom">Заготовка траверсы</string>
+    <string name="hb9cv_position_r">Положение R от заднего торца</string>
+    <string name="hb9cv_position_s">Положение S от заднего торца</string>
+    <string name="hb9cv_phasing">Фазовые ветви</string>
+    <string name="hb9cv_formula_mode">Рассчитать</string>
+    <string name="hb9cv_manual_mode">Указать длины</string>
+    <string name="hb9cv_allowance">Запас Δ на каждую сторону, мм</string>
+    <string name="hb9cv_branch_r">Ветвь к R, мм</string>
+    <string name="hb9cv_branch_s">Ветвь к S, мм</string>
+    <string name="hb9cv_elements">Исполнение элементов</string>
+    <string name="hb9cv_sectional">Секционное</string>
+    <string name="hb9cv_single">Цельное</string>
+    <string name="hb9cv_diameter">Диаметр элемента или центральной трубы, мм</string>
+    <string name="hb9cv_tip_diameter">Диаметр концевой трубы, мм</string>
+    <string name="hb9cv_wall">Толщина стенки центральной трубы, мм</string>
+    <string name="hb9cv_center">Длина центральной трубы, мм</string>
+    <string name="hb9cv_overlap">Посадка на стык, мм</string>
+    <string name="hb9cv_center_pair">Две центральные трубы, длина каждой</string>
+    <string name="hb9cv_cut_r">Две концевые секции R, длина каждой</string>
+    <string name="hb9cv_cut_s">Две концевые секции S, длина каждой</string>
+    <string name="hb9cv_impedance">Волновое сопротивление фидера и ветвей, Ом</string>
+    <string name="hb9cv_missing">Заполните поля допустимыми значениями: %1$s.</string>
+    <string name="hb9cv_source">Открыть оригинальную публикацию</string>
+    <string name="hb9cv_formulas">Формулы расчёта</string>
+    <string name="hb9cv_wavelength">Длина волны λ = 299,8 / f, где f в МГц, а λ в метрах.</string>
+    <string name="hb9cv_uw_formula">Длина траверсы = A + оба вылета. Размах труб = центральная труба + 2 × (средняя труба + концевая труба − обе посадки). Для ветвей по Снесареву T = A + 2Δ и D = λ × VF / 8. Все длины выражаются в миллиметрах. Ветвь R = (T + D) / 2, ветвь S = (T − D) / 2.</string>
+    <string name="hb9cv_radio_formula">Длина траверсы = A + оба вылета. Концевая секция = (размах − длина центральной трубы) / 2 + посадка. Ветвь R = F, ветвь S = E − F. E и F берутся из таблицы автора.</string>
+    <string name="hb9cv_dk_formula">Посадка = (центральная труба + 2 × концевая труба − размах) / 2. Для начальной оценки DK7ZB приводит R ≈ 150 / f, S ≈ 139 / f, A ≈ λ / 8, RS ≈ 0,076λ и SS ≈ 0,072λ при длинах в метрах. В этой конструкции используются опубликованные размеры на 6 м.</string>
+    <string name="hb9cv_portable_formula">Длина реза = готовая длина штанги − добавка от наконечника.</string>
+    <string name="hb9cv_pd_formula">Длина каждой половины трубы до сборки 260 / 2 = 130 мм. Разнесите оси на 250 мм после установки трубок в Т-фитинг.</string>
+    <string name="hb9cv_fixed_formula">Длины заготовок взяты из опубликованного чертежа. Соблюдайте монтажные размеры выбранной конструкции.</string>
+</resources>

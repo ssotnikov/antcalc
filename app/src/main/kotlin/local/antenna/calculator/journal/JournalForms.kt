@@ -291,6 +291,6 @@ private fun JournalNumberField(
         limit = PositiveDecimalParser.MAX_CHARACTERS,
         keyboard = if (signed) KeyboardType.Text else KeyboardType.Decimal,
         error = if (invalid) R.string.journal_number_invalid else requiredError,
-        numeric = true, megahertz = megahertz,
+        numeric = true, megahertz = megahertz, signed = signed,
     )
 }

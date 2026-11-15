@@ -69,6 +69,17 @@ class WebSourcesTest {
         }
     }
 
+    @Test fun hb9cvPublicationsPermitOnlyTheirExactHttpsAddresses() {
+        val addresses = Hb9cvSource.entries.map { it.url }
+        assertEquals(addresses.size, addresses.distinct().size)
+        for (url in addresses) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            val unexpected = if ('?' in url) "&redirect=unexpected" else "?redirect=unexpected"
+            assertNull(validatedSourceAddress(url.substringBefore('#') + unexpected))
+        }
+    }
+
     @Test fun onlyTheConfiguredAuthorSupportAddressIsAllowed() {
         authorSupportPaymentUrl?.let {
             assertEquals(it, validatedSourceAddress(it))

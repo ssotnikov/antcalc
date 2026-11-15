@@ -138,6 +138,25 @@ internal fun LicensesScreen() {
                 sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
             }
         }
+        Text(
+            stringResource(R.string.hb9cv_sources_heading),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+        )
+        Hb9cvSource.entries.groupBy { it.author }.forEach { (author, sources) ->
+            Column {
+                Text(
+                    stringResource(author), Modifier.semantics { heading() },
+                    style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary,
+                )
+                sources.forEach { source ->
+                    TextButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(source.title), modifier = Modifier.fillMaxWidth())
+                    }
+                }
+                sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
+            }
+        }
         HelpText(R.string.licenses_rights)
     }
 }

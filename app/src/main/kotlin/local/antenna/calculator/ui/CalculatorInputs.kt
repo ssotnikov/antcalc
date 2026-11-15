@@ -112,7 +112,7 @@ private fun NumericInput(key: FieldKey, label: Int, state: CalculatorUiState, on
             })
         }
     }
-    OutlinedTextField(value = field.text, onValueChange = { onEvent(CalculatorEvent.Edit(key, it)) },
+    OutlinedTextField(value = field.text, onValueChange = { if (it.acceptsDecimalEdit()) onEvent(CalculatorEvent.Edit(key, it)) },
         visualTransformation = lengthTransformation ?: frequencyTransformation,
         modifier = frequencyModifier.fillMaxWidth().testTag("field-${key.name}").semantics {
             if (errorMessage != null) error(errorMessage)
