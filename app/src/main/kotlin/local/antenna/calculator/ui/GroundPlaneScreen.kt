@@ -3,7 +3,6 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -14,7 +13,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.KeyboardType
@@ -56,8 +54,8 @@ internal fun GroundPlaneScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         StorageNotice(state, onEvent)
-        Image(painterResource(R.drawable.ground_plane_antenna), stringResource(R.string.ground_plane_illustration),
-            modifier = Modifier.fillMaxWidth().height(185.dp))
+        RotatingAntenna("gp-4-45", stringResource(R.string.ground_plane_illustration),
+            geometry = remember(layout) { layout?.let(::groundPlaneVector) })
         HelpText(R.string.ground_plane_definition)
         HelpText(R.string.ground_plane_intro)
         GroundPlaneHeading(R.string.input_data)
@@ -188,7 +186,7 @@ private fun GroundPlaneInput(draft: GroundPlaneDraft, field: GroundPlaneField, o
     )
     OutlinedTextField(
         visualTransformation = frequencyTransformation,
-        value = draft.fields.getValue(field), onValueChange = onEdit,
+        value = draft.fields.getValue(field), onValueChange = { if (it.acceptsDecimalEdit()) onEdit(it) },
         label = { Text(if (suffix == null) label else stringResource(R.string.inverted_v_input_unit, label, suffix)) },
         singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         isError = message != null,

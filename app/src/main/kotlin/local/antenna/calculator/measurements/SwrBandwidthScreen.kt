@@ -33,7 +33,7 @@ import local.antenna.calculator.ui.rememberPageLazyListState
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.PositiveDecimalParser
 import local.antenna.calculator.core.measurements.*
-import local.antenna.calculator.state.boundedNumericText
+import local.antenna.calculator.ui.acceptsDecimalEdit
 import local.antenna.calculator.ui.FormulaPlate
 import local.antenna.calculator.ui.cardListBounce
 
@@ -112,8 +112,10 @@ internal fun SwrBandwidthScreen(
             OutlinedTextField(
                 value = rawThreshold,
                 onValueChange = { value ->
-                    rawThreshold = value.boundedNumericText()
-                    parseBandwidthThreshold(rawThreshold)?.let { storeBandwidthThreshold(preferences, it) }
+                    if (value.acceptsDecimalEdit()) {
+                        rawThreshold = value
+                        parseBandwidthThreshold(value)?.let { storeBandwidthThreshold(preferences, it) }
+                    }
                 },
                 label = { Text(stringResource(R.string.bandwidth_threshold)) },
                 supportingText = { Text(stringResource(R.string.bandwidth_threshold_range)) },

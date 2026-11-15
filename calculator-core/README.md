@@ -324,3 +324,18 @@ perimeters are about 21.11 m and 21.57 m. Measure the resonance after installati
 the frequency and the matching cable's velocity factor. It calculates
 `sqrt(R × Z₀)` and `VF × c / (4f)`. With 112.5 Ω into 50 Ω at 14.2 MHz and
 VF = 0.66 the result is 75 Ω and about 3.48 m.
+
+## Moxon rectangle
+
+`MoxonEstimate.calculate` accepts a validated frequency in hertz and conductor
+diameter in millimetres. It evaluates L. B. Cebik’s round-conductor regression
+for a nominal 50 Ω feed over the inclusive domain 10⁻⁵ ≤ d/λ ≤ 10⁻².
+It returns A–E, the idealized element lengths and a precision hint for
+d/λ ≥ 0.0075. At 146 MHz with a 4.7625 mm rod, A–E are approximately
+737.42, 96.60, 35.49, 141.99 and 274.08 mm.
+
+Published profiles supply their own geometry and may include distinct stock
+lengths. Keep those values separate from the regression and from the dimensions
+of a user’s assembled antenna.
+
+[Cebik — Designing Moxon Rectangles by Equation and by Model](https://antenna2.github.io/cebik/content/moxon/moxgen.html)

@@ -5,6 +5,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -18,6 +19,7 @@ import local.antenna.calculator.state.AppLanguage
 
 @Composable
 internal fun ReferencesScreen(language: AppLanguage) {
+    val context = LocalContext.current
     val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
@@ -26,6 +28,16 @@ internal fun ReferencesScreen(language: AppLanguage) {
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         HelpText(R.string.materials_note)
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(stringResource(R.string.moxon_title), color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+            MoxonSource.entries.forEach { source ->
+                TextButton(
+                    onClick = { openSourceWithFeedback(context, source.url) },
+                    modifier = Modifier.fillMaxWidth(),
+                ) { Text("${source.author} · ${source.title}", modifier = Modifier.fillMaxWidth()) }
+            }
+        }
         referenceGroups.forEach { group ->
             val eligible = group.materials.filter { !it.interfaceLanguageOnly || it.language == language }
             val materials = if (group.interfaceLanguageOnly || language == AppLanguage.ENGLISH) {

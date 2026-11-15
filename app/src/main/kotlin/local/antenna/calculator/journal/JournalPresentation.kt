@@ -21,6 +21,10 @@ import local.antenna.calculator.core.layout.LoopShape
 import local.antenna.calculator.ui.loopLabel
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.ui.SlimJimProfile
+import local.antenna.calculator.ui.MoxonDimension
+import local.antenna.calculator.ui.MoxonProfile
+import local.antenna.calculator.ui.moxonProfiles
+import local.antenna.calculator.core.layout.MoxonEstimate
 import local.antenna.calculator.ui.connectionText
 import local.antenna.calculator.core.trimming.AntennaType
 
@@ -28,6 +32,8 @@ internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.MONOPOLE -> R.string.monopole
     AntennaType.SYMMETRIC_DIPOLE -> R.string.dipole
     AntennaType.SLIM_JIM -> R.string.slim_jim_title
+    AntennaType.MOXON -> R.string.moxon_title
+    AntennaType.HB9CV -> R.string.hb9cv_title
     AntennaType.YAGI -> R.string.yagi_title
     AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
@@ -100,6 +106,7 @@ internal class JournalPresentation(private val context: Context) {
     fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> = buildList {
             val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
             val yagi = YagiProfile.entries.firstOrNull { it.design.model == s.model }
+            val moxon = moxonProfiles.firstOrNull { it.id == s.model && it.revision == s.revision }
             val label = profile?.let { text(it.title) } ?: when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
@@ -108,12 +115,13 @@ internal class JournalPresentation(private val context: Context) {
                 "j_pole" -> text(R.string.jpole_title)
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
-                else -> yagi?.label ?: s.model
+                MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
+                else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
             for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
             for (metric in s.outputsForAntenna(type)) {
-                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type) to metricValue(metric))
+                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to metricValue(metric))
             }
             if (profile != null) {
                 add(text(R.string.slim_jim_construction) to text(profile.material))
@@ -143,8 +151,35 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun signed(value: Double, formatted: String): String = if (value > 0) "+$formatted" else formatted
 
-    private fun metricLabel(key: String, type: AntennaType): String = when (key) {
+    private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = when (key) {
         "frequency" -> text(R.string.frequency)
+        "hb9cv_r" -> "R"
+        "hb9cv_s" -> "S"
+        "hb9cv_spacing" -> "A"
+        "hb9cv_rtap" -> "RS"
+        "hb9cv_stap" -> "SS"
+        "hb9cv_gap" -> "h"
+        "hb9cv_boom" -> text(R.string.hb9cv_boom)
+        "hb9cv_position_r" -> text(R.string.hb9cv_position_r)
+        "hb9cv_position_s" -> text(R.string.hb9cv_position_s)
+        "hb9cv_branch_r", "hb9cv_rear_cable" -> text(R.string.hb9cv_branch_r)
+        "hb9cv_branch_s", "hb9cv_front_cable" -> text(R.string.hb9cv_branch_s)
+        "hb9cv_rear" -> text(R.string.hb9cv_rear)
+        "hb9cv_front" -> text(R.string.hb9cv_front)
+        "hb9cv_boom_width" -> text(R.string.hb9cv_boom_width)
+        "hb9cv_tip" -> text(R.string.hb9cv_tip)
+        "hb9cv_center" -> text(R.string.hb9cv_center)
+        "hb9cv_center_cut" -> text(R.string.hb9cv_center_pair)
+        "hb9cv_overlap" -> text(R.string.hb9cv_overlap)
+        "hb9cv_cut_r" -> text(R.string.hb9cv_cut_r)
+        "hb9cv_cut_s" -> text(R.string.hb9cv_cut_s)
+        "hb9cv_vf" -> "VF"
+        "hb9cv_allowance" -> text(R.string.hb9cv_allowance)
+        "moxon_band" -> text(R.string.moxon_band)
+        "moxon_diameter" -> text(R.string.moxon_diameter)
+        "moxon_allowance" -> text(R.string.moxon_allowance)
+        "moxon_unit" -> text(R.string.loop_output_unit)
+        "moxon_second_frequency" -> text(R.string.moxon_second_frequency)
         "factor" -> text(R.string.factor)
         "target" -> text(R.string.target_frequency)
         "resonance" -> text(R.string.measured_frequency)
@@ -213,7 +248,24 @@ internal class JournalPresentation(private val context: Context) {
         "yagi_band_1_high" -> text(R.string.yagi_band_1_high)
         "yagi_band_2_low" -> text(R.string.yagi_band_2_low)
         "yagi_band_2_high" -> text(R.string.yagi_band_2_high)
-        else -> yagiMetricLabel(key) ?: key
+        else -> yagiMetricLabel(key) ?: moxonMetricLabel(key, moxon) ?: key
+    }
+
+    private fun moxonMetricLabel(key: String, profile: MoxonProfile?): String? {
+        MoxonDimension.entries.firstOrNull { it.metric == key }?.let { return "${it.mark} · ${text(it.label)}" }
+        val index = key.substringAfterLast('_').toIntOrNull() ?: return null
+        if (key.startsWith("moxon_stock_")) {
+            val part = profile?.stockInches?.getOrNull(index)?.first ?: return null
+            return if (part == "Boom") text(R.string.moxon_stock_boom)
+                else context.getString(R.string.moxon_stock_piece, part)
+        }
+        val dimension = when {
+            key.startsWith("moxon_yagi_position_") -> R.string.moxon_position
+            key.startsWith("moxon_yagi_length_") -> R.string.moxon_element_length
+            else -> return null
+        }
+        val element = if (index == 0) text(R.string.moxon_coupled) else context.getString(R.string.moxon_director, index)
+        return "$element · ${text(dimension)}"
     }
 
     private fun yagiMetricLabel(key: String): String? {
@@ -235,10 +287,11 @@ internal class JournalPresentation(private val context: Context) {
         if (YagiMatchingCable.entries.any { it.metricKey == metric.key }) {
             return context.getString(R.string.yagi_matching_pair, yagiLength(context, metric.value * 1000, LengthUnit.MILLIMETERS))
         }
-        if (metric.key.startsWith("yagi_") && metric.unit == SnapshotUnit.METERS) {
+        if ((metric.key.startsWith("yagi_") || metric.key.startsWith("moxon_") && metric.key != "moxon_band") &&
+            metric.unit == SnapshotUnit.METERS) {
             return yagiLength(context, metric.value * 1000, LengthUnit.MILLIMETERS)
         }
-        if (metric.key == "yagi_unit") {
+        if (metric.key == "yagi_unit" || metric.key == "moxon_unit") {
             LengthUnit.entries.firstOrNull { it.ordinal.toDouble() == metric.value }?.let { return text(it.labelResource()) }
         }
         val label = when (metric.key) {

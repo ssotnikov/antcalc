@@ -69,6 +69,27 @@ class WebSourcesTest {
         }
     }
 
+    @Test fun hb9cvPublicationsPermitOnlyTheirExactHttpsAddresses() {
+        val addresses = Hb9cvSource.entries.map { it.url }
+        assertEquals(addresses.size, addresses.distinct().size)
+        for (url in addresses) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            val unexpected = if ('?' in url) "&redirect=unexpected" else "?redirect=unexpected"
+            assertNull(validatedSourceAddress(url.substringBefore('#') + unexpected))
+        }
+    }
+
+    @Test fun onlyTheConfiguredAuthorSupportAddressIsAllowed() {
+        authorSupportPaymentUrl?.let {
+            assertEquals(it, validatedSourceAddress(it))
+            assertNull(validatedSourceAddress("$it?next=unexpected"))
+            assertNull(validatedSourceAddress(it.replace("https:", "http:")))
+        }
+        assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/"))
+        assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/unapproved"))
+    }
+
     @Test fun unsafeOrAmbiguousUrisFailClosed() {
         for (url in listOf("", "http://www.arrl.org/", "javascript:alert(1)", "file:///sdcard/test",
             "content://www.arrl.org/test", "intent://www.arrl.org/", "https://www.arrl.org.evil.example/",

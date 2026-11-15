@@ -1,0 +1,44 @@
+<resources>
+    <string name="hb9cv_title">HB9CV antenna</string>
+    <string name="hb9cv_intro">Published HB9CV builds, dimensions and cutting lists.</string>
+    <string name="hb9cv_diagram">Construction diagram</string>
+    <string name="hb9cv_symbols">R rear element, S front element, A center spacing, X feed point. Drawing not to scale.</string>
+    <string name="hb9cv_symbols_taps">R rear element, S front element, A center spacing, RS and SS gamma taps, X feed point. Drawing not to scale.</string>
+    <string name="hb9cv_published">Published dimensions</string>
+    <string name="hb9cv_tip">Added length of end fitting, mm</string>
+    <string name="hb9cv_custom">Your build dimensions</string>
+    <string name="hb9cv_rear">Rear overhang, mm</string>
+    <string name="hb9cv_front">Front overhang, mm</string>
+    <string name="hb9cv_boom_width">Boom diameter or width, mm</string>
+    <string name="hb9cv_boom">Boom blank</string>
+    <string name="hb9cv_position_r">Position of R from rear end</string>
+    <string name="hb9cv_position_s">Position of S from rear end</string>
+    <string name="hb9cv_phasing">Phasing branches</string>
+    <string name="hb9cv_formula_mode">Calculate</string>
+    <string name="hb9cv_manual_mode">Enter lengths</string>
+    <string name="hb9cv_allowance">Allowance Δ per side, mm</string>
+    <string name="hb9cv_branch_r">Branch to R, mm</string>
+    <string name="hb9cv_branch_s">Branch to S, mm</string>
+    <string name="hb9cv_elements">Element construction</string>
+    <string name="hb9cv_sectional">Sectional</string>
+    <string name="hb9cv_single">One-piece</string>
+    <string name="hb9cv_diameter">Element/center tube diameter, mm</string>
+    <string name="hb9cv_tip_diameter">End tube diameter, mm</string>
+    <string name="hb9cv_wall">Center tube wall thickness, mm</string>
+    <string name="hb9cv_center">Center tube length, mm</string>
+    <string name="hb9cv_overlap">Insertion per joint, mm</string>
+    <string name="hb9cv_center_pair">Two center tubes, length each</string>
+    <string name="hb9cv_cut_r">Two R end sections, length each</string>
+    <string name="hb9cv_cut_s">Two S end sections, length each</string>
+    <string name="hb9cv_impedance">Feed line and branch impedance, Ω</string>
+    <string name="hb9cv_missing">Enter valid values for %1$s.</string>
+    <string name="hb9cv_source">Open original publication</string>
+    <string name="hb9cv_formulas">Calculation formulas</string>
+    <string name="hb9cv_wavelength">Wavelength λ = 299.8 / f, with f in MHz and λ in metres.</string>
+    <string name="hb9cv_uw_formula">Boom length = A + both overhangs. Tube span = center tube + 2 × (intermediate tube + end tube − both insertions). For the author’s feeds, T = A + 2Δ and D = λ × VF / 8. Use millimetres throughout. R = (T + D) / 2, S = (T − D) / 2.</string>
+    <string name="hb9cv_radio_formula">Boom length = A + both overhangs. Each end section = (element span − center tube length) / 2 + insertion. R branch = F, S branch = E − F. E and F come from the published table.</string>
+    <string name="hb9cv_dk_formula">Insertion = (center tube + 2 × end tube − assembled span) / 2. For an initial geometry estimate at other frequencies DK7ZB gives R ≈ 150 / f, S ≈ 139 / f, A ≈ λ / 8, RS ≈ 0.076λ, SS ≈ 0.072λ, with lengths in metres. This profile uses the published 6 m dimensions.</string>
+    <string name="hb9cv_portable_formula">Cut length = finished rod length − the length added by its end fitting.</string>
+    <string name="hb9cv_pd_formula">Each half of the copper tube is 260 / 2 = 130 mm before assembly. Mark the 250 mm center spacing after inserting the tubes in the tee.</string>
+    <string name="hb9cv_fixed_formula">Cutting lengths come from the published drawing. Follow the specified assembly dimensions for this build.</string>
+</resources>

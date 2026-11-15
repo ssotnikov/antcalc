@@ -66,7 +66,9 @@ internal fun AntennaParameterToolsScreen(
     onOpenFullWaveLoop: () -> Unit,
     onOpenJPole: () -> Unit,
     onOpenSlimJim: () -> Unit,
+    onOpenMoxon: () -> Unit,
     onOpenYagi: () -> Unit,
+    onOpenHb9cv: () -> Unit,
 ) {
     val scroll = rememberPageScrollState()
     Column(
@@ -80,6 +82,8 @@ internal fun AntennaParameterToolsScreen(
         ToolCard(R.string.yagi_title, R.string.yagi_tool, "open-yagi-calculator", onOpenYagi, showChevron = true)
         ToolCard(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole, showChevron = true)
         ToolCard(R.string.slim_jim_title, R.string.slim_jim_card, "open-slim-jim", onOpenSlimJim, showChevron = true)
+        ToolCard(R.string.moxon_title, R.string.moxon_card, "open-moxon", onOpenMoxon, showChevron = true)
+        ToolCard(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv, showChevron = true)
     }
 }
 

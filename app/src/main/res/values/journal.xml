@@ -84,6 +84,7 @@
     <string name="journal_impedance_pair_required">Enter both R and X when recording impedance.</string>
     <string name="journal_close">Close</string>
     <string name="contact_author">Contact the author</string>
+    <string name="support_author">Support the author</string>
     <string name="journal_ohms">Ω</string>
     <string name="journal_r_label">Resistance R</string>
     <string name="journal_x_label">Reactance X</string>

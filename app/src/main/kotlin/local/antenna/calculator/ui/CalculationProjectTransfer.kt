@@ -1,142 +1,27 @@
 package local.antenna.calculator.ui
 
-import android.os.Bundle
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import java.time.OffsetDateTime
-import java.util.UUID
-import kotlin.math.roundToLong
 import local.antenna.calculator.R
-import local.antenna.calculator.core.journal.AntennaProject
-import local.antenna.calculator.core.journal.CalculationSnapshot
 import local.antenna.calculator.core.journal.JournalLimits
-import local.antenna.calculator.core.journal.JournalRecord
 import local.antenna.calculator.core.trimming.AntennaType
-import local.antenna.calculator.core.units.Frequency
-import local.antenna.calculator.core.units.PhysicalLength
 import local.antenna.calculator.journal.JournalColumn
 import local.antenna.calculator.journal.JournalDetails
-import local.antenna.calculator.journal.JournalJson
 import local.antenna.calculator.journal.JournalPresentation
 import local.antenna.calculator.journal.JournalTextField
 import local.antenna.calculator.journal.JournalViewModel
 import local.antenna.calculator.journal.journalLabel
-import local.antenna.calculator.journal.journalSnapshot
 import local.antenna.calculator.journal.label
-import local.antenna.calculator.journal.outputsForAntenna
-import local.antenna.calculator.journal.sizingSnapshot
-import local.antenna.calculator.state.CalculatorUiState
-import local.antenna.calculator.state.Section
-
-private enum class TransferSource(val model: String, val title: Int, val frequencyKey: String) {
-    SIZING("sizing", R.string.sizes, "frequency"),
-    TRIMMING("trimming", R.string.trimming, "target"),
-    INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
-    GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
-    SLIM_JIM("slim_jim", R.string.slim_jim_title, "frequency"),
-    J_POLE("j_pole", R.string.jpole_title, "frequency"),
-    YAGI("yagi_r3udk", R.string.yagi_title, "frequency"),
-    FULL_WAVE_LOOP("full_wave_loop", R.string.loop_title, "loop_frequency"),
-}
-
-internal class PendingProjectCalculation(
-    val snapshot: CalculationSnapshot,
-    private val projectId: UUID = UUID.randomUUID(),
-    val recordId: UUID = UUID.randomUUID(),
-    private val time: OffsetDateTime = OffsetDateTime.now(),
-    private val note: String = "",
-) {
-    private val source = if (SlimJimProfile.entries.any { it.model == snapshot.model }) {
-        TransferSource.SLIM_JIM
-    } else if (YagiProfile.entries.any { it.design.model == snapshot.model }) {
-        TransferSource.YAGI
-    } else {
-        TransferSource.entries.first { it.model == snapshot.model }
-    }
-    val needsAntennaChoice get() = source == TransferSource.SIZING
-    val isInvertedV get() = source == TransferSource.INVERTED_V
-    val isGroundPlane get() = source == TransferSource.GROUND_PLANE
-    val isYagi get() = source == TransferSource.YAGI
-    val isSlimJim get() = source == TransferSource.SLIM_JIM
-    val isJPole get() = source == TransferSource.J_POLE
-    val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
-    val title get() = source.title
-    val target = (if (isFullWaveLoop) snapshot.outputs else snapshot.inputs)
-        .firstOrNull { it.key == source.frequencyKey && snapshot.model != YagiProfile.DUO.design.model }
-        ?.let { if (isFullWaveLoop) it.value.roundToLong() else it.value.toLong() }
-        ?.takeIf { it in Frequency.MIN_HERTZ..Frequency.MAX_HERTZ }
-        ?.let(Frequency::ofHertz)
-    val recommendedLengthNanometers get() = if (source == TransferSource.TRIMMING)
-        outputLengthNanometers("new_length") else null
-
-    val hasInitialLength get() = !isYagi && !isSlimJim
-
-    fun initialLength(type: AntennaType): PhysicalLength? {
-        val nanometers = when (source) {
-            TransferSource.YAGI, TransferSource.SLIM_JIM -> return null
-            TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
-            TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
-            TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
-            TransferSource.INVERTED_V -> outputLengthNanometers("dipole_total")
-            TransferSource.SIZING -> outputLengthNanometers(if (type == AntennaType.MONOPOLE) "monopole_length" else "dipole_total")
-            TransferSource.TRIMMING -> snapshot.inputs.first { it.key == "length" }.value.toLong()
-        }
-        return nanometers.takeIf { it in PhysicalLength.MIN_NANOMETERS..PhysicalLength.MAX_NANOMETERS }
-            ?.let(PhysicalLength::ofNanometers)
-    }
-
-    private fun outputLengthNanometers(key: String) =
-        (snapshot.outputs.first { it.key == key }.value * 1_000_000_000).roundToLong()
-
-    fun newProject(type: AntennaType, name: String) =
-        AntennaProject(projectId, name, type, target, initialLength(type))
-
-    fun record(type: AntennaType, title: String) =
-        JournalRecord(recordId, title, time, type, note = note, calculation = snapshot.copy(outputs = snapshot.outputsForAntenna(type)))
-
-    companion object {
-        fun capture(state: CalculatorUiState, section: Section, type: AntennaType): PendingProjectCalculation? {
-            val snapshot = if (section == Section.SIZING) sizingSnapshot(state) else journalSnapshot(state, type, section)
-            return snapshot?.let { PendingProjectCalculation(it) }
-        }
-
-        val saver = Saver<PendingProjectCalculation?, Bundle>(
-            save = { pending ->
-                pending?.let {
-                    Bundle().apply {
-                        putByteArray("snapshot", JournalJson.encodePendingSnapshot(it.snapshot))
-                        putString("note", it.note)
-                        putString("project", it.projectId.toString())
-                        putString("record", it.recordId.toString())
-                        putString("time", it.time.toString())
-                    }
-                }
-            },
-            restore = { bundle ->
-                runCatching {
-                    PendingProjectCalculation(
-                        JournalJson.decodePendingSnapshot(requireNotNull(bundle.getByteArray("snapshot"))),
-                        UUID.fromString(bundle.getString("project")),
-                        UUID.fromString(bundle.getString("record")),
-                        OffsetDateTime.parse(bundle.getString("time")),
-                        bundle.getString("note").orEmpty(),
-                    )
-                }.getOrNull()
-            },
-        )
-    }
-}
 
 @Composable
 internal fun TransferAntennaType(

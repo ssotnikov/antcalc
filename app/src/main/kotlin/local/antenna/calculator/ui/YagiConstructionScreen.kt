@@ -64,7 +64,7 @@ private enum class YagiSection(@param:StringRes val title: Int, val blocks: IntR
 }
 
 @Composable
-internal fun YagiConstructionScreen(onOpenMeasurements: (() -> Unit)?) {
+internal fun YagiConstructionScreen(onOpenCalculator: () -> Unit, onOpenMeasurements: (() -> Unit)?) {
     val context = LocalContext.current
     val blocks = yagiArticleBlocks()
     var expandedSections by rememberSaveable { mutableIntStateOf(1 shl YagiSection.GEOMETRY.ordinal) }
@@ -83,6 +83,9 @@ internal fun YagiConstructionScreen(onOpenMeasurements: (() -> Unit)?) {
                     modifier = Modifier.fillMaxWidth().height(192.dp),
                 )
                 Text(stringResource(R.string.construction_yagi_intro))
+                TextButton(onClick = onOpenCalculator, modifier = Modifier.testTag("yagi-guide-open-calculator")) {
+                    Text(stringResource(R.string.construction_yagi_open_calculator))
+                }
             }
         }
         YagiSection.entries.forEach { section ->

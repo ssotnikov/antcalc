@@ -4,8 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -62,8 +60,8 @@ internal fun InvertedVScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         StorageNotice(state, onEvent)
-        Image(painterResource(R.drawable.inverted_v_antenna), stringResource(R.string.inverted_v_illustration),
-            modifier = Modifier.fillMaxWidth().height(185.dp))
+        RotatingAntenna("v-120", stringResource(R.string.inverted_v_illustration),
+            geometry = remember(result) { result?.let(::invertedVVector) })
         HelpText(R.string.inverted_v_definition)
         HelpText(R.string.inverted_v_intro)
         InvertedVHeading(R.string.inverted_v_inputs)
@@ -218,7 +216,7 @@ private fun InvertedVInput(draft: InvertedVDraft, field: InvertedVField, onEdit:
     )
     OutlinedTextField(
         visualTransformation = frequencyTransformation,
-        value = draft.fields.getValue(field), onValueChange = onEdit,
+        value = draft.fields.getValue(field), onValueChange = { if (it.acceptsDecimalEdit()) onEdit(it) },
         label = { Text(inputLabel) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         isError = message != null,

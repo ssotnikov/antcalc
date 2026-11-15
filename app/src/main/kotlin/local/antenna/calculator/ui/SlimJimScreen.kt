@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -18,7 +17,6 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -159,8 +157,8 @@ internal fun SlimJimScreen(
             .padding(20.dp).testTag("slim-jim-screen"),
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        Image(painterResource(selected.illustration), null,
-            Modifier.fillMaxWidth().height(175.dp).testTag("slim-jim-hero"))
+        RotatingAntenna("slim-${selected.ordinal}", profile,
+            Modifier.testTag("slim-jim-hero"), baseHeight = 175.dp)
         HelpText(if (selected == SlimJimProfile.SLIMTENNA_20M) R.string.slim_jim_slimtenna_intro else R.string.slim_jim_intro)
         ChoicePicker(stringResource(R.string.slim_jim_band), SlimJimProfile.entries, selected,
             { stringResource(it.bandLabel) }, { selected = it }, "slim-jim-band")

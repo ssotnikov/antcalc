@@ -26,6 +26,9 @@ internal const val SLIM_JIM_M0UKD_URL = "https://m0ukd.com/calculators/slim-jim-
 internal const val SLIM_JIM_KX4O_URL = "https://www.hamradio.me/antennas/slimjim-vs-traditional-j-pole-antenna.html"
 internal const val SLIM_JIM_CEBIK_URL = "https://antenna2.github.io/cebik/content/vhf/sj.html"
 
+private val moxonSourceAddresses = MoxonSource.entries.map { it.url }.toSet()
+private val hb9cvSourceAddresses = Hb9cvSource.entries.map { it.url }.toSet()
+
 private val additionalSourceAddresses = setOf(
     "https://radio3rt.ru/2-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2%D0%B0%D1%8F-%D0%BF%D0%BE%D0%BB%D1%83%D0%B2%D0%BE%D0%BB%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0/",
     "https://radio3rt.ru/%D0%B0%D0%B2%D0%B0%D1%80%D0%B8%D0%B9%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-%D0%BA%D0%B2-%D0%B8-%D1%83%D0%BA%D0%B2/",
@@ -113,9 +116,11 @@ internal fun validatedSourceAddress(address: String): String? {
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
+    if (url == authorSupportPaymentUrl) return url
     return when (url) {
         BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
-        else -> url.takeIf { it in additionalSourceAddresses || directReleaseAddress.matches(it) ||
+        else -> url.takeIf { it in additionalSourceAddresses || it in moxonSourceAddresses || it in hb9cvSourceAddresses ||
+            directReleaseAddress.matches(it) ||
             cableDatasheetAddress.matches(it) || uri.host?.lowercase(Locale.ROOT) in allowedHosts }
     }
 }

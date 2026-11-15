@@ -4,10 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
@@ -19,7 +17,6 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -81,6 +78,13 @@ internal enum class YagiProfile(
 private val inputFields = listOf(R.string.yagi_allowance, R.string.yagi_rear, R.string.yagi_front)
 private val decimal = Regex("(?:[0-9]{1,4}(?:[.,][0-9]{1,3})?|[.,][0-9]{1,3})")
 
+private fun Context.yagiCalculatorPreferences() =
+    applicationContext.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+
+internal fun Context.selectYagiCalculatorProfile(profile: YagiProfile) {
+    yagiCalculatorPreferences().edit { putString("profile", profile.id) }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun YagiCalculatorScreen(
@@ -91,7 +95,7 @@ internal fun YagiCalculatorScreen(
 ) {
     val context = LocalContext.current
     val prefs = remember(context.applicationContext) {
-        context.applicationContext.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+        context.yagiCalculatorPreferences()
     }
     var profile by remember {
         mutableStateOf(YagiProfile.entries.firstOrNull { it.id == prefs.getString("profile", null) } ?: YagiProfile.R3)
@@ -126,7 +130,7 @@ internal fun YagiCalculatorScreen(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
             .padding(20.dp).testTag("yagi-calculator"), verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Image(painterResource(profile.image), profileLabel(profile), Modifier.fillMaxWidth().height(160.dp))
+        RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), baseHeight = 160.dp)
         YagiProfilePicker(profile, profileLabel) { selected ->
             val previousId = profile.id
             prefs.edit {
@@ -162,7 +166,7 @@ internal fun YagiCalculatorScreen(
                 placeholder = if (focused) null else {
                     { Text(if (index == 0) "0" else "20", color = exampleColor) }
                 },
-                inputTransformation = InputTransformation { if (length > 24) revertAllChanges() },
+                inputTransformation = decimalInputTransformation(limit = 24),
                 lineLimits = TextFieldLineLimits.SingleLine,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = errors[index],
@@ -209,7 +213,7 @@ internal fun YagiCalculatorScreen(
             TextButton(onClick = onGuide, modifier = Modifier.testTag("yagi-open-guide")) { Text(stringResource(R.string.yagi_guide)) }
         } else {
             TextButton(onClick = { openSourceWithFeedback(context, profile.buildSource) }) {
-                Text(stringResource(R.string.yagi_guide))
+                Text(stringResource(R.string.yagi_external_guide))
             }
         }
         YagiHeading(R.string.yagi_check)
