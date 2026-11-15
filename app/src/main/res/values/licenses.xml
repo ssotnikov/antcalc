@@ -3,7 +3,6 @@
     <string name="licenses_mit">The app’s source code is licensed under the MIT License.</string>
     <string name="licenses_intro">The project draws on materials from the following authors and publishers.</string>
     <string name="licenses_rights">The authors and other rights holders retain the rights to the original designs and materials. See the original publications for their terms of commercial and non-commercial use.</string>
-    <string name="licenses_r3udk_permission">The R3UDK article, its illustrations and STL files are included with the author’s permission.</string>
     <string name="licenses_author_1">R3UDK</string>
     <string name="licenses_work_1_1">Building a Yagi–Uda Antenna (Russian original)</string>
     <string name="licenses_author_2">Hartmut Klüver (DG7YBN)</string>

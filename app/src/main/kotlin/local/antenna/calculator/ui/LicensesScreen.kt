@@ -108,7 +108,6 @@ internal fun LicensesScreen() {
                 }
             }
         }
-        HelpText(R.string.licenses_r3udk_permission)
         HelpText(R.string.licenses_rights)
     }
 }
