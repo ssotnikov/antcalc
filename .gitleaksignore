@@ -1,2 +1,4 @@
 # Snapshot metric identifier in a test assertion. This entry applies only to the historical match.
 c7a598b3a2a23d978f963eb4bf7348c400d7b27a:app/src/androidTest/kotlin/local/antenna/calculator/ui/YagiCalculatorTest.kt:generic-api-key:94
+# HB9CV capacitance snapshot identifier in a test assertion.
+5e7026f5c47644c911a7b8eb04983d48b3b335da:app/src/androidTest/kotlin/local/antenna/calculator/ui/Hb9cvAerialUiTest.kt:generic-api-key:68
