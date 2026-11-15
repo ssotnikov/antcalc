@@ -4,6 +4,7 @@
     <string name="construction_hint">Dimensions, materials and assembly notes for specific antenna designs</string>
     <string name="construction_yagi_title">Yagi-Uda antenna</string>
     <string name="construction_yagi_card_title">@string/construction_yagi_title</string>
+    <string name="construction_yagi_open_calculator">Open the R3UDK calculator</string>
     <string name="construction_yagi_intro">A portable four-element Yagi for 145 MHz, with thin metal rods, a PVC boom and removable elements.</string>
     <string name="construction_yagi_geometry">Layout and dimensions</string>
     <string name="construction_yagi_geometry_note">Positions are measured along the boom from the reflector. Use Ø25 mm electrical conduit for the boom. The published build uses Ø2.4 mm aluminium rods and discusses alternatives in the Ø2–3 mm range.</string>

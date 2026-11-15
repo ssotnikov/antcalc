@@ -27,10 +27,11 @@
     <string name="yagi_limited">The cut list uses documented part lengths. Confirm any missing feed gap or part dimensions before cutting.</string>
     <string name="yagi_check">Check the assembled antenna</string>
     <string name="yagi_measure">Measure SWR and impedance in the operating setup. Save the sweep separately from the cut list.</string>
+    <string name="yagi_external_guide">Open the construction guide</string>
     <string name="yagi_guide">Open the R3UDK assembly guide</string>
     <string name="yagi_scheme">Top view, with the reflector as the zero point. All dimensions are listed in the table.</string>
     <string name="yagi_formed">The driven-element blank is 995 mm before bending. The finished overall length is 990 mm.</string>
-    <string name="yagi_dk_rights">AntCalc presents data from Martin Steyer (DK7ZB) for non-commercial use. The author’s published terms require his permission for commercial use of the designs.</string>
+    <string name="yagi_dk_rights">Data from Martin Steyer (DK7ZB) are provided for non-commercial use. The author’s published terms require his permission for commercial use of the designs.</string>
     <string name="yagi_dg_rights">The author retains the rights to the original designs and requires written permission for republication.</string>
     <string name="yagi_r3_rights">The publication is for non-commercial use. Rights remain with the author (R3UDK). See the original article for the terms.</string>
     <string name="yagi_dg_measure">Measure the SWR and impedance of the assembled antenna. The miniVNA sweep the author published for the WiMo folded dipole applies to a different configuration.</string>

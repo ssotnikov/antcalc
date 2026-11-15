@@ -81,6 +81,13 @@ internal enum class YagiProfile(
 private val inputFields = listOf(R.string.yagi_allowance, R.string.yagi_rear, R.string.yagi_front)
 private val decimal = Regex("(?:[0-9]{1,4}(?:[.,][0-9]{1,3})?|[.,][0-9]{1,3})")
 
+private fun Context.yagiCalculatorPreferences() =
+    applicationContext.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+
+internal fun Context.selectYagiCalculatorProfile(profile: YagiProfile) {
+    yagiCalculatorPreferences().edit { putString("profile", profile.id) }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun YagiCalculatorScreen(
@@ -91,7 +98,7 @@ internal fun YagiCalculatorScreen(
 ) {
     val context = LocalContext.current
     val prefs = remember(context.applicationContext) {
-        context.applicationContext.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+        context.yagiCalculatorPreferences()
     }
     var profile by remember {
         mutableStateOf(YagiProfile.entries.firstOrNull { it.id == prefs.getString("profile", null) } ?: YagiProfile.R3)
@@ -209,7 +216,7 @@ internal fun YagiCalculatorScreen(
             TextButton(onClick = onGuide, modifier = Modifier.testTag("yagi-open-guide")) { Text(stringResource(R.string.yagi_guide)) }
         } else {
             TextButton(onClick = { openSourceWithFeedback(context, profile.buildSource) }) {
-                Text(stringResource(R.string.yagi_guide))
+                Text(stringResource(R.string.yagi_external_guide))
             }
         }
         YagiHeading(R.string.yagi_check)

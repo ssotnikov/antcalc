@@ -79,7 +79,7 @@ private fun LocalizedCalculatorApp(
     var menu by remember { mutableStateOf(false) }
     var cableParent by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
-    var constructionParent by rememberSaveable { mutableStateOf(Page.ANTENNA_CONSTRUCTION) }
+    var yagiLinkOrigin by rememberSaveable { mutableStateOf<Page?>(null) }
     var bandwidthFromMeasurements by rememberSaveable { mutableStateOf(false) }
     var bandwidthEntrySlot by rememberSaveable { mutableStateOf<Int?>(null) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
@@ -123,6 +123,15 @@ private fun LocalizedCalculatorApp(
         }
         sweepTransferId = null
     }
+    fun openRelatedYagiPage(destination: Page) {
+        leaveInput()
+        if (destination == Page.YAGI_CALCULATOR) {
+            context.selectYagiCalculatorProfile(YagiProfile.R3)
+            if (yagiLinkOrigin == null) screenStates.removeState("yagi-calculator")
+        }
+        yagiLinkOrigin = if (yagiLinkOrigin == destination) null else page
+        page = destination
+    }
     fun goBack() {
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
@@ -132,8 +141,11 @@ private fun LocalizedCalculatorApp(
                 menuParents = ArrayList(menuParents.dropLast(1))
             }
             Page.ANTENNA_PARAMETER_TOOLS, Page.ANTENNA_CONSTRUCTION, Page.ADDITIONAL_TOOLS -> page = Page.CALCULATOR
-            Page.CONSTRUCTION_YAGI -> page = constructionParent
-            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.YAGI_CALCULATOR -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.CONSTRUCTION_YAGI, Page.YAGI_CALCULATOR -> {
+                page = yagiLinkOrigin ?: if (page == Page.CONSTRUCTION_YAGI) Page.ANTENNA_CONSTRUCTION else Page.ANTENNA_PARAMETER_TOOLS
+                yagiLinkOrigin = null
+            }
+            Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM -> page = Page.ANTENNA_PARAMETER_TOOLS
             Page.CABLE -> page = cableParent
             Page.MEASUREMENTS -> page = measurementsParent
             Page.SWR_BANDWIDTH -> page = if (bandwidthFromMeasurements) Page.MEASUREMENTS else Page.ADDITIONAL_TOOLS
@@ -365,17 +377,22 @@ private fun LocalizedCalculatorApp(
                             onOpenFullWaveLoop = { leaveInput(); page = Page.FULL_WAVE_LOOP },
                             onOpenSlimJim = { leaveInput(); page = Page.SLIM_JIM },
                             onOpenJPole = { leaveInput(); page = Page.J_POLE },
-                            onOpenYagi = { leaveInput(); page = Page.YAGI_CALCULATOR },
+                            onOpenYagi = {
+                                leaveInput()
+                                yagiLinkOrigin = null
+                                page = Page.YAGI_CALCULATOR
+                            },
                         )
                     }
                     Page.ANTENNA_CONSTRUCTION -> screenStates.SaveableStateProvider("antenna-construction") {
                         AntennaConstructionScreen {
-                            constructionParent = Page.ANTENNA_CONSTRUCTION
+                            yagiLinkOrigin = null
                             page = Page.CONSTRUCTION_YAGI
                         }
                     }
                     Page.CONSTRUCTION_YAGI -> screenStates.SaveableStateProvider("construction-yagi") {
                         YagiConstructionScreen(
+                            onOpenCalculator = { openRelatedYagiPage(Page.YAGI_CALCULATOR) },
                             onOpenMeasurements = measurements?.let { model ->
                                 {
                                     measurementsParent = Page.CONSTRUCTION_YAGI
@@ -463,11 +480,7 @@ private fun LocalizedCalculatorApp(
                     }
                     Page.YAGI_CALCULATOR -> screenStates.SaveableStateProvider("yagi-calculator") {
                         YagiCalculatorScreen(
-                            onGuide = {
-                                leaveInput()
-                                constructionParent = Page.YAGI_CALCULATOR
-                                page = Page.CONSTRUCTION_YAGI
-                            },
+                            onGuide = { openRelatedYagiPage(Page.CONSTRUCTION_YAGI) },
                             onMeasurements = measurements?.let { model ->
                                 {
                                     leaveInput()

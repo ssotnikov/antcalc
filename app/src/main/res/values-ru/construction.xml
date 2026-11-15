@@ -4,6 +4,7 @@
     <string name="construction_hint">Размеры, материалы и порядок сборки конкретных антенн</string>
     <string name="construction_yagi_title">Волновой канал</string>
     <string name="construction_yagi_card_title">Волновой канал Яги - Уда</string>
+    <string name="construction_yagi_open_calculator">Открыть калькулятор R3UDK</string>
     <string name="construction_yagi_intro">Разборная четырёхэлементная антенна Яги — Уда на 145 МГц с тонкими металлическими элементами и траверсой из ПВХ.</string>
     <string name="construction_yagi_geometry">Схема и размеры</string>
     <string name="construction_yagi_geometry_note">Положение каждого элемента отсчитывается вдоль траверсы от рефлектора. Траверса изготовлена из электротехнической трубы ПВХ Ø25 мм. В описанной сборке использованы алюминиевые прутки Ø2,4 мм. В статье также разобраны варианты из других проводников Ø2–3 мм.</string>

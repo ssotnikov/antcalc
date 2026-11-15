@@ -37,6 +37,40 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         }
     }
 
+    @Test fun guideSelectsR3udkAndRelatedLinksReturnToTheirEntryPoint() {
+        val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+        val previous = prefs.getString("profile", null)
+        prefs.edit().putString("profile", YagiProfile.GTV.id).commit()
+        try {
+            start()
+            compose.onNodeWithTag("nav-TOOLS").performClick()
+            compose.onNodeWithTag("open-antenna-construction").performScrollTo().performClick()
+            compose.onNodeWithTag("open-construction-yagi").performScrollTo().performClick()
+            val guide = compose.onNodeWithTag("yagi-guide")
+            guide.performScrollToNode(hasTestTag("yagi-guide-open-calculator"))
+            compose.onNodeWithTag("yagi-guide-open-calculator").performClick()
+
+            val profile = compose.onNodeWithTag("yagi-profile")
+            val guideLink = compose.onNodeWithTag("yagi-open-guide")
+            profile.assertIsDisplayed().assertTextContains(YagiProfile.R3.label, substring = true)
+            profile.performClick()
+            compose.onNodeWithTag("yagi-profile-${YagiProfile.GTV.id}").performClick()
+            guideLink.assertDoesNotExist()
+            compose.onNodeWithText("Открыть руководство R3UDK").assertDoesNotExist()
+            back()
+            guide.assertExists()
+
+            compose.onNodeWithTag("yagi-guide-open-calculator").performClick()
+            profile.assertTextContains(YagiProfile.R3.label, substring = true)
+            guideLink.performScrollTo().performClick()
+            guide.assertExists()
+            back()
+            compose.onNodeWithTag("open-construction-yagi").assertExists()
+        } finally {
+            prefs.edit().putString("profile", previous).commit()
+        }
+    }
+
     @Test fun profileCutListsSurviveJsonAndDraftsStaySeparate() {
         val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
         val original = prefs.all
