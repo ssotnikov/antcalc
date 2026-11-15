@@ -33,6 +33,10 @@ class MeasurementAcceptanceTest {
 
     @Test fun toolNavigationReturnsThroughAdditionalTools() {
         openMeasurements()
+        compose.onNode(
+            hasText("Трасса S1P показывает отражение", substring = true) or
+                hasText("An S1P trace shows reflection", substring = true),
+        ).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("nav-TOOLS").assertIsSelected()
         compose.activityRule.scenario.recreate()
         waitFor("measurement-screen")

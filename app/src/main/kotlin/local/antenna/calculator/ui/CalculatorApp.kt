@@ -497,6 +497,14 @@ private fun LocalizedCalculatorApp(
                     }
                     Page.HB9CV -> screenStates.SaveableStateProvider("hb9cv") {
                         Hb9cvScreen(
+                            onMeasurements = measurements?.let { model ->
+                                {
+                                    leaveInput()
+                                    measurementsParent = Page.HB9CV
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
+                            },
                             onSave = if (journal == null) null else { snapshot, note ->
                                 startTransfer(PendingProjectCalculation(snapshot, note = note), AntennaType.HB9CV)
                             },

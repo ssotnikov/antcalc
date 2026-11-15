@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hb9cv_aerial_name">Frequency calculator · 3G‑Aerial</string>
+    <string name="hb9cv_aerial_default_frequency">145.000</string>
+    <string name="hb9cv_aerial_intro">Starting dimensions for two active elements with gamma matching, scaled from a published ANSYS HFSS model.</string>
+    <string name="hb9cv_aerial_frequency">Operating frequency, MHz</string>
+    <string name="hb9cv_aerial_frequency_range">Enter a frequency from 100 to 1500 MHz.</string>
+    <string name="hb9cv_aerial_overhang_range">Optional. Enter 0 to 10000 mm.</string>
+    <string name="hb9cv_aerial_dimensions">Calculated dimensions</string>
+    <string name="hb9cv_aerial_scaling_note">Changing the frequency scales all model dimensions, including diameters D and d and gap h. For example, D drops from 12.6 to 4.2 mm when going from 145 to 435 MHz. Check the match of the resulting build if you change a diameter, the gap or the material.</string>
+    <string name="hb9cv_aerial_wavelength">λ · Wavelength</string>
+    <string name="hb9cv_aerial_lr">LR · Rear element</string>
+    <string name="hb9cv_aerial_lf">LF · Front element</string>
+    <string name="hb9cv_aerial_mr">MR · Rear gamma arm</string>
+    <string name="hb9cv_aerial_mf">MF · Front gamma arm</string>
+    <string name="hb9cv_aerial_spacing">A · Center spacing</string>
+    <string name="hb9cv_aerial_diameter">D · Element and boom diameter</string>
+    <string name="hb9cv_aerial_gamma_diameter">d · Gamma conductor diameter</string>
+    <string name="hb9cv_aerial_gap">h · Surface-to-surface gap</string>
+    <string name="hb9cv_aerial_capacitance">C · Estimated capacitance</string>
+    <string name="hb9cv_aerial_mm">mm</string>
+    <string name="hb9cv_aerial_m">m</string>
+    <string name="hb9cv_aerial_pf">pF</string>
+    <string name="hb9cv_aerial_gamma_note">Measure MR and MF along each element from the boom centerline to the gamma connection. A is the spacing between the element axes. The inset shows the gap h between conductor surfaces.</string>
+    <string name="hb9cv_aerial_diagram_description">HB9CV diagram showing both active elements, gamma arms, feed point and conductor cross section.</string>
+    <string name="hb9cv_aerial_gamma_blank">MR and MF are mounting dimensions. The full blank depends on the bends and feed fittings.</string>
+    <string name="hb9cv_aerial_boom_hint">Enter both end overhangs to calculate the boom length and mark the element positions.</string>
+    <string name="hb9cv_aerial_position_rear">LR position from the rear end</string>
+    <string name="hb9cv_aerial_position_front">LF position from the rear end</string>
+    <string name="hb9cv_aerial_formulas">With f in MHz, wavelength λ = 299.792458 / f in metres. Multiply each 144 MHz dimension below by 144 / f. Estimated capacitance C = 2304 / f in pF. Boom length = A + both end overhangs.</string>
+    <string name="hb9cv_aerial_tuning">Antenna tuning</string>
+    <string name="hb9cv_aerial_tuning_pattern">To improve front-to-back suppression, lengthen LR and shorten LF by the same amount. Fine-tune A and check the radiation pattern.</string>
+    <string name="hb9cv_aerial_tuning_swr">For minimum SWR, move both gamma taps by the same amount and adjust the series capacitor while measuring the assembled antenna.</string>
+    <string name="hb9cv_aerial_s1p">Import VNA measurements</string>
+    <string name="hb9cv_aerial_sources">Source and model plots</string>
+    <string name="hb9cv_aerial_graphs_note">The original publication includes simulated impedance, SWR, gain, front-to-back ratio, radiation pattern and S11 plots.</string>
+    <string name="hb9cv_author_aerial">3G‑Aerial</string>
+    <string name="hb9cv_work_aerial">HB9CV calculator and HFSS plots</string>
+    <string name="hb9cv_work_aerial_terms">3G‑Aerial terms of use</string>
+    <string name="hb9cv_aerial_terms">3G‑Aerial permits reuse of its material with a link to the site.</string>
+</resources>

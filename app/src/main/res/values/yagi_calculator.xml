@@ -25,6 +25,7 @@
     <string name="yagi_policy">Author’s terms</string>
     <string name="yagi_original">Open original publication</string>
     <string name="yagi_limited">The cut list uses documented part lengths. Confirm any missing feed gap or part dimensions before cutting.</string>
+    <string name="yagi_model_conditions">The cut list applies to the selected design, specified element diameters and boom mounting. If you substitute parts, check the publication for a variant that matches the new dimensions and mounting.</string>
     <string name="yagi_check">Check the assembled antenna</string>
     <string name="yagi_measure">Measure SWR and impedance in the operating setup. Save the sweep separately from the cut list.</string>
     <string name="yagi_external_guide">Open the construction guide</string>

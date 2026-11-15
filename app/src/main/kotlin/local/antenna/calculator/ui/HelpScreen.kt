@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -20,6 +21,7 @@ import local.antenna.calculator.core.trimming.AdjustmentDirection
 
 @Composable
 fun HelpScreen() {
+    val context = LocalContext.current
     val scroll = rememberPageScrollState()
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
@@ -34,6 +36,16 @@ fun HelpScreen() {
         HelpText(R.string.formula_lengths_key)
         HelpText(R.string.sizing_note)
         HelpText(R.string.conductor_note)
+        HelpHeading(R.string.modeling_help_title)
+        HelpText(R.string.modeling_help_results)
+        HelpText(R.string.modeling_help_scaling)
+        HelpText(R.string.modeling_help_solvers)
+        TextButton(
+            onClick = { openSourceWithFeedback(context, Hb9cvSource.AERIAL_CALCULATION.url) },
+            modifier = Modifier.testTag("help-antenna-calculation-source"),
+        ) {
+            Text(stringResource(R.string.source_antenna_calculation_aerial))
+        }
         FormulaPlate(R.string.ideal_five_eighths, R.drawable.formula_five_eighths, R.string.formula_five_eighths_alt, "formula-five-eighths")
         HelpText(R.string.five_eighths_note)
         FormulaPlate(R.string.trimming, R.drawable.formula_trimming, R.string.formula_trimming_alt, "formula-trimming")

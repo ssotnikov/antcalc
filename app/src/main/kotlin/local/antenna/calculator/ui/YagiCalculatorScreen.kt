@@ -157,6 +157,7 @@ internal fun YagiCalculatorScreen(
             HelpText(published)
         }
         YagiHeading(R.string.yagi_cuts)
+        HelpText(R.string.yagi_model_conditions)
         inputFields.forEachIndexed { index, label ->
             var focused by remember { mutableStateOf(false) }
             OutlinedTextField(
@@ -401,6 +402,7 @@ private fun yagiReport(context: Context, profile: YagiProfile, cut: YagiCutList,
     appendLine()
     appendLine(context.getString(profile.mount))
     appendLine(context.getString(profile.feed))
+    appendLine(context.getString(R.string.yagi_model_conditions))
     appendLine()
     inputFields.forEachIndexed { index, label ->
         val value = values[index] ?: if (index == 0) 0.0 else null

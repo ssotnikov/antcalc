@@ -4,6 +4,9 @@
     <string name="references_language_en">English</string>
     <string name="references_language_ru">Russian</string>
     <string name="references_fundamentals">Wavelength and starting dimensions</string>
+    <string name="source_antenna_calculation_aerial">How Are Antennas Calculated?</string>
+    <string name="source_antenna_calculation_aerial_description">An introduction to antenna modelling, scaling a reference design by frequency, and the effects of wire diameter and materials.</string>
+    <string name="source_antenna_calculation_aerial_url" translatable="false">https://3g-aerial.biz/antenna-calculation</string>
     <string name="references_construction">Dipole and monopole construction</string>
     <string name="references_five_eighths">5/8-wave verticals</string>
     <string name="references_tuning">Tuning and measurements</string>

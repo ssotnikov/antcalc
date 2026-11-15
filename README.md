@@ -29,7 +29,7 @@
 ### Возможности
 
 - **Размеры и подстройка.** Рассчитывайте начальную длину штыря и диполя и оценивайте изменение длины по измеренному резонансу.
-- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона также доступен расчёт размеров по частоте и диаметру. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
+- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона доступен расчёт по частоте и диаметру, для HB9CV — по частоте 100–1500 МГц. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
 - **Конструирование.** Иллюстрированное руководство по сборке четырёхэлементной Яги — Уда.
 - **КСВ и диаграмма Смита.** Пересчитывайте КСВ, отражение и возвратные потери. Изучайте влияние нагрузки на мощность передатчика и перемещайте маркеры на интерактивной диаграмме.
 - **Фидер.** Рассчитывайте электрическую длину, задержку и затухание кабеля по встроенному каталогу или своим данным.
@@ -90,6 +90,8 @@
 
 #### Материалы по HB9CV
 
+- **3G‑Aerial** — [Расчёт антенны HB9CV и графики HFSS](https://3g-aerial.biz/onlajn-raschety/raschety-antenn/raschet-antenny-hb9cv) · [Как рассчитать антенну?](https://3g-aerial.biz/antenna-calculation). Сайт разрешает использование материалов при указании ссылки. [Условия 3G‑Aerial](https://3g-aerial.biz/otkaz-ot-otvetstvennosti)
+
 - **Рудольф Баумгартнер (HB9CV)** — [Антенна HB9CV (чешский перевод авторского руководства)](https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm)
 - **Мартин Штайер (DK7ZB)** — [HB9CV на 2, 6 и 10 м, FUNKAMATEUR 12/1997](https://dk7zb.darc.de/Download/hb9cv.pdf) · [Двухэлементная HB9CV, чертежи и формулы](https://dk7zb.darc.de/HB9CV/Details-HB9CV.htm). Коммерческое использование конструкций требует разрешения автора. [Условия DK7ZB](https://dk7zb.darc.de/)
 - **Л. Б. Себик (W4RNL)** — [The HB9CV Phased Array and Gain Comparisons](https://antenna2.github.io/cebik/content/phase/hb.html)
@@ -144,7 +146,7 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 ### Features
 
 - **Antenna sizing and tuning.** Estimate monopole and dipole lengths and work out how much to adjust an antenna using its measured resonance.
-- **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda, Moxon and HB9CV design catalogs. The Moxon calculator also gives dimensions by frequency and conductor diameter. Drag to rotate the antenna model and double-tap to view it full-screen.
+- **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda, Moxon and HB9CV design catalogs. Calculate Moxon dimensions by frequency and conductor diameter, and HB9CV dimensions from 100 to 1500 MHz. Drag to rotate the antenna model and double-tap to view it full-screen.
 - **Antenna construction.** An illustrated guide to building a four-element Yagi–Uda.
 - **SWR and Smith chart.** Convert between SWR, reflection and return loss. Explore how the load affects transmitter power and drag markers on the interactive chart.
 - **Feedlines.** Calculate cable electrical length, delay and attenuation using the built-in cable catalog or your own data.
@@ -204,6 +206,8 @@ The project draws on materials from the following authors and publishers.
 - **Barry Shaffer** — [YAMA 2.0](https://github.com/barryshaffer/YAMA). The construction repository is licensed under GPL-3.0.
 
 #### HB9CV sources
+
+- **3G‑Aerial** — [HB9CV calculator and HFSS plots](https://3g-aerial.biz/onlajn-raschety/raschety-antenn/raschet-antenny-hb9cv) · [How Are Antennas Calculated? (Russian)](https://3g-aerial.biz/antenna-calculation). The site permits reuse of its material with a link back to the site. [3G‑Aerial terms](https://3g-aerial.biz/otkaz-ot-otvetstvennosti)
 
 - **Rudolf Baumgartner (HB9CV)** — [The HB9CV Beam Antenna (Czech translation)](https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm)
 - **Martin Steyer (DK7ZB)** — [HB9CV Antennas for 2, 6 and 10 m, FUNKAMATEUR 12/1997](https://dk7zb.darc.de/Download/hb9cv.pdf) · [The Two-Element HB9CV Beam, Drawings and Formulas](https://dk7zb.darc.de/HB9CV/Details-HB9CV.htm). Commercial use of the designs requires the author's permission. [DK7ZB’s terms](https://dk7zb.darc.de/)

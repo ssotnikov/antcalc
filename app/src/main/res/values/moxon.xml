@@ -11,7 +11,7 @@
     <string name="moxon_diameter">Conductor diameter, mm</string>
     <string name="moxon_intro">A two-element directional antenna whose driven element and reflector bend toward each other.</string>
     <string name="moxon_image">Stylized illustration of the selected Moxon antenna</string>
-    <string name="moxon_round_model">Cebik’s equations for a round conductor of uniform diameter with a nominal 50-ohm feed.</string>
+    <string name="moxon_round_model">Cebik’s equations for a round conductor of uniform diameter with a nominal 50-ohm feed. If you change the wire, enter its new diameter and use the updated dimensions.</string>
     <string name="moxon_estimate">Initial calculated geometry</string>
     <string name="moxon_preliminary">Preliminary geometry for this band.</string>
     <string name="moxon_upper_limit">Accuracy decreases near the upper limit of the model.</string>

@@ -25,6 +25,7 @@ import local.antenna.calculator.R
 import local.antenna.calculator.ui.rememberPageScrollState
 import local.antenna.calculator.core.measurements.S11Point
 import local.antenna.calculator.ui.SmithSweepGraphic
+import local.antenna.calculator.ui.HelpText
 
 internal enum class SweepMetric(val title: Int, val axis: String) {
     SWR(R.string.sweep_swr, ""), MAGNITUDE(R.string.sweep_magnitude, "|S11|"),
@@ -136,6 +137,7 @@ internal fun MeasurementScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text(stringResource(R.string.sweep_files), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.secondary)
+        HelpText(R.string.modeling_s1p_port)
         displayedTraces.forEachIndexed { slotIndex, trace ->
             if (trace != null) {
                 OutlinedCard(Modifier.fillMaxWidth()) {

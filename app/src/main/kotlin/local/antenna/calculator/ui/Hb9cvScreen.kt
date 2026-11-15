@@ -52,7 +52,11 @@ private class Hb9cvProfile(val number: Int, val data: JSONObject, val russian: B
 }
 
 @Composable
-internal fun Hb9cvScreen(onSave: ((CalculationSnapshot, String) -> Unit)?, onCopied: () -> Unit) {
+internal fun Hb9cvScreen(
+    onSave: ((CalculationSnapshot, String) -> Unit)?,
+    onCopied: () -> Unit,
+    onMeasurements: (() -> Unit)?,
+) {
     val context = LocalContext.current
     val locale = LocalResources.current.configuration.locales[0]
     val profiles = remember(context.assets, locale) {
@@ -63,27 +67,35 @@ internal fun Hb9cvScreen(onSave: ((CalculationSnapshot, String) -> Unit)?, onCop
     }
     var selected by rememberSaveable { mutableIntStateOf(0) }
     var expanded by remember { mutableStateOf(false) }
-    val profile = profiles[selected]
+    val profile = profiles.getOrNull(selected)
+    val name = profile?.text("name") ?: stringResource(R.string.hb9cv_aerial_name)
     val number = remember(locale) { NumberFormat.getNumberInstance(locale).apply { maximumFractionDigits = 2; isGroupingUsed = false } }
-    val mm: (Double) -> String = { number.format(it) + profile.local(" мм", " mm") }
+    val millimeterUnit = stringResource(R.string.hb9cv_aerial_mm)
+    val mm: (Double) -> String = { number.format(it) + " " + millimeterUnit }
     val state = rememberSaveableStateHolder()
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
         .padding(20.dp).testTag("hb9cv-screen"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        RotatingAntenna("hb-$selected", profile.text("name"))
-        Text(profile.text("description"), style = MaterialTheme.typography.bodyMedium)
+        RotatingAntenna(if (profile == null) "hb-aerial" else "hb-$selected", name)
+        if (profile != null) Text(profile.text("description"), style = MaterialTheme.typography.bodyMedium)
         Text(stringResource(R.string.yagi_profile), style = MaterialTheme.typography.titleMedium)
         Box {
             OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth().testTag("hb9cv-profile")) {
-                Text(profile.text("name"))
+                Text(name)
             }
             DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.hb9cv_aerial_name)) },
+                    onClick = { selected = -1; expanded = false },
+                    modifier = Modifier.testTag("hb9cv-aerial-profile"),
+                )
                 profiles.forEach { item ->
                     DropdownMenuItem(text = { Text(item.text("name")) }, onClick = { selected = item.number; expanded = false })
                 }
             }
         }
         state.SaveableStateProvider(selected) {
-            Hb9cvDetails(profile, mm, onSave, onCopied)
+            if (profile == null) Hb9cvAerialDetails(onSave, onCopied, onMeasurements)
+            else Hb9cvDetails(profile, mm, onSave, onCopied)
         }
     }
 }
@@ -112,7 +124,7 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
         outputs += metric(key, value)
     }
     @Composable fun input(key: String, label: String, min: Double, max: Double, unit: SnapshotUnit? = SnapshotUnit.METERS): Double? {
-        val (value, valid) = Hb9cvInput(key, label, min, max)
+        val (value, valid) = hb9cvInput(key, label, min, max)
         if (!valid) missing += label
         if (value != null && unit != null) inputs += if (unit == SnapshotUnit.METERS) metric(key, value) else SnapshotValue(key, value, unit)
         return value
@@ -247,7 +259,7 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
 }
 
 @Composable
-private fun Hb9cvInput(key: String, label: String, min: Double, max: Double): Pair<Double?, Boolean> {
+private fun hb9cvInput(key: String, label: String, min: Double, max: Double): Pair<Double?, Boolean> {
     var raw by rememberSaveable(key) { mutableStateOf("") }
     val decimal = (PositiveDecimalParser.parse(raw, allowZero = true) as? FieldState.Valid)?.value?.toDouble()
     val value = decimal?.takeIf { it in min..max }

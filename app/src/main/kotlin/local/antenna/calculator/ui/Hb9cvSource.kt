@@ -3,6 +3,19 @@ package local.antenna.calculator.ui
 import local.antenna.calculator.R
 
 internal enum class Hb9cvSource(val author: Int, val title: Int, val url: String, val terms: Int? = null) {
+    AERIAL(
+        R.string.hb9cv_author_aerial, R.string.hb9cv_work_aerial,
+        "https://3g-aerial.biz/onlajn-raschety/raschety-antenn/raschet-antenny-hb9cv",
+        R.string.hb9cv_aerial_terms,
+    ),
+    AERIAL_CALCULATION(
+        R.string.hb9cv_author_aerial, R.string.source_antenna_calculation_aerial,
+        "https://3g-aerial.biz/antenna-calculation",
+    ),
+    AERIAL_TERMS(
+        R.string.hb9cv_author_aerial, R.string.hb9cv_work_aerial_terms,
+        "https://3g-aerial.biz/otkaz-ot-otvetstvennosti",
+    ),
     BAUM(
         R.string.hb9cv_author_baum, R.string.hb9cv_work_baum,
         "https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm",

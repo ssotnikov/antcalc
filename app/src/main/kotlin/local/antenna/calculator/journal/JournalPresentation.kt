@@ -2,6 +2,12 @@ package local.antenna.calculator.journal
 
 import android.content.Context
 import local.antenna.calculator.core.layout.YagiMatchingCable
+import local.antenna.calculator.core.Hb9cvAerial
+import local.antenna.calculator.ui.HB9CV_AERIAL_CAPACITANCE
+import local.antenna.calculator.ui.HB9CV_AERIAL_WAVE
+import local.antenna.calculator.ui.Hb9cvSource
+import local.antenna.calculator.ui.hb9cvAerialLength
+import local.antenna.calculator.ui.hb9cvAerialNumber
 import local.antenna.calculator.ui.YagiProfile
 import local.antenna.calculator.ui.label
 import local.antenna.calculator.ui.yagiElementLabelOrNull
@@ -116,12 +122,19 @@ internal class JournalPresentation(private val context: Context) {
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
+                Hb9cvAerial.MODEL -> text(R.string.hb9cv_aerial_name)
                 else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
-            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
+            val aerialMhz = if (s.model == Hb9cvAerial.MODEL) {
+                s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
+            } else null
+            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric, aerialMhz))
             for (metric in s.outputsForAntenna(type)) {
-                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to metricValue(metric))
+                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to metricValue(metric, aerialMhz))
+            }
+            if (s.model == Hb9cvAerial.MODEL) {
+                add(text(R.string.hb9cv_source) to Hb9cvSource.AERIAL.url)
             }
             if (profile != null) {
                 add(text(R.string.slim_jim_construction) to text(profile.material))
@@ -153,6 +166,10 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = when (key) {
         "frequency" -> text(R.string.frequency)
+        HB9CV_AERIAL_WAVE -> text(R.string.hb9cv_aerial_wavelength)
+        HB9CV_AERIAL_CAPACITANCE -> text(R.string.hb9cv_aerial_capacitance)
+        "hb9cv_aerial_position_rear" -> text(R.string.hb9cv_aerial_position_rear)
+        "hb9cv_aerial_position_front" -> text(R.string.hb9cv_aerial_position_front)
         "hb9cv_r" -> "R"
         "hb9cv_s" -> "S"
         "hb9cv_spacing" -> "A"
@@ -248,7 +265,8 @@ internal class JournalPresentation(private val context: Context) {
         "yagi_band_1_high" -> text(R.string.yagi_band_1_high)
         "yagi_band_2_low" -> text(R.string.yagi_band_2_low)
         "yagi_band_2_high" -> text(R.string.yagi_band_2_high)
-        else -> yagiMetricLabel(key) ?: moxonMetricLabel(key, moxon) ?: key
+        else -> Hb9cvAerial.Dimension.entries.firstOrNull { it.key == key }?.let { text(it.labelResource()) }
+            ?: yagiMetricLabel(key) ?: moxonMetricLabel(key, moxon) ?: key
     }
 
     private fun moxonMetricLabel(key: String, profile: MoxonProfile?): String? {
@@ -283,7 +301,11 @@ internal class JournalPresentation(private val context: Context) {
         return context.getString(R.string.yagi_record_column, text(element), text(column))
     }
 
-    private fun metricValue(metric: SnapshotValue): String {
+    private fun metricValue(metric: SnapshotValue, aerialMhz: Double? = null): String {
+        if (aerialMhz != null && metric.unit == SnapshotUnit.METERS) {
+            return hb9cvAerialLength(locale, metric.key, metric.value, aerialMhz,
+                text(R.string.hb9cv_aerial_mm), text(R.string.hb9cv_aerial_m))
+        }
         if (YagiMatchingCable.entries.any { it.metricKey == metric.key }) {
             return context.getString(R.string.yagi_matching_pair, yagiLength(context, metric.value * 1000, LengthUnit.MILLIMETERS))
         }
@@ -307,6 +329,7 @@ internal class JournalPresentation(private val context: Context) {
         SnapshotUnit.METERS -> formatLength(context, metric.value, LengthUnit.METERS)
         SnapshotUnit.FACTOR -> number(metric.value)
         SnapshotUnit.DEGREES -> context.getString(R.string.inverted_v_degrees, number(metric.value))
+        SnapshotUnit.PICOFARADS -> "${hb9cvAerialNumber(locale, metric.value, 1)} ${text(R.string.hb9cv_aerial_pf)}"
         }
     }
 }

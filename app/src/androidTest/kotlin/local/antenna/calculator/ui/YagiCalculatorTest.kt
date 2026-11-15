@@ -26,6 +26,8 @@ class YagiCalculatorTest : CalculatorUiFixture() {
             compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
             compose.onNodeWithTag("open-yagi-calculator").performScrollTo().performClick()
             compose.onNodeWithTag("yagi-calculator").assertExists()
+            compose.onNodeWithText("Размеры ведомости относятся к выбранной конструкции", substring = true)
+                .performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("yagi-open-guide").performScrollTo().performClick()
             compose.onNodeWithTag("yagi-guide").assertExists()
             back()
