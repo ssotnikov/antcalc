@@ -108,6 +108,18 @@ internal fun LicensesScreen() {
                 }
             }
         }
+        MoxonSource.entries.groupBy { it.author }.forEach { (author, sources) ->
+            Column {
+                Text(author, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.secondary)
+                sources.forEach { source ->
+                    TextButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
+                        Text(source.title, modifier = Modifier.fillMaxWidth())
+                    }
+                }
+                sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
+            }
+        }
         HelpText(R.string.licenses_rights)
     }
 }

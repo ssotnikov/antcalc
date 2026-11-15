@@ -16,10 +16,17 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.trimming.AntennaType
+import local.antenna.calculator.ui.MoxonAntennaArt
+import local.antenna.calculator.ui.MoxonView
 
 @Composable
 internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = Modifier) {
+    if (type == AntennaType.MOXON) {
+        MoxonAntennaArt(MoxonView.GENERIC, null, modifier.testTag("journal-antenna-image-MOXON"))
+        return
+    }
     val painter = when (type) {
+        AntennaType.MOXON -> error("Moxon is drawn directly")
         AntennaType.SLIM_JIM -> painterResource(R.drawable.slim_jim_antenna)
         AntennaType.YAGI -> painterResource(R.drawable.yagi_r3_hero)
         AntennaType.J_POLE -> painterResource(R.drawable.j_pole_antenna)

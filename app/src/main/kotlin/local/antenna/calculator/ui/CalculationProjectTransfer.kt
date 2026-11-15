@@ -45,6 +45,7 @@ private enum class TransferSource(val model: String, val title: Int, val frequen
     INVERTED_V("inverted_v", R.string.inverted_v_title, "frequency"),
     GROUND_PLANE("ground_plane", R.string.ground_plane_title, "frequency"),
     SLIM_JIM("slim_jim", R.string.slim_jim_title, "frequency"),
+    MOXON("moxon_calculated", R.string.moxon_title, "frequency"),
     J_POLE("j_pole", R.string.jpole_title, "frequency"),
     YAGI("yagi_r3udk", R.string.yagi_title, "frequency"),
     FULL_WAVE_LOOP("full_wave_loop", R.string.loop_title, "loop_frequency"),
@@ -59,6 +60,8 @@ internal class PendingProjectCalculation(
 ) {
     private val source = if (SlimJimProfile.entries.any { it.model == snapshot.model }) {
         TransferSource.SLIM_JIM
+    } else if (moxonProfiles.any { it.id == snapshot.model }) {
+        TransferSource.MOXON
     } else if (YagiProfile.entries.any { it.design.model == snapshot.model }) {
         TransferSource.YAGI
     } else {
@@ -69,22 +72,24 @@ internal class PendingProjectCalculation(
     val isGroundPlane get() = source == TransferSource.GROUND_PLANE
     val isYagi get() = source == TransferSource.YAGI
     val isSlimJim get() = source == TransferSource.SLIM_JIM
+    val isMoxon get() = source == TransferSource.MOXON
     val isJPole get() = source == TransferSource.J_POLE
     val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
     val title get() = source.title
     val target = (if (isFullWaveLoop) snapshot.outputs else snapshot.inputs)
-        .firstOrNull { it.key == source.frequencyKey && snapshot.model != YagiProfile.DUO.design.model }
+        .firstOrNull { it.key == source.frequencyKey && snapshot.model != YagiProfile.DUO.design.model &&
+            snapshot.inputs.none { value -> value.key == "moxon_second_frequency" } }
         ?.let { if (isFullWaveLoop) it.value.roundToLong() else it.value.toLong() }
         ?.takeIf { it in Frequency.MIN_HERTZ..Frequency.MAX_HERTZ }
         ?.let(Frequency::ofHertz)
     val recommendedLengthNanometers get() = if (source == TransferSource.TRIMMING)
         outputLengthNanometers("new_length") else null
 
-    val hasInitialLength get() = !isYagi && !isSlimJim
+    val hasInitialLength get() = !isYagi && !isSlimJim && !isMoxon
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
-            TransferSource.YAGI, TransferSource.SLIM_JIM -> return null
+            TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON -> return null
             TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
