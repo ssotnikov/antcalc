@@ -191,7 +191,8 @@ internal fun SlimJimScreen(
         when (selected) {
             SlimJimProfile.SLIMTENNA_20M -> SlimtennaDiagram()
             SlimJimProfile.SV1JRF_70CM -> PublishedVerticalDiagram(sv1jrfVertical,
-                stringResource(R.string.slim_jim_sv1jrf_material), "slim-jim-diagram-$selected")
+                stringResource(R.string.slim_jim_sv1jrf_material), "slim-jim-diagram-$selected",
+                highlightGapAndFeed = true)
             else -> SlimJimDiagram(selected)
         }
         HelpText(selected.connectionText())

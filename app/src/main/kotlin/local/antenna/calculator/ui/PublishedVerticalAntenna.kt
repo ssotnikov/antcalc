@@ -7,7 +7,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -57,10 +59,18 @@ internal val sv1jrfVertical = PublishedVerticalAntenna(503f, 166f, 172f, 17f, 15
 
 @Composable
 internal fun PublishedVerticalDiagram(
-    layout: PublishedVerticalAntenna, description: String, tag: String = "published-vertical-diagram",
+    layout: PublishedVerticalAntenna,
+    description: String,
+    tag: String = "published-vertical-diagram",
+    highlightGapAndFeed: Boolean = false,
 ) {
-    val metal = MaterialTheme.colorScheme.secondary
-    val feed = MaterialTheme.colorScheme.tertiary
+    val colors = MaterialTheme.colorScheme
+    val metal = colors.secondary
+    val feed = if (highlightGapAndFeed) {
+        if (colors.surface.luminance() < .5f) Color(0xFFF7C879) else Color(0xFF805000)
+    } else {
+        colors.tertiary
+    }
     val labels = rememberTextMeasurer()
     Canvas(Modifier.fillMaxWidth().height(194.dp).testTag(tag)
         .semantics { contentDescription = description }) {
@@ -77,6 +87,12 @@ internal fun PublishedVerticalDiagram(
         )
         val sections = layout.wireSections()
         sections.forEach { (a, b) -> drawLine(metal, position(a), position(b), 3.dp.toPx(), StrokeCap.Round) }
+        if (highlightGapAndFeed) {
+            for (edge in listOf(layout.lowerEdgeMm, layout.upperEdgeMm)) {
+                val end = position(AntennaPoint(layout.spacingMm / 2, edge, 0f))
+                drawLine(feed, end - Offset(4.dp.toPx(), 0f), end + Offset(4.dp.toPx(), 0f), 2.dp.toPx())
+            }
+        }
         for (side in listOf(-1, 1)) {
             val contact = position(AntennaPoint(side * layout.spacingMm / 2, layout.feedMm, 0f))
             drawCircle(feed, 4.dp.toPx(), contact)
@@ -92,7 +108,10 @@ internal fun PublishedVerticalDiagram(
                 "E" to Offset(size.width * .60f, gapCenter - 8.dp.toPx()),
                 "F" to Offset(size.width * .41f, 0f),
             )
-            marks.forEach { (mark, at) -> drawText(labels.measure(mark, style), topLeft = at) }
+            marks.forEach { (mark, at) ->
+                val markStyle = if (highlightGapAndFeed && mark == "E") style.copy(color = feed) else style
+                drawText(labels.measure(mark, markStyle), topLeft = at)
+            }
         }
     }
 }

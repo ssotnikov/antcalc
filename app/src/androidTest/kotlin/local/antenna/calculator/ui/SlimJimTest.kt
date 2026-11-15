@@ -1,6 +1,9 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import local.antenna.calculator.core.trimming.AntennaType
@@ -12,18 +15,23 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.roundToInt
 
 @RunWith(AndroidJUnit4::class)
 class SlimJimTest : CalculatorUiFixture() {
     @Test fun publishedUhfDesignKeepsTheAuthorsDimensionsAndFrequency() {
         lateinit var pending: PendingProjectCalculation
         compose.setContent {
-            MaterialTheme {
+            MaterialTheme(colorScheme = darkColorScheme()) {
                 SlimJimScreen(onSave = { pending = PendingProjectCalculation(it) }, onMeasurements = null, onCopied = {})
             }
         }
         compose.onNodeWithTag("slim-jim-band-SV1JRF_70CM").performScrollTo().performClick()
-        compose.onNodeWithTag("slim-jim-diagram-SV1JRF_70CM").performScrollTo().assertIsDisplayed()
+        val diagram = compose.onNodeWithTag("slim-jim-diagram-SV1JRF_70CM").performScrollTo().assertIsDisplayed()
+        val pixels = diagram.captureToImage().toPixelMap()
+        val feedX = (.33f * pixels.width).roundToInt()
+        val feedY = ((.86f - .76f * 17f / 503f) * pixels.height).roundToInt()
+        assertEquals(Color(0xFFF7C879), pixels[feedX, feedY])
         compose.onNodeWithTag("slim-jim-save").performScrollTo().performClick()
         compose.runOnIdle {
             assertEquals(436_000_000L, pending.newProject(AntennaType.SLIM_JIM, "70 cm").target?.hertz)
