@@ -27,7 +27,7 @@ internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = 
         return
     }
     if (type == AntennaType.HB9CV) {
-        RotatingAntenna("hb-0", "HB9CV", modifier.fillMaxWidth().height(144.dp).testTag("journal-antenna-image-HB9CV"), interactive = false)
+        RotatingAntenna("hb-0", "HB9CV", modifier.testTag("journal-antenna-image-HB9CV"), interactive = false, baseHeight = 144.dp)
         return
     }
     val painter = when (type) {

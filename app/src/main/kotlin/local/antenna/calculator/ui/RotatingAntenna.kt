@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -27,6 +25,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -71,6 +70,67 @@ internal data class AntennaVector(val rods: List<AntennaRod>, val joints: List<A
     }
 }
 
+internal data class AntennaView(val yaw: Float, val pitch: Float, val roll: Float = 0f) {
+    fun projection(): (AntennaPoint) -> AntennaPoint {
+        fun radians(degrees: Float) = degrees * (PI.toFloat() / 180f)
+        val cy = cos(radians(yaw))
+        val sy = sin(radians(yaw))
+        val cx = cos(radians(pitch))
+        val sx = sin(radians(pitch))
+        val cr = cos(radians(roll))
+        val sr = sin(radians(roll))
+        return { point ->
+            val x = point.x * cy + point.z * sy
+            val z = -point.x * sy + point.z * cy
+            val y = -point.y * cx + z * sx
+            AntennaPoint(x * cr - y * sr, x * sr + y * cr, point.y * sx + z * cx)
+        }
+    }
+}
+
+internal fun initialAntennaView(id: String): AntennaView = when {
+    id == "yagi-5" -> AntennaView(5f, 76f, 35f)
+    id.startsWith("yagi-") -> AntennaView(-8f, 65f, -12f)
+    id.startsWith("hb-") -> AntennaView(8f, 69f, 28f)
+    id.startsWith("gp-") -> AntennaView(22f, 23f)
+    id.startsWith("v-") || id.startsWith("loop-") -> AntennaView(-10f, 9f)
+    id == "jpole" || id.startsWith("slim-") -> AntennaView(-14f, 8f)
+    id in setOf("moxon_w1cdn", "moxon_baker_v", "moxon_cb_field_2", "moxon_ea2bd") -> AntennaView(-13f, 9f)
+    id.startsWith("moxon") -> AntennaView(-13f, 69f, -9f)
+    else -> AntennaView(-14f, 18f)
+}
+
+internal data class AntennaFrame(val left: Float, val top: Float, val right: Float, val bottom: Float) {
+    val center get() = Offset((left + right) / 2f, (top + bottom) / 2f)
+    fun scale(width: Float, height: Float) = minOf(width / (right - left), height / (bottom - top))
+}
+
+internal fun AntennaVector.frame(): AntennaFrame {
+    var left = Float.POSITIVE_INFINITY
+    var top = Float.POSITIVE_INFINITY
+    var right = Float.NEGATIVE_INFINITY
+    var bottom = Float.NEGATIVE_INFINITY
+    fun include(point: AntennaPoint, diameter: Float) {
+        val margin = diameter / 2 + 2f
+        left = minOf(left, point.x - margin)
+        top = minOf(top, point.y - margin)
+        right = maxOf(right, point.x + margin)
+        bottom = maxOf(bottom, point.y + margin)
+    }
+    for (rod in rods) {
+        include(rod.first, rod.width)
+        include(rod.last, rod.width)
+    }
+    for (joint in joints) include(joint.point, joint.diameter)
+    return AntennaFrame(left, top, right, bottom)
+}
+
+private fun AntennaVector.project(view: AntennaView): AntennaVector {
+    val project = view.projection()
+    return AntennaVector(rods.map { it.copy(first = project(it.first), last = project(it.last)) },
+        joints.map { it.copy(point = project(it.point)) })
+}
+
 private val antennaPalette = listOf(
     listOf(Color(0xff627f96), Color(0xffa5bfd2), Color(0xffe4f0f7)),
     listOf(Color(0xff293f50), Color(0xff476778), Color(0xff83a2b1)),
@@ -96,24 +156,25 @@ internal fun readAntennaVector(data: JSONObject, id: String): AntennaVector {
 
 @Composable
 internal fun RotatingAntenna(
-    id: String, description: String, modifier: Modifier = Modifier.fillMaxWidth().height(180.dp),
+    id: String, description: String, modifier: Modifier = Modifier,
     geometry: AntennaVector? = null, interactive: Boolean = true,
+    baseHeight: Dp = 180.dp,
 ) {
     val assets = LocalContext.current.assets
     val stored = remember(assets) { lazy { assets.open("antennas/models.json").bufferedReader().use { JSONObject(it.readText()) } } }
     val model = remember(id, geometry, stored) { (geometry ?: readAntennaVector(stored.value, id)).normalize() }
-    val profileStates = rememberSaveableStateHolder()
-    profileStates.SaveableStateProvider(id) {
-        var yaw by rememberSaveable { mutableFloatStateOf(-24f) }
-        var pitch by rememberSaveable { mutableFloatStateOf(26f) }
-        var expanded by rememberSaveable { mutableStateOf(false) }
+    val initial = remember(id) { initialAntennaView(id) }
+    val initialFrame = remember(model, initial) { model.project(initial).frame() }
+    key(id) {
+        var view by remember { mutableStateOf(initial) }
+        var expanded by remember { mutableStateOf(false) }
         val turn: (Float, Float) -> Unit = { dx, dy ->
-            yaw = (yaw + dx) % 360f
-            pitch = (pitch + dy).coerceIn(-89f, 89f)
+            view = view.copy(yaw = (view.yaw + dx) % 360f, pitch = (view.pitch + dy).coerceIn(-89f, 89f))
         }
-        val reset = { yaw = -24f; pitch = 26f }
-        Box(modifier) {
-            AntennaSurface(model, description, yaw, pitch, turn, reset, { expanded = true }, false, Modifier.fillMaxSize(), interactive)
+        val reset = { view = initial }
+        val height = if (interactive) baseHeight * 1.2f else baseHeight
+        Box(modifier.fillMaxWidth().height(height)) {
+            AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = true }, false, Modifier.fillMaxSize(), interactive)
         }
         if (expanded) {
             Dialog(
@@ -130,7 +191,7 @@ internal fun RotatingAntenna(
                         }
                     }
                 }
-                AntennaSurface(model, description, yaw, pitch, turn, reset, { expanded = false }, true,
+                AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = false }, true,
                     Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface))
             }
         }
@@ -139,7 +200,7 @@ internal fun RotatingAntenna(
 
 @Composable
 private fun AntennaSurface(
-    model: AntennaVector, description: String, yaw: Float, pitch: Float,
+    model: AntennaVector, description: String, view: AntennaView, initialFrame: AntennaFrame,
     turn: (Float, Float) -> Unit, reset: () -> Unit, toggle: () -> Unit, expanded: Boolean, modifier: Modifier,
     interactive: Boolean = true,
 ) {
@@ -201,20 +262,15 @@ private fun AntennaSurface(
             }
         } else Modifier
     Canvas(modifier.semantics { contentDescription = description }.then(interaction)) {
-        val angleY = yaw * (PI.toFloat() / 180)
-        val angleX = pitch * (PI.toFloat() / 180)
-        val cy = cos(angleY)
-        val sy = sin(angleY)
-        val cx = cos(angleX)
-        val sx = sin(angleX)
-        val scale = minOf(size.width / 390, size.height / 350)
-        fun project(point: AntennaPoint): AntennaPoint {
-            val z = -point.x * sy + point.z * cy
-            return AntennaPoint(point.x * cy + point.z * sy, -(point.y * cx - z * sx), point.y * sx + z * cx)
-        }
-        fun screen(point: AntennaPoint) = center + Offset(point.x, point.y) * scale
-        val rods = model.rods.map { it.copy(first = project(it.first), last = project(it.last)) }
-        val joints = model.joints.map { it.copy(point = project(it.point)) }
+        val projected = model.project(view)
+        val frame = projected.frame()
+        val width = size.width * .93f
+        val height = size.height * .9f
+        val scale = minOf(initialFrame.scale(width, height), frame.scale(width, height), size.minDimension / 190f)
+        val origin = center - frame.center * scale
+        fun screen(point: AntennaPoint) = origin + Offset(point.x, point.y) * scale
+        val rods = projected.rods
+        val joints = projected.joints
         val order = (rods.indices.map { it to (rods[it].first.z + rods[it].last.z) / 2 } +
             joints.indices.map { (it + rods.size) to joints[it].point.z + 1 }).sortedBy { it.second }
         for ((index, _) in order) {
@@ -223,10 +279,22 @@ private fun AntennaSurface(
                 val first = screen(rod.first)
                 val last = screen(rod.last)
                 val (edge, base, light) = antennaPalette[rod.material]
-                drawLine(edge, first, last, (rod.width + 1.4f) * scale, StrokeCap.Round)
-                drawLine(base, first, last, rod.width * scale, StrokeCap.Round)
-                val gleam = Offset(0f, -scale)
-                drawLine(light, first + gleam, last + gleam, (rod.width * .19f).coerceAtLeast(.8f) * scale, StrokeCap.Round)
+                val along = last - first
+                val length = along.getDistance()
+                if (length < .5f) {
+                    drawCircle(edge, (rod.width + 1.4f) * scale / 2, first)
+                    drawCircle(base, rod.width * scale / 2, first)
+                } else {
+                    // Overlap the flat ends by a fraction of a pixel to hide depth-sort seams.
+                    val overlap = along * (.45f / length)
+                    val start = first - overlap
+                    val end = last + overlap
+                    drawLine(edge, start, end, (rod.width + 1.4f) * scale, StrokeCap.Butt)
+                    drawLine(base, start, end, rod.width * scale, StrokeCap.Butt)
+                    val across = Offset(along.y, -along.x) / length
+                    val gleam = across * (rod.width * .22f * scale) * if (across.y > 0) -1f else 1f
+                    drawLine(light, start + gleam, end + gleam, (rod.width * .17f * scale).coerceAtLeast(.65.dp.toPx()), StrokeCap.Butt)
+                }
             } else {
                 val joint = joints[index - rods.size]
                 val (edge, base, light) = antennaPalette[joint.material]

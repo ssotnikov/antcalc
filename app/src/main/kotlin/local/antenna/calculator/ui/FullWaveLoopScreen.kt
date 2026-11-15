@@ -79,9 +79,9 @@ internal fun FullWaveLoopScreen(
     ) {
         StorageNotice(state, onEvent)
         RotatingAntenna(
-            "loop-${draft.shape.name}",
+            "loop-${draft.shape.name}-${draft.feed.name}",
             stringResource(if (square) R.string.loop_square_image else R.string.loop_triangle_image),
-            Modifier.fillMaxWidth().height(180.dp).testTag(if (square) "loop-square-image" else "loop-triangle-image"),
+            Modifier.testTag(if (square) "loop-square-image" else "loop-triangle-image"),
             remember(draft.shape, draft.feed) { loopVector(draft.shape, draft.feed) },
         )
         HelpText(R.string.loop_intro)

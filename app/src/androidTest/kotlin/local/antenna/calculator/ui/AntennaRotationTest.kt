@@ -2,16 +2,45 @@ package local.antenna.calculator.ui
 
 import androidx.compose.ui.test.*
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AntennaRotationTest : CalculatorUiFixture() {
+    @Test fun yagiReturnsToItsStartingViewAfterChangingDesignAndLeavingTheScreen() {
+        start()
+        openAntennaTool("open-yagi-calculator")
+        fun select(profile: YagiProfile) {
+            compose.onNodeWithTag("yagi-profile").performScrollTo().performClick()
+            compose.onNodeWithTag("yagi-profile-${profile.id}").performScrollTo().performClick()
+        }
+        val model = compose.onNodeWithTag("antenna-rotating-view")
+        fun image() = model.performScrollTo().captureToImage().asAndroidBitmap()
+        select(YagiProfile.DUO)
+        model.assertHeightIsEqualTo(192.dp)
+        val initial = image()
+        model.performTouchInput { swipe(center, center + Offset(64f, 47f)) }
+        assertFalse(initial.sameAs(image()))
+        select(YagiProfile.DK2)
+        select(YagiProfile.DUO)
+        assertTrue(initial.sameAs(image()))
+        model.performTouchInput { swipe(center, center + Offset(-62f, 38f)) }
+        assertFalse(initial.sameAs(image()))
+        settings()
+        back()
+        assertTrue(initial.sameAs(image()))
+    }
+
     @Test fun dragKeepsThePageInPlaceAndDoubleTapOpensTheViewer() {
         start()
         openAntennaTool("open-ground-plane")
         val model = compose.onNodeWithTag("antenna-rotating-view")
+        model.assertHeightIsEqualTo(216.dp)
         val before = model.fetchSemanticsNode().boundsInRoot.top
         model.performTouchInput { swipe(center, center - Offset(0f, 70f)) }
         check(model.fetchSemanticsNode().boundsInRoot.top == before)

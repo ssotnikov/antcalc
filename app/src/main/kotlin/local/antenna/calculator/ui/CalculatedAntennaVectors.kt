@@ -11,16 +11,35 @@ import kotlin.math.sin
 
 private fun point(x: Number = 0, y: Number = 0, z: Number = 0) = AntennaPoint(x.toFloat(), y.toFloat(), z.toFloat())
 
+private fun sleeve(at: AntennaPoint, axis: AntennaPoint, length: Float, diameter: Float, material: Int): AntennaRod {
+    val half = axis * (length / 2)
+    return AntennaRod(at - half, at + half, diameter, material)
+}
+
+private fun coaxConnector(at: AntennaPoint): List<AntennaRod> = listOf(
+    sleeve(at, point(y = 1), 11f, 11f, 0),
+    sleeve(at + point(y = 4), point(y = 1), 3f, 13f, 2),
+    sleeve(at + point(y = -5), point(y = 1), 2f, 12f, 2),
+    sleeve(at + point(y = -11), point(y = 1), 9f, 7f, 1),
+)
+
 internal fun groundPlaneVector(layout: GroundPlaneResult.Layout): AntennaVector {
     val unit = 140 / maxOf(layout.whipMeters, layout.radialMeters)
     val radial = layout.radiusMeters * unit
     val drop = -layout.dropMeters * unit
     val hub = point()
     val ends = listOf(point(radial, drop), point(0, drop, radial), point(-radial, drop), point(0, drop, -radial))
+    val top = point(y = layout.whipMeters * unit)
+    val coupling = minOf(12f, top.y / 3)
+    val ferrules = ends.map { tip ->
+        val direction = tip * (1f / tip.length)
+        sleeve(direction * minOf(11f, tip.length * .22f), direction, 9f, 8f, 2)
+    }
     return AntennaVector(
-        listOf(AntennaRod(hub, point(0, layout.whipMeters * unit), 6f, 0), AntennaRod(hub, point(0,-65), 9f, 1)) +
-            ends.map { AntennaRod(hub, it, 5f, 0) },
-        listOf(AntennaJoint(hub, 15f, 2)),
+        listOf(AntennaRod(hub, top, 6f, 0), AntennaRod(point(y = -17), point(y = -54), 6f, 1),
+            sleeve(point(y = coupling), point(y = 1), 9f, 9f, 0), sleeve(hub, point(y = 1), 8f, 18f, 2)) +
+            ends.map { AntennaRod(hub, it, 5f, 0) } + ferrules + coaxConnector(point(y = -10)),
+        ends.map { AntennaJoint(it, 4f, 0) } + AntennaJoint(top, 4f, 0),
     )
 }
 
@@ -28,11 +47,13 @@ internal fun invertedVVector(layout: InvertedVResult): AntennaVector {
     val half = layout.angleTenths * PI / 3600
     val width = 145 * sin(half)
     val height = 145 * cos(half)
+    val tips = listOf(point(-width, 30 - height), point(width, 30 - height))
+    val feed = point(0, 30)
     return AntennaVector(
-        listOf(AntennaRod(point(-4,30), point(-width,30-height), 4f, 5),
-            AntennaRod(point(4,30), point(width,30-height), 4f, 5),
-            AntennaRod(point(0,26), point(0,-80,9), 4f, 1)),
-        listOf(AntennaJoint(point(0,30), 12f, 3)),
+        tips.mapIndexed { index, tip -> AntennaRod(point(if (index == 0) -5 else 5, 30), tip, 4f, 5) } +
+            listOf(sleeve(feed, point(x = 1), 18f, 11f, 3), AntennaRod(point(0, 19), point(0, -80, 6), 4f, 1)) +
+            coaxConnector(point(0, 20)),
+        tips.map { AntennaJoint(it, 5f, 4) } + listOf(AntennaJoint(point(-6, 31, 5), 4f, 2), AntennaJoint(point(6, 31, 5), 4f, 2)),
     )
 }
 
@@ -48,10 +69,17 @@ internal fun loopVector(shape: LoopShape, feed: LoopFeed): AntennaVector {
         LoopFeed.APEX -> vertices[2]
         LoopFeed.QUARTER_FROM_APEX -> between(2,1,.25f)
     }
+    val perimeter = (vertices + vertices.first()).zipWithNext { a, b ->
+        val axis = (b - a) * (1f / (b - a).length)
+        val start = if ((at - a).length < 1f) a + axis * 5f else a
+        val end = if ((at - b).length < 1f) b - axis * 5f else b
+        if ((a - at).length + (b - at).length - (b - a).length < .01f && start == a && end == b) {
+            listOf(AntennaRod(a, at - axis * 5f, 5f, 5), AntennaRod(at + axis * 5f, b, 5f, 5))
+        } else listOf(AntennaRod(start, end, 5f, 5))
+    }.flatten()
     return AntennaVector(
-        (vertices + vertices.first()).zipWithNext { a,b -> AntennaRod(a,b,5f,5) } +
-            AntennaRod(at, at + point(0,-44,12),4f,1),
-        listOf(AntennaJoint(at,10f,2)),
+        perimeter + coaxConnector(at + point(0, -10, 4)) + listOf(AntennaRod(at, at + point(0, -44, 12), 4f, 1)),
+        vertices.filter { it != at }.map { AntennaJoint(it, 6f, 4) } + AntennaJoint(at + point(z = 3), 9f, 3),
     )
 }
 
@@ -69,6 +97,11 @@ internal fun moxonVector(model: MoxonDimensions): AntennaVector {
     }
     val reflector = listOf(point(-width,z = back - model.reflectorTailMm * scale), point(-width,z = back),
         point(width,z = back), point(width,z = back - model.reflectorTailMm * scale))
-    return AntennaVector(driven + reflector.zipWithNext { a,b -> AntennaRod(a,b,6f,0) } +
-        AntennaRod(point(y = -6,z = front), point(y = -6,z = back),9f,1), listOf(AntennaJoint(feed,11f,2)))
+    val gapSpacers = listOf(-1, 1).map { side ->
+        AntennaRod(point(side * width, z = front + model.drivenTailMm * scale),
+            point(side * width, z = back - model.reflectorTailMm * scale), 7f, 3)
+    }
+    return AntennaVector(driven + reflector.zipWithNext { a, b -> AntennaRod(a, b, 6f, 0) } + gapSpacers +
+        coaxConnector(feed + point(y = -8)) + AntennaRod(point(y = -6, z = front), point(y = -6, z = back), 9f, 1),
+        listOf(AntennaJoint(feed, 10f, 2), AntennaJoint(point(y = -5, z = back), 8f, 3)))
 }

@@ -158,7 +158,7 @@ internal fun SlimJimScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         RotatingAntenna("slim-${selected.ordinal}", profile,
-            Modifier.fillMaxWidth().height(175.dp).testTag("slim-jim-hero"))
+            Modifier.testTag("slim-jim-hero"), baseHeight = 175.dp)
         HelpText(if (selected == SlimJimProfile.SLIMTENNA_20M) R.string.slim_jim_slimtenna_intro else R.string.slim_jim_intro)
         ChoicePicker(stringResource(R.string.slim_jim_band), SlimJimProfile.entries, selected,
             { stringResource(it.bandLabel) }, { selected = it }, "slim-jim-band")

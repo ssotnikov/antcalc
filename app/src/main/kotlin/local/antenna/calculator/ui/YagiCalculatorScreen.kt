@@ -130,8 +130,7 @@ internal fun YagiCalculatorScreen(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
             .padding(20.dp).testTag("yagi-calculator"), verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile),
-            Modifier.fillMaxWidth().height(160.dp))
+        RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), baseHeight = 160.dp)
         YagiProfilePicker(profile, profileLabel) { selected ->
             val previousId = profile.id
             prefs.edit {

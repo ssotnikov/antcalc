@@ -1,0 +1,1 @@
+Expanded the antenna model area in the calculators by 20% and refined the vector details. The model resets to its starting view when you change designs or return to the screen.
