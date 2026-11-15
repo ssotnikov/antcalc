@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerHoverIcon
@@ -52,7 +53,30 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                     stringResource(when (it) { AppTheme.SYSTEM -> R.string.theme_system; AppTheme.LIGHT -> R.string.theme_light; AppTheme.DARK -> R.string.theme_dark })
                 }, { onEvent(CalculatorEvent.Settings(settings.copy(theme = it))) }, "theme")
                 StorageNotice(state, onEvent)
-                OutlinedButton(onClick = onAbout) { Text(stringResource(R.string.about)) }
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    OutlinedButton(onClick = onAbout, modifier = Modifier.testTag("settings-help")) {
+                        Text(stringResource(R.string.about))
+                    }
+                    if (settings.language == AppLanguage.RUSSIAN) {
+                        authorSupportPaymentUrl?.let { url ->
+                            Button(
+                                onClick = { openSourceWithFeedback(context, url) },
+                                modifier = Modifier.testTag("support-author"),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF005BFF),
+                                    contentColor = Color.White,
+                                ),
+                            ) {
+                                Icon(painterResource(R.drawable.ic_author_support), null, Modifier.size(24.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.support_author))
+                            }
+                        }
+                    }
+                }
                 Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
                 HorizontalDivider()
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,

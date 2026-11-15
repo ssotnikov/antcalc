@@ -84,6 +84,7 @@
     <string name="journal_impedance_pair_required">Для импеданса укажите и R, и X.</string>
     <string name="journal_close">Закрыть</string>
     <string name="contact_author">Связаться с автором</string>
+    <string name="support_author">Поддержать автора</string>
     <string name="journal_ohms">Ом</string>
     <string name="journal_r_label">Сопротивление R</string>
     <string name="journal_x_label">Реактивность X</string>

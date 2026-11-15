@@ -115,6 +115,7 @@ internal fun validatedSourceAddress(address: String): String? {
     if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.rawUserInfo != null ||
         uri.port !in setOf(-1, 443)) return null
     val url = uri.toASCIIString()
+    if (url == authorSupportPaymentUrl) return url
     return when (url) {
         BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
         else -> url.takeIf { it in additionalSourceAddresses || moxonSourceAddresses.contains(it) || directReleaseAddress.matches(it) ||

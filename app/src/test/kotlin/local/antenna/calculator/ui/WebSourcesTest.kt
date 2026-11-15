@@ -69,6 +69,16 @@ class WebSourcesTest {
         }
     }
 
+    @Test fun onlyTheConfiguredAuthorSupportAddressIsAllowed() {
+        authorSupportPaymentUrl?.let {
+            assertEquals(it, validatedSourceAddress(it))
+            assertNull(validatedSourceAddress("$it?next=unexpected"))
+            assertNull(validatedSourceAddress(it.replace("https:", "http:")))
+        }
+        assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/"))
+        assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/unapproved"))
+    }
+
     @Test fun unsafeOrAmbiguousUrisFailClosed() {
         for (url in listOf("", "http://www.arrl.org/", "javascript:alert(1)", "file:///sdcard/test",
             "content://www.arrl.org/test", "intent://www.arrl.org/", "https://www.arrl.org.evil.example/",

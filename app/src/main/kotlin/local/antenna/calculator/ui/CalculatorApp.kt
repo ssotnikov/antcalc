@@ -322,6 +322,15 @@ private fun LocalizedCalculatorApp(
                                     onClick = { menu = false; openAuthorContact(context) },
                                     modifier = Modifier.testTag("contact-author"),
                                 )
+                                if (state.draft.settings.language == AppLanguage.RUSSIAN) {
+                                    authorSupportPaymentUrl?.let { url ->
+                                        DropdownMenuItem(
+                                            text = { Text(stringResource(R.string.support_author)) },
+                                            onClick = { menu = false; openSourceWithFeedback(context, url) },
+                                            modifier = Modifier.testTag("menu-support-author"),
+                                        )
+                                    }
+                                }
                                 for (action in updateActions) {
                                     DropdownMenuItem(
                                         text = { Text(action.title) },
