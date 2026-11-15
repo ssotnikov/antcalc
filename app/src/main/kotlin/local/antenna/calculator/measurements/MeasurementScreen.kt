@@ -45,6 +45,8 @@ internal fun MeasurementScreen(
     model: MeasurementViewModel,
     onSaveToProject: (() -> Unit)?,
     onOpenBandwidth: ((Int) -> Unit)? = null,
+    showBeforeAfter: Boolean = false,
+    beforeAfterProject: String? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -170,6 +172,9 @@ internal fun MeasurementScreen(
             val message = stringResource(it.problem.label())
             Text(if (it.line > 0) stringResource(R.string.sweep_error_line, it.line, message) else message,
                 color = MaterialTheme.colorScheme.error, modifier = Modifier.testTag("sweep-error"))
+        }
+        if (showBeforeAfter && !state.busy) {
+            BeforeAfterBandwidth(displayedTraces[0], displayedTraces[1], beforeAfterProject) { onMessage(copied) }
         }
         if (!state.busy && activeTrace != null && frequency != null) {
             fun selectPoint(pointIndex: Int) {

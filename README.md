@@ -38,6 +38,8 @@
 
 Расчеты, формулы и схемы доступны офлайн. В настройках можно выбрать русский или английский язык, светлую, тёмную или системную тему. В версии GitHub Direct обновления доступны из меню приложения.
 
+- **Баночная антенна (Cantenna).** Подбор диаметра круглого волновода, проверка допусков, сравнение заготовок, три опубликованные конструкции и развёртка раструба. Ведомость сохраняется в проект, а трассы S1P сравниваются по общему порогу КСВ.
+
 ### Лицензии
 
 [LICENSE.md](LICENSE.md) · Код приложения распространяется по лицензии MIT.
@@ -116,6 +118,14 @@
 
 Права на оригинальные конструкции и материалы сохраняются за их авторами и правообладателями. Условия коммерческого и некоммерческого использования определяются правообладателями и указаны в оригинальных публикациях.
 
+#### Материалы по баночным антеннам
+
+- **Changpuak** — [калькулятор круглого волновода и баночной антенны](https://www.changpuak.ch/electronics/cantenna.php). Сайт приветствует проекты с указанием источника. [Условия Changpuak](https://www.changpuak.ch/terms/index.php)
+- **Пётр Ковина, Кристине Фёльлингер и Манфред Вендт** — [RF Measurement Techniques – Theory, CERN Accelerator School](https://indico.cern.ch/event/1380440/contributions/6176014/attachments/2964377/5214841/RFMeasurementTechniques_Theory_Spa.pdf), теория круглых волноводов.
+- **Алан Дж. Фенн** — [MIT Laptop Radar, слайды 20–25](https://ocw.mit.edu/courses/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/fa61f02356be7efc88142b258d031110_MITRES_LL_003IAP11_lec02.pdf). Лекция опубликована под CC BY-NC-SA 4.0 с исключениями для сторонних материалов. [Условия MIT OpenCourseWare](https://ocw.mit.edu/pages/privacy-and-terms-of-use/)
+- **Г. Пол Шух (N6TX)** — [облучатель VE4MA и регулируемое кольцо](https://www.setileague.org/hardware/feedchok.htm). The SETI League сохраняет права на оригинальную публикацию. [Условия The SETI League](https://www.setileague.org/admin/copyrigh.htm)
+- **Юрий Пилипенко** — [баночная антенна с коническим раструбом на 2440 МГц](https://ypylypenko.livejournal.com/43582.html), опубликованный чертёж и модель.
+
 ### Обратная связь
 
 Чтобы сообщить об ошибке, выберите «Сообщить об ошибке» в меню или настройках. Для связи в Telegram выберите «Связаться с автором» в меню.
@@ -154,6 +164,8 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 - **Projects and tuning journals.** Keep calculations, measurements, traces and annotated photos. Compare entries, transfer projects as JSON, and export photos as ZIP. [Demo project](examples/demo-dipole-journal-145mhz-en.json) · [Before tuning (S1P)](examples/demo-dipole-145mhz-before.s1p) · [After tuning (S1P)](examples/demo-dipole-145mhz-after.s1p).
 
 Calculations, formulas and diagrams are available offline. Choose English or Russian and a light, dark or system theme in Settings. The GitHub Direct build can check for updates from the app menu.
+
+- **Cantenna.** Find a circular waveguide diameter, check tolerances, compare cans, explore three published designs and develop a conical flare. Save the dimensions to a project and compare S1P traces at a shared SWR threshold.
 
 ### Licenses
 
@@ -232,6 +244,14 @@ The project draws on materials from the following authors and publishers.
 - **Igor Goncharenko (DL2KQ / EU1TT)** — [Two-Dipole Beam, Section 9.2.2 (Russian original)](https://dl2kq.de/ant/kniga/922.htm)
 
 The authors and other rights holders retain the rights to the original designs and materials. See the original publications for their terms of commercial and non-commercial use.
+
+#### Cantenna sources
+
+- **Changpuak** — [circular waveguide and cantenna calculator](https://www.changpuak.ch/electronics/cantenna.php). The site welcomes projects that credit the source. [Changpuak terms](https://www.changpuak.ch/terms/index.php)
+- **Piotr Kowina, Christine Völlinger and Manfred Wendt** — [RF Measurement Techniques – Theory, CERN Accelerator School](https://indico.cern.ch/event/1380440/contributions/6176014/attachments/2964377/5214841/RFMeasurementTechniques_Theory_Spa.pdf), circular waveguide theory.
+- **Alan J. Fenn** — [MIT Laptop Radar, slides 20–25](https://ocw.mit.edu/courses/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/fa61f02356be7efc88142b258d031110_MITRES_LL_003IAP11_lec02.pdf). The lecture is published under CC BY-NC-SA 4.0, with exceptions for third-party material. [MIT OpenCourseWare terms](https://ocw.mit.edu/pages/privacy-and-terms-of-use/)
+- **H. Paul Shuch (N6TX)** — [VE4MA feed and adjustable choke ring](https://www.setileague.org/hardware/feedchok.htm). The SETI League reserves rights to the original publication. [The SETI League terms](https://www.setileague.org/admin/copyrigh.htm)
+- **Yurii Pylypenko** — [2440 MHz cantenna with a conical flare](https://ypylypenko.livejournal.com/43582.html), published drawing and simulation.
 
 ### Contact
 

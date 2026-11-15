@@ -69,6 +69,7 @@ internal fun AntennaParameterToolsScreen(
     onOpenMoxon: () -> Unit,
     onOpenYagi: () -> Unit,
     onOpenHb9cv: () -> Unit,
+    onOpenCantenna: () -> Unit = {},
 ) {
     val scroll = rememberPageScrollState()
     Column(
@@ -84,6 +85,7 @@ internal fun AntennaParameterToolsScreen(
         ToolCard(R.string.slim_jim_title, R.string.slim_jim_card, "open-slim-jim", onOpenSlimJim, showChevron = true)
         ToolCard(R.string.moxon_title, R.string.moxon_card, "open-moxon", onOpenMoxon, showChevron = true)
         ToolCard(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv, showChevron = true)
+        ToolCard(R.string.cantenna_title, R.string.cantenna_intro, "open-cantenna", onOpenCantenna, showChevron = true)
     }
 }
 

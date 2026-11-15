@@ -157,6 +157,7 @@ internal fun LicensesScreen() {
                 sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
             }
         }
+        CantennaSourceLinks()
         HelpText(R.string.licenses_rights)
     }
 }

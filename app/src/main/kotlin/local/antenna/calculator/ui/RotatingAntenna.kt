@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -32,7 +34,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import local.antenna.calculator.R
 import org.json.JSONArray
 import org.json.JSONObject
@@ -92,6 +93,7 @@ internal fun initialAntennaView(id: String): AntennaView = when {
     id == "yagi-5" -> AntennaView(5f, 76f, 35f)
     id.startsWith("yagi-") -> AntennaView(-8f, 65f, -12f)
     id.startsWith("hb-") -> AntennaView(8f, 69f, 28f)
+    id.startsWith("cantenna") -> AntennaView(36f, 22f, -10f)
     id.startsWith("gp-") -> AntennaView(22f, 23f)
     id.startsWith("v-") || id.startsWith("loop-") -> AntennaView(-10f, 9f)
     id == "jpole" || id.startsWith("slim-") -> AntennaView(-14f, 8f)
@@ -182,17 +184,19 @@ internal fun RotatingAntenna(
                 properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
             ) {
                 val window = (LocalView.current.parent as? DialogWindowProvider)?.window
+                val background = MaterialTheme.colorScheme.surface
                 SideEffect {
                     window?.let {
                         it.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
                         WindowCompat.getInsetsController(it, it.decorView).apply {
-                            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                            hide(WindowInsetsCompat.Type.systemBars())
+                            isAppearanceLightNavigationBars = background.luminance() > .5f
+                            hide(WindowInsetsCompat.Type.statusBars())
+                            show(WindowInsetsCompat.Type.navigationBars())
                         }
                     }
                 }
                 AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = false }, true,
-                    Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface))
+                    Modifier.fillMaxSize().background(background).navigationBarsPadding())
             }
         }
     }

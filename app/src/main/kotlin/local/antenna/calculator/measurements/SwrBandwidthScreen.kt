@@ -208,7 +208,7 @@ private fun BandwidthHeading(title: Int) {
         style = MaterialTheme.typography.titleLarge)
 }
 
-private class BandwidthPresentation(
+internal class BandwidthPresentation(
     private val resources: Resources,
     private val format: MeasurementNumberFormat,
     private val decimalSeparator: Char,
@@ -275,7 +275,7 @@ private class BandwidthPresentation(
     }
 }
 
-private fun parseBandwidthThreshold(raw: String): BigDecimal? {
+internal fun parseBandwidthThreshold(raw: String): BigDecimal? {
     if (raw.length > PositiveDecimalParser.MAX_CHARACTERS) return null
     val value = (PositiveDecimalParser.parse(raw) as? FieldState.Valid)?.value ?: return null
     return value.takeIf { it >= BigDecimal.ONE && it <= BigDecimal.valueOf(1000) }

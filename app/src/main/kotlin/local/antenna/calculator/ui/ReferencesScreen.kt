@@ -28,6 +28,7 @@ internal fun ReferencesScreen(language: AppLanguage) {
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         HelpText(R.string.materials_note)
+        CantennaSourceLinks()
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(stringResource(R.string.moxon_title), color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })

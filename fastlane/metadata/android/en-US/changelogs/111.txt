@@ -1,0 +1,1 @@
+Added a cantenna calculator. Find a diameter for a frequency or band, compare cans, develop a conical flare and save dimensions to a project. Includes three published designs and before/after S1P comparison at a shared SWR threshold. Android navigation controls remain visible in full-screen antenna views.

@@ -6,6 +6,9 @@ import local.antenna.calculator.core.Hb9cvAerial
 import local.antenna.calculator.ui.HB9CV_AERIAL_CAPACITANCE
 import local.antenna.calculator.ui.HB9CV_AERIAL_WAVE
 import local.antenna.calculator.ui.Hb9cvSource
+import local.antenna.calculator.ui.CantennaDesign
+import local.antenna.calculator.ui.CantennaSource
+import local.antenna.calculator.ui.CantennaText
 import local.antenna.calculator.ui.hb9cvAerialLength
 import local.antenna.calculator.ui.hb9cvAerialNumber
 import local.antenna.calculator.ui.YagiProfile
@@ -40,6 +43,7 @@ internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.SLIM_JIM -> R.string.slim_jim_title
     AntennaType.MOXON -> R.string.moxon_title
     AntennaType.HB9CV -> R.string.hb9cv_title
+    AntennaType.CANTENNA -> R.string.cantenna_title
     AntennaType.YAGI -> R.string.yagi_title
     AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
@@ -113,6 +117,8 @@ internal class JournalPresentation(private val context: Context) {
             val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
             val yagi = YagiProfile.entries.firstOrNull { it.design.model == s.model }
             val moxon = moxonProfiles.firstOrNull { it.id == s.model && it.revision == s.revision }
+            val cantenna = CantennaDesign.entries.firstOrNull { it.model == s.model && s.revision == 1 }
+            val cantennaText = CantennaText(context.resources).takeIf { s.model.startsWith("cantenna_") }
             val label = profile?.let { text(it.title) } ?: when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
@@ -123,16 +129,26 @@ internal class JournalPresentation(private val context: Context) {
                 "inverted_v" -> text(R.string.inverted_v_title)
                 MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
                 Hb9cvAerial.MODEL -> text(R.string.hb9cv_aerial_name)
+                "cantenna_calculated" -> text(R.string.cantenna_title)
+                "cantenna_mit", "cantenna_ve4ma", "cantenna_flare" -> cantenna?.let { text(it.title) } ?: s.model
                 else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
             val aerialMhz = if (s.model == Hb9cvAerial.MODEL) {
                 s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
             } else null
-            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric, aerialMhz))
-            for (metric in s.outputsForAntenna(type)) {
-                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to metricValue(metric, aerialMhz))
+            fun render(metric: SnapshotValue): String {
+                if (cantennaText != null) {
+                    if (metric.key == "cantenna_objective") return text(if (metric.value == 1.0) R.string.cantenna_gain else R.string.cantenna_noise)
+                    if (metric.unit == SnapshotUnit.METERS) return cantennaText.mm(metric.value)
+                }
+                return metricValue(metric, aerialMhz)
             }
+            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to render(metric))
+            for (metric in s.outputsForAntenna(type)) {
+                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to render(metric))
+            }
+            if (cantennaText != null) add(text(R.string.cantenna_reference) to (cantenna?.source ?: CantennaSource.CHANGPUAK).url)
             if (s.model == Hb9cvAerial.MODEL) {
                 add(text(R.string.hb9cv_source) to Hb9cvSource.AERIAL.url)
             }
@@ -150,6 +166,12 @@ internal class JournalPresentation(private val context: Context) {
                     "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
                     "RADIALS_TOUCH_GROUND" -> text(R.string.ground_plane_contact)
                     "ENDS_TOUCH_GROUND" -> text(R.string.inverted_v_ground_contact)
+                    "CANTENNA_BELOW" -> text(R.string.cantenna_below)
+                    "CANTENNA_HIGHER" -> text(R.string.cantenna_higher)
+                    "CANTENNA_BAND" -> text(R.string.cantenna_misses)
+                    "CANTENNA_SHORT" -> text(R.string.cantenna_short)
+                    "CANTENNA_CONTACT" -> text(R.string.cantenna_contact_long)
+                    "CANTENNA_TOLERANCE" -> text(R.string.cantenna_offset_loss)
                     else -> warning
                 }
                 add(text(R.string.approximate) to message)
@@ -166,6 +188,40 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = when (key) {
         "frequency" -> text(R.string.frequency)
+        "cantenna_te11" -> "TE₁₁"
+        "cantenna_tm01" -> "TM₀₁"
+        "cantenna_focal", "cantenna_objective" -> "f/D"
+        "cantenna_offset_min" -> "${text(R.string.cantenna_offset_range)} · min"
+        "cantenna_offset_max" -> "${text(R.string.cantenna_offset_range)} · max"
+        "cantenna_low" -> text(R.string.cantenna_low)
+        "cantenna_high" -> text(R.string.cantenna_high)
+        "cantenna_diameter" -> text(R.string.cantenna_diameter)
+        "cantenna_depth" -> text(R.string.cantenna_depth)
+        "cantenna_tolerance" -> text(R.string.cantenna_tolerance)
+        "cantenna_contact" -> text(R.string.cantenna_contact)
+        "cantenna_probe_d" -> text(R.string.cantenna_probe_d)
+        "cantenna_mouth" -> text(R.string.cantenna_mouth)
+        "cantenna_throat" -> text(R.string.cantenna_throat)
+        "cantenna_flare_l" -> text(R.string.cantenna_flare_l)
+        "cantenna_seam" -> text(R.string.cantenna_seam)
+        "cantenna_wave" -> text(R.string.cantenna_wave)
+        "cantenna_guide" -> text(R.string.cantenna_guide)
+        "cantenna_low_margin" -> text(R.string.cantenna_low_margin)
+        "cantenna_high_margin" -> text(R.string.cantenna_high_margin)
+        "cantenna_probe" -> text(R.string.cantenna_probe)
+        "cantenna_offset" -> text(R.string.cantenna_offset)
+        "cantenna_suggest" -> text(R.string.cantenna_suggest)
+        "cantenna_clearance" -> text(R.string.cantenna_clearance)
+        "cantenna_added" -> text(R.string.cantenna_added)
+        "cantenna_ring_d" -> text(R.string.cantenna_ring_d)
+        "cantenna_ring_l" -> text(R.string.cantenna_ring_l)
+        "cantenna_ring_p" -> text(R.string.cantenna_ring_p)
+        "cantenna_pin_h" -> text(R.string.cantenna_pin_h)
+        "cantenna_pin_spacing" -> text(R.string.cantenna_pin_spacing)
+        "cantenna_slant" -> text(R.string.cantenna_slant)
+        "cantenna_inner" -> text(R.string.cantenna_inner)
+        "cantenna_outer" -> text(R.string.cantenna_outer)
+        "cantenna_angle" -> text(R.string.cantenna_angle)
         HB9CV_AERIAL_WAVE -> text(R.string.hb9cv_aerial_wavelength)
         HB9CV_AERIAL_CAPACITANCE -> text(R.string.hb9cv_aerial_capacitance)
         "hb9cv_aerial_position_rear" -> text(R.string.hb9cv_aerial_position_rear)
