@@ -13,13 +13,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -111,7 +112,7 @@ internal fun HaloCbScreen(
         if (variant == HaloVariant.CSQ11) {
             HaloHistory()
         } else {
-            Card {
+            HaloSectionSurface {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     HaloHeading(R.string.halo_inputs)
                     HaloField(draft.frequency, R.string.halo_frequency, draft.hertz == null,
@@ -135,7 +136,7 @@ internal fun HaloCbScreen(
             }
             HaloHeading(R.string.halo_general)
             HaloDiagram(if (variant == HaloVariant.ROUND) HaloDiagramType.ROUND else HaloDiagramType.SQUARE)
-            Card {
+            HaloSectionSurface {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     HaloHeading(R.string.halo_results)
                     HelpText(R.string.halo_estimate)
@@ -198,7 +199,7 @@ internal fun HaloCbScreen(
 
 @Composable
 private fun HaloHistory() {
-    Card {
+    HaloSectionSurface {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             HaloHeading(R.string.halo_published)
             HaloRow(stringResource(R.string.halo_side), stringResource(R.string.halo_csq_side))
@@ -210,6 +211,16 @@ private fun HaloHistory() {
             HelpText(R.string.halo_historical)
         }
     }
+}
+
+@Composable
+private fun HaloSectionSurface(content: @Composable () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        content = content,
+    )
 }
 
 @Composable
@@ -263,7 +274,11 @@ private fun HaloHeading(label: Int) {
 private fun HaloDisclosure(label: Int, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        TextButton({ expanded = !expanded }, Modifier.testTag("halo-section-$label")) {
+        TextButton(
+            { expanded = !expanded },
+            Modifier.testTag("halo-section-$label"),
+            colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
+        ) {
             Text(stringResource(label) + if (expanded) " ▴" else " ▾")
         }
         if (expanded) content()
