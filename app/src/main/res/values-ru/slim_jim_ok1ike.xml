@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="slim_jim_ok1ike">Походная антенна OK1IKE</string>
+    <string name="slim_jim_ok1ike_author">OK1IKE</string>
+    <string name="slim_jim_ok1ike_source">OK1IKE · Аварийная антенна для КВ и УКВ (на чешском)</string>
+    <string name="slim_jim_ok1ike_dimensions">Для 430–440 МГц размер A в таблице OK1IKE обозначает полную высоту 472,5 мм. По данным HB9ACC верхний участок составляет 330,5 мм, согласующий участок — 142 мм. Формула на чертеже даёт 332,53 мм для верхнего участка на 435 МГц. Верхние проводники разомкнуты.</string>
+    <string name="jpole_calculated_profile">Расчёт по частоте</string>
+    <string name="jpole_ok1ike_profile">Ленточная J-антенна · OK1IKE · 430–440 МГц</string>
+    <string name="jpole_ok1ike_height">Полная длина ленты</string>
+    <string name="jpole_ok1ike_upper">От верха до центра выреза</string>
+    <string name="jpole_ok1ike_stub_center">От низа до центра выреза</string>
+    <string name="jpole_ok1ike_coax">Минимальная длина RG-58 по статье</string>
+    <string name="jpole_ok1ike_diagram">Лента 300 Ом. Оставьте верхние проводники разомкнутыми и соедините их внизу. Сделайте вырез 5 мм только в одном проводнике, с центром на высоте 142 мм от низа. Оба контакта питания расположены на высоте 9,3 мм от перемычки. Для настройки смещайте контакты по минимуму КСВ в рабочей полосе. Начальная частота проекта — 435 МГц.</string>
+    <string name="jpole_ok1ike_hb9acc">Гибкая аварийная антенна на 2 м и 70 см · HB9ACC, HBradio 6/2011, с. 26–28 (на немецком)</string>
+    <string name="jpole_ok1ike_hb9acc_author">Макс Рюэггер (HB9ACC)</string>
+    <string name="slim_jim_sv1jrf_band">70 см · SV1JRF / 5B4AMD</string>
+    <string name="slim_jim_sv1jrf_title">SV1JRF / 5B4AMD</string>
+    <string name="slim_jim_sv1jrf_source">Конструкция Slim Jim на 70 см (на английском)</string>
+    <string name="slim_jim_sv1jrf_material">Проводники соединены вверху и внизу. На правой ветви есть вырез над согласующим участком. Фидер подключается к обеим ветвям ниже выреза.</string>
+    <string name="slim_jim_sv1jrf_dimensions">Размеры округлены в публикации автора. В таблице зазор E равен 7 мм. По разности A − B − C получается 6 мм. D на схеме — высота отвода 17 мм. Схема в приложении построена по размерам A, B и C.</string>
+    <string name="slim_jim_sv1jrf_tuning">Автор измерил на своём экземпляре КСВ 1,1:1 на 436 МГц и ниже 1,4:1 в полосе 430–440 МГц. Устанавливайте антенну вдали от металла и при настройке смещайте оба контакта питания вместе.</string>
+</resources>

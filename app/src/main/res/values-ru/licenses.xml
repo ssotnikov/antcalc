@@ -50,4 +50,22 @@
     <string name="licenses_r3udk_terms">По условиям публикации материалы предназначены для некоммерческого использования. Права на 3D-модели сохраняются за R3UDK.</string>
     <string name="licenses_cc_by_terms">Статья опубликована по лицензии CC BY 4.0.</string>
     <string name="licenses_author_terms">Условия использования от автора</string>
+    <string name="licenses_halo_sources">Материалы по Halo CB</string>
+    <string name="licenses_halo_cushcraft">Cush Craft / Cushcraft</string>
+    <string name="licenses_halo_csq11">CSQ‑11 Squalo · заводские данные, 73 Magazine, июнь 1964</string>
+    <string name="licenses_halo_asq10">ASQ‑10 Squalo · руководство для диапазона 10 м</string>
+    <string name="licenses_halo_asq10_terms">Руководство ASQ‑10 © 2013 Cushcraft, редакция 3.</string>
+    <string name="licenses_halo_buckwalter">Лен Бакволтер (KBA4480)</string>
+    <string name="licenses_halo_s9">Squalo на 27 МГц · Reddi Match и монтаж, S9, декабрь 1964</string>
+    <string name="licenses_halo_milazzo">Кэрол Ф. Милаццо (KP4MD)</string>
+    <string name="licenses_halo_kp4md">Halo на 144 МГц · схема гамма-согласования и измерения</string>
+    <string name="licenses_halo_intloop">Разомкнутые полуволновые контуры</string>
+    <string name="licenses_halo_roberts">Мэтт Робертс (KK5JY)</string>
+    <string name="licenses_halo_es">Halo на 6 и 10 м · параллельное индуктивное согласование</string>
+    <string name="licenses_halo_es_terms">© 2021–2023 Мэтт Робертс. Все права защищены.</string>
+    <string name="licenses_halo_aerial">3G‑Aerial</string>
+    <string name="licenses_halo_aerial_models">Всенаправленные антенны горизонтальной поляризации · раздел «Антенна „Гало“»</string>
+    <string name="licenses_halo_aerial_gamma">Гамма-согласующее устройство · схема и параметры</string>
+    <string name="licenses_halo_ra3poy">Алексей (RA3POY)</string>
+    <string name="licenses_halo_w2eey">W2EEY/1 · отчёт о сборке объёмной антенны на Си-Би</string>
 </resources>

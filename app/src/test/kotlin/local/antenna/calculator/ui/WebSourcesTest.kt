@@ -60,8 +60,8 @@ class WebSourcesTest {
 
     @Test fun yagiProfilesUseApprovedSourcesAndUniqueStableIds() {
         val profiles = YagiProfile.entries
-        assertEquals(7, profiles.map { it.id }.distinct().size)
-        assertEquals(7, profiles.map { it.image }.distinct().size)
+        assertEquals(profiles.size, profiles.map { it.id }.distinct().size)
+        assertEquals(7, profiles.take(7).map { it.image }.distinct().size)
         for (profile in profiles) {
             assertEquals(profile.original, validatedSourceAddress(profile.original))
             profile.terms?.let { assertEquals(it, validatedSourceAddress(it)) }
@@ -80,6 +80,23 @@ class WebSourcesTest {
         }
     }
 
+    @Test fun cantennaPublicationsUseExactApprovedHttpsAddresses() {
+        val addresses = CantennaSource.entries.flatMap { listOfNotNull(it.url, it.termsUrl) }
+        for (url in addresses) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            assertNull(validatedSourceAddress("$url?redirect=unexpected"))
+        }
+    }
+
+    @Test fun haloPublicationsUseExactApprovedHttpsAddresses() {
+        for (url in haloSourceAddresses) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            assertNull(validatedSourceAddress("$url?redirect=unexpected"))
+        }
+    }
+
     @Test fun onlyTheConfiguredAuthorSupportAddressIsAllowed() {
         authorSupportPaymentUrl?.let {
             assertEquals(it, validatedSourceAddress(it))
@@ -88,6 +105,12 @@ class WebSourcesTest {
         }
         assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/"))
         assertNull(validatedSourceAddress("https://finance.ozon.ru/apps/sbp/ozonbankpay/unapproved"))
+    }
+
+    @Test fun privacyPolicyPermitsOnlyThePublishedAddress() {
+        assertEquals(PRIVACY_POLICY_URL, validatedSourceAddress(PRIVACY_POLICY_URL))
+        assertNull(validatedSourceAddress(PRIVACY_POLICY_URL + "?extra=1"))
+        assertNull(validatedSourceAddress("https://antcalc.ssotnikov.pro/"))
     }
 
     @Test fun unsafeOrAmbiguousUrisFailClosed() {

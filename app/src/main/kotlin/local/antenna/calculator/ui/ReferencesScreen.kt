@@ -28,6 +28,26 @@ internal fun ReferencesScreen(language: AppLanguage) {
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         HelpText(R.string.materials_note)
+        CantennaSourceLinks()
+        listOf(
+            R.string.slim_jim_ok1ike_source to SLIM_JIM_OK1IKE_URL,
+            R.string.jpole_ok1ike_hb9acc to OK1IKE_HB9ACC_URL,
+            R.string.slim_jim_sv1jrf_source to SLIM_JIM_SV1JRF_URL,
+        ).forEach { (title, url) ->
+            TextButton(onClick = { openSourceWithFeedback(context, url) }, Modifier.fillMaxWidth()) {
+                Text(stringResource(title), Modifier.fillMaxWidth())
+            }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(stringResource(R.string.hb9cv_sources_heading), color = MaterialTheme.colorScheme.secondary,
+                style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+            listOf(Hb9cvSource.LVT, Hb9cvSource.LVT_PCB, Hb9cvSource.ASQ, Hb9cvSource.SNES, Hb9cvSource.BUTORIN, Hb9cvSource.TAX)
+                .forEach { source ->
+                    TextButton(onClick = { openSourceWithFeedback(context, source.url) }, Modifier.fillMaxWidth()) {
+                        Text("${stringResource(source.author)} · ${stringResource(source.title)}", Modifier.fillMaxWidth())
+                    }
+                }
+        }
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(stringResource(R.string.moxon_title), color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })

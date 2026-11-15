@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hb9cv_nominal_frequency">Project target (suggested for the published band)</string>
+    <string name="hb9cv_hinge_r">R · distance between hinge axes, mm</string>
+    <string name="hb9cv_hinge_s">S · distance between hinge axes, mm</string>
+    <string name="hb9cv_hinge_margin">Rod length behind the hinge axis, mm</string>
+    <string name="hb9cv_f1_formula">Each rod blank = (installed span − distance between hinge axes) / 2 + length behind the hinge axis. Use the original PCB drawing for the copper layout.</string>
+    <string name="hb9cv_jo_line">Physical length of the installed 200 Ω line, mm</string>
+    <string name="hb9cv_u5_inner">Insertion at steel center tube, mm</string>
+    <string name="hb9cv_u5_outer">Insertion of the exposed end strip, mm</string>
+    <string name="hb9cv_u5_formula">Intermediate tube blank per arm = (published span − 3500 mm) / 2 − exposed strip + both insertions. The strip blank is its exposed part plus its insertion. The calculated tube lengths use the published reference spans.</string>
+    <string name="hb9cv_u5_custom_line">Use my own physical phasing line lengths</string>
+    <string name="hb9cv_piecewise_formula">Assembled boom = axis spacing plus the end overhangs. Each end blank = (span − center length) / 2 + overlap.</string>
+    <string name="hb9cv_tax_formula">Enter the actual axis spacing on the published boom. Each end blank = (span − center length) / 2 + overlap. This is a mechanical cut calculation for the published spans.</string>
+    <string name="hb9cv_tax_spacing">Actual distance between element axes, mm</string>
+    <string name="hb9cv_tax_trim">Distance from the rear boom end to the R axis, mm</string>
+    <string name="hb9cv_u5_author">Grigory Butorin (U5MH)</string>
+    <string name="hb9cv_u5_work">Mechanically strong HF antenna, Radio 5/1990</string>
+    <string name="hb9cv_published_frequency">Frequency for this profile</string>
+</resources>

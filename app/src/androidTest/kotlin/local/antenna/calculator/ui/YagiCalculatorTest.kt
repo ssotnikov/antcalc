@@ -26,6 +26,8 @@ class YagiCalculatorTest : CalculatorUiFixture() {
             compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
             compose.onNodeWithTag("open-yagi-calculator").performScrollTo().performClick()
             compose.onNodeWithTag("yagi-calculator").assertExists()
+            compose.onNodeWithText("Размеры ведомости относятся к выбранной конструкции", substring = true)
+                .performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("yagi-open-guide").performScrollTo().performClick()
             compose.onNodeWithTag("yagi-guide").assertExists()
             back()
@@ -114,7 +116,7 @@ class YagiCalculatorTest : CalculatorUiFixture() {
             compose.onNodeWithTag("yagi-input-1").performScrollTo().performTextReplacement("40")
             for (design in YagiDesign.entries.filter { it != YagiDesign.R3 }) {
                 compose.onNodeWithTag("yagi-profile").performScrollTo().performClick()
-                compose.onNodeWithTag("yagi-profile-${design.id}").performClick()
+                compose.onNodeWithTag("yagi-profile-${design.id}").performScrollTo().performClick()
                 compose.onNodeWithTag("yagi-save").performScrollTo().performClick()
                 compose.runOnIdle {
                     val project = checkNotNull(saved)

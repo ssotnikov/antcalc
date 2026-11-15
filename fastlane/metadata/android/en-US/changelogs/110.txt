@@ -1,0 +1,1 @@
+Added an HB9CV calculator for 100–1500 MHz with a starting capacitance estimate, cutting list and project saving. Updated the Yagi–Uda and Moxon guidance, modelling help and S1P import notes.

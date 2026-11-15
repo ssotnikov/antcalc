@@ -25,21 +25,27 @@ object R3udkYagi {
     )
 }
 
-data class YagiCutList(val spanMm: Double, val boomMm: Double?, val blanksMm: List<Double?>)
+data class YagiCutList(
+    val spanMm: Double,
+    val boomMm: Double?,
+    val blanksMm: List<Double?>,
+    val verticalBlanksMm: List<Double?> = emptyList(),
+)
 
 fun calculateYagiCutList(design: YagiDesign, allowanceMm: Double, rearMm: Double?, frontMm: Double?): YagiCutList {
     require(allowanceMm in 0.0..1000.0)
     require(listOfNotNull(rearMm, frontMm).all { it in 0.0..1000.0 })
-    val span = design.elements.last().positionMm
+    val span = maxOf(design.elements.last().positionMm, design.verticalElements.lastOrNull()?.positionMm ?: 0.0) -
+        minOf(design.elements.first().positionMm, design.verticalElements.firstOrNull()?.positionMm ?: design.elements.first().positionMm)
     val boom = if (rearMm != null && frontMm != null) span + rearMm + frontMm else null
-    val blanks = design.elements.map { element ->
+    fun blanks(elements: List<YagiElement>) = elements.map { element ->
         when {
             element.blankMm != null -> element.blankMm
             design.removableHalves || element.id == "de" -> null
             else -> element.overallMm + 2 * allowanceMm
         }
     }
-    return YagiCutList(span, boom, blanks)
+    return YagiCutList(span, design.publishedBoomMm ?: boom, blanks(design.elements), blanks(design.verticalElements))
 }
 
 fun calculateR3udkCutList(allowanceMm: Double, rearMm: Double?, frontMm: Double?): YagiCutList =

@@ -1,6 +1,9 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import local.antenna.calculator.core.trimming.AntennaType
@@ -12,9 +15,51 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.math.roundToInt
 
 @RunWith(AndroidJUnit4::class)
 class SlimJimTest : CalculatorUiFixture() {
+    @Test fun publishedUhfDesignKeepsTheAuthorsDimensionsAndFrequency() {
+        lateinit var pending: PendingProjectCalculation
+        compose.setContent {
+            MaterialTheme(colorScheme = darkColorScheme()) {
+                SlimJimScreen(onSave = { pending = PendingProjectCalculation(it) }, onMeasurements = null, onCopied = {})
+            }
+        }
+        compose.onNodeWithTag("slim-jim-band-SV1JRF_70CM").performScrollTo().performClick()
+        val diagram = compose.onNodeWithTag("slim-jim-diagram-SV1JRF_70CM").performScrollTo().assertIsDisplayed()
+        val pixels = diagram.captureToImage().toPixelMap()
+        val feedX = (.33f * pixels.width).roundToInt()
+        val feedY = ((.86f - .76f * 17f / 503f) * pixels.height).roundToInt()
+        assertEquals(Color(0xFFF7C879), pixels[feedX, feedY])
+        compose.onNodeWithTag("slim-jim-save").performScrollTo().performClick()
+        compose.runOnIdle {
+            assertEquals(436_000_000L, pending.newProject(AntennaType.SLIM_JIM, "70 cm").target?.hertz)
+            assertEquals(listOf(.503, .331, .166, .017, .007, .015), pending.snapshot.outputs.map { it.value })
+        }
+    }
+
+    @Test fun ribbonJPoleKeepsTheGapCoordinatesAndCanReturnToTheCalculator() {
+        lateinit var pending: PendingProjectCalculation
+        compose.setContent {
+            MaterialTheme { JPoleScreen(onSave = { pending = PendingProjectCalculation(it) }, onOpenCable = {}, onCopied = {}) }
+        }
+        compose.onNodeWithTag("jpole-profile-true").performScrollTo().performClick()
+        compose.onNodeWithTag("published-vertical-diagram").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("jpole-save").performScrollTo().performClick()
+        compose.runOnIdle {
+            val project = pending.newProject(AntennaType.J_POLE, "Ribbon")
+            assertEquals(435_000_000L, project.target?.hertz)
+            assertEquals(472_500_000L, project.initialLength?.nanometers)
+            assertEquals(Page.J_POLE, pending.returnPage)
+            val rows = pending.snapshot.outputs.associate { it.key to it.value }
+            assertEquals(.1395, rows.getValue("slim_jim_gap_start"), 1e-12)
+            assertEquals(.1445, rows.getValue("slim_jim_gap_end"), 1e-12)
+        }
+        compose.onNodeWithTag("jpole-profile-false").performScrollTo().performClick()
+        compose.onNodeWithTag("jpole-frequency").assertExists()
+    }
+
     @Test fun dimensionsAndReferencesAreReachableInBothLanguagesAtLargeFont() {
         start(fontScale = 2f)
         for (language in AppLanguage.entries) {

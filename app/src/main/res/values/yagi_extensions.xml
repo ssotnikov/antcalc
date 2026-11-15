@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="yagi_mount_gtv_15">Standard insulators on a 15 × 15 mm boom</string>
+    <string name="yagi_mount_gtv_sp6gwn">SP6GWN insulators on a 20 × 20 mm boom</string>
+    <string name="yagi_mount_gtv_stauff">Stauff or SM7DTT clamps on a 1″ × 1″ boom</string>
+    <string name="yagi_mount_gtv_through_4">Through a 20 × 20 × 2 mm boom, Ø6 mm holes, 40 mm end offsets</string>
+    <string name="yagi_mount_gtv_through_476">Through a 25.4 × 25.4 × 1.6 mm boom, Ø7.5 mm holes, 40 mm end offsets</string>
+    <string name="yagi_mount_gtv_datv">146.5 MHz DATV on a 20 × 20 mm boom with standard insulators</string>
+    <string name="yagi_mount_gtv_datv_through">146.5 MHz DATV through a 25 × 25 × 1.5 mm boom, Ø10 mm holes, 40 mm end offsets</string>
+    <string name="yagi_gtv_extension_published">Dimensions include the corrections printed in the selected DG7YBN mounting table. The pre-bend blanks for the two driven halves require the feed gap and bend details.</string>
+    <string name="yagi_mount_gtv_xpol_stauff">Two perpendicular planes with hydraulic clamps or SM7DTT insulators on a 1″ × 1″ boom</string>
+    <string name="yagi_mount_gtv_xpol_8">Two perpendicular planes on a 20 × 20 mm boom with standard holders</string>
+    <string name="yagi_mount_gtv_xpol_through4">Two perpendicular planes. Insulated elements through a 20 × 20 × 2 mm boom, Ø6 mm holes. H plane rear/front offsets 750/150 mm, V plane 860/40 mm.</string>
+    <string name="yagi_mount_gtv_xpol_through476">Two perpendicular planes. Insulated elements through a 1″ × 1″ boom with 1.6 mm wall, Ø7.5 mm holes. H plane rear/front offsets 750/150 mm, V plane 860/40 mm.</string>
+    <string name="yagi_mount_gtv_sat">Stauff holders. The mounting table specifies a 1″ square boom, while the nearby heading says 20 × 20 mm. Verify the mounts against Table 6 before cutting.</string>
+    <string name="yagi_xpol_feed">Separate 50 Ω feeds for the two driven elements. Check each plane before connecting a combining network.</string>
+    <string name="yagi_xpol_nominal">The project starts at the nominal frequency of the base GTV model. The selected mounting table specifies dimensions for this xpol variant.</string>
+    <string name="yagi_sat_feed">The driven elements are 514 mm apart along the boom. The author uses equal lengths of 50 Ω coax and a two-way splitter for circular polarization.</string>
+    <string name="yagi_horizontal_plane">Horizontal plane (H)</string>
+    <string name="yagi_vertical_plane">Vertical plane (V)</string>
+    <string name="yagi_xpol_scheme">The sketches show each plane separately. Table positions are measured from the rear end of the same boom. The drawn bends are schematic. Use the source drawing for fabrication.</string>
+</resources>

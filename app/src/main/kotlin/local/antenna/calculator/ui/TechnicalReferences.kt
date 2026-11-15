@@ -62,6 +62,9 @@ internal val referenceGroups = listOf(
         TechnicalReference("jpole-wireman", R.string.jpole_link_wireman, R.string.jpole_ref_wireman, R.string.jpole_source_wireman, "DK7ZB", AppLanguage.ENGLISH),
     )),
     ReferenceGroup(R.string.references_fundamentals, listOf(
+        TechnicalReference("antenna-calculation-aerial", R.string.source_antenna_calculation_aerial,
+            R.string.source_antenna_calculation_aerial_description, R.string.source_antenna_calculation_aerial_url,
+            "3G‑Aerial", AppLanguage.RUSSIAN),
         TechnicalReference("nist", R.string.source_nist, R.string.source_nist_description, R.string.source_nist_url, "NIST", AppLanguage.ENGLISH),
         TechnicalReference("itu", R.string.source_itu, R.string.source_itu_description, R.string.source_itu_url, "МСЭ / ITU", AppLanguage.RUSSIAN, "§ 4.3"),
         TechnicalReference("antenna-geometry", R.string.source_antenna_geometry, R.string.source_antenna_geometry_description, R.string.source_antenna_geometry_url, "ARRL", AppLanguage.ENGLISH, "Unit 4"),

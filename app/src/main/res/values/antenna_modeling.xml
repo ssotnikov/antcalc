@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="modeling_help_title">Understanding antenna calculations</string>
+    <string name="modeling_help_results">Starting dimensions give you a starting point for assembly. A published cut list is specific to the parts and mounting of that design. Simulation plots describe the antenna under the conditions specified in the model.</string>
+    <string name="modeling_help_scaling">Scaling a reference design by frequency also changes conductor diameters and gaps. If you change the material, diameter or mounting, choose a suitable design variant and verify its performance.</string>
+    <string name="modeling_help_solvers">4nec2 works with NEC‑2 and NEC‑4. MMANA‑GAL Basic uses a modified MININEC‑3 engine. Choose segment lengths to suit the geometry and follow the guidance for your solver.</string>
+    <string name="modeling_s1p_port">An S1P trace shows reflection at the measurement port. Interpret SWR and input impedance at the stated reference plane. Use the same plane to compare measurements. Assess gain and front-to-back ratio separately through field measurements or simulation.</string>
+</resources>

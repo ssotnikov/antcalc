@@ -4,6 +4,8 @@
     <string name="references_language_en">Английский</string>
     <string name="references_language_ru">Русский</string>
     <string name="references_fundamentals">Длина волны и начальные размеры</string>
+    <string name="source_antenna_calculation_aerial">Как рассчитать антенну?</string>
+    <string name="source_antenna_calculation_aerial_description">Как моделируют антенны, когда можно масштабировать размеры по частоте и как на результат влияют диаметр проводника и материалы.</string>
     <string name="references_construction">Конструкция диполя и штыря</string>
     <string name="references_five_eighths">Вертикальные антенны 5/8 λ</string>
     <string name="references_tuning">Подстройка и измерения</string>

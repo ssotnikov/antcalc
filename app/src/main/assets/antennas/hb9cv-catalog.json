@@ -1,6 +1,7 @@
 [
   {
     "id": "dk7zb",
+    "suggestedFrequency": 50,
     "name": "DK7ZB · 6 м · ступенчатые элементы",
     "r": 3000,
     "s": 2770,
@@ -61,6 +62,7 @@
   },
   {
     "id": "pd0ddr",
+    "suggestedFrequency": 145,
     "name": "PD0DDR · 2 м · медная траверса",
     "r": 1030,
     "s": 960,
@@ -113,6 +115,7 @@
   },
   {
     "id": "jg0sxc",
+    "suggestedFrequency": 50.25,
     "name": "JG0SXC · 6 м · разборная",
     "r": 2980,
     "s": 2850,
@@ -182,6 +185,7 @@
   },
   {
     "id": "g4jxx",
+    "suggestedFrequency": 29.5,
     "name": "G4JXX · 10 м FM · из двух CB-диполей",
     "r": 4980,
     "s": 4400,
@@ -236,6 +240,7 @@
   },
   {
     "id": "dk2tx",
+    "suggestedFrequency": 28,
     "name": "DK2TX · 10 м · разборная",
     "gap": 30,
     "description": "Квадратные телескопические трубы с установочными метками, фигурные пластины и разъёмная фазовая линия.",
@@ -309,6 +314,7 @@
   },
   {
     "id": "dow-portable",
+    "suggestedFrequency": 145,
     "name": "DL1DOW · 2 м · складная",
     "r": 1030,
     "s": 950,
@@ -359,6 +365,7 @@
   },
   {
     "id": "dow-weather",
+    "suggestedFrequency": 145,
     "name": "DL1DOW · 2 м · всепогодная",
     "r": 1030,
     "s": 950,
@@ -415,6 +422,7 @@
   },
   {
     "id": "dow-70",
+    "suggestedFrequency": 435,
     "name": "DL1DOW · 70 см · компактная",
     "r": 334,
     "s": 298,
@@ -562,5 +570,263 @@
     "url": "https://www.rlocman.ru/shem/schematics.html?di=4949",
     "nameEn": "Radio Design · 144.7 MHz",
     "descriptionEn": "Two active elements with gamma taps and coaxial phasing. Choose one-piece or sectional elements."
+  },
+  {
+    "id": "f1lvt",
+    "name": "F1LVT · 400–406 МГц · складная",
+    "nameEn": "F1LVT · 400–406 MHz · folding",
+    "f": 403,
+    "r": 375,
+    "s": 340,
+    "spacing": 95,
+    "url": "https://f1lvt.com/files/543-AntHB9CVpliante.138.pdf",
+    "description": "Двухсторонняя плата несёт фазовую линию. Четыре стальных луча складываются на шарнирах. Размеры относятся к авторской сборке.",
+    "descriptionEn": "A double-sided PCB carries the phasing line. Four steel whips fold on hinges. Dimensions are from the author's build.",
+    "dimensions": [
+      [
+        "Последовательный конденсатор",
+        "10 пФ",
+        "Series capacitor",
+        "10 pF"
+      ],
+      [
+        "В сложенном виде",
+        "130 × 100 мм",
+        "Folded size",
+        "130 × 100 mm"
+      ]
+    ]
+  },
+  {
+    "id": "jo2asq",
+    "name": "JO2ASQ · 50 МГц · облегчённая",
+    "nameEn": "JO2ASQ · 50 MHz · lightweight",
+    "f": 50.3,
+    "r": 2920,
+    "s": 2840,
+    "spacing": 730,
+    "sTap": 250,
+    "gap": 40,
+    "url": "https://www.fbnews.jp/201308/rensai/jo2asq_idouunyou_benrigoods_05_01.html",
+    "description": "Деревянная траверса, алюминиевые трубы и съёмные зажимы. 50,3 МГц — пример целевой частоты настройки автора.",
+    "descriptionEn": "Wooden boom, aluminum tubes and removable clips. 50.3 MHz is the author's example tuning target.",
+    "dimensions": [
+      [
+        "Фазовая линия",
+        "200 Ом",
+        "Phasing line",
+        "200 Ω"
+      ],
+      [
+        "Ёмкость авторской сборки",
+        "67 пФ",
+        "Capacitance in author's build",
+        "67 pF"
+      ]
+    ],
+    "cuts": [
+      [
+        "Центральные трубы Ø8 × 1 мм · 2 шт.",
+        "1000 мм",
+        "Center tubes Ø8 × 1 mm · 2 pieces",
+        "1000 mm"
+      ],
+      [
+        "Концевые трубы Ø6 мм · 4 шт.",
+        "1000 мм",
+        "End tubes Ø6 mm · 4 pieces",
+        "1000 mm"
+      ],
+      [
+        "Гамма-трубки Ø8 мм · 2 шт.",
+        "400 мм",
+        "Gamma tubes Ø8 mm · 2 pieces",
+        "400 mm"
+      ],
+      [
+        "Акриловые планки · 2 шт.",
+        "100 × 15 × 3 мм",
+        "Acrylic strips · 2 pieces",
+        "100 × 15 × 3 mm"
+      ]
+    ]
+  },
+  {
+    "id": "uw3bj-other",
+    "name": "UW3BJ · 21,2 МГц",
+    "nameEn": "UW3BJ · 21.2 MHz",
+    "f": 21.2,
+    "r": 7020,
+    "s": 6470,
+    "spacing": 1770,
+    "rTap": 950,
+    "sTap": 870,
+    "gap": 90,
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4994",
+    "description": "Установочные размеры из таблицы 1. Две фазовые ветви по 150 Ом через тройник 75 Ом. Сечения и посадки заготовок зависят от выбранного исполнения.",
+    "descriptionEn": "Installed dimensions from Table 1. Two 150 Ω phasing branches via a 75 Ω tee. Blank sections and insertion depths depend on the build."
+  },
+  {
+    "id": "uw3bj-other",
+    "name": "UW3BJ · 28,5 МГц",
+    "nameEn": "UW3BJ · 28.5 MHz",
+    "f": 28.5,
+    "r": 5190,
+    "s": 4800,
+    "spacing": 1320,
+    "rTap": 710,
+    "sTap": 660,
+    "gap": 60,
+    "url": "https://www.rlocman.ru/shem/schematics.html?di=4994",
+    "description": "Установочные размеры из таблицы 1. Две фазовые ветви по 150 Ом через тройник 75 Ом. Сечения и посадки заготовок зависят от выбранного исполнения.",
+    "descriptionEn": "Installed dimensions from Table 1. Two 150 Ω phasing branches via a 75 Ω tee. Blank sections and insertion depths depend on the build."
+  },
+  {
+    "id": "u5mh",
+    "name": "U5MH · 20 м · усиленная",
+    "nameEn": "U5MH · 20 m · reinforced",
+    "f": 14.15,
+    "r": 10600,
+    "s": 9740,
+    "spacing": 2650,
+    "rTap": 1430,
+    "sTap": 1330,
+    "gap": 120,
+    "url": "https://www.diagram.com.ua/list/cb/1-67.shtml",
+    "description": "Размахи из таблицы автора для труб Ø30 мм. В описанной сборке применены центральные стальные трубы Ø≈21 мм. Разнос из таблицы и габарит траверсы из описания сохранены отдельно.",
+    "descriptionEn": "Spans from the author's table for Ø30 mm tubing. The described build uses steel center tubes of about Ø21 mm. The table spacing and the overall boom size from the text are shown separately.",
+    "dimensions": [
+      [
+        "Траверса с планками по описанию",
+        "2630 мм",
+        "Overall boom with plates, as described",
+        "2630 mm"
+      ],
+      [
+        "Вылет шины R",
+        "900 мм",
+        "Exposed R end strip",
+        "900 mm"
+      ],
+      [
+        "Вылет шины S",
+        "500 мм",
+        "Exposed S end strip",
+        "500 mm"
+      ]
+    ],
+    "cuts": [
+      [
+        "Центральные стальные трубы · 2 шт.",
+        "3500 мм",
+        "Steel center tubes · 2 pieces",
+        "3500 mm"
+      ],
+      [
+        "РК-75, VF 0,67 · вся линия",
+        "2780 мм",
+        "75 Ω line, VF 0.67 · total",
+        "2780 mm"
+      ],
+      [
+        "РК-75 · от ответвления к R",
+        "2280 мм",
+        "75 Ω line · split to R",
+        "2280 mm"
+      ],
+      [
+        "РК-75 · от ответвления к S",
+        "500 мм",
+        "75 Ω line · split to S",
+        "500 mm"
+      ]
+    ]
+  },
+  {
+    "id": "pa0tax",
+    "name": "PA0TAX · 28,5 МГц",
+    "nameEn": "PA0TAX · 28.5 MHz",
+    "f": 28.5,
+    "r": 5130,
+    "s": 4770,
+    "boom": 1320,
+    "gap": 60,
+    "sTap": 650,
+    "rTap": 710,
+    "url": "https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1989/page148/index.html",
+    "description": "Алюминиевые элементы и медная фазовая линия Ø8 мм. В таблице автора дана полная длина траверсы. Задайте межосевой разнос своей сборки.",
+    "descriptionEn": "Aluminum elements and an Ø8 mm copper phasing line. The author's table gives overall boom length. Enter the element spacing used in your build.",
+    "dimensions": [
+      [
+        "Опубликованная длина траверсы",
+        "1320 мм",
+        "Published boom length",
+        "1320 mm"
+      ],
+      [
+        "Последовательный подстроечный конденсатор",
+        "до 150 пФ",
+        "Series trimmer",
+        "up to 150 pF"
+      ]
+    ]
+  },
+  {
+    "id": "pa0tax",
+    "name": "PA0TAX · 21,15 МГц",
+    "nameEn": "PA0TAX · 21.15 MHz",
+    "f": 21.15,
+    "r": 6950,
+    "s": 6420,
+    "boom": 1770,
+    "gap": 90,
+    "sTap": 880,
+    "rTap": 960,
+    "url": "https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1989/page148/index.html",
+    "description": "Алюминиевые элементы и медная фазовая линия Ø8 мм. В таблице автора дана полная длина траверсы. Задайте межосевой разнос своей сборки.",
+    "descriptionEn": "Aluminum elements and an Ø8 mm copper phasing line. The author's table gives overall boom length. Enter the element spacing used in your build.",
+    "dimensions": [
+      [
+        "Опубликованная длина траверсы",
+        "1770 мм",
+        "Published boom length",
+        "1770 mm"
+      ],
+      [
+        "Последовательный подстроечный конденсатор",
+        "до 150 пФ",
+        "Series trimmer",
+        "up to 150 pF"
+      ]
+    ]
+  },
+  {
+    "id": "pa0tax",
+    "name": "PA0TAX · 14,15 МГц",
+    "nameEn": "PA0TAX · 14.15 MHz",
+    "f": 14.15,
+    "r": 10400,
+    "s": 9600,
+    "boom": 2650,
+    "gap": 120,
+    "sTap": 1320,
+    "rTap": 1430,
+    "url": "https://www.robkalmeijer.nl/techniek/electronica/radiotechniek/hambladen/cq-pa/1989/page148/index.html",
+    "description": "Алюминиевые элементы и медная фазовая линия Ø8 мм. В таблице автора дана полная длина траверсы. Задайте межосевой разнос своей сборки.",
+    "descriptionEn": "Aluminum elements and an Ø8 mm copper phasing line. The author's table gives overall boom length. Enter the element spacing used in your build.",
+    "dimensions": [
+      [
+        "Опубликованная длина траверсы",
+        "2650 мм",
+        "Published boom length",
+        "2650 mm"
+      ],
+      [
+        "Последовательный подстроечный конденсатор",
+        "до 150 пФ",
+        "Series trimmer",
+        "up to 150 pF"
+      ]
+    ]
   }
 ]

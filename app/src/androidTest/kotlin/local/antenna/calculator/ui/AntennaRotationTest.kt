@@ -3,8 +3,10 @@ package local.antenna.calculator.ui
 import androidx.compose.ui.test.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -12,6 +14,59 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class AntennaRotationTest : CalculatorUiFixture() {
+    @Test fun fullScreenPinchZoomsAndTwoFingersPanWithoutRotating() {
+        start()
+        openAntennaTool("open-ground-plane")
+        val model = compose.onNodeWithTag("antenna-rotating-view")
+        model.performTouchInput { doubleClick() }
+        val fullScreen = compose.onNodeWithTag("antenna-full-view")
+        fun image(): android.graphics.Bitmap {
+            fullScreen.assertIsDisplayed()
+            compose.waitForIdle()
+            return checkNotNull(InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot())
+        }
+        fun zoomLabel() = fullScreen.fetchSemanticsNode().config[SemanticsProperties.StateDescription]
+        val initial = image()
+        assertTrue(zoomLabel().contains("100"))
+        fullScreen.performTouchInput {
+            val span = width * .12f
+            down(0, center - Offset(span, 0f))
+            down(1, center + Offset(span, 0f))
+            updatePointerTo(0, center - Offset(span * 2, 0f))
+            updatePointerTo(1, center + Offset(span * 2, 0f))
+            move()
+            up(1)
+            up(0)
+        }
+        assertTrue(zoomLabel().contains("200"))
+        val magnified = image()
+        assertFalse(initial.sameAs(magnified))
+
+        fun moveModel(displacement: Offset, dragAfterLift: Boolean = false) = fullScreen.performTouchInput {
+            val span = width * .12f
+            val first = center - Offset(span, 0f)
+            val second = center + Offset(span, 0f)
+            down(0, first)
+            down(1, second)
+            updatePointerTo(0, first + displacement)
+            updatePointerTo(1, second + displacement)
+            move()
+            up(1)
+            if (dragAfterLift) moveTo(0, first + displacement + Offset(40f, -40f))
+            up(0)
+        }
+        moveModel(Offset(31f, 46f), dragAfterLift = true)
+        assertTrue(zoomLabel().contains("200"))
+        assertFalse(magnified.sameAs(image()))
+        moveModel(Offset(-31f, -46f))
+        assertTrue(magnified.sameAs(image()))
+
+        fullScreen.performTouchInput { doubleClick() }
+        model.performTouchInput { doubleClick() }
+        assertTrue(zoomLabel().contains("100"))
+        assertTrue(initial.sameAs(image()))
+    }
+
     @Test fun yagiReturnsToItsStartingViewAfterChangingDesignAndLeavingTheScreen() {
         start()
         openAntennaTool("open-yagi-calculator")
@@ -62,7 +117,7 @@ class AntennaRotationTest : CalculatorUiFixture() {
         openAntennaTool("open-hb9cv")
         compose.onNodeWithTag("antenna-rotating-view").assertIsDisplayed()
         compose.onNodeWithTag("hb9cv-profile").performScrollTo().performClick()
-        compose.onNodeWithText("UW3BJ", substring = true).performScrollTo().performClick()
+        compose.onAllNodesWithText("UW3BJ", substring = true).onFirst().performScrollTo().performClick()
         val overhang = compose.onNodeWithTag("hb9cv_rear").performScrollTo()
         overhang.performTextReplacement("100")
         overhang.performTextReplacement("100 mm")

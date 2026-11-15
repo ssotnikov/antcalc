@@ -1,5 +1,7 @@
 package local.antenna.calculator.journal
 
+import local.antenna.calculator.core.trimming.AntennaType
+
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -39,6 +41,7 @@ import local.antenna.calculator.ui.rememberPageScrollState
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.state.CalculatorUiState
 import local.antenna.calculator.ui.AppAlertDialog
+import local.antenna.calculator.ui.HaloDraft
 import local.antenna.calculator.ui.cardListBounce
 
 internal enum class JournalPage(val title: Int) {
@@ -74,7 +77,8 @@ internal fun JournalScreen(
     calculator: CalculatorUiState,
     currentCalculator: () -> CalculatorUiState,
     initialProjectId: String? = null,
-    onOpenSweeps: ((SweepComparison) -> Unit)? = null,
+    onOpenSweeps: ((SweepComparison, AntennaProject) -> Unit)? = null,
+    onOpenHalo: ((CalculationSnapshot) -> Unit)? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -97,8 +101,9 @@ internal fun JournalScreen(
     val record = project?.records?.find { it.id.toString() == recordId }
     val selected = project?.records.orEmpty().filter { it.id.toString() in picked }.sortedWith(journalChronology)
     val selectedSweep = project?.sweeps?.firstOrNull { it.selectionKey() in picked }
+    val beforeAfter = project?.selectedCantennaPair(picked)
     val canCompare = project != null && picked.size == 2 &&
-        (selected.size == 2 || (selected.size == 1 && selectedSweep != null)) &&
+        (selected.size == 2 || (selected.size == 1 && selectedSweep != null) || (beforeAfter != null && onOpenSweeps != null)) &&
         project.comparisonRejection(picked) == null
     val context = LocalContext.current
     val presentation = JournalPresentation(context)
@@ -245,9 +250,12 @@ internal fun JournalScreen(
                     },
                     onOpen = { id -> recordId = id.toString(); navigate(JournalPage.RECORD) },
                     onAdd = { navigate(JournalPage.ADD_RECORD) },
-                    onCompare = { navigate(JournalPage.COMPARE) },
+                    onCompare = {
+                        if (beforeAfter != null && onOpenSweeps != null) onOpenSweeps(beforeAfter, project)
+                        else navigate(JournalPage.COMPARE)
+                    },
                     onAction = { onProjectAction(project, it) },
-                    onOpenSweeps = onOpenSweeps,
+                    onOpenSweeps = onOpenSweeps?.let { open -> { sweep -> open(sweep, project) } },
                     onRemoveSweeps = {
                         picked = picked - it.selectionKey()
                         model.removeSweeps(project.id, it)
@@ -271,10 +279,16 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.RECORD -> if (record != null) {
                 val details = presentation.recordDetails(record)
+                val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
                     JournalHeading(record.title)
                     JournalDetails(details)
                     JournalScope()
+                    if (halo != null && onOpenHalo != null) {
+                        TextButton(onClick = { onOpenHalo(halo) }, enabled = enabled, modifier = Modifier.testTag("journal-open-halo")) {
+                            Text(stringResource(R.string.halo_reopen))
+                        }
+                    }
                     OutlinedButton(onClick = {
                         copy(listOf(record.title, presentation.formatFields(details), scopeNote).joinToString("\n"))
                     }, enabled = enabled) { Text(stringResource(R.string.journal_copy)) }
@@ -353,11 +367,17 @@ internal fun JournalScreen(
 
 private fun SweepComparison.selectionKey() = traces.joinToString(separator = ":", prefix = "sweep:") { it.id }
 
+private fun AntennaProject.selectedCantennaPair(keys: List<String>): SweepComparison? {
+    if (antennaType != AntennaType.CANTENNA || keys.size != 2) return null
+    val pair = keys.mapNotNull { key -> sweeps.firstOrNull { it.selectionKey() == key }?.traces?.singleOrNull() }
+    return pair.takeIf { it.size == 2 }?.let(::SweepComparison)
+}
+
 private fun AntennaProject.comparisonRejection(keys: List<String>): Int? {
     if (keys.size != 2) return null
     val records = records.filter { it.id.toString() in keys }
     val sweepCount = keys.size - records.size
-    if (sweepCount == 2) return R.string.journal_reject_two_sweeps
+    if (sweepCount == 2) return R.string.journal_reject_two_sweeps.takeIf { selectedCantennaPair(keys) == null }
     if (sweepCount == 1) {
         return R.string.journal_sweep_compare_select_manual.takeIf { records.single().measurement == null }
     }
@@ -554,6 +574,9 @@ private fun ProjectHistory(
                         color = MaterialTheme.colorScheme.secondary)
                     val help = if (sweeps.isNotEmpty()) R.string.journal_sweep_compare_help else R.string.journal_compare_help
                     Text(stringResource(help), style = MaterialTheme.typography.bodySmall)
+                    if (project.antennaType == AntennaType.CANTENNA && sweeps.count { it.traces.size == 1 } >= 2) {
+                        Text(stringResource(R.string.cantenna_measurement_selection), style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
         }

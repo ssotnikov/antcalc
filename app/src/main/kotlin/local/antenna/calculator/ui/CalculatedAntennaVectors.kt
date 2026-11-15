@@ -83,7 +83,7 @@ internal fun loopVector(shape: LoopShape, feed: LoopFeed): AntennaVector {
     )
 }
 
-internal fun moxonVector(model: MoxonDimensions): AntennaVector {
+internal fun moxonVector(model: MoxonDimensions, includeMount: Boolean = true): AntennaVector {
     val scale = 257 / model.widthMm
     val width = model.widthMm * scale / 2
     val depth = (model.drivenTailMm + model.gapMm + model.reflectorTailMm) * scale
@@ -101,7 +101,52 @@ internal fun moxonVector(model: MoxonDimensions): AntennaVector {
         AntennaRod(point(side * width, z = front + model.drivenTailMm * scale),
             point(side * width, z = back - model.reflectorTailMm * scale), 7f, 3)
     }
-    return AntennaVector(driven + reflector.zipWithNext { a, b -> AntennaRod(a, b, 6f, 0) } + gapSpacers +
-        coaxConnector(feed + point(y = -8)) + AntennaRod(point(y = -6, z = front), point(y = -6, z = back), 9f, 1),
-        listOf(AntennaJoint(feed, 10f, 2), AntennaJoint(point(y = -5, z = back), 8f, 3)))
+    val outline = driven + reflector.zipWithNext { a, b -> AntennaRod(a, b, 6f, 0) } + gapSpacers
+    val feedJoint = AntennaJoint(feed, 10f, 2)
+    if (!includeMount) return AntennaVector(outline, listOf(feedJoint))
+    return AntennaVector(outline + coaxConnector(feed + point(y = -8)) +
+        AntennaRod(point(y = -6, z = front), point(y = -6, z = back), 9f, 1),
+        listOf(feedJoint, AntennaJoint(point(y = -5, z = back), 8f, 3)))
+}
+
+internal fun moxonPublishedVector(profile: MoxonProfile): AntennaVector? {
+    val model = profile.dimensions ?: return null
+    val scale = 257 / model.widthMm
+    val front = -model.depthMm * scale / 2
+    val back = -front
+    if (profile.hybrid) {
+        val base = moxonVector(model, includeMount = false)
+        val extra = moxonSatelliteYagi.mapIndexed { index, (position, length) ->
+            val z = back - position * scale
+            AntennaRod(point(-length * scale / 2, z = z), point(length * scale / 2, z = z),
+                4f, if (index == 0) 2 else 0)
+        }
+        val boom = AntennaRod(point(y = -5, z = back + 24 * scale),
+            point(y = -5, z = back - 957 * scale), 8f, 1)
+        return base.copy(rods = base.rods + extra + boom)
+    }
+    if (profile.view !in setOf(MoxonView.CB_PENNANT, MoxonView.CB_VERTICAL)) return null
+    val base = moxonVector(model, includeMount = false)
+    fun upright(p: AntennaPoint) = AntennaPoint(-p.y, p.x, p.z)
+    val rods = base.rods.map { it.copy(first = upright(it.first), last = upright(it.last)) }
+    val joints = base.joints.map { it.copy(point = upright(it.point)) }
+    val mast = point(x = -10, z = front + 650 * scale)
+    val supportLength = 1470 * scale
+    val halfHeight = model.widthMm * scale / 2
+    val support = listOf(-halfHeight, halfHeight).map { height ->
+        AntennaRod(point(x = -5, y = height, z = front - 20 * scale),
+            point(x = -5, y = height, z = front - 20 * scale + supportLength), 4f, 3)
+    }
+    val mastRod = AntennaRod(mast + point(y = 145), mast + point(y = -153), 8f, 1)
+    val feed = point(z = front)
+    val lead = if (profile.view == MoxonView.CB_PENNANT) {
+        val guideEnd = point(z = front + 580 * scale)
+        support + AntennaRod(feed, guideEnd, 4f, 3) +
+            listOf(feed, guideEnd, mast + point(y = -9), mast + point(y = -153))
+                .zipWithNext { a, b -> AntennaRod(a, b, 2f, 2) }
+    } else {
+        support + listOf(feed, point(z = mast.z), mast + point(y = -153))
+            .zipWithNext { a, b -> AntennaRod(a, b, 2f, 2) }
+    }
+    return AntennaVector(rods + mastRod + lead, joints)
 }

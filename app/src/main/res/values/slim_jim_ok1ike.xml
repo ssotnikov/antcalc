@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="slim_jim_ok1ike">Portable antenna by OK1IKE</string>
+    <string name="slim_jim_ok1ike_author">OK1IKE</string>
+    <string name="slim_jim_ok1ike_source">OK1IKE · Nouzová anténa pro KV i VKV (Czech)</string>
+    <string name="slim_jim_ok1ike_dimensions">For 430–440 MHz, A in the OK1IKE table is the overall height, 472.5 mm. HB9ACC gives an upper section of 330.5 mm and a matching section of 142 mm. The drawing formula gives 332.53 mm for the upper section at 435 MHz. The top conductors are open.</string>
+    <string name="jpole_calculated_profile">Calculate by frequency</string>
+    <string name="jpole_ok1ike_profile">Ribbon J-pole · OK1IKE · 430–440 MHz</string>
+    <string name="jpole_ok1ike_height">Overall length of the ribbon</string>
+    <string name="jpole_ok1ike_upper">Top to gap center</string>
+    <string name="jpole_ok1ike_stub_center">Bottom to gap center</string>
+    <string name="jpole_ok1ike_coax">Minimum RG-58 length in the article</string>
+    <string name="jpole_ok1ike_diagram">300 Ω ribbon. Leave the top conductors open and join them at the bottom. Make a 5 mm gap in one conductor only, centered 142 mm above the bottom. Both feed contacts are 9.3 mm above the short. Adjust the contacts for minimum SWR around the intended operating frequency. The project starts at 435 MHz.</string>
+    <string name="jpole_ok1ike_hb9acc">Flexible Notantenne für 2 m und 70 cm · HB9ACC, HBradio 6/2011, pp. 26–28</string>
+    <string name="jpole_ok1ike_hb9acc_author">Max Rüegger (HB9ACC)</string>
+    <string name="slim_jim_sv1jrf_band">70 cm · SV1JRF / 5B4AMD</string>
+    <string name="slim_jim_sv1jrf_title">SV1JRF / 5B4AMD</string>
+    <string name="slim_jim_sv1jrf_source">Slim Jim UHF Antenna Design</string>
+    <string name="slim_jim_sv1jrf_url" translatable="false">https://sv1jrf.blogspot.com/2016/02/slim-jim-uhf-antenna-desi.html?m=1</string>
+    <string name="slim_jim_sv1jrf_material">The conductors are joined at the top and bottom. The right leg has a gap above the matching section. The feed connects to both legs below the gap.</string>
+    <string name="slim_jim_sv1jrf_dimensions">The table reproduces the author’s rounded dimensions. The published gap E is 7 mm, while A − B − C gives 6 mm. D is the feed height shown on the drawing, 17 mm. The schematic uses the geometry implied by A, B and C.</string>
+    <string name="slim_jim_sv1jrf_tuning">The author measured SWR 1.1:1 at 436 MHz and below 1.4:1 across 430–440 MHz on this build. Mount it clear of metal and adjust the feed contacts together to tune it.</string>
+</resources>

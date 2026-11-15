@@ -5,16 +5,23 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculateCentroid
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -25,6 +32,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -32,13 +40,13 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import local.antenna.calculator.R
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.math.PI
 import kotlin.math.ceil
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -92,10 +100,13 @@ internal fun initialAntennaView(id: String): AntennaView = when {
     id == "yagi-5" -> AntennaView(5f, 76f, 35f)
     id.startsWith("yagi-") -> AntennaView(-8f, 65f, -12f)
     id.startsWith("hb-") -> AntennaView(8f, 69f, 28f)
+    id.startsWith("cantenna") -> AntennaView(36f, 22f, -10f)
+    id.startsWith("halo-") -> AntennaView(-16f, 32f, -11f)
     id.startsWith("gp-") -> AntennaView(22f, 23f)
     id.startsWith("v-") || id.startsWith("loop-") -> AntennaView(-10f, 9f)
-    id == "jpole" || id.startsWith("slim-") -> AntennaView(-14f, 8f)
-    id in setOf("moxon_w1cdn", "moxon_baker_v", "moxon_cb_field_2", "moxon_ea2bd") -> AntennaView(-13f, 9f)
+    id.startsWith("jpole") || id.startsWith("slim-") -> AntennaView(-14f, 8f)
+    id in setOf("moxon_cb_field", "moxon_cb_field_2") -> AntennaView(24f, 9f)
+    id in setOf("moxon_w1cdn", "moxon_baker_v", "moxon_ea2bd") -> AntennaView(-13f, 9f)
     id.startsWith("moxon") -> AntennaView(-13f, 69f, -9f)
     else -> AntennaView(-14f, 18f)
 }
@@ -104,6 +115,22 @@ internal data class AntennaFrame(val left: Float, val top: Float, val right: Flo
     val center get() = Offset((left + right) / 2f, (top + bottom) / 2f)
     fun scale(width: Float, height: Float) = minOf(width / (right - left), height / (bottom - top))
 }
+
+private fun AntennaFrame.fit(initial: AntennaFrame, viewport: Size): Float {
+    val width = viewport.width * .93f
+    val height = viewport.height * .9f
+    return minOf(initial.scale(width, height), scale(width, height), viewport.minDimension / 190f)
+}
+
+private fun AntennaFrame.boundPan(pan: Offset, viewport: Size, margin: Float, scale: Float): Offset {
+    val extentX = (right - left) * scale / 2
+    val extentY = (bottom - top) * scale / 2
+    val x = viewport.width / 2 + extentX - minOf(margin, extentX)
+    val y = viewport.height / 2 + extentY - minOf(margin, extentY)
+    return Offset(pan.x.coerceIn(-x, x), pan.y.coerceIn(-y, y))
+}
+
+private const val MaxAntennaZoom = 5f
 
 internal fun AntennaVector.frame(): AntennaFrame {
     var left = Float.POSITIVE_INFINITY
@@ -182,17 +209,19 @@ internal fun RotatingAntenna(
                 properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
             ) {
                 val window = (LocalView.current.parent as? DialogWindowProvider)?.window
+                val background = MaterialTheme.colorScheme.surface
                 SideEffect {
                     window?.let {
                         it.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
                         WindowCompat.getInsetsController(it, it.decorView).apply {
-                            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-                            hide(WindowInsetsCompat.Type.systemBars())
+                            isAppearanceLightNavigationBars = background.luminance() > .5f
+                            hide(WindowInsetsCompat.Type.statusBars())
+                            show(WindowInsetsCompat.Type.navigationBars())
                         }
                     }
                 }
                 AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = false }, true,
-                    Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface))
+                    Modifier.fillMaxSize().background(background).navigationBarsPadding())
             }
         }
     }
@@ -206,18 +235,31 @@ private fun AntennaSurface(
 ) {
     val currentTurn by rememberUpdatedState(turn)
     val currentToggle by rememberUpdatedState(toggle)
+    val projected = remember(model, view) { model.project(view) }
+    val frame = remember(projected) { projected.frame() }
+    val currentFrame by rememberUpdatedState(frame)
+    val currentInitialFrame by rememberUpdatedState(initialFrame)
+    var zoom by remember { mutableFloatStateOf(1f) }
+    var pan by remember { mutableStateOf(Offset.Zero) }
+    val zoomLabel = if (expanded) stringResource(R.string.photo_zoom_level, (zoom * 100).roundToInt()) else null
     val toggleLabel = stringResource(if (expanded) R.string.antenna_view_close else R.string.antenna_view_expand)
     val actions = listOf(
         CustomAccessibilityAction(stringResource(R.string.antenna_view_left)) { turn(-15f, 0f); true },
         CustomAccessibilityAction(stringResource(R.string.antenna_view_right)) { turn(15f, 0f); true },
         CustomAccessibilityAction(stringResource(R.string.antenna_view_up)) { turn(0f, 12f); true },
         CustomAccessibilityAction(stringResource(R.string.antenna_view_down)) { turn(0f, -12f); true },
-        CustomAccessibilityAction(stringResource(R.string.antenna_view_reset)) { reset(); true },
+        CustomAccessibilityAction(stringResource(R.string.antenna_view_reset)) {
+            reset()
+            zoom = 1f
+            pan = Offset.Zero
+            true
+        },
     )
     val interaction = if (interactive) Modifier.testTag(if (expanded) "antenna-full-view" else "antenna-rotating-view")
         .semantics {
             onClick(toggleLabel) { toggle(); true }
             customActions = actions
+            if (zoomLabel != null) stateDescription = zoomLabel
         }
         .pointerInput(expanded) {
             var tapTime: Long? = null
@@ -230,10 +272,33 @@ private fun AntennaSurface(
                 down.consume()
                 var previous = down.position
                 var dragged = false
+                var transformed = false
                 while (true) {
                     val event = awaitPointerEvent()
+                    val pressed = event.changes.count { it.pressed }
+                    if (expanded && (pressed >= 2 || transformed)) {
+                        tapTime = null
+                        transformed = true
+                        if (event.changes.any { it.isConsumed }) break
+                        if (event.changes.count { it.pressed && it.previousPressed } >= 2) {
+                            val viewport = Size(size.width.toFloat(), size.height.toFloat())
+                            val visibleFrame = currentFrame
+                            val fit = visibleFrame.fit(currentInitialFrame, viewport)
+                            val margin = 24.dp.toPx()
+                            val nextZoom = (zoom * event.calculateZoom()).coerceIn(1f, MaxAntennaZoom)
+                            val anchor = event.calculateCentroid(useCurrent = false) -
+                                Offset(viewport.width / 2, viewport.height / 2)
+                            val currentPan = visibleFrame.boundPan(pan, viewport, margin, fit * zoom)
+                            val moved = anchor - (anchor - currentPan) * (nextZoom / zoom) + event.calculatePan()
+                            pan = visibleFrame.boundPan(moved, viewport, margin, fit * nextZoom)
+                            zoom = nextZoom
+                        }
+                        event.changes.forEach { it.consume() }
+                        if (pressed == 0) break
+                        continue
+                    }
                     val change = event.changes.firstOrNull { it.id == down.id }
-                    if (change == null || change.isConsumed || event.changes.count { it.pressed } > 1) {
+                    if (change == null || change.isConsumed || pressed > 1) {
                         tapTime = null
                         break
                     }
@@ -261,13 +326,11 @@ private fun AntennaSurface(
                 }
             }
         } else Modifier
-    Canvas(modifier.semantics { contentDescription = description }.then(interaction)) {
-        val projected = model.project(view)
-        val frame = projected.frame()
-        val width = size.width * .93f
-        val height = size.height * .9f
-        val scale = minOf(initialFrame.scale(width, height), frame.scale(width, height), size.minDimension / 190f)
-        val origin = center - frame.center * scale
+    val canvasModifier = if (expanded) modifier.clipToBounds() else modifier
+    Canvas(canvasModifier.semantics { contentDescription = description }.then(interaction)) {
+        val scale = frame.fit(initialFrame, size) * zoom
+        val offset = if (expanded) frame.boundPan(pan, size, 24.dp.toPx(), scale) else Offset.Zero
+        val origin = center + offset - frame.center * scale
         fun screen(point: AntennaPoint) = origin + Offset(point.x, point.y) * scale
         val rods = projected.rods
         val joints = projected.joints

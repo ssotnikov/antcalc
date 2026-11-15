@@ -58,6 +58,7 @@ internal fun JPoleScreen(
     var frequencyText by rememberSaveable { mutableStateOf(initialFrequency) }
     var factorText by rememberSaveable { mutableStateOf(initialFactor) }
     var unit by rememberSaveable { mutableStateOf(LengthUnit.MILLIMETERS) }
+    var ribbon by rememberSaveable { mutableStateOf(false) }
     val frequency = QuantityInput.frequency(frequencyText, FrequencyUnit.MEGAHERTZ).validValue()
     val factor = QuantityInput.shorteningFactor(factorText).validValue()
     val result = if (frequency != null && factor != null) calculateJPole(frequency, factor) else null
@@ -70,7 +71,16 @@ internal fun JPoleScreen(
 
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
         .padding(20.dp).testTag("jpole-screen"), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-        RotatingAntenna("jpole", stringResource(R.string.jpole_title))
+        RotatingAntenna(if (ribbon) "jpole-ok1ike" else "jpole",
+            stringResource(if (ribbon) R.string.jpole_ok1ike_profile else R.string.jpole_title),
+            geometry = if (ribbon) ok1ikeVertical.vector() else null)
+        ChoicePicker(stringResource(R.string.yagi_profile), listOf(false, true), ribbon,
+            { stringResource(if (it) R.string.jpole_ok1ike_profile else R.string.jpole_calculated_profile) },
+            { ribbon = it }, "jpole-profile")
+        if (ribbon) {
+            Ok1ikeJPoleProfile(unit, { unit = it }, onSave, onCopied)
+            return@Column
+        }
         JPolePanel(R.string.jpole_theory) {
             JPoleDiagram(R.string.jpole_radiatorLabel, R.string.jpole_stubLabel)
             HelpText(R.string.jpole_radiatorExplanation)
@@ -150,6 +160,65 @@ internal fun JPoleScreen(
         }) { Text(stringResource(R.string.jpole_copy)) }
         JPoleHeading(R.string.jpole_refs)
         JPoleLink(R.string.jpole_source_cebik)
+    }
+}
+
+internal val ok1ikeRows = listOf(
+    Triple("jpole_long", R.string.jpole_ok1ike_height, .4725),
+    Triple("jpole_ok1ike_upper", R.string.jpole_ok1ike_upper, .3305),
+    Triple("jpole_ok1ike_stub_center", R.string.jpole_ok1ike_stub_center, .142),
+    Triple("slim_jim_gap_start", R.string.slim_jim_gap_start, .1395),
+    Triple("slim_jim_gap_end", R.string.slim_jim_gap_end, .1445),
+    Triple("slim_jim_gap", R.string.slim_jim_gap, .005),
+    Triple("jpole_tap", R.string.jpole_tap, .0093),
+    Triple("jpole_coax_min", R.string.jpole_ok1ike_coax, .60),
+)
+
+@Composable
+private fun Ok1ikeJPoleProfile(
+    unit: LengthUnit, onUnit: (LengthUnit) -> Unit, onSave: ((CalculationSnapshot) -> Unit)?, onCopied: () -> Unit,
+) {
+    val context = LocalContext.current
+    val resources = LocalResources.current
+    val title = stringResource(R.string.jpole_ok1ike_profile)
+    HelpText(R.string.slim_jim_ok1ike_dimensions)
+    PublishedVerticalDiagram(ok1ikeVertical, stringResource(R.string.jpole_ok1ike_diagram))
+    HelpText(R.string.jpole_ok1ike_diagram)
+    ChoicePicker(stringResource(R.string.length_units), LengthUnit.entries, unit,
+        { stringResource(it.labelResource()) }, onUnit, "jpole-ribbon-unit")
+    JPoleHeading(R.string.jpole_sizes)
+    ok1ikeRows.forEach { (key, label, meters) ->
+        Text(stringResource(R.string.journal_property, stringResource(label), formatLength(context, meters, unit)),
+            Modifier.testTag(key))
+    }
+    if (onSave != null) Button(
+        onClick = {
+            onSave(CalculationSnapshot(Ok1ikeJPoleModel, 1,
+                listOf(SnapshotValue("frequency", 435_000_000.0, SnapshotUnit.HERTZ)),
+                ok1ikeRows.map { (key, _, meters) -> SnapshotValue(key, meters, SnapshotUnit.METERS) }))
+        },
+        modifier = Modifier.fillMaxWidth().testTag("jpole-save"),
+    ) { Text(stringResource(R.string.jpole_copyProject)) }
+    OutlinedButton(onClick = {
+        val clipboard = context.getSystemService(ClipboardManager::class.java) ?: return@OutlinedButton
+        val report = buildString {
+            appendLine(title)
+            ok1ikeRows.forEach { (_, label, meters) ->
+                appendLine(resources.getString(R.string.journal_property,
+                    resources.getString(label), formatLength(context, meters, unit)))
+            }
+            appendLine(resources.getString(R.string.jpole_ok1ike_diagram))
+            appendLine(SLIM_JIM_OK1IKE_URL)
+            append(OK1IKE_HB9ACC_URL)
+        }
+        clipboard.setPrimaryClip(ClipData.newPlainText(title, report))
+        onCopied()
+    }, modifier = Modifier.fillMaxWidth().testTag("jpole-copy")) { Text(stringResource(R.string.jpole_copy)) }
+    TextButton(onClick = { openSourceWithFeedback(context, SLIM_JIM_OK1IKE_URL) }) {
+        Text(stringResource(R.string.slim_jim_ok1ike_source))
+    }
+    TextButton(onClick = { openSourceWithFeedback(context, OK1IKE_HB9ACC_URL) }) {
+        Text(stringResource(R.string.jpole_ok1ike_hb9acc))
     }
 }
 

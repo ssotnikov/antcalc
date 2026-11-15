@@ -68,7 +68,7 @@ internal fun MoxonScreen(
         mutableStateOf(saved["calculate"] == true)
     }
     var profileId by rememberSaveable {
-        mutableStateOf(moxonProfiles.firstOrNull { it.id == saved["profile"] }?.id ?: moxonProfiles.first().id)
+        mutableStateOf(moxonCalculatorProfiles.firstOrNull { it.id == saved["profile"] }?.id ?: moxonCalculatorProfiles.first().id)
     }
     var presetIndex by rememberSaveable { mutableStateOf(moxonPresets.indexOfFirst { it.hz == saved["preset_hz"] }) }
     var rawFrequency by rememberSaveable {
@@ -94,7 +94,7 @@ internal fun MoxonScreen(
             putString("unit", unit.name)
         }
     }
-    val profile = moxonProfiles.firstOrNull { it.id == profileId } ?: moxonProfiles.first()
+    val profile = moxonCalculatorProfiles.firstOrNull { it.id == profileId } ?: moxonCalculatorProfiles.first()
     val published = profile.takeUnless { calculating }
     val preset = moxonPresets.getOrNull(presetIndex)
     val frequencyInput = (PositiveDecimalParser.parse(rawFrequency) as? FieldState.Valid)?.value
@@ -108,12 +108,12 @@ internal fun MoxonScreen(
     } else null
     val dimensions = published?.dimensions ?: estimate?.dimensions
     val source = published?.source ?: MoxonSource.METHOD
-    val stock = published?.stockInches.orEmpty()
+    val stock = published?.stock.orEmpty()
     val allowance = if (rawAllowance.isBlank()) 0.0 else {
         (PositiveDecimalParser.parse(rawAllowance, allowZero = true) as? FieldState.Valid)?.value
             ?.takeIf { it.scale() <= 3 }?.toDouble()?.takeIf { it in 0.0..1000.0 }
     }
-    val adjustedStock = allowance?.let { extra -> stock.map { (name, inches) -> name to inches * 25.4 + extra * 2 } }
+    val adjustedStock = allowance?.let { extra -> stock.map { it.inches * 25.4 + extra * 2 } }
     val snapshot = dimensions?.let {
         moxonSnapshot(published, frequency, diameter, it, unit, allowance?.takeIf { stock.isNotEmpty() }, adjustedStock.orEmpty())
     }
@@ -137,7 +137,9 @@ internal fun MoxonScreen(
         published?.facts?.forEach { add(resources.getString(it)) }
         if (adjustedStock.orEmpty().isNotEmpty() && allowance != null) {
             add(resources.getString(R.string.moxon_allowance) + " — " + context.moxonNumber(allowance))
-            adjustedStock.orEmpty().forEach { (key, mm) -> add("$key — ${length(mm)}") }
+            adjustedStock.orEmpty().forEachIndexed { index, mm ->
+                add("${context.moxonStockLabel(stock[index])} — ${length(mm)}")
+            }
         }
         if (published?.hybrid == true) addAll(moxonYagiLines(context, length))
         if (published == null) add(resources.getString(R.string.moxon_round_model))
@@ -153,14 +155,16 @@ internal fun MoxonScreen(
     ) {
         RotatingAntenna(published?.id ?: "moxon-estimate", stringResource(R.string.moxon_image),
             Modifier.testTag("moxon-art-${(published?.view ?: MoxonView.GENERIC).name}"),
-            geometry = remember(calculating, dimensions) { dimensions?.takeIf { calculating }?.let(::moxonVector) }, baseHeight = 154.dp)
+            geometry = remember(published, dimensions) {
+                if (published == null) dimensions?.let(::moxonVector) else moxonPublishedVector(published)
+            }, baseHeight = 154.dp)
         HelpText(published?.description ?: R.string.moxon_intro)
         ChoicePicker(stringResource(R.string.moxon_mode), listOf(false, true), calculating,
             { stringResource(if (it) R.string.moxon_calculate else R.string.moxon_published) },
             { calculating = it }, "moxon-mode")
         if (published != null) {
             MoxonHeading(R.string.yagi_profile)
-            MoxonMenu(title, "moxon-profile", moxonProfiles.map { it.id to context.moxonLabel(it) }) {
+            MoxonMenu(title, "moxon-profile", moxonCalculatorProfiles.map { it.id to context.moxonLabel(it) }) {
                 profileId = it
             }
             if (frequencyText.isNotEmpty()) Text(frequencyText)
@@ -219,8 +223,6 @@ internal fun MoxonScreen(
                         "D/λ = 0.001 t + 0.07178571429")
                 }
             }
-        } else if (published != null) {
-            HelpText(R.string.moxon_partial)
         }
         if (published != null && published.facts.isNotEmpty()) {
             MoxonDisclosure(R.string.moxon_facts) { published.facts.forEach { HelpText(it) } }
@@ -230,9 +232,8 @@ internal fun MoxonScreen(
             MoxonInput(rawAllowance, R.string.moxon_allowance, "moxon-allowance", allowance == null,
                 R.string.yagi_invalid) { rawAllowance = it }
             HelpText(R.string.moxon_allowance_note)
-            adjustedStock?.forEach { (key, mm) ->
-                val part = if (key == "Boom") stringResource(R.string.moxon_stock_boom) else key
-                Text("$part — ${length(mm)}")
+            adjustedStock?.forEachIndexed { index, mm ->
+                Text("${context.moxonStockLabel(stock[index])} — ${length(mm)}")
             }
         }
         if (dimensions != null) {
@@ -272,6 +273,11 @@ private fun Context.moxonLabel(profile: MoxonProfile): String = buildList {
 private fun Context.moxonNumber(value: Double): String = NumberFormat.getNumberInstance(resources.configuration.locales[0])
     .apply { isGroupingUsed = false; maximumFractionDigits = 8 }.format(value)
 
+internal fun Context.moxonStockLabel(part: MoxonStockPart): String {
+    val name = if (part.boom) "${getString(R.string.moxon_stock_boom)} · Ø ${part.name}" else part.name
+    return "$name · ${part.quantity} ×"
+}
+
 private fun moxonYagiLines(context: Context, length: (Double) -> String) =
     moxonSatelliteYagi.mapIndexed { index, (position, mm) ->
         val name = if (index == 0) context.getString(R.string.moxon_coupled) else context.getString(R.string.moxon_director, index)
@@ -285,7 +291,7 @@ private fun moxonSnapshot(
     dimensions: MoxonDimensions,
     unit: LengthUnit,
     allowance: Double?,
-    stock: List<Pair<String, Double>>,
+    stock: List<Double>,
 ) = CalculationSnapshot(
     model = profile?.id ?: MoxonEstimate.MODEL,
     revision = profile?.revision ?: MoxonEstimate.REVISION,
@@ -310,8 +316,10 @@ private fun moxonSnapshot(
             add(SnapshotValue("moxon_yagi_position_$index", position / 1000, SnapshotUnit.METERS))
             add(SnapshotValue("moxon_yagi_length_$index", length / 1000, SnapshotUnit.METERS))
         }
-        stock.forEachIndexed { index, (_, mm) ->
-            add(SnapshotValue("moxon_stock_$index", mm / 1000, SnapshotUnit.METERS))
+        val parts = profile?.stock.orEmpty()
+        stock.forEachIndexed { index, mm ->
+            val prefix = if (parts[index].boom) "moxon_stock_boom" else "moxon_stock"
+            add(SnapshotValue("${prefix}_$index", mm / 1000, SnapshotUnit.METERS))
         }
     },
 )

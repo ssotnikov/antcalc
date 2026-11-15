@@ -2,6 +2,18 @@ package local.antenna.calculator.journal
 
 import android.content.Context
 import local.antenna.calculator.core.layout.YagiMatchingCable
+import local.antenna.calculator.core.Hb9cvAerial
+import local.antenna.calculator.ui.HB9CV_AERIAL_CAPACITANCE
+import local.antenna.calculator.ui.HB9CV_AERIAL_WAVE
+import local.antenna.calculator.ui.Hb9cvSource
+import local.antenna.calculator.ui.CantennaDesign
+import local.antenna.calculator.ui.CantennaSource
+import local.antenna.calculator.ui.CantennaText
+import local.antenna.calculator.ui.HALO_CB_MODEL
+import local.antenna.calculator.ui.HaloGammaField
+import local.antenna.calculator.ui.haloMetricLabel
+import local.antenna.calculator.ui.hb9cvAerialLength
+import local.antenna.calculator.ui.hb9cvAerialNumber
 import local.antenna.calculator.ui.YagiProfile
 import local.antenna.calculator.ui.label
 import local.antenna.calculator.ui.yagiElementLabelOrNull
@@ -24,6 +36,9 @@ import local.antenna.calculator.ui.SlimJimProfile
 import local.antenna.calculator.ui.MoxonDimension
 import local.antenna.calculator.ui.MoxonProfile
 import local.antenna.calculator.ui.moxonProfiles
+import local.antenna.calculator.ui.moxonStockLabel
+import local.antenna.calculator.ui.Ok1ikeJPoleModel
+import local.antenna.calculator.ui.ok1ikeRows
 import local.antenna.calculator.core.layout.MoxonEstimate
 import local.antenna.calculator.ui.connectionText
 import local.antenna.calculator.core.trimming.AntennaType
@@ -34,6 +49,8 @@ internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.SLIM_JIM -> R.string.slim_jim_title
     AntennaType.MOXON -> R.string.moxon_title
     AntennaType.HB9CV -> R.string.hb9cv_title
+    AntennaType.CANTENNA -> R.string.cantenna_title
+    AntennaType.HALO_CB -> R.string.halo_title
     AntennaType.YAGI -> R.string.yagi_title
     AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
@@ -107,21 +124,57 @@ internal class JournalPresentation(private val context: Context) {
             val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
             val yagi = YagiProfile.entries.firstOrNull { it.design.model == s.model }
             val moxon = moxonProfiles.firstOrNull { it.id == s.model && it.revision == s.revision }
+            val cantenna = CantennaDesign.entries.firstOrNull { it.model == s.model && s.revision == 1 }
+            val cantennaText = CantennaText(context.resources).takeIf { s.model.startsWith("cantenna_") }
             val label = profile?.let { text(it.title) } ?: when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
                 "ground_plane" -> text(R.string.ground_plane_title)
                 "yagi_r3udk" -> text(R.string.yagi_record_model)
                 "j_pole" -> text(R.string.jpole_title)
+                Ok1ikeJPoleModel -> text(R.string.jpole_ok1ike_profile)
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
+                Hb9cvAerial.MODEL -> text(R.string.hb9cv_aerial_name)
+                "cantenna_calculated" -> text(R.string.cantenna_title)
+                HALO_CB_MODEL -> text(R.string.halo_estimate)
+                "cantenna_mit", "cantenna_ve4ma", "cantenna_flare" -> cantenna?.let { text(it.title) } ?: s.model
                 else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
-            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
+            val aerialMhz = if (s.model == Hb9cvAerial.MODEL) {
+                s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
+            } else null
+            fun render(metric: SnapshotValue): String {
+                if (s.model == HALO_CB_MODEL) {
+                    if (metric.key == "halo_shape") return when (metric.value) {
+                        1.0 -> text(R.string.halo_round)
+                        2.0 -> text(R.string.halo_square)
+                        else -> metricValue(metric)
+                    }
+                    if (metric.unit == SnapshotUnit.METERS &&
+                        (metric.key == "halo_gap" || HaloGammaField.entries.any { it.key == metric.key })) {
+                        return CantennaText(context.resources).mm(metric.value)
+                    }
+                }
+                if (cantennaText != null) {
+                    if (metric.key == "cantenna_objective") return text(if (metric.value == 1.0) R.string.cantenna_gain else R.string.cantenna_noise)
+                    if (metric.unit == SnapshotUnit.METERS) return cantennaText.mm(metric.value)
+                }
+                return metricValue(metric, aerialMhz)
+            }
+            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to render(metric))
             for (metric in s.outputsForAntenna(type)) {
-                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to metricValue(metric))
+                val ok1ikeLabel = if (s.model == Ok1ikeJPoleModel) {
+                    ok1ikeRows.firstOrNull { it.first == metric.key }?.second
+                } else null
+                val metricName = ok1ikeLabel?.let(::text) ?: metricLabel(metric.key, type, moxon)
+                add(text(R.string.journal_calculation_output) + " · " + metricName to render(metric))
+            }
+            if (cantennaText != null) add(text(R.string.cantenna_reference) to (cantenna?.source ?: CantennaSource.CHANGPUAK).url)
+            if (s.model == Hb9cvAerial.MODEL) {
+                add(text(R.string.hb9cv_source) to Hb9cvSource.AERIAL.url)
             }
             if (profile != null) {
                 add(text(R.string.slim_jim_construction) to text(profile.material))
@@ -137,6 +190,12 @@ internal class JournalPresentation(private val context: Context) {
                     "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
                     "RADIALS_TOUCH_GROUND" -> text(R.string.ground_plane_contact)
                     "ENDS_TOUCH_GROUND" -> text(R.string.inverted_v_ground_contact)
+                    "CANTENNA_BELOW" -> text(R.string.cantenna_below)
+                    "CANTENNA_HIGHER" -> text(R.string.cantenna_higher)
+                    "CANTENNA_BAND" -> text(R.string.cantenna_misses)
+                    "CANTENNA_SHORT" -> text(R.string.cantenna_short)
+                    "CANTENNA_CONTACT" -> text(R.string.cantenna_contact_long)
+                    "CANTENNA_TOLERANCE" -> text(R.string.cantenna_offset_loss)
                     else -> warning
                 }
                 add(text(R.string.approximate) to message)
@@ -151,8 +210,46 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun signed(value: Double, formatted: String): String = if (value > 0) "+$formatted" else formatted
 
-    private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = when (key) {
+    private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = haloMetricLabel(key)?.let(::text) ?: when (key) {
         "frequency" -> text(R.string.frequency)
+        "cantenna_te11" -> "TE₁₁"
+        "cantenna_tm01" -> "TM₀₁"
+        "cantenna_focal", "cantenna_objective" -> "f/D"
+        "cantenna_offset_min" -> "${text(R.string.cantenna_offset_range)} · min"
+        "cantenna_offset_max" -> "${text(R.string.cantenna_offset_range)} · max"
+        "cantenna_low" -> text(R.string.cantenna_low)
+        "cantenna_high" -> text(R.string.cantenna_high)
+        "cantenna_diameter" -> text(R.string.cantenna_diameter)
+        "cantenna_depth" -> text(R.string.cantenna_depth)
+        "cantenna_tolerance" -> text(R.string.cantenna_tolerance)
+        "cantenna_contact" -> text(R.string.cantenna_contact)
+        "cantenna_probe_d" -> text(R.string.cantenna_probe_d)
+        "cantenna_mouth" -> text(R.string.cantenna_mouth)
+        "cantenna_throat" -> text(R.string.cantenna_throat)
+        "cantenna_flare_l" -> text(R.string.cantenna_flare_l)
+        "cantenna_seam" -> text(R.string.cantenna_seam)
+        "cantenna_wave" -> text(R.string.cantenna_wave)
+        "cantenna_guide" -> text(R.string.cantenna_guide)
+        "cantenna_low_margin" -> text(R.string.cantenna_low_margin)
+        "cantenna_high_margin" -> text(R.string.cantenna_high_margin)
+        "cantenna_probe" -> text(R.string.cantenna_probe)
+        "cantenna_offset" -> text(R.string.cantenna_offset)
+        "cantenna_suggest" -> text(R.string.cantenna_suggest)
+        "cantenna_clearance" -> text(R.string.cantenna_clearance)
+        "cantenna_added" -> text(R.string.cantenna_added)
+        "cantenna_ring_d" -> text(R.string.cantenna_ring_d)
+        "cantenna_ring_l" -> text(R.string.cantenna_ring_l)
+        "cantenna_ring_p" -> text(R.string.cantenna_ring_p)
+        "cantenna_pin_h" -> text(R.string.cantenna_pin_h)
+        "cantenna_pin_spacing" -> text(R.string.cantenna_pin_spacing)
+        "cantenna_slant" -> text(R.string.cantenna_slant)
+        "cantenna_inner" -> text(R.string.cantenna_inner)
+        "cantenna_outer" -> text(R.string.cantenna_outer)
+        "cantenna_angle" -> text(R.string.cantenna_angle)
+        HB9CV_AERIAL_WAVE -> text(R.string.hb9cv_aerial_wavelength)
+        HB9CV_AERIAL_CAPACITANCE -> text(R.string.hb9cv_aerial_capacitance)
+        "hb9cv_aerial_position_rear" -> text(R.string.hb9cv_aerial_position_rear)
+        "hb9cv_aerial_position_front" -> text(R.string.hb9cv_aerial_position_front)
         "hb9cv_r" -> "R"
         "hb9cv_s" -> "S"
         "hb9cv_spacing" -> "A"
@@ -175,6 +272,14 @@ internal class JournalPresentation(private val context: Context) {
         "hb9cv_cut_s" -> text(R.string.hb9cv_cut_s)
         "hb9cv_vf" -> "VF"
         "hb9cv_allowance" -> text(R.string.hb9cv_allowance)
+        "hb9cv_hinge_r" -> text(R.string.hb9cv_hinge_r)
+        "hb9cv_hinge_s" -> text(R.string.hb9cv_hinge_s)
+        "hb9cv_hinge_margin" -> text(R.string.hb9cv_hinge_margin)
+        "hb9cv_line", "hb9cv_line_length" -> text(R.string.hb9cv_jo_line)
+        "hb9cv_u5_inner" -> text(R.string.hb9cv_u5_inner)
+        "hb9cv_u5_outer" -> text(R.string.hb9cv_u5_outer)
+        "hb9cv_strip_r" -> "R · ${text(R.string.hb9cv_cut_r)}"
+        "hb9cv_strip_s" -> "S · ${text(R.string.hb9cv_cut_s)}"
         "moxon_band" -> text(R.string.moxon_band)
         "moxon_diameter" -> text(R.string.moxon_diameter)
         "moxon_allowance" -> text(R.string.moxon_allowance)
@@ -218,6 +323,7 @@ internal class JournalPresentation(private val context: Context) {
         "jpole_radiator" -> text(R.string.jpole_radiator)
         "jpole_spacing" -> text(R.string.jpole_spacing)
         "jpole_tap" -> text(R.string.jpole_tap)
+        "jpole_coax_min" -> text(R.string.jpole_ok1ike_coax)
         "loop_perimeter" -> text(R.string.loop_perimeter)
         "loop_side" -> text(R.string.loop_side)
         "loop_width" -> text(R.string.loop_width)
@@ -248,16 +354,17 @@ internal class JournalPresentation(private val context: Context) {
         "yagi_band_1_high" -> text(R.string.yagi_band_1_high)
         "yagi_band_2_low" -> text(R.string.yagi_band_2_low)
         "yagi_band_2_high" -> text(R.string.yagi_band_2_high)
-        else -> yagiMetricLabel(key) ?: moxonMetricLabel(key, moxon) ?: key
+        else -> Hb9cvAerial.Dimension.entries.firstOrNull { it.key == key }?.let { text(it.labelResource()) }
+            ?: yagiMetricLabel(key) ?: moxonMetricLabel(key, moxon) ?: key
     }
 
     private fun moxonMetricLabel(key: String, profile: MoxonProfile?): String? {
         MoxonDimension.entries.firstOrNull { it.metric == key }?.let { return "${it.mark} · ${text(it.label)}" }
         val index = key.substringAfterLast('_').toIntOrNull() ?: return null
         if (key.startsWith("moxon_stock_")) {
-            val part = profile?.stockInches?.getOrNull(index)?.first ?: return null
-            return if (part == "Boom") text(R.string.moxon_stock_boom)
-                else context.getString(R.string.moxon_stock_piece, part)
+            val part = profile?.stock?.getOrNull(index) ?: return null
+            if (part.boom && !key.startsWith("moxon_stock_boom_")) return text(R.string.moxon_stock_boom)
+            return context.moxonStockLabel(part)
         }
         val dimension = when {
             key.startsWith("moxon_yagi_position_") -> R.string.moxon_position
@@ -271,7 +378,9 @@ internal class JournalPresentation(private val context: Context) {
     private fun yagiMetricLabel(key: String): String? {
         if (!key.startsWith("yagi_")) return null
         YagiMatchingCable.entries.firstOrNull { it.metricKey == key }?.let { return text(it.label()) }
-        val element = yagiElementLabelOrNull(key.removePrefix("yagi_").substringBefore('_')) ?: return null
+        val id = key.removePrefix("yagi_").substringBefore('_')
+        val vertical = id.startsWith("v")
+        val element = yagiElementLabelOrNull(if (vertical) id.removePrefix("v") else id) ?: return null
         val column = when (key.substringAfterLast('_')) {
             "position" -> R.string.yagi_position
             "overall" -> R.string.yagi_overall
@@ -280,10 +389,15 @@ internal class JournalPresentation(private val context: Context) {
             "blank" -> R.string.yagi_record_blank
             else -> return null
         }
-        return context.getString(R.string.yagi_record_column, text(element), text(column))
+        val label = context.getString(R.string.yagi_record_column, text(element), text(column))
+        return if (vertical) "V · $label" else label
     }
 
-    private fun metricValue(metric: SnapshotValue): String {
+    private fun metricValue(metric: SnapshotValue, aerialMhz: Double? = null): String {
+        if (aerialMhz != null && metric.unit == SnapshotUnit.METERS) {
+            return hb9cvAerialLength(locale, metric.key, metric.value, aerialMhz,
+                text(R.string.hb9cv_aerial_mm), text(R.string.hb9cv_aerial_m))
+        }
         if (YagiMatchingCable.entries.any { it.metricKey == metric.key }) {
             return context.getString(R.string.yagi_matching_pair, yagiLength(context, metric.value * 1000, LengthUnit.MILLIMETERS))
         }
@@ -307,6 +421,7 @@ internal class JournalPresentation(private val context: Context) {
         SnapshotUnit.METERS -> formatLength(context, metric.value, LengthUnit.METERS)
         SnapshotUnit.FACTOR -> number(metric.value)
         SnapshotUnit.DEGREES -> context.getString(R.string.inverted_v_degrees, number(metric.value))
+        SnapshotUnit.PICOFARADS -> "${hb9cvAerialNumber(locale, metric.value, 1)} ${text(R.string.hb9cv_aerial_pf)}"
         }
     }
 }

@@ -30,6 +30,15 @@ private data class PublicationCredit(
 )
 
 private val publicationCredits = listOf(
+    PublicationCredit(R.string.slim_jim_ok1ike_author, listOf(
+        CreditedPublication(R.string.slim_jim_ok1ike_source, SLIM_JIM_OK1IKE_URL),
+    )),
+    PublicationCredit(R.string.jpole_ok1ike_hb9acc_author, listOf(
+        CreditedPublication(R.string.jpole_ok1ike_hb9acc, OK1IKE_HB9ACC_URL),
+    )),
+    PublicationCredit(R.string.slim_jim_sv1jrf_title, listOf(
+        CreditedPublication(R.string.slim_jim_sv1jrf_source, SLIM_JIM_SV1JRF_URL),
+    )),
     PublicationCredit(R.string.licenses_author_1, listOf(
         CreditedPublication(R.string.licenses_work_1_1, LIZAALERT_YAGI_URL),
     ), PublicationTerms(R.string.licenses_r3udk_terms, LIZAALERT_YAGI_URL)),
@@ -92,6 +101,71 @@ private val publicationCredits = listOf(
     )),
 )
 
+private val haloPublicationCredits = listOf(
+    PublicationCredit(R.string.licenses_halo_cushcraft, listOf(
+        CreditedPublication(R.string.licenses_halo_csq11,
+            "https://www.worldradiohistory.com/Archive-DX/73-magazine/73-magazine-1964/73-magazine-06-june-1964.pdf"),
+        CreditedPublication(R.string.licenses_halo_asq10, "https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/"),
+    ), PublicationTerms(R.string.licenses_halo_asq10_terms, "https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/")),
+    PublicationCredit(R.string.licenses_halo_buckwalter, listOf(
+        CreditedPublication(R.string.licenses_halo_s9, "https://www.worldradiohistory.com/Archive-CB-Radio/S9-Magazine/S9-1964-12.pdf"),
+    )),
+    PublicationCredit(R.string.licenses_halo_milazzo, listOf(
+        CreditedPublication(R.string.licenses_halo_kp4md, "https://www.qsl.net/kp4md/144_mhz_halo.htm"),
+    )),
+    PublicationCredit(R.string.licenses_author_8, listOf(
+        CreditedPublication(R.string.licenses_halo_intloop, "https://antenna2.github.io/cebik/content/wire/intloop.pdf"),
+    )),
+    PublicationCredit(R.string.licenses_halo_roberts, listOf(
+        CreditedPublication(R.string.licenses_halo_es, "https://www.kk5jy.net/Es-halo/"),
+    ), PublicationTerms(R.string.licenses_halo_es_terms, "https://www.kk5jy.net/Es-halo/")),
+    PublicationCredit(R.string.licenses_halo_aerial, listOf(
+        CreditedPublication(R.string.licenses_halo_aerial_models, "https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii"),
+        CreditedPublication(R.string.licenses_halo_aerial_gamma,
+            "https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva"),
+    ), PublicationTerms(R.string.hb9cv_aerial_terms, Hb9cvSource.AERIAL_TERMS.url)),
+    PublicationCredit(R.string.licenses_halo_ra3poy, listOf(
+        CreditedPublication(R.string.licenses_halo_w2eey,
+            "https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html"),
+    )),
+)
+
+internal val haloSourceAddresses = haloPublicationCredits.flatMap { credit ->
+    credit.publications.map { it.url } + listOfNotNull(credit.terms?.url)
+}.toSet()
+
+@Composable
+private fun PublicationCreditCard(credit: PublicationCredit) {
+    val context = LocalContext.current
+    Column {
+        Text(
+            stringResource(credit.author),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+        credit.publications.forEach { publication ->
+            TextButton(
+                onClick = { openSourceWithFeedback(context, publication.url) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(publication.title), modifier = Modifier.fillMaxWidth())
+            }
+        }
+        credit.terms?.let { terms ->
+            HelpText(terms.description)
+            TextButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
+                Text(stringResource(R.string.licenses_author_terms))
+            }
+        }
+    }
+}
+
+@Composable
+internal fun HaloPublicationLinks() {
+    haloPublicationCredits.forEach { PublicationCreditCard(it) }
+}
+
 @Composable
 internal fun LicensesScreen() {
     val context = LocalContext.current
@@ -102,30 +176,7 @@ internal fun LicensesScreen() {
     ) {
         HelpText(R.string.licenses_mit)
         HelpText(R.string.licenses_intro)
-        publicationCredits.forEach { credit ->
-            Column {
-                Text(
-                    stringResource(credit.author),
-                    modifier = Modifier.semantics { heading() },
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                )
-                credit.publications.forEach { publication ->
-                    TextButton(
-                        onClick = { openSourceWithFeedback(context, publication.url) },
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(stringResource(publication.title), modifier = Modifier.fillMaxWidth())
-                    }
-                }
-                credit.terms?.let { terms ->
-                    HelpText(terms.description)
-                    TextButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
-                        Text(stringResource(R.string.licenses_author_terms))
-                    }
-                }
-            }
-        }
+        publicationCredits.forEach { PublicationCreditCard(it) }
         MoxonSource.entries.groupBy { it.author }.forEach { (author, sources) ->
             Column {
                 Text(author, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium,
@@ -157,6 +208,13 @@ internal fun LicensesScreen() {
                 sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
             }
         }
+        CantennaSourceLinks()
+        Text(
+            stringResource(R.string.licenses_halo_sources),
+            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+        )
+        HaloPublicationLinks()
         HelpText(R.string.licenses_rights)
     }
 }

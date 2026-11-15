@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -19,6 +20,9 @@ import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.ui.MoxonAntennaArt
 import local.antenna.calculator.ui.MoxonView
 import local.antenna.calculator.ui.RotatingAntenna
+import local.antenna.calculator.ui.cantennaVector
+import local.antenna.calculator.ui.HaloVariant
+import local.antenna.calculator.ui.haloVector
 
 @Composable
 internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = Modifier) {
@@ -30,8 +34,22 @@ internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = 
         RotatingAntenna("hb-0", "HB9CV", modifier.testTag("journal-antenna-image-HB9CV"), interactive = false, baseHeight = 144.dp)
         return
     }
+    if (type == AntennaType.CANTENNA) {
+        RotatingAntenna("cantenna-journal", stringResource(R.string.cantenna_title),
+            modifier.testTag("journal-antenna-image-CANTENNA"), geometry = remember { cantennaVector() },
+            interactive = false, baseHeight = 144.dp)
+        return
+    }
+    if (type == AntennaType.HALO_CB) {
+        RotatingAntenna("halo-journal", stringResource(R.string.halo_title),
+            modifier.testTag("journal-antenna-image-HALO_CB"), geometry = remember { haloVector(HaloVariant.ROUND) },
+            interactive = false, baseHeight = 144.dp)
+        return
+    }
     val painter = when (type) {
         AntennaType.HB9CV -> error("HB9CV is drawn directly")
+        AntennaType.CANTENNA -> error("Cantenna is drawn directly")
+        AntennaType.HALO_CB -> error("Halo CB is drawn directly")
         AntennaType.MOXON -> error("Moxon is drawn directly")
         AntennaType.SLIM_JIM -> painterResource(R.drawable.slim_jim_antenna)
         AntennaType.YAGI -> painterResource(R.drawable.yagi_r3_hero)

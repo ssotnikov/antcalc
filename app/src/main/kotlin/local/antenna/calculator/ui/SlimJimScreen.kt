@@ -34,6 +34,7 @@ import local.antenna.calculator.core.layout.SlimJimG0kya
 import local.antenna.calculator.core.layout.Slimtenna4X4lh
 import local.antenna.calculator.core.layout.estimateSlimJimM0ukd
 import local.antenna.calculator.core.sizing.calculateIdealSizing
+import local.antenna.calculator.core.units.Frequency
 import local.antenna.calculator.core.units.LengthUnit
 import local.antenna.calculator.journal.JournalPresentation
 
@@ -51,6 +52,7 @@ internal enum class SlimJimProfile(
     val sourceUrl: Int,
     @param:DrawableRes @get:DrawableRes val illustration: Int,
     val factor: Double? = null,
+    val frequency: Frequency = band.frequency,
 ) {
     DU1ANV(SlimJimBand.TWO_METERS, SlimJimDu1anv.MODEL_ID, R.string.slim_jim_band_2m,
         R.string.slim_jim_profile, R.string.slim_jim_material, R.string.slim_jim_projection,
@@ -72,14 +74,17 @@ internal enum class SlimJimProfile(
         R.string.slim_jim_g0kya_article, R.string.slim_jim_g0kya_article_url, R.drawable.slim_jim_window_line),
     SLIMTENNA_20M(SlimJimBand.TWENTY_METERS, "slim_jim_4x4lh_20m", R.string.slim_jim_band_20m,
         R.string.slim_jim_slimtenna_profile, R.string.slim_jim_slimtenna_material, R.string.slim_jim_slimtenna_formula,
-        R.string.slim_jim_20m_en_title, R.string.slim_jim_20m_en_url, R.drawable.slim_jim_slimtenna, factor = Slimtenna4X4lh.STUB_VF);
+        R.string.slim_jim_20m_en_title, R.string.slim_jim_20m_en_url, R.drawable.slim_jim_slimtenna, factor = Slimtenna4X4lh.STUB_VF),
+    SV1JRF_70CM(SlimJimBand.SEVENTY_CENTIMETERS, "slim_jim_sv1jrf_70cm", R.string.slim_jim_sv1jrf_band,
+        R.string.slim_jim_sv1jrf_title, R.string.slim_jim_sv1jrf_material, R.string.slim_jim_sv1jrf_dimensions,
+        R.string.slim_jim_sv1jrf_source, R.string.slim_jim_sv1jrf_url, R.drawable.slim_jim_metal,
+        frequency = Frequency.ofHertz(436_000_000));
 
     val usesM0ukd get() = this == M0UKD_70CM || this == M0UKD_MARINE || this == M0UKD_4M
     val revision get() = if (this == DU1ANV) SlimJimDu1anv.REVISION else 1
 }
 
 private fun SlimJimProfile.dimensions(): List<SlimJimDimension> {
-    val frequency = band.frequency
     return when (this) {
         SlimJimProfile.DU1ANV -> with(SlimJimDu1anv) {
             listOf(
@@ -116,6 +121,14 @@ private fun SlimJimProfile.dimensions(): List<SlimJimDimension> {
             SlimJimDimension("H", "slim_jim_slimtenna_height", R.string.slim_jim_slimtenna_height, Slimtenna4X4lh.HEIGHT_METERS),
             SlimJimDimension("L", "slim_jim_separate_stub", R.string.slim_jim_separate_stub, Slimtenna4X4lh.stubMeters(frequency)),
         )
+        SlimJimProfile.SV1JRF_70CM -> listOf(
+            SlimJimDimension("A", "slim_jim_height", R.string.slim_jim_height, .503),
+            SlimJimDimension("B", "slim_jim_return", R.string.slim_jim_return, .331),
+            SlimJimDimension("C", "slim_jim_stub", R.string.slim_jim_stub, .166),
+            SlimJimDimension("D", "slim_jim_tap", R.string.slim_jim_tap, .017),
+            SlimJimDimension("E", "slim_jim_gap", R.string.slim_jim_gap, .007),
+            SlimJimDimension("F", "slim_jim_spacing", R.string.slim_jim_spacing, .015),
+        )
     }
 }
 
@@ -128,7 +141,7 @@ internal fun SlimJimProfile.connectionText(): Int = when (this) {
 private fun SlimJimProfile.snapshot(dimensions: List<SlimJimDimension>) = CalculationSnapshot(
     model, revision,
     buildList {
-        add(SnapshotValue("frequency", band.frequency.hertz.toDouble(), SnapshotUnit.HERTZ))
+        add(SnapshotValue("frequency", frequency.hertz.toDouble(), SnapshotUnit.HERTZ))
         factor?.let {
             val key = if (this@snapshot == SlimJimProfile.SLIMTENNA_20M) "slim_jim_stub_vf" else "factor"
             add(SnapshotValue(key, it, SnapshotUnit.FACTOR))
@@ -148,7 +161,7 @@ internal fun SlimJimScreen(
     var unit by rememberSaveable { mutableStateOf(LengthUnit.MILLIMETERS) }
     var selected by rememberSaveable { mutableStateOf(SlimJimProfile.DU1ANV) }
     val dimensions = remember(selected) { selected.dimensions() }
-    val frequency = JournalPresentation(context).frequency(selected.band.frequency.hertz)
+    val frequency = JournalPresentation(context).frequency(selected.frequency.hertz)
     val profile = stringResource(selected.title)
     val version = stringResource(R.string.journal_model, profile, selected.revision)
     val factorText = selected.factor?.let { localizedNumber(context, it.toString()) }
@@ -158,7 +171,8 @@ internal fun SlimJimScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         RotatingAntenna("slim-${selected.ordinal}", profile,
-            Modifier.testTag("slim-jim-hero"), baseHeight = 175.dp)
+            Modifier.testTag("slim-jim-hero"),
+            geometry = if (selected == SlimJimProfile.SV1JRF_70CM) sv1jrfVertical.vector() else null, baseHeight = 175.dp)
         HelpText(if (selected == SlimJimProfile.SLIMTENNA_20M) R.string.slim_jim_slimtenna_intro else R.string.slim_jim_intro)
         ChoicePicker(stringResource(R.string.slim_jim_band), SlimJimProfile.entries, selected,
             { stringResource(it.bandLabel) }, { selected = it }, "slim-jim-band")
@@ -174,7 +188,13 @@ internal fun SlimJimScreen(
         ChoicePicker(stringResource(R.string.length_units), LengthUnit.entries, unit,
             { stringResource(it.labelResource()) }, { unit = it }, "slim-jim-unit")
         SlimJimHeading(R.string.slim_jim_diagram)
-        if (selected == SlimJimProfile.SLIMTENNA_20M) SlimtennaDiagram() else SlimJimDiagram(selected)
+        when (selected) {
+            SlimJimProfile.SLIMTENNA_20M -> SlimtennaDiagram()
+            SlimJimProfile.SV1JRF_70CM -> PublishedVerticalDiagram(sv1jrfVertical,
+                stringResource(R.string.slim_jim_sv1jrf_material), "slim-jim-diagram-$selected",
+                highlightGapAndFeed = true)
+            else -> SlimJimDiagram(selected)
+        }
         HelpText(selected.connectionText())
         if (selected.usesM0ukd) HelpText(R.string.slim_jim_m0ukd_spacing)
         SlimJimHeading(R.string.slim_jim_sizes)
@@ -227,6 +247,7 @@ internal fun SlimJimScreen(
             HelpText(when (selected) {
                 SlimJimProfile.DU1ANV -> R.string.slim_jim_tuning_text
                 SlimJimProfile.SLIMTENNA_20M -> R.string.slim_jim_slimtenna_tuning
+                SlimJimProfile.SV1JRF_70CM -> R.string.slim_jim_sv1jrf_tuning
                 else -> R.string.slim_jim_other_tuning
             })
             onMeasurements?.let {
@@ -242,6 +263,11 @@ internal fun SlimJimScreen(
         SlimJimHeading(R.string.slim_jim_source)
         if (selected == SlimJimProfile.DU1ANV) HelpText(R.string.slim_jim_author)
         SlimJimLink(selected.sourceTitle, stringResource(selected.sourceUrl))
+        SlimJimPanel(R.string.slim_jim_ok1ike) {
+            HelpText(R.string.slim_jim_ok1ike_dimensions)
+            SlimJimLink(R.string.slim_jim_ok1ike_source, SLIM_JIM_OK1IKE_URL)
+            SlimJimLink(R.string.jpole_ok1ike_hb9acc, OK1IKE_HB9ACC_URL)
+        }
     }
 }
 

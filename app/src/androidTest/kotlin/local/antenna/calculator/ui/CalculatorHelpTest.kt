@@ -25,6 +25,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
     private fun checkFormulaImages() {
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-about").performClick()
+        compose.onNodeWithTag("help-antenna-calculation-source").performScrollTo().assertIsDisplayed()
         listOf("wavelength", "monopole", "dipole", "five-eighths", "trimming", "delta", "arm").forEach { name ->
             compose.onNodeWithTag("formula-$name").performScrollTo().assertIsDisplayed()
                 .assert(SemanticsMatcher.keyIsDefined(androidx.compose.ui.semantics.SemanticsProperties.ContentDescription))
@@ -169,6 +170,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         }
 
         checkSizes(",", "см")
+        checkOrder("antenna-calculation-aerial", "nist", "Русский")
         checkOrder("itu", "nist", "Русский")
         checkOrder("radiolab", "rfi-dielectrics", "Русский")
         field(FieldKey.SIZING_FREQUENCY).assertTextContains("145", substring = true)
@@ -180,7 +182,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         compose.onNodeWithTag("open-references").assertTextContains("References").performClick()
         compose.onNodeWithTag("source-nist").performScrollTo().assertIsDisplayed()
             .assertTextContains("English", substring = true)
-        for (id in listOf("itu", "rig-tuning", "kadamm", "rig-cable", "radiolab")) {
+        for (id in listOf("antenna-calculation-aerial", "itu", "rig-tuning", "kadamm", "rig-cable", "radiolab")) {
             compose.onNodeWithTag("source-$id").assertDoesNotExist()
         }
         compose.onNodeWithTag("source-rfi-dielectrics").performScrollTo().assertIsDisplayed()

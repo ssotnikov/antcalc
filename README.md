@@ -29,7 +29,7 @@
 ### Возможности
 
 - **Размеры и подстройка.** Рассчитывайте начальную длину штыря и диполя и оценивайте изменение длины по измеренному резонансу.
-- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона также доступен расчёт размеров по частоте и диаметру. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
+- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона доступен расчёт по частоте и диаметру, для HB9CV — по частоте 100–1500 МГц. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
 - **Конструирование.** Иллюстрированное руководство по сборке четырёхэлементной Яги — Уда.
 - **КСВ и диаграмма Смита.** Пересчитывайте КСВ, отражение и возвратные потери. Изучайте влияние нагрузки на мощность передатчика и перемещайте маркеры на интерактивной диаграмме.
 - **Фидер.** Рассчитывайте электрическую длину, задержку и затухание кабеля по встроенному каталогу или своим данным.
@@ -37,6 +37,9 @@
 - **Проекты и журналы подстройки.** Храните расчеты, замеры, трассы и фото с комментариями. Сравнивайте записи, переносите проекты в JSON и экспортируйте фото в ZIP. [Демо-проект](examples/demo-dipole-journal-145mhz-ru.json) · [S1P до подстройки](examples/demo-dipole-145mhz-before.s1p) · [S1P после подстройки](examples/demo-dipole-145mhz-after.s1p).
 
 Расчеты, формулы и схемы доступны офлайн. В настройках можно выбрать русский или английский язык, светлую, тёмную или системную тему. В версии GitHub Direct обновления доступны из меню приложения.
+
+- **Баночная антенна (Cantenna).** Подбор диаметра круглого волновода, проверка допусков, сравнение заготовок, три опубликованные конструкции и развёртка раструба. Ведомость сохраняется в проект, а трассы S1P сравниваются по общему порогу КСВ.
+- **Halo CB.** Начальные размеры круглой и квадратной антенн на 27 МГц, схемы питания, справка по Squalo CSQ‑11 и сохранение расчёта в проект.
 
 ### Лицензии
 
@@ -58,6 +61,9 @@
 
 - **Хосе И. Кальдерон (DU1ANV)** — [Build the Slim JIM Antenna](https://www.qsl.net/n1ea/slimjim_du1anv.pdf)
 - **Джон (M0UKD)** — [Slim Jim and J Pole Calculator](https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/) · [1/4 Wave Ground Plane Antenna Calculator](https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/)
+- **OK1IKE** — [Аварийная антенна для КВ и УКВ (на чешском)](https://ok1ike.nagano.cz/soubory/nouz_ant2.htm)
+- **Макс Рюэггер (HB9ACC)** — [Гибкая аварийная антенна на 2 м и 70 см, HBradio 6/2011, с. 26–28](https://www.e-periodica.ch/digbib/view?pid=hbr-002%3A2011%3A79%3A%3A248)
+- **SV1JRF / 5B4AMD** — [Конструкция Slim Jim на 70 см](https://sv1jrf.blogspot.com/2016/02/slim-jim-uhf-antenna-desi.html?m=1)
 - **Стив Николс (G0KYA)** — [10m Slim Jim Antenna](https://www.infotechcomms.co.uk/downloads/10m_Slim_Jim.pdf) · [Заметки автора о пересчёте размеров и сборке OH2EUU](https://g0kya.blogspot.com/2011/08/10m-slim-jim-antenna.html)
 - **Эли Ково (4X4LH)** — [The 4X4 Slimtenna](https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59)
 - **Л. Б. Себик (W4RNL)** — [Some J-Poles That I Have Known, Part 1](https://antenna2.github.io/cebik/content/vhf/jp1.html) · [What Is a Slim Jim?](https://antenna2.github.io/cebik/content/vhf/sj.html) · [Some J-Poles That I Have Known, Part 3](https://antenna2.github.io/cebik/content/vhf/jp3.html) · [Some J-Poles That I Have Known, Part 4](https://antenna2.github.io/cebik/content/vhf/jp4.html)
@@ -80,7 +86,7 @@
 - **W1CDN** — [70 cm Moxon Antenna](https://w1cdn.net/2024/09/70-cm-moxon-antenna/).
 - **A. W. Baker (KG4JJH)** — [6 Meter Moxon Rectangle](https://moxonantennaproject.net/6m%20Moxon%20drawings%20in%20Acrobat%20format.pdf).
 - **Ross (G6GVI)** — [A Moxon Rectangle Antenna for 4 m](https://www.qsl.net/g6gvi/4m_Moxon.pdf).
-- **Henry HPSD (19DX348)** — [2el Moxon for CB](https://cb-antennas.com/wire-antennas/2el-moxon/).
+- **Henry HPSD (19DX348)** — [2el Moxon for CB, архив публикации](https://web.archive.org/web/20260212152810/https://cb-antennas.com/wire-antennas/2el-moxon/).
 - **Andreas (Krampfader)** — [Moxon-Richtantenne für CB-Funk](https://antennenbau.dxfreun.de/krampfader/moxon.php).
 - **Ignacio (EA2BD)** — [Antena Moxon para 20 m](https://ea2bd.ure.es/archives/EA2BD_Moxon_20m.pdf).
 - **George Smart (M1GEO), G8OCV** — [Dual Band Satellite Yagi](https://www.george-smart.co.uk/antennas/dual_band_satellite_yagi/).
@@ -90,8 +96,11 @@
 
 #### Материалы по HB9CV
 
+- **3G‑Aerial** — [Расчёт антенны HB9CV и графики HFSS](https://3g-aerial.biz/onlajn-raschety/raschety-antenn/raschet-antenny-hb9cv) · [Как рассчитать антенну?](https://3g-aerial.biz/antenna-calculation). Сайт разрешает использование материалов при указании ссылки. [Условия 3G‑Aerial](https://3g-aerial.biz/otkaz-ot-otvetstvennosti)
+
 - **Рудольф Баумгартнер (HB9CV)** — [Антенна HB9CV (чешский перевод авторского руководства)](https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm)
 - **Мартин Штайер (DK7ZB)** — [HB9CV на 2, 6 и 10 м, FUNKAMATEUR 12/1997](https://dk7zb.darc.de/Download/hb9cv.pdf) · [Двухэлементная HB9CV, чертежи и формулы](https://dk7zb.darc.de/HB9CV/Details-HB9CV.htm). Коммерческое использование конструкций требует разрешения автора. [Условия DK7ZB](https://dk7zb.darc.de/)
+- **Г. Буторин (U5MH)** — [Механически прочная КВ антенна, «Радио» № 5/1990](https://www.diagram.com.ua/list/cb/1-67.shtml)
 - **Л. Б. Себик (W4RNL)** — [The HB9CV Phased Array and Gain Comparisons](https://antenna2.github.io/cebik/content/phase/hb.html)
 - **Мик Сеньор (G4EFO)** — [HB9CV: Theory Meets Practice, Ham Radio Today, апрель 1987](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1987-04.pdf#page=19)
 - **М. Хэдли (G4JXX)** — [Антенна для ЧМ на 10 м, Ham Radio Today, июль 1983](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1983-07.pdf)
@@ -113,6 +122,27 @@
 - **Игорь Гончаренко (DL2KQ / EU1TT)** — [Направленная из двух диполей, раздел 9.2.2](https://dl2kq.de/ant/kniga/922.htm)
 
 Права на оригинальные конструкции и материалы сохраняются за их авторами и правообладателями. Условия коммерческого и некоммерческого использования определяются правообладателями и указаны в оригинальных публикациях.
+
+#### Материалы по баночным антеннам
+
+- **Changpuak** — [калькулятор круглого волновода и баночной антенны](https://www.changpuak.ch/electronics/cantenna.php). Сайт приветствует проекты с указанием источника. [Условия Changpuak](https://www.changpuak.ch/terms/index.php)
+- **Дэйв Гоф, перевод Я. А. Осадчего (drug123)** — [Антенна с цилиндрическим волноводом на 2,4 ГГц](https://vtanaev.narod.ru/2.4Ggz/cylindrical_waves.htm)
+- **3G‑Aerial** — [Баночная антенна Wi-Fi и 3G](https://3g-aerial.biz/konstruktsii-antenn/odnonapravlennye-antenny/banochnaya-antenna). Сайт разрешает использование материалов при указании ссылки. [Условия 3G‑Aerial](https://3g-aerial.biz/otkaz-ot-otvetstvennosti)
+- **Elepal** — [Волноводная антенна WLAN и раструб (на английском)](https://www.elepal.fi/antennit/antenna2.html)
+- **Пётр Ковина, Кристине Фёльлингер и Манфред Вендт** — [RF Measurement Techniques – Theory, CERN Accelerator School](https://indico.cern.ch/event/1380440/contributions/6176014/attachments/2964377/5214841/RFMeasurementTechniques_Theory_Spa.pdf), теория круглых волноводов.
+- **Алан Дж. Фенн** — [MIT Laptop Radar, слайды 20–25](https://ocw.mit.edu/courses/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/fa61f02356be7efc88142b258d031110_MITRES_LL_003IAP11_lec02.pdf). Лекция опубликована под CC BY-NC-SA 4.0 с исключениями для сторонних материалов. [Условия MIT OpenCourseWare](https://ocw.mit.edu/pages/privacy-and-terms-of-use/)
+- **Г. Пол Шух (N6TX)** — [облучатель VE4MA и регулируемое кольцо](https://www.setileague.org/hardware/feedchok.htm). The SETI League сохраняет права на оригинальную публикацию. [Условия The SETI League](https://www.setileague.org/admin/copyrigh.htm)
+- **Юрий Пилипенко** — [баночная антенна с коническим раструбом на 2440 МГц](https://ypylypenko.livejournal.com/43582.html), опубликованный чертёж и модель.
+
+#### Материалы по Halo CB
+
+- **Cush Craft / Cushcraft** — [заводские данные CSQ‑11 на 11 м, 73 Magazine, июнь 1964, с. 13](https://www.worldradiohistory.com/Archive-DX/73-magazine/73-magazine-1964/73-magazine-06-june-1964.pdf) · [руководство ASQ‑10 для диапазона 10 м, © 2013 Cushcraft](https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/).
+- **Лен Бакволтер (KBA4480)** — [Squalo на 27 МГц, Reddi Match и автомобильный монтаж, S9, декабрь 1964, с. 52](https://www.worldradiohistory.com/Archive-CB-Radio/S9-Magazine/S9-1964-12.pdf).
+- **Кэрол Ф. Милаццо (KP4MD)** — [Halo на 144 МГц, гамма-согласование и измерения](https://www.qsl.net/kp4md/144_mhz_halo.htm).
+- **Л. Б. Себик (W4RNL)** — [разомкнутые полуволновые контуры](https://antenna2.github.io/cebik/content/wire/intloop.pdf).
+- **Мэтт Робертс (KK5JY)** — [Halo на 6 и 10 м, параллельное индуктивное согласование](https://www.kk5jy.net/Es-halo/). © 2021–2023 Мэтт Робертс. Все права защищены.
+- **3G‑Aerial** — [всенаправленные антенны горизонтальной поляризации, раздел «Антенна „Гало“»](https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii) · [гамма-согласующее устройство](https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva). Сайт разрешает использовать свои материалы с указанием ссылки. [Условия 3G‑Aerial](https://3g-aerial.biz/otkaz-ot-otvetstvennosti).
+- **Алексей (RA3POY)** — [отчёт о сборке объёмной антенны W2EEY/1 на Си-Би](https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html), смежная конструкция.
 
 ### Обратная связь
 
@@ -144,7 +174,7 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 ### Features
 
 - **Antenna sizing and tuning.** Estimate monopole and dipole lengths and work out how much to adjust an antenna using its measured resonance.
-- **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda, Moxon and HB9CV design catalogs. The Moxon calculator also gives dimensions by frequency and conductor diameter. Drag to rotate the antenna model and double-tap to view it full-screen.
+- **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda, Moxon and HB9CV design catalogs. Calculate Moxon dimensions by frequency and conductor diameter, and HB9CV dimensions from 100 to 1500 MHz. Drag to rotate the antenna model and double-tap to view it full-screen.
 - **Antenna construction.** An illustrated guide to building a four-element Yagi–Uda.
 - **SWR and Smith chart.** Convert between SWR, reflection and return loss. Explore how the load affects transmitter power and drag markers on the interactive chart.
 - **Feedlines.** Calculate cable electrical length, delay and attenuation using the built-in cable catalog or your own data.
@@ -152,6 +182,9 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 - **Projects and tuning journals.** Keep calculations, measurements, traces and annotated photos. Compare entries, transfer projects as JSON, and export photos as ZIP. [Demo project](examples/demo-dipole-journal-145mhz-en.json) · [Before tuning (S1P)](examples/demo-dipole-145mhz-before.s1p) · [After tuning (S1P)](examples/demo-dipole-145mhz-after.s1p).
 
 Calculations, formulas and diagrams are available offline. Choose English or Russian and a light, dark or system theme in Settings. The GitHub Direct build can check for updates from the app menu.
+
+- **Cantenna.** Find a circular waveguide diameter, check tolerances, compare cans, explore three published designs and develop a conical flare. Save the dimensions to a project and compare S1P traces at a shared SWR threshold.
+- **Halo CB.** Estimate round and square 27 MHz antenna dimensions, view feed diagrams and the Squalo CSQ‑11 reference, and save calculations to a project.
 
 ### Licenses
 
@@ -173,6 +206,9 @@ The project draws on materials from the following authors and publishers.
 
 - **Jose I. Calderon (DU1ANV)** — [Build the Slim JIM Antenna](https://www.qsl.net/n1ea/slimjim_du1anv.pdf)
 - **John (M0UKD)** — [Slim Jim and J Pole Calculator](https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/) · [1/4 Wave Ground Plane Antenna Calculator](https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/)
+- **OK1IKE** — [Nouzová anténa pro KV i VKV (Czech)](https://ok1ike.nagano.cz/soubory/nouz_ant2.htm)
+- **Max Rüegger (HB9ACC)** — [Flexible Notantenne für 2 m und 70 cm, HBradio 6/2011, pp. 26–28](https://www.e-periodica.ch/digbib/view?pid=hbr-002%3A2011%3A79%3A%3A248)
+- **SV1JRF / 5B4AMD** — [Slim Jim UHF Antenna Design](https://sv1jrf.blogspot.com/2016/02/slim-jim-uhf-antenna-desi.html?m=1)
 - **Steve Nichols (G0KYA)** — [10m Slim Jim Antenna](https://www.infotechcomms.co.uk/downloads/10m_Slim_Jim.pdf) · [Author’s notes on scaling and the OH2EUU build](https://g0kya.blogspot.com/2011/08/10m-slim-jim-antenna.html)
 - **Eli Kovo (4X4LH)** — [The 4X4 Slimtenna](https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59)
 - **L. B. Cebik (W4RNL)** — [Some J-Poles That I Have Known, Part 1](https://antenna2.github.io/cebik/content/vhf/jp1.html) · [What Is a Slim Jim?](https://antenna2.github.io/cebik/content/vhf/sj.html) · [Some J-Poles That I Have Known, Part 3](https://antenna2.github.io/cebik/content/vhf/jp3.html) · [Some J-Poles That I Have Known, Part 4](https://antenna2.github.io/cebik/content/vhf/jp4.html)
@@ -195,7 +231,7 @@ The project draws on materials from the following authors and publishers.
 - **W1CDN** — [70 cm Moxon Antenna](https://w1cdn.net/2024/09/70-cm-moxon-antenna/).
 - **A. W. Baker (KG4JJH)** — [6 Meter Moxon Rectangle](https://moxonantennaproject.net/6m%20Moxon%20drawings%20in%20Acrobat%20format.pdf).
 - **Ross (G6GVI)** — [A Moxon Rectangle Antenna for 4 m](https://www.qsl.net/g6gvi/4m_Moxon.pdf).
-- **Henry HPSD (19DX348)** — [2el Moxon for CB](https://cb-antennas.com/wire-antennas/2el-moxon/).
+- **Henry HPSD (19DX348)** — [2el Moxon for CB, archived publication](https://web.archive.org/web/20260212152810/https://cb-antennas.com/wire-antennas/2el-moxon/).
 - **Andreas (Krampfader)** — [Moxon-Richtantenne für CB-Funk](https://antennenbau.dxfreun.de/krampfader/moxon.php).
 - **Ignacio (EA2BD)** — [Antena Moxon para 20 m](https://ea2bd.ure.es/archives/EA2BD_Moxon_20m.pdf).
 - **George Smart (M1GEO), G8OCV** — [Dual Band Satellite Yagi](https://www.george-smart.co.uk/antennas/dual_band_satellite_yagi/).
@@ -205,8 +241,11 @@ The project draws on materials from the following authors and publishers.
 
 #### HB9CV sources
 
+- **3G‑Aerial** — [HB9CV calculator and HFSS plots](https://3g-aerial.biz/onlajn-raschety/raschety-antenn/raschet-antenny-hb9cv) · [How Are Antennas Calculated? (Russian)](https://3g-aerial.biz/antenna-calculation). The site permits reuse of its material with a link back to the site. [3G‑Aerial terms](https://3g-aerial.biz/otkaz-ot-otvetstvennosti)
+
 - **Rudolf Baumgartner (HB9CV)** — [The HB9CV Beam Antenna (Czech translation)](https://www.ok2kkw.com/hb9cv/hb9cv_1969.htm)
 - **Martin Steyer (DK7ZB)** — [HB9CV Antennas for 2, 6 and 10 m, FUNKAMATEUR 12/1997](https://dk7zb.darc.de/Download/hb9cv.pdf) · [The Two-Element HB9CV Beam, Drawings and Formulas](https://dk7zb.darc.de/HB9CV/Details-HB9CV.htm). Commercial use of the designs requires the author's permission. [DK7ZB’s terms](https://dk7zb.darc.de/)
+- **G. Butorin (U5MH)** — [Mechanically strong HF antenna, Radio 5/1990](https://www.diagram.com.ua/list/cb/1-67.shtml)
 - **L. B. Cebik (W4RNL)** — [The HB9CV Phased Array and Gain Comparisons](https://antenna2.github.io/cebik/content/phase/hb.html)
 - **Mick Senior (G4EFO)** — [HB9CV: Theory Meets Practice, Ham Radio Today, April 1987](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1987-04.pdf#page=19)
 - **M. Hadley (G4JXX)** — [A Simple Beam for 10 Metre FM, Ham Radio Today, July 1983](https://www.worldradiohistory.com/UK/Ham-Radio-Today/80s/HRT-1983-07.pdf)
@@ -228,6 +267,27 @@ The project draws on materials from the following authors and publishers.
 - **Igor Goncharenko (DL2KQ / EU1TT)** — [Two-Dipole Beam, Section 9.2.2 (Russian original)](https://dl2kq.de/ant/kniga/922.htm)
 
 The authors and other rights holders retain the rights to the original designs and materials. See the original publications for their terms of commercial and non-commercial use.
+
+#### Cantenna sources
+
+- **Changpuak** — [circular waveguide and cantenna calculator](https://www.changpuak.ch/electronics/cantenna.php). The site welcomes projects that credit the source. [Changpuak terms](https://www.changpuak.ch/terms/index.php)
+- **Dave Gough, translated by Y. A. Osadchiy (drug123)** — [Circular Waveguide Antenna for 2.4 GHz (Russian translation)](https://vtanaev.narod.ru/2.4Ggz/cylindrical_waves.htm)
+- **3G‑Aerial** — [Wi-Fi and 3G Cantenna (Russian)](https://3g-aerial.biz/konstruktsii-antenn/odnonapravlennye-antenny/banochnaya-antenna). The site permits reuse of its material with a link back to the site. [3G‑Aerial terms](https://3g-aerial.biz/otkaz-ot-otvetstvennosti)
+- **Elepal** — [WLAN Waveguide Antenna and Flare](https://www.elepal.fi/antennit/antenna2.html)
+- **Piotr Kowina, Christine Völlinger and Manfred Wendt** — [RF Measurement Techniques – Theory, CERN Accelerator School](https://indico.cern.ch/event/1380440/contributions/6176014/attachments/2964377/5214841/RFMeasurementTechniques_Theory_Spa.pdf), circular waveguide theory.
+- **Alan J. Fenn** — [MIT Laptop Radar, slides 20–25](https://ocw.mit.edu/courses/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/fa61f02356be7efc88142b258d031110_MITRES_LL_003IAP11_lec02.pdf). The lecture is published under CC BY-NC-SA 4.0, with exceptions for third-party material. [MIT OpenCourseWare terms](https://ocw.mit.edu/pages/privacy-and-terms-of-use/)
+- **H. Paul Shuch (N6TX)** — [VE4MA feed and adjustable choke ring](https://www.setileague.org/hardware/feedchok.htm). The SETI League reserves rights to the original publication. [The SETI League terms](https://www.setileague.org/admin/copyrigh.htm)
+- **Yurii Pylypenko** — [2440 MHz cantenna with a conical flare](https://ypylypenko.livejournal.com/43582.html), published drawing and simulation.
+
+#### Halo CB sources
+
+- **Cush Craft / Cushcraft** — [CSQ‑11 manufacturer data for 11 m, 73 Magazine, June 1964, p. 13](https://www.worldradiohistory.com/Archive-DX/73-magazine/73-magazine-1964/73-magazine-06-june-1964.pdf) · [ASQ‑10 manual for the 10 m band, © 2013 Cushcraft](https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/).
+- **Len Buckwalter (KBA4480)** — [27 MHz Squalo, Reddi Match and vehicle mounting, S9, December 1964, p. 52](https://www.worldradiohistory.com/Archive-CB-Radio/S9-Magazine/S9-1964-12.pdf).
+- **Carol F. Milazzo (KP4MD)** — [144 MHz Halo, gamma match and measurements](https://www.qsl.net/kp4md/144_mhz_halo.htm).
+- **L. B. Cebik (W4RNL)** — [Half-Wavelength Interrupted Loops](https://antenna2.github.io/cebik/content/wire/intloop.pdf).
+- **Matt Roberts (KK5JY)** — [6 m and 10 m Halo with shunt inductive matching](https://www.kk5jy.net/Es-halo/). © 2021–2023 Matt Roberts. All rights reserved.
+- **3G‑Aerial** — [horizontally polarized omnidirectional antennas, Halo section (Russian)](https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii) · [gamma matching network (Russian)](https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva). The site permits reuse of its material with a link back to the site. [3G‑Aerial terms](https://3g-aerial.biz/otkaz-ot-otvetstvennosti).
+- **Alexey (RA3POY)** — [CB build report for the three-dimensional W2EEY/1 (Russian)](https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html), a related antenna design.
 
 ### Contact
 

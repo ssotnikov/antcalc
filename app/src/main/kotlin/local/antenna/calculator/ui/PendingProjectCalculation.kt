@@ -32,6 +32,8 @@ private enum class TransferSource(
     SLIM_JIM("slim_jim", Page.SLIM_JIM, R.string.slim_jim_title),
     MOXON("moxon_calculated", Page.MOXON, R.string.moxon_title),
     HB9CV("hb9cv", Page.HB9CV, R.string.hb9cv_title),
+    CANTENNA("cantenna", Page.CANTENNA, R.string.cantenna_title),
+    HALO(HALO_CB_MODEL, Page.HALO_CB, R.string.halo_title),
     J_POLE("j_pole", Page.J_POLE, R.string.jpole_title),
     YAGI("yagi_r3udk", Page.YAGI_CALCULATOR, R.string.yagi_title),
     FULL_WAVE_LOOP("full_wave_loop", Page.FULL_WAVE_LOOP, R.string.loop_title, "loop_frequency");
@@ -39,7 +41,9 @@ private enum class TransferSource(
     companion object {
         fun fromModel(model: String): TransferSource = when {
             model.startsWith("hb9cv_") -> HB9CV
+            model.startsWith("cantenna_") -> CANTENNA
             SlimJimProfile.entries.any { it.model == model } -> SLIM_JIM
+            model == Ok1ikeJPoleModel -> J_POLE
             moxonProfiles.any { it.id == model } -> MOXON
             YagiProfile.entries.any { it.design.model == model } -> YAGI
             else -> entries.first { it.model == model }
@@ -63,13 +67,13 @@ internal class PendingProjectCalculation(
         outputLengthNanometers("new_length") else null
 
     val hasInitialLength get() = when (source) {
-        TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV -> false
+        TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV, TransferSource.CANTENNA, TransferSource.HALO -> false
         else -> true
     }
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
-            TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV -> return null
+            TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV, TransferSource.CANTENNA, TransferSource.HALO -> return null
             TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")
