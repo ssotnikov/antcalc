@@ -24,7 +24,10 @@
     <string name="cantenna_contact_long">Выступ контакта уже больше начальной длины зонда.</string>
     <string name="cantenna_short">Ось зонда достигает раскрыва или выходит за него. Нужна более глубокая банка.</string>
     <string name="cantenna_interval_none">Для всей полосы нет одномодового диаметра.</string>
-    <string name="cantenna_take_d">Проверить диаметр из середины интервала</string>
+    <string name="cantenna_take_d">Проверить выбранный диаметр</string>
+    <string name="cantenna_chosen_d">Диаметр для проверки</string>
+    <string name="cantenna_d_outside">Введите диаметр строго между двумя границами.</string>
+    <string name="cantenna_invalid_edges">Введите допустимые границы полосы по возрастанию.</string>
     <string name="cantenna_strict">Открытый интервал (без включения границ)</string>
     <string name="cantenna_wave">Длина волны в воздухе λ₀</string>
     <string name="cantenna_guide">Длина волны в волноводе λg</string>

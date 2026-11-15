@@ -24,7 +24,10 @@
     <string name="cantenna_contact_long">The connector pin already exceeds the starting probe length.</string>
     <string name="cantenna_short">The probe axis reaches or exceeds the aperture. Use a deeper can.</string>
     <string name="cantenna_interval_none">No single-mode diameter covers this entire band.</string>
-    <string name="cantenna_take_d">Check the midpoint diameter</string>
+    <string name="cantenna_take_d">Check this diameter</string>
+    <string name="cantenna_chosen_d">Diameter to check</string>
+    <string name="cantenna_d_outside">Enter a diameter strictly between the two limits.</string>
+    <string name="cantenna_invalid_edges">Enter valid band edges in ascending order.</string>
     <string name="cantenna_strict">Open interval (both endpoints excluded)</string>
     <string name="cantenna_wave">Free-space wavelength λ₀</string>
     <string name="cantenna_guide">Guide wavelength λg</string>

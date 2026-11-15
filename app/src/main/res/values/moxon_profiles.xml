@@ -7,7 +7,7 @@
     <string name="moxon_fact_cebik_2m_3">Vertical model · 144 MHz · height 30′, elevation 3° — 10.7 dBi · F/B 18.6 dB · (40 − j10) Ω</string>
     <string name="moxon_fact_cebik_2m_4">Vertical model · 146 MHz · height 30′, elevation 3° — 10.4 dBi · F/B 40 dB · (52 + j1) Ω</string>
     <string name="moxon_fact_cebik_2m_5">Vertical model · 148 MHz · height 30′, elevation 3° — 10.1 dBi · F/B 19.7 dB · (63 + j10) Ω</string>
-    <string name="moxon_desc_cebik_2m_b">Version B uses the same rod with a slightly wider frame and larger tip gaps. Its dimensions come from the separate version B drawing.</string>
+    <string name="moxon_desc_cebik_2m_b">Version B uses the same rod with a slightly wider frame and larger tip gaps. These are the dimensions in parentheses in Figure 1.</string>
     <string name="moxon_material_cebik_2m_b">Aluminum rod Ø 3/16″ (4.7625 mm)</string>
     <string name="moxon_fact_cebik_2m_b_1">Bend radius — 1″ / 25.4 mm</string>
     <string name="moxon_desc_cebik_2m_flat">The aluminum flat-stock alternative uses screws in slotted PVC end caps. The author increased the tip gap to 2″ for the wider stock.</string>
@@ -20,8 +20,8 @@
     <string name="moxon_fact_qst_2m_2">Nominal Schedule 40 PVC size / wire drill diameter — 1/2″ / 1/8″</string>
     <string name="moxon_fact_qst_2m_3">Hole marks on parts C / D / F — 1 1/2″ / 2 3/8″ / 1/2″</string>
     <string name="moxon_fact_qst_2m_4">Initial wire cuts — DE 2 × 24″ · REF ≥ 45″</string>
-    <string name="moxon_fact_qst_2m_5">Reported front-to-back — 29 dB @ 146.5 MHz · ≈35 dB @ 147 MHz</string>
-    <string name="moxon_desc_w6ye">Dimensions are from the baseline 435 MHz M0 model with AWG 12 wire. The article also shows a PVC-mounted build and examines how small errors at the tips affect front-to-back ratio.</string>
+    <string name="moxon_fact_qst_2m_5">Measured rear null relative to the forward signal — 29 dB at 146.5 MHz · ≈35 dB at 147 MHz</string>
+    <string name="moxon_desc_w6ye">Dimensions are from the 435 MHz M0 model with AWG 12 wire. The PVC-mounted antenna shown in the article is the 551 MHz television build. The 435 MHz model examines how small errors at the tips affect front-to-back ratio.</string>
     <string name="moxon_material_w6ye">Model, AWG 12 wire</string>
     <string name="moxon_fact_w6ye_1">M0 model · free space — 5.93 dBi · F/B 32.69 dB · (53.78 − j1.307) Ω</string>
     <string name="moxon_fact_w6ye_2">M1 model · B tip coordinate (C + D), step — 2.34–2.47″ · 0.01″</string>
@@ -49,13 +49,13 @@
     <string name="moxon_desc_cb_wire">The 27.555 MHz 19DX348 model uses 2 mm bare copper wire. The driven element uses a 50 Ω coaxial feed with a choke. The published 5.94 dBi gain is a simulation result.</string>
     <string name="moxon_material_cb_wire">2 mm bare copper wire</string>
     <string name="moxon_fact_cb_wire_1">Model at 27.555 MHz — 5.94 dBi · 50 Ω</string>
-    <string name="moxon_desc_cb_field">The Wimpel build has two fiberglass spreaders and a side support for its 8.82 m H155 feed line. The vertical segment of that line between the elements forms part of the design.</string>
+    <string name="moxon_desc_cb_field">The long sides of the Wimpel frame are vertical. Two fiberglass spreaders hold the frame at the top and bottom. The 8.82 m H155 feed line runs from the driven element along a 58 cm side guide to the mast, then down the mast.</string>
     <string name="moxon_material_cb_field">Portable vertical frame, 8.82 m H155 feed line</string>
     <string name="moxon_fact_cb_field_1">Driven halves along the frame — 2 × 192 cm</string>
     <string name="moxon_fact_cb_field_2">Mast height / weight without mast — 10 m / 530 g</string>
     <string name="moxon_fact_cb_field_3">Published span at SWR ≤ 2 — 26.5–28.4 MHz</string>
-    <string name="moxon_fact_cb_field_4">Published power and front-to-back — 100 W · 20 dB</string>
-    <string name="moxon_desc_cb_field_2">The Vertikal build uses 147 cm fiberglass spreaders and 13.23 m of H155. Its drawing shows a 26.3–28.5 MHz span at SWR ≤ 2.</string>
+    <string name="moxon_fact_cb_field_4">Published maximum power and front-to-back — 100 W · 20 dB</string>
+    <string name="moxon_desc_cb_field_2">Two 147 cm fiberglass spreaders support the upright Vertikal frame. The 13.23 m H155 feed line runs from the driven element to the mast and then down it. The drawing shows a 26.3–28.5 MHz span at SWR ≤ 2.</string>
     <string name="moxon_material_cb_field_2">Portable vertical frame, 13.23 m H155 feed line</string>
     <string name="moxon_fact_cb_field_2_1">Driven halves along the frame — 2 × 195 cm</string>
     <string name="moxon_fact_cb_field_2_2">Spreader length / mast height / weight without mast — 147 cm / 10 m / 530 g</string>
@@ -95,4 +95,11 @@
     <string name="moxon_desc_yama">YAMA 2.0 uses four fishing poles in a central hub. Tethers with eyelets tension the wire and trimmer line holds the tip gaps. The author shows field builds for 10 and 15 m.</string>
     <string name="moxon_material_yama">Portable frame hardware for 10 and 15 m</string>
     <string name="moxon_fact_yama_1">X-hub support angle as described by the author — 140°</string>
+    <string name="moxon_fact_w1cdn_cuts">The article gives the tip gap and the frame scale. The final lengths of the trimmed driven element and reflector are needed for a wire cut list.</string>
+    <string name="moxon_fact_yama_rods">Four fishing poles. The author used 12 ft poles on 10 m and 18 ft poles on 15 m.</string>
+    <string name="moxon_fact_yama_pvc">Schedule 40 PVC. Four 11 in lengths of ¾ in pipe, two 12 in lengths and one 36 in length of 1 in pipe.</string>
+    <string name="moxon_fact_yama_hardware">Four 10 in paracord tethers, four 3 × 40 mm dowels, four 2 in hooks in 18 AWG wire, and two 6 in pieces of trimmer line.</string>
+    <string name="moxon_fact_yama_wire">Materials include 3 ft of RG‑316 and about 25 ft of 26 AWG wire stock. Individual element cut lengths are unspecified.</string>
+    <string name="moxon_copy_facts">Copy design notes</string>
+    <string name="moxon_fact_fdim_80_depth">On 3.6 MHz, Table 6 lists E = 36.96 ft. Its B, C and D add up to 35.96 ft. The schematic and report use that sum for E.</string>
 </resources>

@@ -1,0 +1,1 @@
+Added HB9CV designs and GTV 2-6m Yagi–Uda variants, including xpol, SAT and DATV. Added the OK1IKE ribbon J-pole and a 436 MHz Slim Jim. Updated Moxon models and cut lists. The cantenna calculator can apply a selected diameter from the band finder. Pinch to zoom and pan antenna models with two fingers in full-screen view.

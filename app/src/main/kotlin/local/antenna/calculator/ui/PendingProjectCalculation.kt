@@ -42,6 +42,7 @@ private enum class TransferSource(
             model.startsWith("hb9cv_") -> HB9CV
             model.startsWith("cantenna_") -> CANTENNA
             SlimJimProfile.entries.any { it.model == model } -> SLIM_JIM
+            model == Ok1ikeJPoleModel -> J_POLE
             moxonProfiles.any { it.id == model } -> MOXON
             YagiProfile.entries.any { it.design.model == model } -> YAGI
             else -> entries.first { it.model == model }

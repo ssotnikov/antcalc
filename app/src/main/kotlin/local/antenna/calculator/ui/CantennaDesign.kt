@@ -23,6 +23,11 @@ internal enum class CantennaSource(
         "https://www.setileague.org/hardware/feedchok.htm",
         R.string.cantenna_ve_terms, "https://www.setileague.org/admin/copyrigh.htm"),
     HORN("Yurii Pylypenko", R.string.cantenna_horn_source, "https://ypylypenko.livejournal.com/43582.html"),
+    GOUGH("Dave Gough", R.string.cantenna_gough_source, "https://vtanaev.narod.ru/2.4Ggz/cylindrical_waves.htm"),
+    AERIAL("3G-Aerial", R.string.cantenna_aerial_source,
+        "https://3g-aerial.biz/konstruktsii-antenn/odnonapravlennye-antenny/banochnaya-antenna",
+        R.string.hb9cv_aerial_terms, Hb9cvSource.AERIAL_TERMS.url),
+    ELEPAL("Elepal", R.string.cantenna_elepal_source, "https://www.elepal.fi/antennit/antenna2.html"),
 }
 
 internal enum class CantennaDesign(

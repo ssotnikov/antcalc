@@ -98,6 +98,10 @@ internal enum class Hb9cvSource(val author: Int, val title: Int, val url: String
         R.string.hb9cv_author_snes, R.string.hb9cv_work_snes,
         "https://www.rlocman.ru/shem/schematics.html?di=4994",
     ),
+    BUTORIN(
+        R.string.hb9cv_u5_author, R.string.hb9cv_u5_work,
+        "https://www.diagram.com.ua/list/cb/1-67.shtml",
+    ),
     KOZ(
         R.string.hb9cv_author_koz, R.string.hb9cv_work_koz,
         "https://www.rlocman.ru/shem/schematics.html?di=4942",

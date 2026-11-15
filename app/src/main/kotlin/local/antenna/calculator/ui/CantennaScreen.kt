@@ -54,13 +54,19 @@ internal fun CantennaScreen(
     var mode by rememberSaveable { mutableStateOf(CantennaMode.CHECK) }
     var design by rememberSaveable { mutableStateOf(CantennaDesign.MIT) }
     var selected by rememberSaveable { mutableIntStateOf(0) }
+    var chosenDiameter by rememberSaveable { mutableStateOf("") }
     var focal by rememberSaveable { mutableIntStateOf(2) }
     var gain by rememberSaveable { mutableStateOf(false) }
     val index = selected.coerceIn(draft.cans.indices)
     val candidate = draft.cans[index]
     val profile = design.takeIf { mode == CantennaMode.DESIGNS }
     val hz = profile?.let { it.mhz * 1e6 } ?: draft.hertz
-    val band = if (profile == null) draft.band() else Cantenna.Band(profile.mhz * 1e6)
+    val band = when {
+        profile != null -> Cantenna.Band(profile.mhz * 1e6)
+        mode == CantennaMode.DIAMETER -> draft.diameterBand()
+        else -> draft.band()
+    }
+    val diameterRange = if (mode == CantennaMode.DIAMETER) band?.let(Cantenna::diameterRange) else null
     val geometry = profile?.can ?: candidate.geometry()
     val result = if (hz != null && band != null && geometry != null) Cantenna.analyze(geometry, hz, band) else null
     val ring = if (profile == CantennaDesign.VE4MA) Cantenna.ringPosition(focal, gain) else null
@@ -99,23 +105,41 @@ internal fun CantennaScreen(
             geometry = art)
         CantennaPicker(stringResource(R.string.cantenna_title), CantennaMode.entries, mode, { stringResource(it.label) }) { mode = it }
         if (profile == null) {
-            CantennaFrequency(draft) { draft = it }
+            CantennaFrequency(draft, diameterOnly = mode == CantennaMode.DIAMETER) { draft = it }
         } else {
             CantennaPicker(stringResource(R.string.cantenna_profiles), CantennaDesign.entries, profile,
-                { stringResource(it.title) }) { design = it }
+                { stringResource(it.title) }, modifier = Modifier.testTag("cantenna-profiles")) { design = it }
         }
         if (mode == CantennaMode.DIAMETER) {
-            val range = band?.let(Cantenna::diameterRange)
-            if (band == null) HelpText(R.string.cantenna_invalid)
+            val range = diameterRange
+            if (band == null) HelpText(if (draft.withBand) R.string.cantenna_invalid_edges else R.string.cantenna_invalid)
             else if (range == null) HelpText(R.string.cantenna_interval_none)
             else {
                 CantennaHeading(R.string.cantenna_strict)
                 Text("${data.mm(range.first)} < D < ${data.mm(range.second)}")
+                val midpoint = (range.first + range.second) / 2
+                val diameterText = chosenDiameter.ifBlank { (midpoint * 1000).toBigDecimal()
+                    .setScale(9, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString() }
+                val chosen = cantennaLength(diameterText)?.takeIf { it > range.first && it < range.second }
+                CantennaField(chosenDiameter, R.string.cantenna_chosen_d, chosen == null,
+                    placeholder = data.mm(midpoint)) { chosenDiameter = it }
+                if (chosen != null) {
+                    val analysis = Cantenna.analyze(Cantenna.Can(chosen), band.lowHz, band)
+                    CantennaRows(data.marginRows(analysis))
+                } else HelpText(R.string.cantenna_d_outside)
                 Button(onClick = {
-                    editCandidate(candidate.copy(diameter = ((range.first + range.second) * 500).toBigDecimal()
-                        .setScale(9, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()))
+                    val target = draft.hertz
+                    val nextTarget = if (target != null && target in band.lowHz..band.highHz) {
+                        draft.target
+                    } else ((band.lowHz + band.highHz) / 2e6).toBigDecimal()
+                        .setScale(9, java.math.RoundingMode.HALF_UP).stripTrailingZeros().toPlainString()
+                    draft = draft.copy(target = nextTarget, cans = draft.cans.mapIndexed { row, can ->
+                        if (row == index) can.copy(diameter = diameterText) else can
+                    })
                     mode = CantennaMode.CHECK
-                }) { Text(stringResource(R.string.cantenna_take_d)) }
+                }, enabled = chosen != null, modifier = Modifier.testTag("cantenna-transfer-diameter")) {
+                    Text(stringResource(R.string.cantenna_take_d))
+                }
             }
         } else {
             if (profile == null) {
@@ -217,9 +241,19 @@ internal fun CantennaScreen(
         }
         HelpText(R.string.cantenna_geometry_only)
         CantennaFormulas()
+        CantennaReferencePanels(
+            frequency = if (mode == CantennaMode.DIAMETER && draft.withBand)
+                band?.let { (it.lowHz + it.highHz) / 2 } else hz,
+            diameter = if (mode == CantennaMode.DIAMETER) {
+                if (chosenDiameter.isBlank()) diameterRange?.let { (it.first + it.second) / 2 }
+                else cantennaLength(chosenDiameter)
+            } else geometry?.diameter,
+            band = band,
+            format = data,
+        )
         onMeasurements?.let { TextButton(onClick = it) { Text(stringResource(R.string.sweep_title)) } }
-        CantennaSourceLinks(profile?.let { listOf(it.source, CantennaSource.CERN, CantennaSource.CHANGPUAK) }
-            ?: listOf(CantennaSource.CHANGPUAK, CantennaSource.CERN))
+        CantennaSourceLinks((listOfNotNull(profile?.source) + listOf(CantennaSource.CHANGPUAK, CantennaSource.CERN,
+            CantennaSource.GOUGH, CantennaSource.AERIAL, CantennaSource.ELEPAL)).distinct())
     }
 }
 
@@ -235,23 +269,29 @@ private fun CantennaRows(rows: List<Pair<String, String>>) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CantennaFrequency(draft: CantennaDraft, edit: (CantennaDraft) -> Unit) {
+private fun CantennaFrequency(draft: CantennaDraft, diameterOnly: Boolean, edit: (CantennaDraft) -> Unit) {
     CantennaHeading(R.string.cantenna_shared)
-    CantennaField(draft.target, R.string.frequency, draft.hertz == null, frequency = true) { edit(draft.copy(target = it)) }
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-        listOf("1296", "1420.405752", "2437").forEach { preset ->
-            TextButton(onClick = { edit(draft.copy(target = preset, withBand = false)) }) {
-                Text(preset)
+    if (!diameterOnly || !draft.withBand) {
+        CantennaField(draft.target, R.string.frequency, draft.hertz == null, frequency = true) { edit(draft.copy(target = it)) }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            listOf("1296", "1420.405752", "2437").forEach { preset ->
+                TextButton(onClick = { edit(draft.copy(target = preset, withBand = false)) }) {
+                    Text(preset)
+                }
             }
         }
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Checkbox(draft.withBand, { edit(draft.copy(withBand = it)) })
+        Checkbox(draft.withBand, { edit(draft.copy(withBand = it)) }, Modifier.testTag("cantenna-band"))
         Text(stringResource(R.string.cantenna_band))
     }
+    TextButton(onClick = {
+        edit(draft.copy(target = "2441.75", withBand = true, lower = "2400", upper = "2483.5"))
+    }) { Text(stringResource(R.string.cantenna_wifi_preset)) }
     if (draft.withBand) {
-        CantennaField(draft.lower, R.string.cantenna_low, draft.band() == null, frequency = true) { edit(draft.copy(lower = it)) }
-        CantennaField(draft.upper, R.string.cantenna_high, draft.band() == null, frequency = true) { edit(draft.copy(upper = it)) }
+        val invalid = (if (diameterOnly) draft.diameterBand() else draft.band()) == null
+        CantennaField(draft.lower, R.string.cantenna_low, invalid, frequency = true) { edit(draft.copy(lower = it)) }
+        CantennaField(draft.upper, R.string.cantenna_high, invalid, frequency = true) { edit(draft.copy(upper = it)) }
     }
 }
 
@@ -273,9 +313,10 @@ private fun CantennaCanFields(can: CantennaCandidate, edit: (CantennaCandidate) 
 
 @Composable
 internal fun CantennaField(raw: String, label: Int, invalid: Boolean, frequency: Boolean = false,
-                           showUnit: Boolean = true, edit: (String) -> Unit) {
-    OutlinedTextField(raw, { if (it.acceptsDecimalEdit()) edit(it) }, Modifier.fillMaxWidth(),
+                           showUnit: Boolean = true, placeholder: String? = null, edit: (String) -> Unit) {
+    OutlinedTextField(raw, { if (it.acceptsDecimalEdit()) edit(it) }, Modifier.fillMaxWidth().testTag("cantenna-input-$label"),
         label = { Text(stringResource(label)) }, singleLine = true, isError = invalid,
+        placeholder = placeholder?.let { example -> { Text(example) } },
         suffix = if (showUnit) {
             { Text(stringResource(if (frequency) R.string.mhz else R.string.hb9cv_aerial_mm)) }
         } else null,
@@ -283,11 +324,14 @@ internal fun CantennaField(raw: String, label: Int, invalid: Boolean, frequency:
 }
 
 @Composable
-private fun <T> CantennaPicker(label: String, values: List<T>, current: T, text: @Composable (T) -> String, select: (T) -> Unit) {
+private fun <T> CantennaPicker(
+    label: String, values: List<T>, current: T, text: @Composable (T) -> String,
+    modifier: Modifier = Modifier, select: (T) -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
     Text(label, color = MaterialTheme.colorScheme.secondary)
     Box {
-        OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
+        OutlinedButton(onClick = { expanded = true }, modifier = modifier.fillMaxWidth()) {
             Text(text(current), Modifier.weight(1f))
             Text("▾")
         }
@@ -329,7 +373,7 @@ internal fun CantennaSourceLinks(entries: List<CantennaSource> = CantennaSource.
 }
 
 @Composable
-private fun CantennaDiagram(d: Double, l: Double, a: Double, p: Double, throat: Double?, mouth: Double?, ring: Double?, tuning: Boolean) {
+internal fun CantennaDiagram(d: Double, l: Double, a: Double, p: Double, throat: Double?, mouth: Double?, ring: Double?, tuning: Boolean) {
     val body = MaterialTheme.colorScheme.onSurfaceVariant
     val guide = MaterialTheme.colorScheme.tertiary
     val textStyle = TextStyle(color = body, fontSize = 13.sp)
@@ -365,6 +409,11 @@ private fun CantennaDiagram(d: Double, l: Double, a: Double, p: Double, throat: 
             val opening = ((mouth / d - 1) * (bottom - top) / 2).toFloat().coerceIn(-top * .75f, top * .75f)
             line(right, top - start, far, top - opening)
             line(right, bottom + start, far, bottom + opening)
+            val beam = (top + bottom) / 2
+            val tip = size.width * .98f
+            line(far + 4.dp.toPx(), beam, tip, beam)
+            line(tip - 5.dp.toPx(), beam - 4.dp.toPx(), tip, beam)
+            line(tip - 5.dp.toPx(), beam + 4.dp.toPx(), tip, beam)
             label("H", (far + right) / 2, bottom + opening)
         } else if (ring != null) {
             val rear = right - ((right - left) * ring / l).toFloat()

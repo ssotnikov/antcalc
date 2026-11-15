@@ -30,6 +30,15 @@ private data class PublicationCredit(
 )
 
 private val publicationCredits = listOf(
+    PublicationCredit(R.string.slim_jim_ok1ike_author, listOf(
+        CreditedPublication(R.string.slim_jim_ok1ike_source, SLIM_JIM_OK1IKE_URL),
+    )),
+    PublicationCredit(R.string.jpole_ok1ike_hb9acc_author, listOf(
+        CreditedPublication(R.string.jpole_ok1ike_hb9acc, OK1IKE_HB9ACC_URL),
+    )),
+    PublicationCredit(R.string.slim_jim_sv1jrf_title, listOf(
+        CreditedPublication(R.string.slim_jim_sv1jrf_source, SLIM_JIM_SV1JRF_URL),
+    )),
     PublicationCredit(R.string.licenses_author_1, listOf(
         CreditedPublication(R.string.licenses_work_1_1, LIZAALERT_YAGI_URL),
     ), PublicationTerms(R.string.licenses_r3udk_terms, LIZAALERT_YAGI_URL)),

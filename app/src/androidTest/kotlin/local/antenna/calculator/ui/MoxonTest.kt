@@ -2,11 +2,13 @@ package local.antenna.calculator.ui
 
 import android.content.Context
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.journal.JournalJson
+import local.antenna.calculator.state.AppLanguage
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -34,15 +36,44 @@ class MoxonTest : CalculatorUiFixture() {
         compose.setContent { MaterialTheme { MoxonScreen(null, null, {}) } }
         choose("moxon_w6ye")
         compose.onNodeWithTag("moxon-art-PVC_BOOM").performScrollTo().assertIsDisplayed()
-        choose("moxon_w1cdn")
-        compose.onNodeWithTag("moxon-art-PRINTED_VERTICAL").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithTag("moxon-copy").assertDoesNotExist()
+        compose.onNodeWithTag("moxon-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("moxon-mode-true").performScrollTo().performClick()
         val frequency = compose.onNodeWithTag("moxon-frequency")
         frequency.performScrollTo().performTextReplacement("435,000")
         compose.onNodeWithTag("moxon-copy").performScrollTo().assertIsEnabled()
         frequency.performScrollTo().performTextReplacement("435,")
         compose.onNodeWithTag("moxon-copy").assertDoesNotExist()
+    }
+
+    @Test fun allProfilesShowTheirIllustrationAndAvailableActionsInBothLanguages() {
+        val language = mutableStateOf(AppLanguage.ENGLISH)
+        compose.setContent {
+            LocalizedContent(language.value) {
+                MaterialTheme { MoxonScreen({ _, _ -> }, null, {}) }
+            }
+        }
+        for (locale in AppLanguage.entries) {
+            compose.runOnIdle { language.value = locale }
+            for (profile in moxonCalculatorProfiles) {
+                choose(profile.id)
+                compose.onNodeWithTag("moxon-art-${profile.view.name}").performScrollTo().assertIsDisplayed()
+                compose.onNodeWithTag("moxon-save").performScrollTo().assertIsEnabled()
+            }
+        }
+    }
+
+    @Test fun excludesReferenceOnlyDesignsAndRecoversPreviousSelection() {
+        InstrumentationRegistry.getInstrumentation().targetContext
+            .getSharedPreferences("moxon_calculator", Context.MODE_PRIVATE)
+            .edit().putString("profile", "moxon_w1cdn").commit()
+        compose.setContent { MaterialTheme { MoxonScreen(null, null, {}) } }
+
+        compose.onNodeWithTag("moxon-art-ROD_A").assertIsDisplayed()
+        compose.onNodeWithTag("moxon-profile").performScrollTo().performClick()
+        for (id in listOf("moxon_w1cdn", "moxon_lora", "moxon_print_10m", "moxon_yama")) {
+            compose.onNodeWithTag("moxon-profile-$id").assertDoesNotExist()
+        }
+        compose.onNodeWithTag("moxon-profile-moxon_w6ye").assertExists()
     }
 
     @Test fun savesBothBandsAndYagiElementPositionsInTheJournal() {

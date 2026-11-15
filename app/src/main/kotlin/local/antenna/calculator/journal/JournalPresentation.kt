@@ -33,6 +33,9 @@ import local.antenna.calculator.ui.SlimJimProfile
 import local.antenna.calculator.ui.MoxonDimension
 import local.antenna.calculator.ui.MoxonProfile
 import local.antenna.calculator.ui.moxonProfiles
+import local.antenna.calculator.ui.moxonStockLabel
+import local.antenna.calculator.ui.Ok1ikeJPoleModel
+import local.antenna.calculator.ui.ok1ikeRows
 import local.antenna.calculator.core.layout.MoxonEstimate
 import local.antenna.calculator.ui.connectionText
 import local.antenna.calculator.core.trimming.AntennaType
@@ -125,6 +128,7 @@ internal class JournalPresentation(private val context: Context) {
                 "ground_plane" -> text(R.string.ground_plane_title)
                 "yagi_r3udk" -> text(R.string.yagi_record_model)
                 "j_pole" -> text(R.string.jpole_title)
+                Ok1ikeJPoleModel -> text(R.string.jpole_ok1ike_profile)
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
                 MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
@@ -146,7 +150,11 @@ internal class JournalPresentation(private val context: Context) {
             }
             for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to render(metric))
             for (metric in s.outputsForAntenna(type)) {
-                add(text(R.string.journal_calculation_output) + " · " + metricLabel(metric.key, type, moxon) to render(metric))
+                val ok1ikeLabel = if (s.model == Ok1ikeJPoleModel) {
+                    ok1ikeRows.firstOrNull { it.first == metric.key }?.second
+                } else null
+                val metricName = ok1ikeLabel?.let(::text) ?: metricLabel(metric.key, type, moxon)
+                add(text(R.string.journal_calculation_output) + " · " + metricName to render(metric))
             }
             if (cantennaText != null) add(text(R.string.cantenna_reference) to (cantenna?.source ?: CantennaSource.CHANGPUAK).url)
             if (s.model == Hb9cvAerial.MODEL) {
@@ -248,6 +256,14 @@ internal class JournalPresentation(private val context: Context) {
         "hb9cv_cut_s" -> text(R.string.hb9cv_cut_s)
         "hb9cv_vf" -> "VF"
         "hb9cv_allowance" -> text(R.string.hb9cv_allowance)
+        "hb9cv_hinge_r" -> text(R.string.hb9cv_hinge_r)
+        "hb9cv_hinge_s" -> text(R.string.hb9cv_hinge_s)
+        "hb9cv_hinge_margin" -> text(R.string.hb9cv_hinge_margin)
+        "hb9cv_line", "hb9cv_line_length" -> text(R.string.hb9cv_jo_line)
+        "hb9cv_u5_inner" -> text(R.string.hb9cv_u5_inner)
+        "hb9cv_u5_outer" -> text(R.string.hb9cv_u5_outer)
+        "hb9cv_strip_r" -> "R · ${text(R.string.hb9cv_cut_r)}"
+        "hb9cv_strip_s" -> "S · ${text(R.string.hb9cv_cut_s)}"
         "moxon_band" -> text(R.string.moxon_band)
         "moxon_diameter" -> text(R.string.moxon_diameter)
         "moxon_allowance" -> text(R.string.moxon_allowance)
@@ -291,6 +307,7 @@ internal class JournalPresentation(private val context: Context) {
         "jpole_radiator" -> text(R.string.jpole_radiator)
         "jpole_spacing" -> text(R.string.jpole_spacing)
         "jpole_tap" -> text(R.string.jpole_tap)
+        "jpole_coax_min" -> text(R.string.jpole_ok1ike_coax)
         "loop_perimeter" -> text(R.string.loop_perimeter)
         "loop_side" -> text(R.string.loop_side)
         "loop_width" -> text(R.string.loop_width)
@@ -329,9 +346,9 @@ internal class JournalPresentation(private val context: Context) {
         MoxonDimension.entries.firstOrNull { it.metric == key }?.let { return "${it.mark} · ${text(it.label)}" }
         val index = key.substringAfterLast('_').toIntOrNull() ?: return null
         if (key.startsWith("moxon_stock_")) {
-            val part = profile?.stockInches?.getOrNull(index)?.first ?: return null
-            return if (part == "Boom") text(R.string.moxon_stock_boom)
-                else context.getString(R.string.moxon_stock_piece, part)
+            val part = profile?.stock?.getOrNull(index) ?: return null
+            if (part.boom && !key.startsWith("moxon_stock_boom_")) return text(R.string.moxon_stock_boom)
+            return context.moxonStockLabel(part)
         }
         val dimension = when {
             key.startsWith("moxon_yagi_position_") -> R.string.moxon_position
@@ -345,7 +362,9 @@ internal class JournalPresentation(private val context: Context) {
     private fun yagiMetricLabel(key: String): String? {
         if (!key.startsWith("yagi_")) return null
         YagiMatchingCable.entries.firstOrNull { it.metricKey == key }?.let { return text(it.label()) }
-        val element = yagiElementLabelOrNull(key.removePrefix("yagi_").substringBefore('_')) ?: return null
+        val id = key.removePrefix("yagi_").substringBefore('_')
+        val vertical = id.startsWith("v")
+        val element = yagiElementLabelOrNull(if (vertical) id.removePrefix("v") else id) ?: return null
         val column = when (key.substringAfterLast('_')) {
             "position" -> R.string.yagi_position
             "overall" -> R.string.yagi_overall
@@ -354,7 +373,8 @@ internal class JournalPresentation(private val context: Context) {
             "blank" -> R.string.yagi_record_blank
             else -> return null
         }
-        return context.getString(R.string.yagi_record_column, text(element), text(column))
+        val label = context.getString(R.string.yagi_record_column, text(element), text(column))
+        return if (vertical) "V · $label" else label
     }
 
     private fun metricValue(metric: SnapshotValue, aerialMhz: Double? = null): String {

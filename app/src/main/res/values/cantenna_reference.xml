@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="cantenna_gough_source">Circular waveguide antenna for 2.4 GHz (Russian translation by Y. A. Osadchiy, drug123)</string>
+    <string name="cantenna_aerial_source">Wi-Fi and 3G cantenna (in Russian)</string>
+    <string name="cantenna_elepal_source">WLAN waveguide antenna and flare</string>
+    <string name="cantenna_reference_table">2.4 GHz diameter reference table</string>
+    <string name="cantenna_wifi_preset">Wi-Fi band · 2400–2483.5 MHz</string>
+    <string name="cantenna_reference_table_note">Rounded values from the Russian translation of Dave Gough’s article. The translation gives λ₀ ≈ 122 mm. Its constants and rounding differ slightly from the live calculator, especially near cutoff.</string>
+    <string name="cantenna_reference_wifi">The strict TE₁₁-only window for the entire 2400–2483.5 MHz band is approximately 73.21 &lt; D &lt; 92.40 mm. Near the lower limit, the required length can grow rapidly.</string>
+    <string name="cantenna_curve">Guide wavelength versus diameter</string>
+    <string name="cantenna_curve_input">Enter a valid frequency or band to plot the curve.</string>
+    <string name="cantenna_curve_frequency">Plot frequency · %1$s</string>
+    <string name="cantenna_curve_x">Horizontal axis · internal diameter from %1$s to %2$s</string>
+    <string name="cantenna_curve_y">Vertical axis · λg. Lines mark 1, 2, 4 and 8 times λ₀, from bottom to top. The vertical line marks the TE₁₁ cutoff.</string>
+    <string name="cantenna_curve_window">Shaded · TE₁₁-only diameters between %1$s and %2$s for the selected band.</string>
+    <string name="cantenna_curve_point">Selected D · %1$s. Calculated λg · %2$s.</string>
+    <string name="cantenna_curve_offscale">The selected point is outside the plotted range.</string>
+    <string name="cantenna_construction">Probe, polarization and assembly</string>
+    <string name="cantenna_reference_axial">In the longitudinal section, A is measured inside the can from the closed back to the axis of the probe. The probe extends inward by P, including the connector pin. The open end radiates primarily along the can axis.</string>
+    <string name="cantenna_reference_aperture">Aperture view. A horizontal line spans the diameter D. The probe and the main electric field at the center are vertical.</string>
+    <string name="cantenna_reference_polarization">The aperture view shows the direction of the dominant TE₁₁ electric field near the center. It follows the probe. Rotating the can around its axis by 90° switches vertical and horizontal polarization.</string>
+    <string name="cantenna_reference_flare">Elepal’s flare example uses a 100 mm throat and 170 mm opening, a 132 mm can, a 44 mm probe offset and a 31 mm probe. The arrow shows the main beam direction.</string>
+    <string name="cantenna_reference_gain">3G-Aerial estimates 4–6 dBi for the basic can. Elepal reports an improvement of about 3 dB from a flare in its example. These figures describe different builds. Gain and beamwidth depend on the aperture, feed and measurement conditions.</string>
+    <string name="cantenna_reference_build_1">1. Use a smooth metal cylinder with a conductive back. Measure the inside diameter. Start with L ≈ 3λg/4. If you trim the can, leave enough metal to finish the edge.</string>
+    <string name="cantenna_reference_build_2">2. Mark the connector axis at A ≈ λg/4. Drill to fit the actual connector. Remove paint at the contact and make sure the connector shell bonds to the can. Start with a probe projection P ≈ λ₀/4.</string>
+    <string name="cantenna_reference_build_3">3. Use short low-loss coax. Match the receiving antenna’s polarization, aim using a signal-level indicator and adjust the probe in small steps. For outdoor use, add a suitable RF-transparent cover and a drain at the lowest point.</string>
+</resources>

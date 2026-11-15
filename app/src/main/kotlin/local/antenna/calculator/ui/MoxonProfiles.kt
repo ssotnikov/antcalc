@@ -21,7 +21,7 @@ internal enum class MoxonSource(val author: String, val title: String, val url: 
     W1CDN("W1CDN", "70 cm Moxon Antenna", "https://w1cdn.net/2024/09/70-cm-moxon-antenna/"),
     BAKER("A. W. Baker (KG4JJH)", "6 Meter Moxon Rectangle", "https://moxonantennaproject.net/6m%20Moxon%20drawings%20in%20Acrobat%20format.pdf"),
     G6GVI("Ross (G6GVI)", "A Moxon Rectangle Antenna for 4 m", "https://www.qsl.net/g6gvi/4m_Moxon.pdf"),
-    CBWIRE("Henry HPSD (19DX348)", "2el Moxon for CB", "https://cb-antennas.com/wire-antennas/2el-moxon/"),
+    CBWIRE("Henry HPSD (19DX348)", "2el Moxon for CB", "https://web.archive.org/web/20260212152810/https://cb-antennas.com/wire-antennas/2el-moxon/"),
     CBFIELD("Andreas (Krampfader)", "Moxon-Richtantenne für CB-Funk", "https://antennenbau.dxfreun.de/krampfader/moxon.php"),
     EA2BD("Ignacio (EA2BD)", "Antena Moxon para 20 m", "https://ea2bd.ure.es/archives/EA2BD_Moxon_20m.pdf"),
     PORTABLE("L. B. Cebik (W4RNL)", "A Truly Portable Moxon Rectangle", "https://antenna2.github.io/cebik/content/moxon/20moxp.html", R.string.moxon_terms_cebik),
@@ -54,18 +54,29 @@ internal data class MoxonProfile(
     val dimensions: MoxonDimensions? = null,
     val sourceUnit: SourceLengthUnit? = null,
     val facts: List<Int> = emptyList(),
+    val revision: Int = 1,
 ) {
-    val revision get() = 1
     val hybrid get() = view == MoxonView.HYBRID
-    val stockInches: List<Pair<String, Double>> get() = when (view) {
-        MoxonView.STEPPED_H -> bakerParts.zip(listOf(10.0, 26.375, 17.75, 53.0, 8.0, 10.25, 10.0, 15.125, 34.0))
-        MoxonView.STEPPED_V -> bakerParts.zip(listOf(10.0, 26.375, 15.625, 53.0, 8.0, 9.5625, 10.0, 14.5, 32.75))
-        MoxonView.PVC_FRAME -> listOf("C" to 15.5625, "D" to 6.0, "E" to 5.125, "F" to 2.0, "G" to 2.0625)
+    val stock: List<MoxonStockPart> get() = when (view) {
+        MoxonView.STEPPED_H -> bakerParts(listOf(10.0, 26.375, 17.75, 53.0, 8.0, 10.25, 10.0, 15.125, 34.0, 34.0))
+        MoxonView.STEPPED_V -> bakerParts(listOf(10.0, 26.375, 15.625, 53.0, 8.0, 9.5625, 10.0, 14.5, 32.75, 32.75))
+        MoxonView.PVC_FRAME -> listOf(
+            MoxonStockPart("C", 15.5625, 4), MoxonStockPart("D", 6.0, 1),
+            MoxonStockPart("E", 5.125, 1), MoxonStockPart("F", 2.0, 1), MoxonStockPart("G", 2.0625, 4),
+        )
         else -> emptyList()
     }
 }
 
-private val bakerParts = listOf("A0", "A1", "A2", "A3", "A4", "B1", "C1", "D1", "Boom")
+internal data class MoxonStockPart(val name: String, val inches: Double, val quantity: Int, val boom: Boolean = false)
+
+private fun bakerParts(lengths: List<Double>) = listOf(
+    "A0" to 1, "A1" to 2, "A2" to 4, "A3" to 1, "A4" to 4,
+    "B1" to 2, "C1" to 2, "D1" to 2,
+).zip(lengths.take(8)) { (name, quantity), inches -> MoxonStockPart(name, inches, quantity) } + listOf(
+    MoxonStockPart("7/8″", lengths[8], 1, boom = true),
+    MoxonStockPart("1″", lengths[9], 1, boom = true),
+)
 
 /** Position from the 2 m reflector and total element length in millimetres. */
 internal val moxonSatelliteYagi = listOf(127.0 to 334.0, 293.0 to 324.0, 477.0 to 280.0, 719.0 to 296.0, 925.0 to 274.0)
@@ -128,7 +139,8 @@ internal val moxonProfiles = listOf(
         band = 70,
         centimeterBand = true,
         frequencies = listOf(430000000L),
-        facts = listOf(R.string.moxon_fact_w1cdn_1, R.string.moxon_fact_w1cdn_2, R.string.moxon_fact_w1cdn_3),
+        facts = listOf(R.string.moxon_fact_w1cdn_1, R.string.moxon_fact_w1cdn_2, R.string.moxon_fact_w1cdn_3,
+            R.string.moxon_fact_w1cdn_cuts),
     ),
     MoxonProfile(
         "moxon_baker_h", "KG4JJH · H-POL", MoxonSource.BAKER, MoxonView.STEPPED_H,
@@ -298,8 +310,10 @@ internal val moxonProfiles = listOf(
         R.string.moxon_material_fdim,
         band = 80,
         frequencies = listOf(3600000L),
-        dimensions = MoxonDimensions(30473.904, 4715.256, 658.368, 5586.984, 11265.408),
+        dimensions = MoxonDimensions(30473.904, 4715.256, 658.368, 5586.984),
         sourceUnit = SourceLengthUnit.FOOT,
+        facts = listOf(R.string.moxon_fact_fdim_80_depth),
+        revision = 2,
     ),
     MoxonProfile(
         "moxon_fdim_75", "W4RNL · AWG 14", MoxonSource.FDIM, MoxonView.WIRE_OUTLINE,
@@ -354,9 +368,12 @@ internal val moxonProfiles = listOf(
         "moxon_yama", "Barry Shaffer · YAMA 2.0", MoxonSource.YAMA, MoxonView.YAMA_HUB,
         R.string.moxon_desc_yama,
         R.string.moxon_material_yama,
-        facts = listOf(R.string.moxon_fact_yama_1),
+        facts = listOf(R.string.moxon_fact_yama_1, R.string.moxon_fact_yama_rods, R.string.moxon_fact_yama_pvc,
+            R.string.moxon_fact_yama_hardware, R.string.moxon_fact_yama_wire),
     ),
 )
+
+internal val moxonCalculatorProfiles = moxonProfiles.filter { it.dimensions != null }
 
 internal data class MoxonPreset(val band: Int, val hz: Long, val unit: Int, val preliminary: Boolean = false)
 internal val moxonPresets = listOf(

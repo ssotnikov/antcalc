@@ -22,6 +22,9 @@ private val cableDatasheetAddress = Regex(
     """https://(?:timesmicrowave\.com/wp-content/uploads/[0-9]{4}/[0-9]{2}/[A-Za-z0-9-]+\.pdf|catalog\.belden\.com/techdata/(?:en|EN)/[0-9]+_techdata\.pdf|www\.radiolab\.ru/(?:ru/3/[0-9]+/[0-9]+/[0-9]+\.php|scalar/[a-z0-9]+\.htm))""",
 )
 internal const val SLIM_JIM_DU1ANV_URL = "https://www.qsl.net/n1ea/slimjim_du1anv.pdf"
+internal const val SLIM_JIM_OK1IKE_URL = "https://ok1ike.nagano.cz/soubory/nouz_ant2.htm"
+internal const val OK1IKE_HB9ACC_URL = "https://www.e-periodica.ch/digbib/view?pid=hbr-002%3A2011%3A79%3A%3A248"
+internal const val SLIM_JIM_SV1JRF_URL = "https://sv1jrf.blogspot.com/2016/02/slim-jim-uhf-antenna-desi.html?m=1"
 internal const val SLIM_JIM_M0UKD_URL = "https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/"
 internal const val SLIM_JIM_KX4O_URL = "https://www.hamradio.me/antennas/slimjim-vs-traditional-j-pole-antenna.html"
 internal const val SLIM_JIM_CEBIK_URL = "https://antenna2.github.io/cebik/content/vhf/sj.html"
@@ -41,6 +44,9 @@ private val additionalSourceAddresses = setOf(
     "https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band",
     "https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59",
     SLIM_JIM_DU1ANV_URL,
+    SLIM_JIM_OK1IKE_URL,
+    OK1IKE_HB9ACC_URL,
+    SLIM_JIM_SV1JRF_URL,
     SLIM_JIM_M0UKD_URL,
     SLIM_JIM_KX4O_URL,
     "https://www.mdpi.com/1996-1073/14/21/7042",

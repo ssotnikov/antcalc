@@ -51,10 +51,14 @@ internal data class CantennaDraft(
     val hertz get() = cantennaNumber(target, 100.0, 100_000.0)?.times(1e6)
     fun band(): Cantenna.Band? {
         val target = hertz ?: return null
-        if (!withBand) return Cantenna.Band(target)
+        return diameterBand()?.takeIf { target in it.lowHz..it.highHz }
+    }
+
+    fun diameterBand(): Cantenna.Band? {
+        if (!withBand) return hertz?.let { Cantenna.Band(it) }
         val low = cantennaNumber(lower, 100.0, 100_000.0)?.times(1e6) ?: return null
         val high = cantennaNumber(upper, 100.0, 100_000.0)?.times(1e6) ?: return null
-        return if (target in low..high) Cantenna.Band(low, high) else null
+        return if (low <= high) Cantenna.Band(low, high) else null
     }
 
     fun json(): String = JSONObject().put("target", target).put("withBand", withBand)

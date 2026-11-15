@@ -14,6 +14,7 @@ class PendingProjectCalculationTest {
             "inverted_v" to Page.INVERTED_V,
             "ground_plane" to Page.GROUND_PLANE,
             "j_pole" to Page.J_POLE,
+            Ok1ikeJPoleModel to Page.J_POLE,
             "full_wave_loop" to Page.FULL_WAVE_LOOP,
             "moxon_calculated" to Page.MOXON,
         ) +

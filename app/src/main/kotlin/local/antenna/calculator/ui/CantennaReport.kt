@@ -18,6 +18,10 @@ internal class CantennaText(private val resources: Resources) {
     fun number(value: Double) = format.format(value)
     fun mm(value: Double?) = value?.let { "${number(it * 1000)} ${text(R.string.hb9cv_aerial_mm)}" } ?: missing
     private fun mhz(value: Double) = "${number(value / 1e6)} ${text(R.string.mhz)}"
+    fun marginRows(result: Cantenna.Result) = listOf(
+        text(R.string.cantenna_low_margin) to mhz(result.lowMarginHz),
+        text(R.string.cantenna_high_margin) to mhz(result.highMarginHz),
+    )
     fun name(can: CantennaCandidate, index: Int) = can.name.trim().ifBlank { resources.getString(R.string.cantenna_entry, index + 1) }
 
     private fun mode(mode: Cantenna.Mode) = text(when (mode) {
@@ -33,8 +37,7 @@ internal class CantennaText(private val resources: Resources) {
         row(R.string.cantenna_mode, mode(r.mode))
         row(R.string.cantenna_wave, mm(r.wavelength))
         row(R.string.cantenna_guide, mm(r.guideWavelength))
-        row(R.string.cantenna_low_margin, mhz(r.lowMarginHz))
-        row(R.string.cantenna_high_margin, mhz(r.highMarginHz))
+        addAll(marginRows(r))
         if (!published) {
             row(R.string.cantenna_band, text(if (r.bandFits) R.string.cantenna_fits else R.string.cantenna_misses))
             row(R.string.cantenna_suggest, mm(r.suggestedDepth))

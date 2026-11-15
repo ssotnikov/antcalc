@@ -60,8 +60,8 @@ class WebSourcesTest {
 
     @Test fun yagiProfilesUseApprovedSourcesAndUniqueStableIds() {
         val profiles = YagiProfile.entries
-        assertEquals(7, profiles.map { it.id }.distinct().size)
-        assertEquals(7, profiles.map { it.image }.distinct().size)
+        assertEquals(profiles.size, profiles.map { it.id }.distinct().size)
+        assertEquals(7, profiles.take(7).map { it.image }.distinct().size)
         for (profile in profiles) {
             assertEquals(profile.original, validatedSourceAddress(profile.original))
             profile.terms?.let { assertEquals(it, validatedSourceAddress(it)) }
@@ -77,6 +77,15 @@ class WebSourcesTest {
             assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
             val unexpected = if ('?' in url) "&redirect=unexpected" else "?redirect=unexpected"
             assertNull(validatedSourceAddress(url.substringBefore('#') + unexpected))
+        }
+    }
+
+    @Test fun cantennaPublicationsUseExactApprovedHttpsAddresses() {
+        val addresses = CantennaSource.entries.flatMap { listOfNotNull(it.url, it.termsUrl) }
+        for (url in addresses) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            assertNull(validatedSourceAddress("$url?redirect=unexpected"))
         }
     }
 
