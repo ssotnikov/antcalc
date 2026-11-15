@@ -41,6 +41,7 @@ import local.antenna.calculator.ui.rememberPageScrollState
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.state.CalculatorUiState
 import local.antenna.calculator.ui.AppAlertDialog
+import local.antenna.calculator.ui.HaloDraft
 import local.antenna.calculator.ui.cardListBounce
 
 internal enum class JournalPage(val title: Int) {
@@ -77,6 +78,7 @@ internal fun JournalScreen(
     currentCalculator: () -> CalculatorUiState,
     initialProjectId: String? = null,
     onOpenSweeps: ((SweepComparison, AntennaProject) -> Unit)? = null,
+    onOpenHalo: ((CalculationSnapshot) -> Unit)? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -277,10 +279,16 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.RECORD -> if (record != null) {
                 val details = presentation.recordDetails(record)
+                val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
                     JournalHeading(record.title)
                     JournalDetails(details)
                     JournalScope()
+                    if (halo != null && onOpenHalo != null) {
+                        TextButton(onClick = { onOpenHalo(halo) }, enabled = enabled, modifier = Modifier.testTag("journal-open-halo")) {
+                            Text(stringResource(R.string.halo_reopen))
+                        }
+                    }
                     OutlinedButton(onClick = {
                         copy(listOf(record.title, presentation.formatFields(details), scopeNote).joinToString("\n"))
                     }, enabled = enabled) { Text(stringResource(R.string.journal_copy)) }

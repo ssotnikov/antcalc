@@ -39,6 +39,7 @@
 Расчеты, формулы и схемы доступны офлайн. В настройках можно выбрать русский или английский язык, светлую, тёмную или системную тему. В версии GitHub Direct обновления доступны из меню приложения.
 
 - **Баночная антенна (Cantenna).** Подбор диаметра круглого волновода, проверка допусков, сравнение заготовок, три опубликованные конструкции и развёртка раструба. Ведомость сохраняется в проект, а трассы S1P сравниваются по общему порогу КСВ.
+- **Halo CB.** Начальные размеры круглой и квадратной антенн на 27 МГц, схемы питания, справка по Squalo CSQ‑11 и сохранение расчёта в проект.
 
 ### Лицензии
 
@@ -133,6 +134,16 @@
 - **Г. Пол Шух (N6TX)** — [облучатель VE4MA и регулируемое кольцо](https://www.setileague.org/hardware/feedchok.htm). The SETI League сохраняет права на оригинальную публикацию. [Условия The SETI League](https://www.setileague.org/admin/copyrigh.htm)
 - **Юрий Пилипенко** — [баночная антенна с коническим раструбом на 2440 МГц](https://ypylypenko.livejournal.com/43582.html), опубликованный чертёж и модель.
 
+#### Материалы по Halo CB
+
+- **Cush Craft / Cushcraft** — [заводские данные CSQ‑11 на 11 м, 73 Magazine, июнь 1964, с. 13](https://www.worldradiohistory.com/Archive-DX/73-magazine/73-magazine-1964/73-magazine-06-june-1964.pdf) · [руководство ASQ‑10 для диапазона 10 м, © 2013 Cushcraft](https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/).
+- **Лен Бакволтер (KBA4480)** — [Squalo на 27 МГц, Reddi Match и автомобильный монтаж, S9, декабрь 1964, с. 52](https://www.worldradiohistory.com/Archive-CB-Radio/S9-Magazine/S9-1964-12.pdf).
+- **Кэрол Ф. Милаццо (KP4MD)** — [Halo на 144 МГц, гамма-согласование и измерения](https://www.qsl.net/kp4md/144_mhz_halo.htm).
+- **Л. Б. Себик (W4RNL)** — [разомкнутые полуволновые контуры](https://antenna2.github.io/cebik/content/wire/intloop.pdf).
+- **Мэтт Робертс (KK5JY)** — [Halo на 6 и 10 м, параллельное индуктивное согласование](https://www.kk5jy.net/Es-halo/). © 2021–2023 Мэтт Робертс. Все права защищены.
+- **3G‑Aerial** — [всенаправленные антенны горизонтальной поляризации, раздел «Антенна „Гало“»](https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii) · [гамма-согласующее устройство](https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva). Сайт разрешает использовать свои материалы с указанием ссылки. [Условия 3G‑Aerial](https://3g-aerial.biz/otkaz-ot-otvetstvennosti).
+- **Алексей (RA3POY)** — [отчёт о сборке объёмной антенны W2EEY/1 на Си-Би](https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html), смежная конструкция.
+
 ### Обратная связь
 
 Чтобы сообщить об ошибке, выберите «Сообщить об ошибке» в меню или настройках. Для связи в Telegram выберите «Связаться с автором» в меню.
@@ -173,6 +184,7 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 Calculations, formulas and diagrams are available offline. Choose English or Russian and a light, dark or system theme in Settings. The GitHub Direct build can check for updates from the app menu.
 
 - **Cantenna.** Find a circular waveguide diameter, check tolerances, compare cans, explore three published designs and develop a conical flare. Save the dimensions to a project and compare S1P traces at a shared SWR threshold.
+- **Halo CB.** Estimate round and square 27 MHz antenna dimensions, view feed diagrams and the Squalo CSQ‑11 reference, and save calculations to a project.
 
 ### Licenses
 
@@ -266,6 +278,16 @@ The authors and other rights holders retain the rights to the original designs a
 - **Alan J. Fenn** — [MIT Laptop Radar, slides 20–25](https://ocw.mit.edu/courses/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/fa61f02356be7efc88142b258d031110_MITRES_LL_003IAP11_lec02.pdf). The lecture is published under CC BY-NC-SA 4.0, with exceptions for third-party material. [MIT OpenCourseWare terms](https://ocw.mit.edu/pages/privacy-and-terms-of-use/)
 - **H. Paul Shuch (N6TX)** — [VE4MA feed and adjustable choke ring](https://www.setileague.org/hardware/feedchok.htm). The SETI League reserves rights to the original publication. [The SETI League terms](https://www.setileague.org/admin/copyrigh.htm)
 - **Yurii Pylypenko** — [2440 MHz cantenna with a conical flare](https://ypylypenko.livejournal.com/43582.html), published drawing and simulation.
+
+#### Halo CB sources
+
+- **Cush Craft / Cushcraft** — [CSQ‑11 manufacturer data for 11 m, 73 Magazine, June 1964, p. 13](https://www.worldradiohistory.com/Archive-DX/73-magazine/73-magazine-1964/73-magazine-06-june-1964.pdf) · [ASQ‑10 manual for the 10 m band, © 2013 Cushcraft](https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/).
+- **Len Buckwalter (KBA4480)** — [27 MHz Squalo, Reddi Match and vehicle mounting, S9, December 1964, p. 52](https://www.worldradiohistory.com/Archive-CB-Radio/S9-Magazine/S9-1964-12.pdf).
+- **Carol F. Milazzo (KP4MD)** — [144 MHz Halo, gamma match and measurements](https://www.qsl.net/kp4md/144_mhz_halo.htm).
+- **L. B. Cebik (W4RNL)** — [Half-Wavelength Interrupted Loops](https://antenna2.github.io/cebik/content/wire/intloop.pdf).
+- **Matt Roberts (KK5JY)** — [6 m and 10 m Halo with shunt inductive matching](https://www.kk5jy.net/Es-halo/). © 2021–2023 Matt Roberts. All rights reserved.
+- **3G‑Aerial** — [horizontally polarized omnidirectional antennas, Halo section (Russian)](https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii) · [gamma matching network (Russian)](https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva). The site permits reuse of its material with a link back to the site. [3G‑Aerial terms](https://3g-aerial.biz/otkaz-ot-otvetstvennosti).
+- **Alexey (RA3POY)** — [CB build report for the three-dimensional W2EEY/1 (Russian)](https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html), a related antenna design.
 
 ### Contact
 

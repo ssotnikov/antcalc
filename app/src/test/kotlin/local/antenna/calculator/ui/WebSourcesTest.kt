@@ -89,6 +89,14 @@ class WebSourcesTest {
         }
     }
 
+    @Test fun haloPublicationsUseExactApprovedHttpsAddresses() {
+        for (url in haloSourceAddresses) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            assertNull(validatedSourceAddress("$url?redirect=unexpected"))
+        }
+    }
+
     @Test fun onlyTheConfiguredAuthorSupportAddressIsAllowed() {
         authorSupportPaymentUrl?.let {
             assertEquals(it, validatedSourceAddress(it))

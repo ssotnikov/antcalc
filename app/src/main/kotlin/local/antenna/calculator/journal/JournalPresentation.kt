@@ -9,6 +9,9 @@ import local.antenna.calculator.ui.Hb9cvSource
 import local.antenna.calculator.ui.CantennaDesign
 import local.antenna.calculator.ui.CantennaSource
 import local.antenna.calculator.ui.CantennaText
+import local.antenna.calculator.ui.HALO_CB_MODEL
+import local.antenna.calculator.ui.HaloGammaField
+import local.antenna.calculator.ui.haloMetricLabel
 import local.antenna.calculator.ui.hb9cvAerialLength
 import local.antenna.calculator.ui.hb9cvAerialNumber
 import local.antenna.calculator.ui.YagiProfile
@@ -47,6 +50,7 @@ internal fun AntennaType.journalLabel(): Int = when (this) {
     AntennaType.MOXON -> R.string.moxon_title
     AntennaType.HB9CV -> R.string.hb9cv_title
     AntennaType.CANTENNA -> R.string.cantenna_title
+    AntennaType.HALO_CB -> R.string.halo_title
     AntennaType.YAGI -> R.string.yagi_title
     AntennaType.J_POLE -> R.string.jpole_title
     AntennaType.FULL_WAVE_LOOP -> R.string.loop_title
@@ -134,6 +138,7 @@ internal class JournalPresentation(private val context: Context) {
                 MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
                 Hb9cvAerial.MODEL -> text(R.string.hb9cv_aerial_name)
                 "cantenna_calculated" -> text(R.string.cantenna_title)
+                HALO_CB_MODEL -> text(R.string.halo_estimate)
                 "cantenna_mit", "cantenna_ve4ma", "cantenna_flare" -> cantenna?.let { text(it.title) } ?: s.model
                 else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
             }
@@ -142,6 +147,17 @@ internal class JournalPresentation(private val context: Context) {
                 s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
             } else null
             fun render(metric: SnapshotValue): String {
+                if (s.model == HALO_CB_MODEL) {
+                    if (metric.key == "halo_shape") return when (metric.value) {
+                        1.0 -> text(R.string.halo_round)
+                        2.0 -> text(R.string.halo_square)
+                        else -> metricValue(metric)
+                    }
+                    if (metric.unit == SnapshotUnit.METERS &&
+                        (metric.key == "halo_gap" || HaloGammaField.entries.any { it.key == metric.key })) {
+                        return CantennaText(context.resources).mm(metric.value)
+                    }
+                }
                 if (cantennaText != null) {
                     if (metric.key == "cantenna_objective") return text(if (metric.value == 1.0) R.string.cantenna_gain else R.string.cantenna_noise)
                     if (metric.unit == SnapshotUnit.METERS) return cantennaText.mm(metric.value)
@@ -194,7 +210,7 @@ internal class JournalPresentation(private val context: Context) {
 
     private fun signed(value: Double, formatted: String): String = if (value > 0) "+$formatted" else formatted
 
-    private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = when (key) {
+    private fun metricLabel(key: String, type: AntennaType, moxon: MoxonProfile? = null): String = haloMetricLabel(key)?.let(::text) ?: when (key) {
         "frequency" -> text(R.string.frequency)
         "cantenna_te11" -> "TE₁₁"
         "cantenna_tm01" -> "TM₀₁"

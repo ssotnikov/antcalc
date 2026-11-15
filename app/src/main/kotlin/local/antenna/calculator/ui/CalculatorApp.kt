@@ -41,7 +41,7 @@ import local.antenna.calculator.measurements.MeasurementViewModel
 import local.antenna.calculator.measurements.SwrBandwidthScreen
 
 // Keep ABOUT as the persisted route identifier for Help.
-internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA }
+internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,10 +82,12 @@ private fun LocalizedCalculatorApp(
     var savedCantennaProject by rememberSaveable { mutableStateOf<String?>(null) }
     var yagiLinkOrigin by rememberSaveable { mutableStateOf<Page?>(null) }
     var bandwidthFromMeasurements by rememberSaveable { mutableStateOf(false) }
+    var bandwidthParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
     var bandwidthEntrySlot by rememberSaveable { mutableStateOf<Int?>(null) }
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
+    var haloRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var sweepTransferId by rememberSaveable { mutableStateOf<UUID?>(null) }
     var transferType by rememberSaveable { mutableStateOf(AntennaType.SYMMETRIC_DIPOLE) }
     var linkedProjectId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -134,9 +136,10 @@ private fun LocalizedCalculatorApp(
                 yagiLinkOrigin = null
             }
             Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.MOXON, Page.HB9CV, Page.CANTENNA -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.HALO_CB -> page = if (haloRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.CABLE -> page = cableParent
             Page.MEASUREMENTS -> page = measurementsParent
-            Page.SWR_BANDWIDTH -> page = if (bandwidthFromMeasurements) Page.MEASUREMENTS else Page.ADDITIONAL_TOOLS
+            Page.SWR_BANDWIDTH -> page = if (bandwidthFromMeasurements) Page.MEASUREMENTS else bandwidthParent
             Page.TRANSFER_NEW -> page = Page.TRANSFER_PICKER
             Page.TRANSFER_PICKER -> if (pending?.needsAntennaChoice == true) page = Page.TRANSFER_TYPE else finishTransfer()
             Page.TRANSFER_TYPE -> finishTransfer()
@@ -251,6 +254,7 @@ private fun LocalizedCalculatorApp(
             Page.MOXON -> R.string.moxon_title
             Page.HB9CV -> R.string.hb9cv_title
             Page.CANTENNA -> R.string.cantenna_title
+            Page.HALO_CB -> R.string.halo_title
             Page.J_POLE -> R.string.jpole_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
             Page.TRANSFER_PICKER -> if (sweepTransferId != null) R.string.sweep_save else R.string.project_transfer_title
@@ -338,7 +342,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -379,6 +383,11 @@ private fun LocalizedCalculatorApp(
                             onOpenMoxon = { leaveInput(); page = Page.MOXON },
                             onOpenHb9cv = { leaveInput(); page = Page.HB9CV },
                             onOpenCantenna = { leaveInput(); page = Page.CANTENNA },
+                            onOpenHalo = {
+                                leaveInput()
+                                haloRestore = null
+                                page = Page.HALO_CB
+                            },
                             onOpenJPole = { leaveInput(); page = Page.J_POLE },
                             onOpenYagi = {
                                 leaveInput()
@@ -414,6 +423,7 @@ private fun LocalizedCalculatorApp(
                             },
                             onOpenBandwidth = {
                                 bandwidthFromMeasurements = false
+                                bandwidthParent = Page.ADDITIONAL_TOOLS
                                 bandwidthEntrySlot = null
                                 measurements?.showWorkspace()
                                 page = Page.SWR_BANDWIDTH
@@ -497,6 +507,33 @@ private fun LocalizedCalculatorApp(
                             },
                             onSave = if (journal == null) null else { snapshot, note ->
                                 startTransfer(PendingProjectCalculation(snapshot, note = note), AntennaType.YAGI)
+                            },
+                            onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
+                        )
+                    }
+                    Page.HALO_CB -> screenStates.SaveableStateProvider(if (haloRestore == null) "halo-cb" else "halo-cb-record") {
+                        HaloCbScreen(
+                            initial = haloRestore?.snapshot,
+                            onMeasurements = measurements?.let { model ->
+                                {
+                                    leaveInput()
+                                    measurementsParent = Page.HALO_CB
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
+                            },
+                            onBandwidth = measurements?.let { model ->
+                                {
+                                    leaveInput()
+                                    bandwidthFromMeasurements = false
+                                    bandwidthParent = Page.HALO_CB
+                                    bandwidthEntrySlot = null
+                                    model.showWorkspace()
+                                    page = Page.SWR_BANDWIDTH
+                                }
+                            },
+                            onSave = if (journal == null) null else { snapshot ->
+                                startTransfer(PendingProjectCalculation(snapshot), AntennaType.HALO_CB)
                             },
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
@@ -649,6 +686,12 @@ private fun LocalizedCalculatorApp(
                         screenStates.SaveableStateProvider(if (linkedProjectId == null) "journal" else "linked-journal") {
                             JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next },
                                 state, currentState, initialProjectId = linkedProjectId,
+                                onOpenHalo = { snapshot ->
+                                    leaveInput()
+                                    screenStates.removeState("halo-cb-record")
+                                    haloRestore = PendingProjectCalculation(snapshot)
+                                    page = Page.HALO_CB
+                                },
                                 onOpenSweeps = measurements?.let { model ->
                                     { sweep, project ->
                                         savedCantennaProject = project.title.takeIf { project.antennaType == AntennaType.CANTENNA }
