@@ -45,11 +45,14 @@
 В проекте используются материалы из публикаций следующих авторов и изданий.
 
 - **R3UDK** — [Изготовление антенны «Волновой канал»](https://wiki.app.lizaalert.ru/s/8a0ac7fb-4e86-4453-8778-5a45f9f0ca3e)
+
+  По условиям публикации материалы предназначены для некоммерческого использования. Права на 3D-модели сохраняются за R3UDK.
+
 - **Хартмут Клювер (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm)
 
   Права на оригинальные конструкции сохраняются за автором. Для перепубликации требуется его письменное разрешение. [Условия DG7YBN](https://www.dg7ybn.de/)
 
-- **Мартин Штайер (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 и 50 Ом)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm)
+- **Мартин Штайер (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 и 50 Ом)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm) · [PVC Yagi Construction Details](https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm) · [Short Yagis for 70 cm](https://dk7zb.darc.de/70cm/70cm-kurz.htm) · [Wireman J-Poles: 450 и 300 Ом](https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm)
 
   Приведены данные конструкций для некоммерческого использования. По опубликованным условиям автора коммерческое использование требует его разрешения. [Условия DK7ZB](https://dk7zb.darc.de/)
 
@@ -57,11 +60,15 @@
 - **Джон (M0UKD)** — [Slim Jim and J Pole Calculator](https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/) · [1/4 Wave Ground Plane Antenna Calculator](https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/)
 - **Стив Николс (G0KYA)** — [10m Slim Jim Antenna](https://www.infotechcomms.co.uk/downloads/10m_Slim_Jim.pdf) · [Заметки автора о пересчёте размеров и сборке OH2EUU](https://g0kya.blogspot.com/2011/08/10m-slim-jim-antenna.html)
 - **Эли Ково (4X4LH)** — [The 4X4 Slimtenna](https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59)
-- **Л. Б. Себик (W4RNL)** — [Some J-Poles That I Have Known, Part 1](https://antenna2.github.io/cebik/content/vhf/jp1.html) · [What Is a Slim Jim?](https://antenna2.github.io/cebik/content/vhf/sj.html)
-- **Имон Скелтон (EI9GQ)** — [J-vertical Antenna for 10 Meters Band](https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band)
+- **Л. Б. Себик (W4RNL)** — [Some J-Poles That I Have Known, Part 1](https://antenna2.github.io/cebik/content/vhf/jp1.html) · [What Is a Slim Jim?](https://antenna2.github.io/cebik/content/vhf/sj.html) · [Some J-Poles That I Have Known, Part 3](https://antenna2.github.io/cebik/content/vhf/jp3.html) · [Some J-Poles That I Have Known, Part 4](https://antenna2.github.io/cebik/content/vhf/jp4.html)
+- **Имон Скелтон (EI9GQ)** — [J-vertical Antenna for 10 Meters Band](https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band) · [Антенна J-вертикал на диапазон 10 метров (R3RT)](https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-j-%D0%B2%D0%B5%D1%80%D1%82%D0%B8%D0%BA%D0%B0%D0%BB-%D0%BD%D0%B0-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/)
 - **Дейл Хант (WB6BYU)** — [Theory of Full Wave Loops](https://practicalantennas.com/theory/loop/full-wave/)
 - **«Радиосхемы» (RadioSkot)** — [Интерактивная диаграмма Смита](https://radioskot.com/calc/interaktivnaya-diagramma-smita)
-- **Кьяра Рамелла, Паоло Колантонио и Марко Пирола** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042)
+- **Кьяра Рамелла, Паоло Колантонио и Марко Пирола** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042). Статья опубликована по лицензии CC BY 4.0.
+- **NT1K** — [Open Stub J-Pole Project – Completed (Many Times)](https://nt1k.com/open-stub-j-pole-project-completed-many-times/)
+- **Евгений Солодовников** — [Петлевой вибратор в антенне Inverted V](https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/)
+- **Джеймс У. Хили (NJ2L)** — [Antenna Here Is a Dipole](https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf)
+- **Патрик У. Финк** — [Wireless Network Communications Overview for Space Mission Operations (CCSDS)](https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf)
 
 #### Источники калькулятора «Антенна Моксон»
 
@@ -129,11 +136,14 @@ Calculations, formulas and diagrams are available offline. Choose English or Rus
 The project draws on materials from the following authors and publishers.
 
 - **R3UDK** — [Building a Yagi–Uda Antenna (Russian original)](https://wiki.app.lizaalert.ru/s/8a0ac7fb-4e86-4453-8778-5a45f9f0ca3e)
+
+  The published terms limit use of the materials to non-commercial purposes. R3UDK retains the rights to the 3D models.
+
 - **Hartmut Klüver (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm)
 
   The author retains the rights to the original designs and requires written permission for republication. [DG7YBN’s terms](https://www.dg7ybn.de/)
 
-- **Martin Steyer (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 and 50 Ω)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm)
+- **Martin Steyer (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 and 50 Ω)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm) · [PVC Yagi Construction Details](https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm) · [Short Yagis for 70 cm](https://dk7zb.darc.de/70cm/70cm-kurz.htm) · [Wireman J-Poles: 450 and 300 Ω](https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm)
 
   Design data are provided for non-commercial use. The author’s published terms require his permission for commercial use. [DK7ZB’s terms](https://dk7zb.darc.de/)
 
@@ -141,11 +151,15 @@ The project draws on materials from the following authors and publishers.
 - **John (M0UKD)** — [Slim Jim and J Pole Calculator](https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/) · [1/4 Wave Ground Plane Antenna Calculator](https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/)
 - **Steve Nichols (G0KYA)** — [10m Slim Jim Antenna](https://www.infotechcomms.co.uk/downloads/10m_Slim_Jim.pdf) · [Author’s notes on scaling and the OH2EUU build](https://g0kya.blogspot.com/2011/08/10m-slim-jim-antenna.html)
 - **Eli Kovo (4X4LH)** — [The 4X4 Slimtenna](https://www.iarc.org/wp-content/uploads/2025/04/2007-06.pdf#page=59)
-- **L. B. Cebik (W4RNL)** — [Some J-Poles That I Have Known, Part 1](https://antenna2.github.io/cebik/content/vhf/jp1.html) · [What Is a Slim Jim?](https://antenna2.github.io/cebik/content/vhf/sj.html)
-- **Eamon Skelton (EI9GQ)** — [J-vertical Antenna for 10 Meters Band](https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band)
+- **L. B. Cebik (W4RNL)** — [Some J-Poles That I Have Known, Part 1](https://antenna2.github.io/cebik/content/vhf/jp1.html) · [What Is a Slim Jim?](https://antenna2.github.io/cebik/content/vhf/sj.html) · [Some J-Poles That I Have Known, Part 3](https://antenna2.github.io/cebik/content/vhf/jp3.html) · [Some J-Poles That I Have Known, Part 4](https://antenna2.github.io/cebik/content/vhf/jp4.html)
+- **Eamon Skelton (EI9GQ)** — [J-vertical Antenna for 10 Meters Band](https://www.iw5edi.com/ham-radio/6250/j-vertical-antenna-for-10-meters-band) · [J-vertical Antenna for 10 Meters Band (Russian edition, R3RT)](https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-j-%D0%B2%D0%B5%D1%80%D1%82%D0%B8%D0%BA%D0%B0%D0%BB-%D0%BD%D0%B0-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/)
 - **Dale Hunt (WB6BYU)** — [Theory of Full Wave Loops](https://practicalantennas.com/theory/loop/full-wave/)
 - **RadioSkot (Радиосхемы)** — [Interactive Smith Chart (Russian original)](https://radioskot.com/calc/interaktivnaya-diagramma-smita)
-- **Chiara Ramella, Paolo Colantonio and Marco Pirola** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042)
+- **Chiara Ramella, Paolo Colantonio and Marco Pirola** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042). The article is published under CC BY 4.0.
+- **NT1K** — [Open Stub J-Pole Project – Completed (Many Times)](https://nt1k.com/open-stub-j-pole-project-completed-many-times/)
+- **Evgeny Solodovnikov** — [Folded Dipole in an Inverted V (Russian original)](https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/)
+- **James W. Healy (NJ2L)** — [Antenna Here Is a Dipole](https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf)
+- **Patrick W. Fink** — [Wireless Network Communications Overview for Space Mission Operations (CCSDS)](https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf)
 
 #### Moxon calculator sources
 

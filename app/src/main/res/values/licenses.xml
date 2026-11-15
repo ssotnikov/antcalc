@@ -12,6 +12,9 @@
     <string name="licenses_work_3_1">3-Element 2 m Yagi</string>
     <string name="licenses_work_3_2">5-Element 70 cm Yagis (28 and 50 Ω)</string>
     <string name="licenses_work_3_3">Duoband Yagi 2 m / 70 cm (2+2)</string>
+    <string name="licenses_work_3_4">PVC Yagi Construction Details</string>
+    <string name="licenses_work_3_5">Short Yagis for 70 cm</string>
+    <string name="licenses_work_3_6">Wireman J-Poles: 450 and 300 Ω</string>
     <string name="licenses_author_4">Jose I. Calderon (DU1ANV)</string>
     <string name="licenses_work_4_1">Build the Slim JIM Antenna</string>
     <string name="licenses_author_5">John (M0UKD)</string>
@@ -25,13 +28,26 @@
     <string name="licenses_author_8">L. B. Cebik (W4RNL)</string>
     <string name="licenses_work_8_1">Some J-Poles That I Have Known, Part 1</string>
     <string name="licenses_work_8_2">What Is a Slim Jim?</string>
+    <string name="licenses_work_8_3">Some J-Poles That I Have Known, Part 3</string>
+    <string name="licenses_work_8_4">Some J-Poles That I Have Known, Part 4</string>
     <string name="licenses_author_9">Eamon Skelton (EI9GQ)</string>
     <string name="licenses_work_9_1">J-vertical Antenna for 10 Meters Band</string>
+    <string name="licenses_work_9_2">J-vertical Antenna for 10 Meters Band (Russian edition, R3RT)</string>
     <string name="licenses_author_10">Dale Hunt (WB6BYU)</string>
     <string name="licenses_work_10_1">Theory of Full Wave Loops</string>
     <string name="licenses_author_11">RadioSkot (Радиосхемы)</string>
     <string name="licenses_work_11_1">Interactive Smith Chart (Russian original)</string>
     <string name="licenses_author_12">Chiara Ramella, Paolo Colantonio and Marco Pirola</string>
     <string name="licenses_work_12_1">A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers</string>
+    <string name="licenses_author_13">NT1K</string>
+    <string name="licenses_work_13_1">Open Stub J-Pole Project – Completed (Many Times)</string>
+    <string name="licenses_author_14">Evgeny Solodovnikov</string>
+    <string name="licenses_work_14_1">Folded Dipole in an Inverted V (Russian original)</string>
+    <string name="licenses_author_15">James W. Healy (NJ2L)</string>
+    <string name="licenses_work_15_1">Antenna Here Is a Dipole</string>
+    <string name="licenses_author_16">Patrick W. Fink</string>
+    <string name="licenses_work_16_1">Wireless Network Communications Overview for Space Mission Operations (CCSDS)</string>
     <string name="licenses_author_terms">Author’s terms of use</string>
+    <string name="licenses_r3udk_terms">The published terms limit use of the materials to non-commercial purposes. R3UDK retains the rights to the 3D models.</string>
+    <string name="licenses_cc_by_terms">The article is published under CC BY 4.0.</string>
 </resources>

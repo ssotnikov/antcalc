@@ -12,6 +12,9 @@
     <string name="licenses_work_3_1">3-Element 2 m Yagi</string>
     <string name="licenses_work_3_2">5-Element 70 cm Yagis (28 и 50 Ом)</string>
     <string name="licenses_work_3_3">Duoband Yagi 2 m / 70 cm (2+2)</string>
+    <string name="licenses_work_3_4">PVC Yagi Construction Details</string>
+    <string name="licenses_work_3_5">Short Yagis for 70 cm</string>
+    <string name="licenses_work_3_6">Wireman J-Poles: 450 и 300 Ом</string>
     <string name="licenses_author_4">Хосе И. Кальдерон (DU1ANV)</string>
     <string name="licenses_work_4_1">Build the Slim JIM Antenna</string>
     <string name="licenses_author_5">Джон (M0UKD)</string>
@@ -25,13 +28,26 @@
     <string name="licenses_author_8">Л. Б. Себик (W4RNL)</string>
     <string name="licenses_work_8_1">Some J-Poles That I Have Known, Part 1</string>
     <string name="licenses_work_8_2">What Is a Slim Jim?</string>
+    <string name="licenses_work_8_3">Some J-Poles That I Have Known, Part 3</string>
+    <string name="licenses_work_8_4">Some J-Poles That I Have Known, Part 4</string>
     <string name="licenses_author_9">Имон Скелтон (EI9GQ)</string>
     <string name="licenses_work_9_1">J-vertical Antenna for 10 Meters Band</string>
+    <string name="licenses_work_9_2">Антенна J-вертикал на диапазон 10 метров (R3RT)</string>
     <string name="licenses_author_10">Дейл Хант (WB6BYU)</string>
     <string name="licenses_work_10_1">Theory of Full Wave Loops</string>
     <string name="licenses_author_11">«Радиосхемы» (RadioSkot)</string>
     <string name="licenses_work_11_1">Интерактивная диаграмма Смита</string>
     <string name="licenses_author_12">Кьяра Рамелла, Паоло Колантонио и Марко Пирола</string>
     <string name="licenses_work_12_1">A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers</string>
+    <string name="licenses_author_13">NT1K</string>
+    <string name="licenses_work_13_1">Open Stub J-Pole Project – Completed (Many Times)</string>
+    <string name="licenses_author_14">Евгений Солодовников</string>
+    <string name="licenses_work_14_1">Петлевой вибратор в антенне Inverted V</string>
+    <string name="licenses_author_15">Джеймс У. Хили (NJ2L)</string>
+    <string name="licenses_work_15_1">Antenna Here Is a Dipole</string>
+    <string name="licenses_author_16">Патрик У. Финк</string>
+    <string name="licenses_work_16_1">Wireless Network Communications Overview for Space Mission Operations (CCSDS)</string>
+    <string name="licenses_r3udk_terms">По условиям публикации материалы предназначены для некоммерческого использования. Права на 3D-модели сохраняются за R3UDK.</string>
+    <string name="licenses_cc_by_terms">Статья опубликована по лицензии CC BY 4.0.</string>
     <string name="licenses_author_terms">Условия использования от автора</string>
 </resources>
