@@ -20,8 +20,8 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 104
-        versionName = "1.20.0"
+        versionCode = 105
+        versionName = "1.21.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -123,3 +123,6 @@ dependencies {
         }
     }
 }
+
+// Validate the bundled Yagi geometry and published cut-list cases before assembly.
+tasks.named("preBuild") { dependsOn(":calculator-core:test") }

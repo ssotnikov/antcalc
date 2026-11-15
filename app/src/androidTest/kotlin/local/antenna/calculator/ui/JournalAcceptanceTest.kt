@@ -26,6 +26,52 @@ import org.junit.runner.RunWith
 class JournalAcceptanceTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
+    @Test fun everyYagiProfileCopiesAndSavesToNewAndExistingProjects() {
+        waitFor("nav-TOOLS")
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-antenna-parameter-tools")
+        click("open-yagi-calculator")
+        val suffix = UUID.randomUUID().toString().take(6)
+        for (profile in YagiProfile.entries) {
+            val title = "Yagi ${profile.id} $suffix"
+            click("yagi-profile")
+            compose.onNodeWithTag("yagi-profile-${profile.id}").performClick()
+            click("yagi-copy")
+            compose.runOnIdle {
+                val clipboard = compose.activity.getSystemService(ClipboardManager::class.java)
+                val clip = checkNotNull(clipboard.primaryClip)
+                assertEquals(profile.label, clip.description.label.toString())
+                val report = clip.getItemAt(0).text.toString()
+                assertTrue(report.startsWith(profile.label))
+                assertTrue(report.contains("#${profile.design.revision}"))
+                assertTrue(report.endsWith(profile.original))
+            }
+
+            click("yagi-save")
+            waitFor("project-transfer-project-picker")
+            val create = hasTestTag("project-transfer-create") and isEnabled()
+            compose.waitUntil(15_000) { compose.onAllNodes(create).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNodeWithTag("project-transfer-create").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick)
+            waitFor("project-transfer-name")
+            edit("project-transfer-name", title)
+            click("project-transfer-save-new")
+            waitFor("yagi-save")
+            val project = savedProject(title)
+            assertEquals(AntennaType.YAGI, project.antennaType)
+            val snapshot = requireNotNull(project.records.single().calculation)
+            assertEquals(profile.design.model, snapshot.model)
+
+            click("yagi-save")
+            waitFor("project-transfer-project-picker")
+            val row = hasTestTag("project-transfer-project") and hasText(title)
+            compose.onNodeWithTag("project-transfer-project-list").performScrollToNode(row)
+            compose.onNode(row).performClick()
+            compose.onNodeWithTag("project-transfer-confirm-project").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick)
+            waitFor("yagi-save")
+            assertEquals(listOf(snapshot, snapshot), savedProject(title).records.map { it.calculation })
+        }
+    }
+
     @Test fun slimJimCanCancelCreateAndAppendWithoutChangingItsGeometry() {
         val title = "Slim Jim " + UUID.randomUUID().toString().take(6)
         waitFor("nav-TOOLS")

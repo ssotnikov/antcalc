@@ -30,4 +30,26 @@ class YagiLayoutTest {
         assertThrows(IllegalArgumentException::class.java) { calculateR3udkCutList(0.0, 1001.0, 0.0) }
         assertThrows(IllegalArgumentException::class.java) { calculateR3udkCutList(0.0, 0.0, Double.NaN) }
     }
+    @Test
+    fun publishedProfilesKeepUnknownBlanksAndUseConfirmedLengths() {
+        val expectedSpans = listOf(868.0, 1485.0, 470.0, 590.0, 630.0, 392.0, 2358.0)
+        val expectedCounts = listOf(4, 5, 3, 5, 5, 4, 6)
+        val designs = YagiDesign.entries
+        assertEquals(designs.size, designs.map(YagiDesign::model).distinct().size)
+        assertEquals(expectedCounts, designs.map { it.elements.size })
+        assertEquals(expectedSpans, designs.map { calculateYagiCutList(it, 0.0, null, null).spanMm })
+        val ybn = calculateYagiCutList(YagiDesign.YBN, 5.0, 30.0, 40.0)
+        assertEquals(1555.0, checkNotNull(ybn.boomMm), 0.0)
+        assertEquals(1042.9, checkNotNull(ybn.blanksMm.first()), 0.0)
+        assertNull(ybn.blanksMm[1])
+        assertEquals(listOf(null, null, null), calculateYagiCutList(YagiDesign.DK2, 5.0, null, null).blanksMm)
+
+        val gtv = calculateYagiCutList(YagiDesign.GTV, 5.0, 40.0, 40.0)
+        assertEquals(2438.0, checkNotNull(gtv.boomMm), 0.0)
+        assertNull(gtv.blanksMm[1])
+        assertEquals(856.83, checkNotNull(gtv.blanksMm.last()), 0.000001)
+        assertEquals(listOf("r2m", "r70", "de", "os"), YagiDesign.DUO.elements.map(YagiElement::id))
+        assertEquals(22.0, YagiDesign.DUO.elements[3].positionMm - YagiDesign.DUO.elements[2].positionMm, 0.0)
+        assertEquals(listOf(120.0, 115.0, 141.0), YagiMatchingCable.entries.map(YagiMatchingCable::sectionMm))
+    }
 }

@@ -59,6 +59,8 @@ internal class PendingProjectCalculation(
 ) {
     private val source = if (SlimJimProfile.entries.any { it.model == snapshot.model }) {
         TransferSource.SLIM_JIM
+    } else if (YagiProfile.entries.any { it.design.model == snapshot.model }) {
+        TransferSource.YAGI
     } else {
         TransferSource.entries.first { it.model == snapshot.model }
     }
@@ -71,7 +73,7 @@ internal class PendingProjectCalculation(
     val isFullWaveLoop get() = source == TransferSource.FULL_WAVE_LOOP
     val title get() = source.title
     val target = (if (isFullWaveLoop) snapshot.outputs else snapshot.inputs)
-        .firstOrNull { it.key == source.frequencyKey }
+        .firstOrNull { it.key == source.frequencyKey && snapshot.model != YagiProfile.DUO.design.model }
         ?.let { if (isFullWaveLoop) it.value.roundToLong() else it.value.toLong() }
         ?.takeIf { it in Frequency.MIN_HERTZ..Frequency.MAX_HERTZ }
         ?.let(Frequency::ofHertz)

@@ -1,6 +1,11 @@
 package local.antenna.calculator.journal
 
 import android.content.Context
+import local.antenna.calculator.core.layout.YagiMatchingCable
+import local.antenna.calculator.ui.YagiProfile
+import local.antenna.calculator.ui.label
+import local.antenna.calculator.ui.yagiElementLabelOrNull
+import local.antenna.calculator.ui.yagiLength
 import local.antenna.calculator.ui.FrequencyNumberFormat
 import local.antenna.calculator.ui.labelResource
 import local.antenna.calculator.ui.formatLength
@@ -94,6 +99,7 @@ internal class JournalPresentation(private val context: Context) {
 
     fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> = buildList {
             val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
+            val yagi = YagiProfile.entries.firstOrNull { it.design.model == s.model }
             val label = profile?.let { text(it.title) } ?: when (s.model) {
                 "sizing" -> text(R.string.journal_sizing_model)
                 "trimming" -> text(R.string.journal_trim_model)
@@ -102,7 +108,7 @@ internal class JournalPresentation(private val context: Context) {
                 "j_pole" -> text(R.string.jpole_title)
                 "full_wave_loop" -> text(R.string.loop_title)
                 "inverted_v" -> text(R.string.inverted_v_title)
-                else -> s.model
+                else -> yagi?.label ?: s.model
             }
             add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
             for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to metricValue(metric))
@@ -117,6 +123,7 @@ internal class JournalPresentation(private val context: Context) {
             }
             for (warning in s.warnings) {
                 val message = when (warning) {
+                    "YAGI_PARTIAL_CUT_LIST" -> text(R.string.yagi_partial_cut_list)
                     "LARGE_FREQUENCY_CHANGE" -> text(R.string.large_change_note)
                     "RESULT_OUTSIDE_INPUT_LENGTH_RANGE" -> text(R.string.outside_length_note)
                     "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
@@ -202,21 +209,21 @@ internal class JournalPresentation(private val context: Context) {
         "yagi_front" -> text(R.string.yagi_front)
         "yagi_span" -> text(R.string.yagi_span)
         "yagi_boom" -> text(R.string.yagi_boom)
+        "yagi_band_1_low" -> text(R.string.yagi_band_1_low)
+        "yagi_band_1_high" -> text(R.string.yagi_band_1_high)
+        "yagi_band_2_low" -> text(R.string.yagi_band_2_low)
+        "yagi_band_2_high" -> text(R.string.yagi_band_2_high)
         else -> yagiMetricLabel(key) ?: key
     }
 
     private fun yagiMetricLabel(key: String): String? {
         if (!key.startsWith("yagi_")) return null
-        val element = when (key.removePrefix("yagi_").substringBefore('_')) {
-            "r" -> R.string.construction_yagi_reflector
-            "de" -> R.string.construction_yagi_driven
-            "d1" -> R.string.construction_yagi_director_1
-            "d2" -> R.string.construction_yagi_director_2
-            else -> return null
-        }
+        YagiMatchingCable.entries.firstOrNull { it.metricKey == key }?.let { return text(it.label()) }
+        val element = yagiElementLabelOrNull(key.removePrefix("yagi_").substringBefore('_')) ?: return null
         val column = when (key.substringAfterLast('_')) {
             "position" -> R.string.yagi_position
             "overall" -> R.string.yagi_overall
+            "table" -> R.string.yagi_gtv_table_length
             "diameter" -> R.string.yagi_diameter
             "blank" -> R.string.yagi_record_blank
             else -> return null
@@ -225,6 +232,12 @@ internal class JournalPresentation(private val context: Context) {
     }
 
     private fun metricValue(metric: SnapshotValue): String {
+        if (YagiMatchingCable.entries.any { it.metricKey == metric.key }) {
+            return context.getString(R.string.yagi_matching_pair, yagiLength(context, metric.value * 1000, LengthUnit.MILLIMETERS))
+        }
+        if (metric.key.startsWith("yagi_") && metric.unit == SnapshotUnit.METERS) {
+            return yagiLength(context, metric.value * 1000, LengthUnit.MILLIMETERS)
+        }
         if (metric.key == "yagi_unit") {
             LengthUnit.entries.firstOrNull { it.ordinal.toDouble() == metric.value }?.let { return text(it.labelResource()) }
         }

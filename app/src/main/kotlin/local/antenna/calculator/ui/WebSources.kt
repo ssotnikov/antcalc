@@ -48,6 +48,8 @@ private val additionalSourceAddresses = setOf(
     "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm",
     "https://dk7zb.darc.de/",
     "https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm",
+    "https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm",
+    "https://dk7zb.darc.de/70cm/70cm-kurz.htm",
     "https://dk7zb.darc.de/70cm/5.htm",
     "https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm",
     "https://antenna2.github.io/cebik/content/vhf/jp1.html",
