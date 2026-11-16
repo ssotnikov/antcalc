@@ -18,7 +18,7 @@ class AntennaRotationTest : CalculatorUiFixture() {
         start()
         openAntennaTool("open-ground-plane")
         val model = compose.onNodeWithTag("antenna-rotating-view")
-        model.performTouchInput { doubleClick() }
+        compose.onNodeWithTag("antenna-view-expand").performTouchInput { click() }
         val fullScreen = compose.onNodeWithTag("antenna-full-view")
         fun image(): android.graphics.Bitmap {
             fullScreen.assertIsDisplayed()

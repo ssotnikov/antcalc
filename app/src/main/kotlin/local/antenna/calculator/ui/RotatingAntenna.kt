@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -203,6 +204,10 @@ internal fun RotatingAntenna(
         val height = if (interactive) baseHeight * 1.2f else baseHeight
         Box(modifier.fillMaxWidth().height(height)) {
             AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = true }, false, Modifier.fillMaxSize(), interactive)
+            if (interactive) {
+                ExpandImageButton(description, { expanded = true },
+                    Modifier.align(Alignment.BottomEnd).testTag("antenna-view-expand"))
+            }
         }
         if (expanded) {
             Dialog(

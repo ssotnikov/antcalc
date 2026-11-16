@@ -39,6 +39,7 @@ import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.journal.PhotoAttachment
 import local.antenna.calculator.core.journal.PhotoFormat
 import local.antenna.calculator.ui.AppAlertDialog
+import local.antenna.calculator.ui.FullscreenImage
 
 internal class JournalPhotoActions(
     val add: () -> Unit,
@@ -302,7 +303,7 @@ private fun StoredPhoto(
             .testTag("journal-photo-preview")
             .clickable(onClickLabel = stringResource(R.string.photo_fullscreen), onClick = onOpen)
         Image(image, description, preview, contentScale = ContentScale.Fit)
-        if (fullscreen) FullscreenJournalPhoto(image, description, onClose)
+        if (fullscreen) FullscreenImage(image, description, onClose)
     }
 }
 

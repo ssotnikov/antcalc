@@ -1,7 +1,6 @@
 package local.antenna.calculator.ui
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -77,10 +77,11 @@ internal fun YagiConstructionScreen(onOpenCalculator: () -> Unit, onOpenMeasurem
     ) {
         item("yagi-intro") {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Image(
-                    painterResource(R.drawable.yagi_antenna),
-                    contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().height(192.dp),
+                GuideIllustration(
+                    ImageBitmap.imageResource(R.drawable.yagi_antenna),
+                    stringResource(R.string.yagi_hero_description),
+                    "overview",
+                    Modifier.fillMaxWidth().height(192.dp),
                 )
                 Text(stringResource(R.string.construction_yagi_intro))
                 TextButton(onClick = onOpenCalculator, modifier = Modifier.testTag("yagi-guide-open-calculator")) {

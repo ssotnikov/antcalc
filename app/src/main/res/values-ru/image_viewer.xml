@@ -1,0 +1,8 @@
+<resources>
+    <string name="image_expand_description">Открыть на весь экран: %1$s</string>
+    <string name="image_zoom_hint">Разведите пальцы для увеличения</string>
+    <string name="image_zoom_out">Уменьшить масштаб</string>
+    <string name="image_zoom_in">Увеличить масштаб</string>
+    <string name="image_zoom_reset">Масштаб %1$d%%. Сбросить</string>
+    <string name="yagi_hero_description">Общий вид антенны Яги — Уда</string>
+</resources>

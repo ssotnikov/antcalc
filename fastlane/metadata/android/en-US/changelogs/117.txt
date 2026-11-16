@@ -1,0 +1,2 @@
+• Open Yagi–Uda guide illustrations full screen with a double tap or the magnifier. Zoom and pan to inspect details.
+• The magnifier also opens rotatable antenna models in calculators full screen.

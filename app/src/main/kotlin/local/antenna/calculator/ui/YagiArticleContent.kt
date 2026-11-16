@@ -4,10 +4,12 @@ import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -18,10 +20,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -31,6 +37,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -111,10 +118,41 @@ private fun ArticleImage(path: String, caption: String, aspectRatio: Float) {
             assets.open("$ARTICLE_ROOT/$path").use { BitmapFactory.decodeStream(it, null, options)?.asImageBitmap() }
         }
     }
-    Box(Modifier.fillMaxWidth().aspectRatio(aspectRatio)) {
-        bitmap?.let {
-            Image(it, caption.ifBlank { stringResource(R.string.construction_yagi_article_image) }, Modifier.fillMaxSize())
+    val description = caption.ifBlank {
+        stringResource(if (path == "images/00.jpg") R.string.construction_yagi_geometry else R.string.construction_yagi_article_image)
+    }
+    GuideIllustration(bitmap, description, path, Modifier.fillMaxWidth().aspectRatio(aspectRatio)) {
+        withContext(Dispatchers.IO) {
+            try {
+                assets.open("$ARTICLE_ROOT/$path").use { BitmapFactory.decodeStream(it)?.asImageBitmap() }
+            } catch (_: IOException) {
+                null
+            }
         }
     }
     if (caption.isNotBlank()) Text(caption, style = MaterialTheme.typography.bodySmall)
+}
+
+@Composable
+internal fun GuideIllustration(
+    preview: ImageBitmap?,
+    description: String,
+    id: String,
+    modifier: Modifier,
+    loadOriginal: (suspend () -> ImageBitmap?)? = null,
+) {
+    var expanded by rememberSaveable(id) { mutableStateOf(false) }
+    val open = { expanded = true }
+    Box(modifier.testTag("yagi-illustration-$id")) {
+        if (preview != null) {
+            Image(preview, description, Modifier.fillMaxSize()
+                .pointerInput(id) { detectTapGestures(onDoubleTap = { open() }) })
+            ExpandImageButton(description, open,
+                Modifier.align(Alignment.BottomEnd).padding(4.dp).testTag("yagi-illustration-expand-$id"))
+        }
+    }
+    if (expanded && preview != null) {
+        val original by produceState<ImageBitmap?>(null, id) { value = loadOriginal?.invoke() }
+        FullscreenImage(original ?: preview, description, { expanded = false }, title = description)
+    }
 }
