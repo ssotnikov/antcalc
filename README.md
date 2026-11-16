@@ -29,7 +29,7 @@
 ### Возможности
 
 - **Размеры и подстройка.** Рассчитывайте начальную длину штыря и диполя и оценивайте изменение длины по измеренному резонансу.
-- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полноволновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона доступен расчёт по частоте и диаметру, для HB9CV — по частоте 100–1500 МГц. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
+- **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полно-волновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона доступен расчёт по частоте и диаметру, для HB9CV — по частоте 100–1500 МГц. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
 - **Конструирование.** Иллюстрированное руководство по сборке четырёхэлементной Яги — Уда.
 - **КСВ и диаграмма Смита.** Пересчитывайте КСВ, отражение и возвратные потери. Изучайте влияние нагрузки на мощность передатчика и перемещайте маркеры на интерактивной диаграмме.
 - **Фидер.** Рассчитывайте электрическую длину, задержку и затухание кабеля по встроенному каталогу или своим данным.
@@ -55,11 +55,11 @@
 
 - **Хартмут Клювер (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm)
 
-  Права на оригинальные конструкции сохраняются за автором. Для перепубликации требуется его письменное разрешение. [Условия DG7YBN](https://www.dg7ybn.de/)
+  Права на оригинальные конструкции сохраняются за автором. [Условия DG7YBN](https://www.dg7ybn.de/)
 
 - **Мартин Штайер (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 и 50 Ом)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm) · [PVC Yagi Construction Details](https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm) · [Short Yagis for 70 cm](https://dk7zb.darc.de/70cm/70cm-kurz.htm) · [Wireman J-Poles: 450 и 300 Ом](https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm)
 
-  Приведены данные конструкций для некоммерческого использования. По опубликованным условиям автора коммерческое использование требует его разрешения. [Условия DK7ZB](https://dk7zb.darc.de/)
+  Данные конструкций в приложении представлены для некоммерческого использования. По опубликованным условиям автора коммерческое использование требует его разрешения. [Условия DK7ZB](https://dk7zb.darc.de/)
 
 - **Хосе И. Кальдерон (DU1ANV)** — [Build the Slim JIM Antenna](https://www.qsl.net/n1ea/slimjim_du1anv.pdf)
 - **Джон (M0UKD)** — [Slim Jim and J Pole Calculator](https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/) · [1/4 Wave Ground Plane Antenna Calculator](https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/)
@@ -212,11 +212,11 @@ The project draws on materials from the following authors and publishers.
 
 - **Hartmut Klüver (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm)
 
-  The author retains the rights to the original designs and requires written permission for republication. [DG7YBN’s terms](https://www.dg7ybn.de/)
+  The author retains the rights to the original designs. [DG7YBN’s terms](https://www.dg7ybn.de/)
 
 - **Martin Steyer (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 and 50 Ω)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm) · [PVC Yagi Construction Details](https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm) · [Short Yagis for 70 cm](https://dk7zb.darc.de/70cm/70cm-kurz.htm) · [Wireman J-Poles: 450 and 300 Ω](https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm)
 
-  Design data are provided for non-commercial use. The author’s published terms require his permission for commercial use. [DK7ZB’s terms](https://dk7zb.darc.de/)
+  The design data in the app are provided for non-commercial use. The author’s published terms require his permission for commercial use. [DK7ZB’s terms](https://dk7zb.darc.de/)
 
 - **Jose I. Calderon (DU1ANV)** — [Build the Slim JIM Antenna](https://www.qsl.net/n1ea/slimjim_du1anv.pdf)
 - **John (M0UKD)** — [Slim Jim and J Pole Calculator](https://m0ukd.com/calculators/slim-jim-and-j-pole-calculator/) · [1/4 Wave Ground Plane Antenna Calculator](https://m0ukd.com/calculators/quarter-wave-ground-plane-antenna-calculator/)
