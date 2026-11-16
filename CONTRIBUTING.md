@@ -355,6 +355,8 @@ Keep dependency-only changes separate from unrelated feature changes whenever pr
 
 Update documentation when a change affects installation, configuration, user-visible behavior, command-line options, APIs, environment variables, deployment, compatibility, architecture, or important design decisions.
 
+Whenever you add an AntCalc feature, update both the [Russian user guide](userguide/ru.html) and the [English user guide](userguide/en.html) in the same change. Keep their instructions in sync with the app and add or refresh the relevant illustrations in `userguide/images/`.
+
 Code and documentation should describe the same behavior when the PR is merged.
 
 ---
