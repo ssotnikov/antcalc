@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.app.Activity
 import android.app.Instrumentation
 import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.v2.createAndroidComposeRule
@@ -125,6 +126,58 @@ class JournalAcceptanceTest {
             compose.onNodeWithTag("project-transfer-confirm-project").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick)
             waitFor("yagi-save")
             assertEquals(listOf(snapshot, snapshot), savedProject(title).records.map { it.calculation })
+        }
+    }
+
+    @Test fun yagiGuideCreatesAndAppendsThePublishedR3udkDesign() {
+        val title = "R3UDK " + UUID.randomUUID().toString().take(6)
+        val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+        val keys = listOf("profile", "${YagiProfile.R3.id}_0", "${YagiProfile.R3.id}_1", "${YagiProfile.R3.id}_2")
+        val previous = keys.associateWith { prefs.getString(it, null) }
+        prefs.edit().putString(keys[0], YagiProfile.GTV.id)
+            .putString(keys[1], "12").putString(keys[2], "30").putString(keys[3], "40").commit()
+        try {
+            waitFor("nav-TOOLS")
+            compose.onNodeWithTag("nav-TOOLS").performClick()
+            click("open-antenna-construction")
+            click("open-construction-yagi")
+            val tag = "yagi-guide-add-to-project"
+            val button = compose.onNodeWithTag(tag)
+            compose.onNodeWithTag("yagi-guide").performScrollToNode(hasTestTag(tag))
+
+            button.performClick()
+            waitFor("project-transfer-project-picker")
+            compose.onNodeWithTag("back").performClick()
+            button.assertIsDisplayed()
+
+            button.performClick()
+            val create = hasTestTag("project-transfer-create") and isEnabled()
+            compose.waitUntil(15_000) { compose.onAllNodes(create).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNode(create).performClick()
+            edit("project-transfer-name", title)
+            click("project-transfer-save-new")
+            waitFor(tag)
+
+            val project = savedProject(title)
+            val snapshot = requireNotNull(project.records.single().calculation)
+            assertEquals(AntennaType.YAGI, project.antennaType)
+            assertEquals(145_000_000L, project.target?.hertz)
+            assertEquals(YagiProfile.R3.design.model, snapshot.model)
+            assertEquals(0.0, snapshot.inputs.single { it.key == "yagi_allowance" }.value, 0.0)
+            assertTrue(snapshot.outputs.none { it.key == "yagi_boom" })
+            assertEquals(0.995, snapshot.outputs.single { it.key == "yagi_de_blank" }.value, 1e-9)
+
+            click(tag)
+            waitFor("project-transfer-project-picker")
+            val row = hasTestTag("project-transfer-project") and hasText(title)
+            compose.onNodeWithTag("project-transfer-project-list").performScrollToNode(row)
+            compose.onNode(row).performClick()
+            compose.onNodeWithTag("project-transfer-confirm-project").performClick()
+            waitFor(tag)
+            assertEquals(listOf(snapshot, snapshot), savedProject(title).records.map { it.calculation })
+            assertEquals(YagiProfile.GTV.id, prefs.getString(keys[0], null))
+        } finally {
+            prefs.edit().apply { previous.forEach { (key, value) -> putString(key, value) } }.commit()
         }
     }
 

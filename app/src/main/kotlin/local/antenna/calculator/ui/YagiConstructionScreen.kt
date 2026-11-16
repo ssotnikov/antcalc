@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,7 +65,11 @@ private enum class YagiSection(@param:StringRes val title: Int, val blocks: IntR
 }
 
 @Composable
-internal fun YagiConstructionScreen(onOpenCalculator: () -> Unit, onOpenMeasurements: (() -> Unit)?) {
+internal fun YagiConstructionScreen(
+    onOpenCalculator: () -> Unit,
+    onOpenMeasurements: (() -> Unit)?,
+    onAddToProject: (() -> Unit)?,
+) {
     val context = LocalContext.current
     val blocks = yagiArticleBlocks()
     var expandedSections by rememberSaveable { mutableIntStateOf(1 shl YagiSection.GEOMETRY.ordinal) }
@@ -119,6 +124,16 @@ internal fun YagiConstructionScreen(onOpenCalculator: () -> Unit, onOpenMeasurem
                 HelpText(R.string.construction_yagi_rights)
                 TextButton(onClick = { openSourceWithFeedback(context, LIZAALERT_YAGI_URL) }) {
                     Text(stringResource(R.string.construction_yagi_source_link))
+                }
+            }
+        }
+        if (onAddToProject != null) {
+            item("add-to-project") {
+                Button(
+                    onClick = onAddToProject,
+                    modifier = Modifier.fillMaxWidth().testTag("yagi-guide-add-to-project"),
+                ) {
+                    Text(stringResource(R.string.construction_yagi_add_to_project))
                 }
             }
         }

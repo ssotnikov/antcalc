@@ -415,6 +415,9 @@ private fun LocalizedCalculatorApp(
                     Page.CONSTRUCTION_YAGI -> screenStates.SaveableStateProvider("construction-yagi") {
                         YagiConstructionScreen(
                             onOpenCalculator = { openRelatedYagiPage(Page.YAGI_CALCULATOR) },
+                            onAddToProject = if (journal == null) null else {
+                                { startTransfer(context.r3udkGuideProjectCalculation(), AntennaType.YAGI) }
+                            },
                             onOpenMeasurements = measurements?.let { model ->
                                 {
                                     measurementsParent = Page.CONSTRUCTION_YAGI

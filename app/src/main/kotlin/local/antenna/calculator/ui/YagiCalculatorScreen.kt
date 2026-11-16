@@ -35,6 +35,7 @@ import local.antenna.calculator.core.layout.YagiCutList
 import local.antenna.calculator.core.layout.YagiDesign
 import local.antenna.calculator.core.layout.YagiMatchingCable
 import local.antenna.calculator.core.layout.YagiElement
+import local.antenna.calculator.core.layout.calculateR3udkCutList
 import local.antenna.calculator.core.layout.calculateYagiCutList
 import local.antenna.calculator.core.units.FrequencyUnit
 import local.antenna.calculator.core.units.LengthUnit
@@ -415,6 +416,18 @@ internal fun yagiLength(context: Context, mm: Double, unit: LengthUnit): String 
         maximumFractionDigits = if (unit == LengthUnit.METERS) 6 else if (unit == LengthUnit.CENTIMETERS) 4 else 3
     }.format(mm / factor)
     return "$value ${context.getString(unit.labelResource())}"
+}
+
+internal fun Context.r3udkGuideProjectCalculation(): PendingProjectCalculation {
+    val profile = YagiProfile.R3
+    val unit = LengthUnit.MILLIMETERS
+    val values = listOf(0.0, null, null)
+    val cut = calculateR3udkCutList(allowanceMm = 0.0, rearMm = null, frontMm = null)
+    return PendingProjectCalculation(
+        yagiSnapshot(profile, values, cut, unit),
+        note = yagiReport(this, profile, cut, values, unit),
+        returnPageOverride = Page.CONSTRUCTION_YAGI,
+    )
 }
 
 private fun yagiSnapshot(profile: YagiProfile, values: List<Double?>, cut: YagiCutList, unit: LengthUnit): CalculationSnapshot {

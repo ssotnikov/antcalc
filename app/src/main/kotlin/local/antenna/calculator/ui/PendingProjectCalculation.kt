@@ -58,10 +58,11 @@ internal class PendingProjectCalculation(
     val recordId: UUID = UUID.randomUUID(),
     private val time: OffsetDateTime = OffsetDateTime.now(),
     private val note: String = "",
+    private val returnPageOverride: Page? = null,
 ) {
     private val source = TransferSource.fromModel(snapshot.model)
     val needsAntennaChoice get() = source == TransferSource.SIZING
-    val returnPage get() = source.page
+    val returnPage get() = returnPageOverride ?: source.page
     val title get() = source.title
     val target = targetFrequency()
     val recommendedLengthNanometers get() = if (source == TransferSource.TRIMMING)
@@ -118,6 +119,7 @@ internal class PendingProjectCalculation(
                     Bundle().apply {
                         putByteArray("snapshot", JournalJson.encodePendingSnapshot(it.snapshot))
                         putString("note", it.note)
+                        putString("returnPage", it.returnPageOverride?.name)
                         putString("project", it.projectId.toString())
                         putString("record", it.recordId.toString())
                         putString("time", it.time.toString())
@@ -132,6 +134,7 @@ internal class PendingProjectCalculation(
                         UUID.fromString(bundle.getString("record")),
                         OffsetDateTime.parse(bundle.getString("time")),
                         bundle.getString("note").orEmpty(),
+                        bundle.getString("returnPage")?.let(Page::valueOf),
                     )
                 }.getOrNull()
             },
