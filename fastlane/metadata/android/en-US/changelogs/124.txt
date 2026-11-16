@@ -1,0 +1,1 @@
+Fixed a crash when choosing Read aloud. The record screen displays calculation inputs and results in two tables with left-aligned labels and right-aligned values.

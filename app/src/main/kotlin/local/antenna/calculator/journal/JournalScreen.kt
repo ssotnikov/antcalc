@@ -10,7 +10,6 @@ import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -25,8 +24,6 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -35,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -293,18 +291,18 @@ internal fun JournalScreen(
                     JournalDetails(presentation.recordFacts(record))
                     if (calculation != null) {
                         JournalDetails(listOf(calculation.model))
-                        JournalCalculationSection(
-                            stringResource(R.string.journal_calculation_input),
-                            calculation.inputs,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                            accentColor = MaterialTheme.colorScheme.secondary,
-                        )
-                        JournalCalculationSection(
-                            stringResource(R.string.journal_calculation_output),
-                            calculation.outputs,
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                            accentColor = MaterialTheme.colorScheme.primary,
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
+                            JournalCalculationTable(
+                                stringResource(R.string.journal_calculation_input),
+                                calculation.inputs,
+                                titleDividerColor = MaterialTheme.colorScheme.outline,
+                            )
+                            JournalCalculationTable(
+                                stringResource(R.string.journal_calculation_output),
+                                calculation.outputs,
+                                titleDividerColor = MaterialTheme.colorScheme.primary,
+                            )
+                        }
                         JournalDetails(calculation.metadata)
                     }
                     presentation.recordNote(record)?.let { JournalDetails(listOf(it)) }
@@ -626,27 +624,44 @@ internal fun JournalColumn(modifier: Modifier = Modifier, content: @Composable C
 }
 
 @Composable
-private fun JournalCalculationSection(
+private fun JournalCalculationTable(
     title: String,
     details: List<Pair<String, String>>,
-    containerColor: Color,
-    accentColor: Color,
+    titleDividerColor: Color,
 ) {
     if (details.isEmpty()) return
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = containerColor,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth().drawBehind {
-                drawRect(accentColor, size = Size(4.dp.toPx(), size.height))
-            }.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
-            JournalDetails(details, spacing = 8.dp)
+    Column(Modifier.fillMaxWidth()) {
+        Text(
+            title,
+            Modifier.padding(bottom = 7.dp).semantics { heading() },
+            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.titleMedium,
+        )
+        HorizontalDivider(thickness = 2.dp, color = titleDividerColor)
+        SelectionContainer {
+            Column {
+                for ((label, value) in details) {
+                    Row(
+                        Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                            .semantics(mergeDescendants = true) {},
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        Text(
+                            label,
+                            Modifier.weight(3f).alignByBaseline(),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Text(
+                            value,
+                            Modifier.weight(2f).alignByBaseline(),
+                            textAlign = TextAlign.End,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                    HorizontalDivider()
+                }
+            }
         }
     }
 }

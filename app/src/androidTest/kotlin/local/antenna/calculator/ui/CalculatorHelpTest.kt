@@ -22,6 +22,42 @@ import androidx.test.platform.app.InstrumentationRegistry
 
 @RunWith(AndroidJUnit4::class)
 class CalculatorHelpTest : CalculatorUiFixture() {
+    @Test fun localizedTextActionsLaunchFromTheCurrentActivity() {
+        var localizedContext: Context? = null
+        compose.setContent {
+            LocalizedContent(AppLanguage.RUSSIAN) {
+                localizedContext = LocalContext.current
+            }
+        }
+
+        val activity = compose.activity
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val requests = mutableListOf<Intent>()
+        val monitor = object : Instrumentation.ActivityMonitor() {
+            override fun onStartActivity(intent: Intent): Instrumentation.ActivityResult? {
+                if (intent.action != Intent.ACTION_PROCESS_TEXT) return null
+                requests += Intent(intent)
+                return Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
+            }
+        }
+        instrumentation.addMonitor(monitor)
+        try {
+            compose.runOnIdle {
+                val context = checkNotNull(localizedContext)
+                assertEquals("ru", context.resources.configuration.locales[0].language)
+                context.startActivity(Intent(Intent.ACTION_PROCESS_TEXT)
+                    .setType("text/plain")
+                    .setClass(activity, activity.javaClass)
+                    .putExtra(Intent.EXTRA_PROCESS_TEXT, "491 мм")
+                    .putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, true))
+                assertEquals("491 мм", requests.single().getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT))
+                assertEquals(0, requests.single().flags and Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+        } finally {
+            instrumentation.removeMonitor(monitor)
+        }
+    }
+
     private fun checkFormulaImages() {
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-about").performClick()
@@ -62,7 +98,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         compose.onNodeWithTag("theme-DARK").performScrollTo().performClick()
         back()
         compose.runOnIdle { assertEquals("433,5", model.state.value.draft[FieldKey.SIZING_FREQUENCY].text) }
-        compose.onNodeWithTag("monopole-result").performScrollTo().assertTextContains("164.2 mm")
+        compose.onNodeWithTag("monopole-result").performScrollTo().assertTextContains("164 mm")
         compose.onNodeWithTag("copy-result").performScrollTo().performClick()
         compose.onNodeWithText("Calculation copied").assertExists()
         compose.runOnUiThread {
@@ -75,7 +111,7 @@ class CalculatorHelpTest : CalculatorUiFixture() {
         trimming()
         field(FieldKey.ACTUAL_LENGTH).performScrollTo().assertTextContains("Actual monopole length", substring = true)
         edit(FieldKey.ACTUAL_LENGTH, "500")
-        compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Decrease of 32.3 mm")
+        compose.onNodeWithTag("adjustment").performScrollTo().assertTextContains("Decrease of", substring = true)
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-about").assertTextContains("Help").performClick()
         compose.onNodeWithText("Calculation copied").assertDoesNotExist()

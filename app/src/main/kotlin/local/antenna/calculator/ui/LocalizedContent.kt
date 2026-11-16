@@ -1,6 +1,7 @@
 package local.antenna.calculator.ui
 
 import android.content.res.Configuration
+import android.view.ContextThemeWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -20,7 +21,10 @@ fun LocalizedContent(language: AppLanguage, content: @Composable () -> Unit) {
     val configuration = remember(systemConfiguration, language) {
         Configuration(systemConfiguration).apply { setLocale(Locale.forLanguageTag(language.tag)) }
     }
-    val localized = remember(context, configuration) { context.createConfigurationContext(configuration) }
+    val localized = remember(context, configuration) {
+        // Keep activity launches attached to the hosting Activity, including Compose text actions.
+        ContextThemeWrapper(context, context.theme).apply { applyOverrideConfiguration(configuration) }
+    }
     CompositionLocalProvider(
         LocalContext provides localized,
         LocalConfiguration provides configuration,
