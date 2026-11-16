@@ -55,6 +55,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 @media(max-width:600px){.with-images{grid-template-columns:minmax(0,1fr)}.gallery{max-width:390px;grid-template-columns:repeat(auto-fit,minmax(min(100%,125px),1fr))}.gallery-wide{max-width:none}.mast{padding-bottom:1.55rem}.shell{padding-top:1.35rem}th,td{padding:.55rem .42rem}}
 @media print{.mast{background:white;color:black;border-bottom:1px solid #888;padding:0 0 1rem}.mast p,.mast .version{color:black}.shell{display:block;padding:0}.chapter h2,figure{break-inside:avoid}aside,footer,.skip,.language{display:none}.with-images{grid-template-columns:minmax(0,1fr) 1.8in}.gallery-wide{grid-template-columns:repeat(4,minmax(0,1fr))}body{background:white;color:black}}
 .app-links{display:none}
+.in-app .brand{display:none}
 .in-app .app-links{display:flex;flex-wrap:wrap;gap:.4rem .6rem;margin:0 0 1rem}
 .in-app th .app-links{flex-direction:column;align-items:flex-start;margin:.2rem 0;gap:.3rem}
 .in-app th .web-label,.in-app:not(.direct) .direct-link{display:none}
@@ -71,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="en.html" lang="en" hreflang="en">English</a></div>
   <h1>Руководство пользователя</h1>
   <p>Рассчитайте размеры, соберите и настройте антенну, затем сохраните результаты измерений в проекте.</p>
-  <span class="version">Для AntCalc 1.33.0</span>
+  <span class="version">Для AntCalc 1.33.1</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -223,7 +224,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
         <div class="prose">
 <h3>Поиск и порядок проектов</h3>
 <p>На экране <strong>Проекты</strong> введите часть названия, частоты или типа антенны в поле под кнопками. Список отфильтруется, а совпадения в карточках будут выделены жёлтым. Для частоты можно использовать запятую или точку.</p>
-<p>Удерживайте карточку, перетащите её вверх или вниз и отпустите на нужном месте. Приложение сохранит порядок. При активном поиске скрытые карточки сохраняют свои места.</p>
+<p>Удерживайте карточку и перетащите её вверх или вниз. Соседние карточки плавно раздвигаются и показывают место вставки. Когда вы отпустите карточку, приложение сохранит порядок. При активном поиске скрытые карточки сохраняют свои места.</p>
 <h3>Сохранение расчёта</h3><ol><li>Нажмите <strong>Копировать в проект</strong> в калькуляторе. В руководстве по Яги кнопка называется <strong>Добавить в проект</strong>.</li><li>Выберите подходящий проект и нажмите <strong>Сохранить в выбранный проект</strong> или выберите <strong>Создать новый проект</strong> и введите название.</li></ol>
 <p>Откройте сохранённый расчёт в журнале проекта. В записи отдельно показаны <strong>Исходные данные расчета</strong> и <strong>Результаты расчета</strong>.</p>
 <h3>Замеры и перенос данных</h3><ol><li>Откройте <strong>Инструменты → Проекты и журналы подстройки</strong>, выберите проект и добавьте запись. Укажите условия установки, внесите результаты замера и добавьте фото с комментарием, если это нужно для повторения опыта.</li><li>В <strong>Сравнить записи</strong> выберите две записи. Сопоставляйте КСВ и импеданс при одинаковых условиях и точке подключения.</li><li>Для переноса проекта используйте <strong>Экспорт JSON</strong> и <strong>Импорт JSON</strong>. При импорте создаётся отдельный проект. Для передачи фото используйте экспорт фото в ZIP.</li></ol>
@@ -240,7 +241,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <div class="app-links"><a href="https://appassets.androidplatform.net/open/help">Открыть справку</a><a href="https://appassets.androidplatform.net/open/references">Открыть материалы и источники</a><a href="https://appassets.androidplatform.net/open/licenses">Открыть лицензии</a><a class="direct-link" href="https://appassets.androidplatform.net/open/check-updates">Проверить обновления</a></div>
       <div>
         <div class="prose">
-<ul><li><strong>Справка</strong> в меню содержит сведения о приложении. <strong>Материалы и источники</strong> ведут к статьям и формулам, а <strong>Лицензии</strong> перечисляют условия использования и источники конструкций.</li><li>Откройте <strong>Руководство пользователя</strong> из меню приложения, чтобы читать его офлайн и переходить к описанным здесь инструментам.</li><li>В сборке GitHub Direct выберите <strong>Проверить обновления</strong>. При наличии новой версии приложение показывает её и предлагает системную установку.</li></ul>
+<ul><li><strong>Справка</strong> в меню содержит сведения о приложении. <strong>Материалы и источники</strong> ведут к статьям и формулам, а <strong>Лицензии</strong> перечисляют условия использования и источники конструкций.</li><li>Откройте <strong>Руководство пользователя</strong> из меню приложения, чтобы читать его офлайн и переходить к описанным здесь инструментам. Текст и скриншоты соответствуют языку и теме приложения.</li><li>В сборке GitHub Direct выберите <strong>Проверить обновления</strong>. При наличии новой версии приложение показывает её и предлагает системную установку.</li></ul>
 <p><a href="../PRIVACY.md">Политика конфиденциальности</a> · <a href="https://github.com/ssotnikov/antcalc/issues">Сообщить об ошибке</a></p>
         </div>
       </div>

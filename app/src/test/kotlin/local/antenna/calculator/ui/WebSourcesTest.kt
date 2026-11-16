@@ -126,6 +126,7 @@ class WebSourcesTest {
         assertEquals(GuideDestination.MOXON, guideDestination("$GUIDE_ORIGIN/open/moxon"))
         assertEquals("ru.html", guideAssetPath("$GUIDE_ORIGIN/userguide/ru.html"))
         assertEquals("images/en/08-yagi.webp", guideAssetPath("$GUIDE_ORIGIN/userguide/images/en/08-yagi.webp"))
+        assertEquals("images/ru/light/08-yagi.webp", guideAssetPath("$GUIDE_ORIGIN/userguide/images/ru/light/08-yagi.webp"))
         val invalid = listOf(
             "$GUIDE_ORIGIN/open/settings?anything", "$GUIDE_ORIGIN/open/%73ettings",
             "$GUIDE_ORIGIN/open/settings#fragment", "$GUIDE_ORIGIN.evil.example/open/settings",
@@ -136,6 +137,13 @@ class WebSourcesTest {
             assertNull(address, guideDestination(address))
             assertNull(address, guideAssetPath(address))
         }
+    }
+
+    @Test fun guideUsesTheSameThemeForThumbnailsAndFullscreenImages() {
+        val dark = """<a href="images/ru/08-yagi.webp"><img src="images/ru/08-yagi.webp"></a>"""
+        val light = """<a href="images/ru/light/08-yagi.webp"><img src="images/ru/light/08-yagi.webp"></a>"""
+        assertEquals(dark, guideImageReferences(dark, dark = true))
+        assertEquals(light, guideImageReferences(dark, dark = false))
     }
 
     @Test fun unsafeOrAmbiguousUrisFailClosed() {

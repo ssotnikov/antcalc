@@ -66,6 +66,13 @@ class ProjectListTest {
                 advanceEventTime(viewConfiguration.longPressTimeoutMillis + 100L)
                 moveTo(from)
                 moveTo(to)
+            }
+            compose.waitUntil(5_000) { lastCard.fetchSemanticsNode().boundsInRoot.center.y - origin.y < to.y - 20 }
+            assertTrue(runBlocking { repo.read() } == example)
+            list.performTouchInput { moveTo(from) }
+            compose.waitUntil(5_000) { lastCard.fetchSemanticsNode().boundsInRoot.center.y - origin.y >= to.y - 1 }
+            list.performTouchInput {
+                moveTo(to)
                 up()
             }
             compose.waitUntil(5_000) { runBlocking { repo.read() } == listOf(last, hidden, first) }

@@ -1,5 +1,7 @@
 package local.antenna.calculator.journal
 
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -15,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChanged
@@ -30,8 +31,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import java.util.UUID
-import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.ui.ProjectSearchField
@@ -39,7 +41,10 @@ import local.antenna.calculator.ui.cardListBounce
 import local.antenna.calculator.ui.rememberPageLazyListState
 
 private data class ProjectCardText(val title: String, val summary: String)
-private data class ProjectDrag(val id: UUID, val grabOffset: Float, val y: Float, val moved: Boolean = false)
+private data class ProjectDrag(
+    val id: UUID, val grabOffset: Float, val height: Int, val y: Float, val moved: Boolean = false,
+)
+private data class ProjectDrop(val drag: ProjectDrag, val target: UUID)
 
 @Composable
 internal fun ProjectList(
@@ -66,37 +71,63 @@ internal fun ProjectList(
     val ids = filtered.map { it.id }
     var menuId by remember { mutableStateOf<UUID?>(null) }
     var drag by remember(ids, enabled) { mutableStateOf<ProjectDrag?>(null) }
+    var drop by remember(ids) { mutableStateOf<ProjectDrop?>(null) }
     val move by rememberUpdatedState(onReorder)
     val density = LocalDensity.current
     val margin = with(density) { 16.dp.toPx() }
+    val cardSpacing = 12.dp
+    val spacingPixels = with(density) { cardSpacing.roundToPx() }
     val scrollEdge = with(density) { 54.dp.toPx() }
     val scrollStep = with(density) { 12.dp.toPx() }
     val moveUp = stringResource(R.string.journal_project_move_up)
     val moveDown = stringResource(R.string.journal_project_move_down)
     val actionsLabel = stringResource(R.string.journal_project_actions)
     val idByKey: Map<Any, UUID> = ids.associateBy(UUID::toString)
-    fun targetAt(y: Float): UUID? {
+    val indexById = ids.withIndex().associate { (index, id) -> id to index }
+    // Use the original slots for hit testing while the visible cards animate.
+    fun targetAt(dragged: ProjectDrag): UUID {
         val layout = scroll.layoutInfo
-        val pointer = y + layout.viewportStartOffset
-        return layout.visibleItemsInfo
-            .filter { it.key in idByKey }
-            .minByOrNull { abs(pointer - (it.offset + it.size / 2f)) }
-            ?.let { idByKey[it.key] }
+        val center = dragged.y - dragged.grabOffset + dragged.height / 2f + layout.viewportStartOffset
+        val origin = indexById.getValue(dragged.id)
+        var target = dragged.id
+        for (item in layout.visibleItemsInfo) {
+            val id = idByKey[item.key] ?: continue
+            val index = indexById.getValue(id)
+            val middle = item.offset + item.size / 2f
+            if (index < origin && center <= middle) return id
+            if (index > origin && center >= middle) target = id
+        }
+        return target
     }
 
+    val insertionTarget by remember(ids, enabled) {
+        derivedStateOf { drag?.takeIf { it.moved }?.let(::targetAt) }
+    }
+    val preview = drag?.takeIf { it.moved }?.let { ProjectDrop(it, insertionTarget ?: it.id) } ?: drop
+    val previewFrom = preview?.let { indexById.getValue(it.drag.id) }
+    val previewTo = preview?.let { indexById.getValue(it.target) }
+    LaunchedEffect(drop, enabled) {
+        if (drop != null && enabled) {
+            delay(250)
+            drop = null
+        }
+    }
     val draggingId = drag?.id
     LaunchedEffect(draggingId, ids) {
         if (draggingId == null) return@LaunchedEffect
-        while (true) {
-            withFrameNanos { }
-            val position = drag?.takeIf { it.moved }?.y ?: continue
+        snapshotFlow {
+            val position = drag?.takeIf { it.moved }?.y ?: return@snapshotFlow 0f
             val height = scroll.layoutInfo.viewportSize.height
-            val step = when {
+            when {
                 position < scrollEdge -> -scrollStep * ((scrollEdge - position) / scrollEdge).coerceIn(0f, 1f)
                 position > height - scrollEdge -> scrollStep * ((position - height + scrollEdge) / scrollEdge).coerceIn(0f, 1f)
                 else -> 0f
             }
-            if (step != 0f) scroll.scrollBy(step)
+        }.collectLatest { step ->
+            if (step == 0f) return@collectLatest
+            do {
+                withFrameNanos { }
+            } while (scroll.scrollBy(step) != 0f)
         }
     }
 
@@ -115,7 +146,7 @@ internal fun ProjectList(
                         } ?: return@awaitEachGesture
                         val id = idByKey.getValue(item.key)
                         val held = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
-                        val initial = ProjectDrag(id, y - item.offset, held.position.y)
+                        val initial = ProjectDrag(id, y - item.offset, item.size, held.position.y)
                         drag = initial
                         try {
                             while (true) {
@@ -128,7 +159,13 @@ internal fun ProjectList(
                                 if (!change.pressed) {
                                     val current = drag ?: break
                                     if (!current.moved) menuId = current.id
-                                    else targetAt(current.y)?.takeIf { it != current.id }?.let { move(ids, current.id, it) }
+                                    else {
+                                        val target = targetAt(current)
+                                        if (target != current.id) {
+                                            drop = ProjectDrop(current, target)
+                                            move(ids, current.id, target)
+                                        }
+                                    }
                                     break
                                 }
                             }
@@ -138,7 +175,7 @@ internal fun ProjectList(
                     }
                 },
             state = scroll, overscrollEffect = null, contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(cardSpacing),
         ) {
             item("project-actions") {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -161,13 +198,19 @@ internal fun ProjectList(
                 Text(stringResource(if (projects.isEmpty()) R.string.journal_no_projects else R.string.journal_project_no_match))
             }
             items(filtered, key = { it.id.toString() }) { project ->
-                val index = ids.indexOf(project.id)
-                val selected = drag?.takeIf { it.moved }?.let { targetAt(it.y) } == project.id && draggingId != project.id
-                val faded = drag?.moved == true && draggingId == project.id
-                val border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary)
-                    else CardDefaults.outlinedCardBorder()
-                Box(Modifier.animateItem()) {
-                    OutlinedCard(Modifier.fillMaxWidth().alpha(if (faded) .3f else 1f), border = border) {
+                val index = indexById.getValue(project.id)
+                val shift = if (preview != null && previewFrom != null && previewTo != null) {
+                    val distance = preview.drag.height + spacingPixels
+                    when {
+                        index > previewFrom && index <= previewTo -> -distance
+                        index < previewFrom && index >= previewTo -> distance
+                        else -> 0
+                    }
+                } else 0
+                val offset = key(ids) { animateIntAsState(shift, tween(160), label = "project insertion gap") }
+                val lifted = preview?.drag?.id == project.id
+                Box(Modifier.animateItem(placementSpec = null).offset { IntOffset(0, offset.value) }) {
+                    OutlinedCard(Modifier.fillMaxWidth().alpha(if (lifted) 0f else 1f)) {
                         ProjectCardContent(project, cards.getValue(project.id), search,
                             Modifier.fillMaxWidth().testTag("journal-project")
                                 .clickable(enabled = enabled) { onOpen(project.id) }
@@ -189,7 +232,7 @@ internal fun ProjectList(
                 }
             }
         }
-        drag?.takeIf { it.moved }?.let { current ->
+        preview?.drag?.let { current ->
             val project = projects.first { it.id == current.id }
             ElevatedCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)
                 .offset { IntOffset(0, (current.y - current.grabOffset).roundToInt()) }

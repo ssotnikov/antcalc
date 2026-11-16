@@ -83,7 +83,11 @@ internal enum class GuideDestination(
 internal fun guideDestination(address: String): GuideDestination? =
     GuideDestination.entries.firstOrNull { address == ROUTE_PREFIX + it.slug }
 
-private val guideImage = Regex("""images/(en|ru)/[a-z0-9-]+\.webp""")
+private val guideImage = Regex("""images/(en|ru)/(light/)?[a-z0-9-]+\.webp""")
+private val guideImageReference = Regex("""((?:href|src)="images/(?:en|ru)/)([a-z0-9-]+\.webp")""")
+
+internal fun guideImageReferences(html: String, dark: Boolean): String =
+    if (dark) html else guideImageReference.replace(html) { it.groupValues[1] + "light/" + it.groupValues[2] }
 
 internal fun guideAssetPath(address: String): String? {
     if (!address.startsWith(GUIDE_DIRECTORY)) return null
@@ -97,10 +101,9 @@ internal fun UserGuideScreen(
     language: AppLanguage, dark: Boolean, canCheckForUpdates: Boolean, onOpen: (GuideDestination) -> Unit,
 ) {
     val context = LocalContext.current
-    val initialDocument = if (language == AppLanguage.RUSSIAN) "ru.html" else "en.html"
-    var document by rememberSaveable(initialDocument) { mutableStateOf(initialDocument) }
-    var scrollY by rememberSaveable(document) { mutableIntStateOf(0) }
-    var imagePath by rememberSaveable { mutableStateOf<String?>(null) }
+    val document = if (language == AppLanguage.RUSSIAN) "ru.html" else "en.html"
+    var scrollY by key(language.tag) { rememberSaveable { mutableIntStateOf(0) } }
+    var imagePath by key(language.tag, dark) { rememberSaveable { mutableStateOf<String?>(null) } }
     var webView by remember { mutableStateOf<WebView?>(null) }
     val open by rememberUpdatedState(onOpen)
     val background = MaterialTheme.colorScheme.background.toArgb()
@@ -115,12 +118,6 @@ internal fun UserGuideScreen(
             factory = { viewContext ->
                 createGuideView(viewContext, document, scrollY, dark, canCheckForUpdates, background,
                     onScroll = { scrollY = it },
-                    onDocument = {
-                        if (document != it) {
-                            scrollY = 0
-                            document = it
-                        }
-                    },
                     onImage = { imagePath = it },
                     onOpen = { open(it) },
                 ).also { webView = it }
@@ -151,7 +148,7 @@ internal fun UserGuideScreen(
 @SuppressLint("SetJavaScriptEnabled")
 private fun createGuideView(
     context: Context, document: String, initialY: Int, dark: Boolean, canCheckForUpdates: Boolean,
-    background: Int, onScroll: (Int) -> Unit, onDocument: (String) -> Unit, onImage: (String) -> Unit,
+    background: Int, onScroll: (Int) -> Unit, onImage: (String) -> Unit,
     onOpen: (GuideDestination) -> Unit,
 ): WebView {
     val url = GUIDE_DIRECTORY + document
@@ -194,7 +191,6 @@ private fun createGuideView(
                 val asset = guideAssetPath(address)
                 when {
                     route != null -> onOpen(route)
-                    asset == "en.html" || asset == "ru.html" -> onDocument(asset)
                     asset != null && guideImage.matches(asset) -> onImage(asset)
                     else -> guideExternalLink(address)?.let { openSourceWithFeedback(context, it) }
                 }
@@ -222,7 +218,7 @@ private fun guideHtml(assets: AssetManager, asset: String, dark: Boolean, canChe
         .replace(" download>", ">")
     return WebResourceResponse("text/html", "UTF-8", 200, "OK", mapOf(
         "Content-Security-Policy" to "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'",
-    ), html.byteInputStream())
+    ), guideImageReferences(html, dark).byteInputStream())
 }
 
 internal fun guideExternalLink(address: String): String? = when (address) {
