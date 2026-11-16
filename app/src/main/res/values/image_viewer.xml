@@ -1,4 +1,5 @@
 <resources>
+    <string name="image_exit_fullscreen">Exit full screen: %1$s</string>
     <string name="image_expand_description">Open full screen: %1$s</string>
     <string name="image_zoom_hint">Pinch to zoom</string>
     <string name="image_zoom_out">Zoom out</string>

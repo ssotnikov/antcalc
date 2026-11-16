@@ -1,0 +1,2 @@
+• Use the minus magnifier to exit full-screen illustrations and antenna models. Model viewers now show a pinch-to-zoom hint.
+• Trap Dipole background notes are grouped in a collapsible section near the bottom of the calculator.

@@ -72,8 +72,6 @@ internal fun TrapDipoleScreen(
             return@Column
         }
         HelpText(R.string.trap_lead)
-        stringResource(R.string.trap_overview).split('\n').forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
-        HelpText(R.string.trap_scope)
         RotatingAntenna("trap-${profile.id}", author, Modifier.testTag("trap-model"), geometry = vector)
         HelpText(R.string.trap_model_note)
         TrapHeading(R.string.trap_construction)
@@ -169,6 +167,12 @@ internal fun TrapDipoleScreen(
             onBandwidth?.let { openBandwidth ->
                 TextButton({ openBandwidth(band) }, Modifier.testTag("trap-open-bandwidth")) { Text(stringResource(R.string.bandwidth_title)) }
             }
+        }
+        TrapDisclosure(R.string.trap_overview_title) {
+            stringResource(R.string.trap_overview).lineSequence().forEach {
+                Text(it, style = MaterialTheme.typography.bodyMedium)
+            }
+            HelpText(R.string.trap_scope)
         }
         TrapHeading(R.string.trap_sources)
         HelpText(R.string.trap_rights)

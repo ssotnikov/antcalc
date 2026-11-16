@@ -92,8 +92,13 @@ internal fun FullscreenImage(
                         maxLines = 2, overflow = TextOverflow.Ellipsis,
                         style = MaterialTheme.typography.titleMedium)
                 }
-                ZoomableImage(image, description, tag, zoomState, offsetState, zoomLabel,
-                    modifier = Modifier.weight(1f).fillMaxWidth())
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    ZoomableImage(image, description, tag, zoomState, offsetState, zoomLabel,
+                        modifier = Modifier.fillMaxSize())
+                    ImageFullscreenButton(title, onClose,
+                        Modifier.align(Alignment.BottomEnd).padding(4.dp).testTag("$tag-exit"),
+                        expanded = true)
+                }
                 Row(Modifier.fillMaxWidth().background(colors.surfaceContainer).padding(start = 12.dp, end = 4.dp),
                     verticalAlignment = Alignment.CenterVertically) {
                     Text(stringResource(R.string.image_zoom_hint), Modifier.weight(1f),

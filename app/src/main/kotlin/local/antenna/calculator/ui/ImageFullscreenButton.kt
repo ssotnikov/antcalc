@@ -10,11 +10,18 @@ import androidx.compose.ui.res.stringResource
 import local.antenna.calculator.R
 
 @Composable
-internal fun ExpandImageButton(description: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+internal fun ImageFullscreenButton(
+    description: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    expanded: Boolean = false,
+) {
+    val icon = if (expanded) R.drawable.ic_zoom_out else R.drawable.ic_zoom_in
+    val label = if (expanded) R.string.image_exit_fullscreen else R.string.image_expand_description
     IconButton(onClick = onClick, modifier = modifier) {
         Icon(
-            painterResource(R.drawable.ic_zoom_in),
-            stringResource(R.string.image_expand_description, description),
+            painterResource(icon),
+            stringResource(label, description),
             tint = Color.Unspecified,
         )
     }

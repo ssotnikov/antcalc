@@ -147,7 +147,7 @@ internal fun GuideIllustration(
         if (preview != null) {
             Image(preview, description, Modifier.fillMaxSize()
                 .pointerInput(id) { detectTapGestures(onDoubleTap = { open() }) })
-            ExpandImageButton(description, open,
+            ImageFullscreenButton(description, open,
                 Modifier.align(Alignment.BottomEnd).padding(4.dp).testTag("yagi-illustration-expand-$id"))
         }
     }

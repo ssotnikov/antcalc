@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="trap_overview_title">Trap Dipole Designs and Band Behaviour</string>
     <string name="trap_title">Trap Dipole</string>
     <string name="trap_intro">Published 20/40/80 m designs, wire cut lists and trap calculations.</string>
     <string name="trap_lead">A trap is a parallel LC circuit inserted into a dipole arm. At its resonant frequency it presents a high impedance, so very little current flows in the wire beyond the trap and that section contributes little to the antenna’s operation. Below resonance the trap acts like an inductor and electrically lengthens the arm. Above resonance it acts like a capacitor and electrically shortens it. This lets one centre-fed wire work on several bands without a tuner or a frequency-selective feed line.</string>

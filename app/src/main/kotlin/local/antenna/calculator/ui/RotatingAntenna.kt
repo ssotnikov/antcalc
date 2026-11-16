@@ -9,11 +9,14 @@ import androidx.compose.foundation.gestures.calculateCentroid
 import androidx.compose.foundation.gestures.calculatePan
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
@@ -205,7 +208,7 @@ internal fun RotatingAntenna(
         Box(modifier.fillMaxWidth().height(height)) {
             AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = true }, false, Modifier.fillMaxSize(), interactive)
             if (interactive) {
-                ExpandImageButton(description, { expanded = true },
+                ImageFullscreenButton(description, { expanded = true },
                     Modifier.align(Alignment.BottomEnd).testTag("antenna-view-expand"))
             }
         }
@@ -226,8 +229,21 @@ internal fun RotatingAntenna(
                         }
                     }
                 }
-                AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = false }, true,
-                    Modifier.fillMaxSize().background(background).navigationBarsPadding())
+                Column(Modifier.fillMaxSize().background(background).navigationBarsPadding()) {
+                    Box(Modifier.weight(1f).fillMaxWidth()) {
+                        AntennaSurface(model, description, view, initialFrame, turn, reset, { expanded = false }, true,
+                            Modifier.fillMaxSize())
+                        ImageFullscreenButton(description, { expanded = false },
+                            Modifier.align(Alignment.BottomEnd).padding(4.dp).testTag("antenna-full-view-exit"),
+                            expanded = true)
+                    }
+                    Text(
+                        stringResource(R.string.image_zoom_hint),
+                        Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surfaceContainer)
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
 <resources>
+    <string name="image_exit_fullscreen">Выйти из полноэкранного режима: %1$s</string>
     <string name="image_expand_description">Открыть на весь экран: %1$s</string>
     <string name="image_zoom_hint">Разведите пальцы для увеличения</string>
     <string name="image_zoom_out">Уменьшить масштаб</string>

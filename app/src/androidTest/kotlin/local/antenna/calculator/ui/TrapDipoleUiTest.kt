@@ -105,6 +105,16 @@ class TrapDipoleUiTest {
         compose.onNodeWithTag("trap-window-empty").assertIsDisplayed()
     }
 
+    @Test fun overviewIsCollapsedUntilOpened() {
+        openCalculator()
+        val overview = compose.onNodeWithText("G8KW", substring = true)
+        overview.assertDoesNotExist()
+        click("trap-section-${R.string.trap_overview_title}")
+        overview.performScrollTo().assertIsDisplayed()
+        click("trap-section-${R.string.trap_overview_title}")
+        overview.assertDoesNotExist()
+    }
+
     private fun openCalculator() {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()

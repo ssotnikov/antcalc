@@ -61,7 +61,9 @@ class AntennaRotationTest : CalculatorUiFixture() {
         moveModel(Offset(-31f, -46f))
         assertTrue(magnified.sameAs(image()))
 
-        fullScreen.performTouchInput { doubleClick() }
+        compose.onNodeWithText("Разведите пальцы для увеличения").assertIsDisplayed()
+        compose.onNodeWithTag("antenna-full-view-exit").performTouchInput { click() }
+        fullScreen.assertDoesNotExist()
         model.performTouchInput { doubleClick() }
         assertTrue(zoomLabel().contains("100"))
         assertTrue(initial.sameAs(image()))

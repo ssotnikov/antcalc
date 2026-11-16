@@ -40,7 +40,7 @@ class YagiIllustrationTest : CalculatorUiFixture() {
         assertTrue(zoom() != initialZoom)
         compose.onNodeWithTag("yagi-illustration-fullscreen-reset").performClick()
         assertEquals(initialZoom, zoom())
-        compose.onNodeWithTag("yagi-illustration-fullscreen-close").performClick()
+        compose.onNodeWithTag("yagi-illustration-fullscreen-exit").performTouchInput { click() }
         viewer.assertDoesNotExist()
         assertEquals(top, preview.fetchSemanticsNode().boundsInRoot.top, 0f)
 
