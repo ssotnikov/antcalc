@@ -1,5 +1,6 @@
 package local.antenna.calculator.measurements
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
@@ -96,9 +97,11 @@ internal fun MeasurementSummaries(
 
 @Composable
 private fun SummaryValue(label: String, value: String) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
-        Text(value, Modifier.weight(1.2f), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.End)
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+            Text(value, Modifier.weight(1.2f), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.End)
+        }
     }
 }
 
@@ -129,6 +132,7 @@ internal fun MeasurementTable(
                             .background(if (isSelected) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface)
                             .selectable(isSelected, role = Role.RadioButton, onClick = { onSelect(index) })
                             .testTag("sweep-table-row-$index"),
+                        selected = isSelected,
                     )
                 }
             }
@@ -137,17 +141,27 @@ internal fun MeasurementTable(
 }
 
 @Composable
-private fun TableRow(values: List<String>, modifier: Modifier = Modifier, header: Boolean = false) {
+private fun TableRow(
+    values: List<String>, modifier: Modifier = Modifier, header: Boolean = false, selected: Boolean = false,
+) {
     Row(
         modifier.fillMaxWidth().heightIn(min = if (header) 0.dp else 48.dp).padding(horizontal = 8.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         values.forEachIndexed { index, value ->
-            Text(value, Modifier.weight(if (index == 0) 1.55f else 1f),
-                color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodySmall,
-                textAlign = if (index == 0) TextAlign.Start else TextAlign.End)
+            val cell = Modifier.weight(if (index == 0) 1.55f else 1f)
+            val alignment = if (index == 0) TextAlign.Start else TextAlign.End
+            if (selected) {
+                SelectionContainer(cell) {
+                    Text(value, Modifier.fillMaxWidth(), style = MaterialTheme.typography.bodySmall, textAlign = alignment)
+                }
+            } else {
+                Text(value, cell,
+                    color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodySmall,
+                    textAlign = alignment)
+            }
         }
     }
 }

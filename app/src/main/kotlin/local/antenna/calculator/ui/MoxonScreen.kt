@@ -199,25 +199,25 @@ internal fun MoxonScreen(
                 { stringResource(it.labelResource()) }, { unit = it }, "moxon-units")
             dimensions.valuesMm.forEachIndexed { index, mm ->
                 val dimension = MoxonDimension.entries[index]
-                Text("${dimension.mark} · ${stringResource(dimension.label)} — ${length(mm)}")
+                SelectableText("${dimension.mark} · ${stringResource(dimension.label)} — ${length(mm)}")
             }
             published?.sourceUnit?.let { original ->
                 MoxonDisclosure(R.string.moxon_original) {
                     dimensions.valuesMm.forEachIndexed { index, mm ->
-                        Text("${MoxonDimension.entries[index].mark} — ${context.moxonNumber(mm / original.mm)}${original.symbol}")
+                        SelectableText("${MoxonDimension.entries[index].mark} — ${context.moxonNumber(mm / original.mm)}${original.symbol}")
                     }
                 }
             }
             if (published?.hybrid == true) {
                 MoxonHeading(R.string.moxon_yagi)
-                moxonYagiLines(context, length).forEach { Text(it) }
+                moxonYagiLines(context, length).forEach { SelectableText(it) }
             }
             MoxonDisclosure(R.string.moxon_formulas) {
-                Text("E = B + C + D\nDE = A + 2B\nREF = A + 2D")
+                SelectableText("E = B + C + D\nDE = A + 2B\nREF = A + 2D")
                 HelpText(R.string.moxon_lengths)
                 if (published == null) {
-                    Text("λ (mm) = 299792.458 / f (MHz)\nt = log₁₀(d / λ)")
-                    Text("A/λ = −0.0008571428571 t² − 0.009571428571 t + 0.3398571429\n" +
+                    SelectableText("λ (mm) = 299792.458 / f (MHz)\nt = log₁₀(d / λ)")
+                    SelectableText("A/λ = −0.0008571428571 t² − 0.009571428571 t + 0.3398571429\n" +
                         "B/λ = −0.002142857143 t² − 0.02035714286 t + 0.008285714286\n" +
                         "C/λ = 0.001809523381 t² + 0.01780952381 t + 0.05164285714\n" +
                         "D/λ = 0.001 t + 0.07178571429")
@@ -233,7 +233,7 @@ internal fun MoxonScreen(
                 R.string.yagi_invalid) { rawAllowance = it }
             HelpText(R.string.moxon_allowance_note)
             adjustedStock?.forEachIndexed { index, mm ->
-                Text("${context.moxonStockLabel(stock[index])} — ${length(mm)}")
+                SelectableText("${context.moxonStockLabel(stock[index])} — ${length(mm)}")
             }
         }
         if (dimensions != null) {
@@ -258,7 +258,7 @@ internal fun MoxonScreen(
         }
         HorizontalDivider()
         MoxonHeading(R.string.yagi_rights)
-        Text(source.author)
+        SelectableText(source.author)
         source.terms?.let { HelpText(it) }
         TextButton(onClick = { openSourceWithFeedback(context, source.url) }) { Text(source.title) }
     }

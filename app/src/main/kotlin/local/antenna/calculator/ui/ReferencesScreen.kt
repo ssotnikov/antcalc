@@ -99,12 +99,12 @@ private fun ReferenceCard(material: TechnicalReference) {
         modifier = Modifier.fillMaxWidth().testTag("source-${material.id}"),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(
+            SelectableText(
                 stringResource(material.title),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Text(
+            SelectableText(
                 listOfNotNull(material.publisher, language, material.section).joinToString(" · "),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

@@ -63,7 +63,7 @@ fun HelpScreen() {
         HelpText(R.string.journal_help_workflow)
         HelpText(R.string.journal_help_comparison)
         HelpText(R.string.journal_scope)
-        Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME))
+        SelectableText(stringResource(R.string.app_version, BuildConfig.VERSION_NAME))
     }
 }
 
@@ -90,6 +90,7 @@ internal fun FormulaPlate(title: Int, image: Int, description: Int, tag: String)
             Image(painter = painterResource(image), contentDescription = stringResource(description),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), contentScale = ContentScale.Fit,
                 modifier = Modifier.fillMaxWidth().height(100.dp).testTag(tag))
+            SelectableText(stringResource(description), style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

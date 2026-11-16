@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -189,9 +190,11 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
         if (result == null) HelpText(R.string.cable_pending) else {
             cableRows(context, draft, result).forEachIndexed { index, row ->
                 Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp).testTag("cable-result-$index").semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(stringResource(row.first), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(row.second, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                    SelectionContainer {
+                        Column(Modifier.padding(16.dp).testTag("cable-result-$index").semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(stringResource(row.first), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(row.second, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                        }
                     }
                 }
             }

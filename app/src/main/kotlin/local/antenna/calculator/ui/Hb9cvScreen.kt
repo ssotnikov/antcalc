@@ -146,7 +146,7 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
     }
     if (profile.id == "pd0ddr") dimensions += "h" to profile.local("15–20 мм", "15–20 mm")
     dimensions += profile.rows("dimensions")
-    dimensions.forEach { (label,value) -> Text("$label  $value") }
+    dimensions.forEach { (label,value) -> SelectableText("$label  $value") }
     val target = profile.size("f") ?: profile.size("suggestedFrequency")
     val targetText = target?.let {
         val locale = LocalResources.current.configuration.locales[0]
@@ -154,7 +154,7 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
     }
     if (target != null && targetText != null) {
         val label = stringResource(if (profile.size("f") == null) R.string.hb9cv_nominal_frequency else R.string.hb9cv_published_frequency)
-        Text("$label · $targetText")
+        SelectableText("$label · $targetText")
         inputs += SnapshotValue("frequency", target * 1e6, SnapshotUnit.HERTZ)
     }
     profile.boom?.let { outputs += metric("hb9cv_boom", it) }
@@ -357,7 +357,7 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
         append(link)
     }
     Text(cuts, style = MaterialTheme.typography.titleMedium)
-    rows.forEach { (label,value) -> Text("$label  $value") }
+    rows.forEach { (label,value) -> SelectableText("$label  $value") }
     if (missing.isNotEmpty()) Text(stringResource(R.string.hb9cv_missing, missing.joinToString()), color = MaterialTheme.colorScheme.error)
     if (onSave != null) Button(onClick = {
         onSave(CalculationSnapshot("hb9cv_${profile.number}", 1, inputs.toList(), outputs.toList()), report)
@@ -373,20 +373,20 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
         Text(stringResource(R.string.hb9cv_formulas) + if (formulasOpen) "  ▴" else "  ▾")
     }
     if (formulasOpen) {
-        Text(stringResource(R.string.hb9cv_wavelength))
+        SelectableText(stringResource(R.string.hb9cv_wavelength))
         when {
-            uw -> Text(stringResource(R.string.hb9cv_uw_formula))
-            profile.id == "radio" -> Text(stringResource(R.string.hb9cv_radio_formula))
-            profile.id == "dk7zb" -> Text(stringResource(R.string.hb9cv_dk_formula))
-            portable -> Text(stringResource(R.string.hb9cv_portable_formula))
-            profile.id == "pd0ddr" -> Text(stringResource(R.string.hb9cv_pd_formula))
-            profile.id == "f1lvt" -> Text(stringResource(R.string.hb9cv_f1_formula))
-            profile.id == "u5mh" -> Text(stringResource(R.string.hb9cv_u5_formula))
-            profile.id == "uw3bj-other" -> Text(stringResource(R.string.hb9cv_piecewise_formula))
-            profile.id == "pa0tax" -> Text(stringResource(R.string.hb9cv_tax_formula))
-            else -> Text(stringResource(R.string.hb9cv_fixed_formula))
+            uw -> SelectableText(stringResource(R.string.hb9cv_uw_formula))
+            profile.id == "radio" -> SelectableText(stringResource(R.string.hb9cv_radio_formula))
+            profile.id == "dk7zb" -> SelectableText(stringResource(R.string.hb9cv_dk_formula))
+            portable -> SelectableText(stringResource(R.string.hb9cv_portable_formula))
+            profile.id == "pd0ddr" -> SelectableText(stringResource(R.string.hb9cv_pd_formula))
+            profile.id == "f1lvt" -> SelectableText(stringResource(R.string.hb9cv_f1_formula))
+            profile.id == "u5mh" -> SelectableText(stringResource(R.string.hb9cv_u5_formula))
+            profile.id == "uw3bj-other" -> SelectableText(stringResource(R.string.hb9cv_piecewise_formula))
+            profile.id == "pa0tax" -> SelectableText(stringResource(R.string.hb9cv_tax_formula))
+            else -> SelectableText(stringResource(R.string.hb9cv_fixed_formula))
         }
-        if (profile.id == "uw3bj-other") Text(stringResource(R.string.hb9cv_uw_formula))
+        if (profile.id == "uw3bj-other") SelectableText(stringResource(R.string.hb9cv_uw_formula))
     }
 }
 

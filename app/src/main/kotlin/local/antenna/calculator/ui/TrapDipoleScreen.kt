@@ -98,7 +98,7 @@ internal fun TrapDipoleScreen(
             }
         }
         TrapDiagram(profile, band)
-        Text(stringResource(R.string.trap_active, trapSectionNames.take(band.ordinal + 1).joinToString(" + ")))
+        SelectableText(stringResource(R.string.trap_active, trapSectionNames.take(band.ordinal + 1).joinToString(" + ")))
         TrapHeading(R.string.trap_cut)
         HelpText(R.string.trap_cut_note)
         TrapField(draft.allowance, R.string.trap_allowance, draft.allowanceMm == null, "trap-allowance") {
@@ -110,14 +110,14 @@ internal fun TrapDipoleScreen(
             update(draft.copy(targets = draft.targets.toMutableList().apply { set(band.ordinal, raw) }))
         }
         val digits = if (profile == Profile.AA4LR) 4 else 3
-        Text(stringResource(R.string.trap_nominal, format(2 * profile.sections.sum(), digits)))
+        SelectableText(stringResource(R.string.trap_nominal, format(2 * profile.sections.sum(), digits)))
         draft.allowanceMm?.let(profile::blanks)?.let { blanks ->
             ScrollableTable(Modifier.width(450.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 blanks.forEachIndexed { index, length ->
-                    Text(stringResource(R.string.trap_cut_row, trapSectionNames[index], format(profile.sections[index], digits), format(length, 6)))
+                    SelectableText(stringResource(R.string.trap_cut_row, trapSectionNames[index], format(profile.sections[index], digits), format(length, 6)))
                 }
             }
-            Text(stringResource(R.string.trap_total, format(2 * blanks.sum(), 6)), Modifier.testTag("trap-total"),
+            SelectableText(stringResource(R.string.trap_total, format(2 * blanks.sum(), 6)), Modifier.testTag("trap-total"),
                 style = MaterialTheme.typography.titleMedium)
         }
         TrapHeading(R.string.trap_traps)
@@ -127,7 +127,7 @@ internal fun TrapDipoleScreen(
             Text(stringResource(R.string.trap_pair, if (index == 0) 20 else 40), style = MaterialTheme.typography.titleSmall)
             val diameter = format(trap.diameterMm, 2)
             val turns = format(trap.turns, 2)
-            Text(if (profile.coaxial) stringResource(R.string.trap_coax, diameter, format(requireNotNull(trap.formerLengthMm), 2), turns)
+            SelectableText(if (profile.coaxial) stringResource(R.string.trap_coax, diameter, format(requireNotNull(trap.formerLengthMm), 2), turns)
                 else stringResource(R.string.trap_lc_trap, diameter, turns, format(requireNotNull(trap.capacitancePf), 0),
                     format(requireNotNull(trap.measuredMhz), 2)))
             val labels = listOf(if (profile.coaxial) R.string.trap_blank_cable else R.string.trap_blank_wire,
@@ -135,7 +135,7 @@ internal fun TrapDipoleScreen(
             val published = listOf(trap.blankMeters, trap.stripNearMeters, trap.stripFarMeters)
             val fields = labels.indices.take(if (profile.coaxial) 3 else 1)
             fields.forEach { field ->
-                published[field]?.let { Text("${stringResource(labels[field])} · ${format(it, 3)}") }
+                published[field]?.let { SelectableText("${stringResource(labels[field])} · ${format(it, 3)}") }
             }
             if (fields.any { published[it] == null }) {
                 HelpText(R.string.trap_missing)
@@ -151,7 +151,7 @@ internal fun TrapDipoleScreen(
             }
             if (index in invalidTraps) Text(stringResource(R.string.trap_invalid), color = MaterialTheme.colorScheme.error)
             else (published[0] ?: draft.dimension(3 * index))?.let {
-                Text(stringResource(R.string.trap_material_total, format(2 * it, 6)))
+                SelectableText(stringResource(R.string.trap_material_total, format(2 * it, 6)))
             }
         }
         if (onSave != null) Button({ snapshot?.let(onSave) }, Modifier.fillMaxWidth().testTag("trap-save"), enabled = snapshot != null) {
@@ -170,7 +170,7 @@ internal fun TrapDipoleScreen(
         }
         TrapDisclosure(R.string.trap_overview_title) {
             stringResource(R.string.trap_overview).lineSequence().forEach {
-                Text(it, style = MaterialTheme.typography.bodyMedium)
+                SelectableText(it, style = MaterialTheme.typography.bodyMedium)
             }
             HelpText(R.string.trap_scope)
         }
@@ -292,7 +292,7 @@ private fun TrapLcCalculator(format: (Double, Int) -> String) {
     var lcOpen by rememberSaveable { mutableStateOf(false) }
     TrapDisclosure(R.string.trap_lc, lcOpen, { lcOpen = it }) {
         HelpText(R.string.trap_lc_help)
-        Text("f₀ = 1 / (2π√LC)")
+        SelectableText("f₀ = 1 / (2π√LC)")
         val labels = listOf(R.string.trap_f, R.string.trap_l, R.string.trap_c)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Quantity.entries.forEach {
@@ -313,12 +313,12 @@ private fun TrapLcCalculator(format: (Double, Int) -> String) {
         }
         val answer = TrapDipole.solve(unknown, parsed[0], parsed[1], parsed[2])
         if (answer == null) HelpText(R.string.trap_lc_invalid)
-        else Text("${stringResource(labels[unknown.ordinal])} = ${format(answer, 3)}", Modifier.testTag("trap-lc-result"),
+        else SelectableText("${stringResource(labels[unknown.ordinal])} = ${format(answer, 3)}", Modifier.testTag("trap-lc-result"),
             style = MaterialTheme.typography.titleMedium)
     }
     TrapDisclosure(R.string.trap_wheeler) {
         HelpText(R.string.trap_wheeler_help)
-        Text("L (µH) ≈ N²D² / (18D + 40ℓ)")
+        SelectableText("L (µH) ≈ N²D² / (18D + 40ℓ)")
         var former by rememberSaveable { mutableStateOf("49.8") }
         var wire by rememberSaveable { mutableStateOf("1") }
         var winding by rememberSaveable { mutableStateOf("106.68") }
@@ -334,7 +334,7 @@ private fun TrapLcCalculator(format: (Double, Int) -> String) {
         val result = if (a != null && b != null && c != null && n != null) TrapDipole.wheeler(a, b, c, n) else null
         if (result == null) HelpText(R.string.trap_coil_invalid)
         else {
-            Text("${stringResource(R.string.trap_l)} ≈ ${format(result, 3)}", Modifier.testTag("trap-coil-result"))
+            SelectableText("${stringResource(R.string.trap_l)} ≈ ${format(result, 3)}", Modifier.testTag("trap-coil-result"))
             if (result in Quantity.INDUCTANCE.limits) TextButton({
                 inductance = format(result, 9)
                 unknown = Quantity.FREQUENCY

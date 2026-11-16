@@ -5,6 +5,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.res.Resources
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -225,10 +226,12 @@ internal fun CantennaScreen(
                 val table = data.comparison(draft.cans, hz, band)
                 ScrollableTable {
                     table.forEachIndexed { index, row ->
-                        Row {
-                            row.forEach { cell ->
-                                Text(cell, Modifier.width(148.dp).padding(8.dp),
-                                    style = if (index == 0) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium)
+                        SelectionContainer {
+                            Row {
+                                row.forEach { cell ->
+                                    Text(cell, Modifier.width(148.dp).padding(8.dp),
+                                        style = if (index == 0) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium)
+                                }
                             }
                         }
                         HorizontalDivider()
@@ -264,7 +267,7 @@ private fun CantennaHeading(label: Int) {
 
 @Composable
 private fun CantennaRows(rows: List<Pair<String, String>>) {
-    rows.forEach { (label, value) -> Text("$label · $value") }
+    rows.forEach { (label, value) -> SelectableText("$label · $value") }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -348,10 +351,10 @@ private fun CantennaFormulas() {
     var expanded by rememberSaveable { mutableStateOf(false) }
     TextButton(onClick = { expanded = !expanded }) { Text(stringResource(R.string.cantenna_formula) + if (expanded) " ▴" else " ▾") }
     if (expanded) {
-        Text("c = 299 792 458 m/s\nfTE₁₁ = 1.841183781 c / (πD)\nfTM₀₁ = 2.404825558 c / (πD)\nλ₀ = c/f\nλg = λ₀ / √(1 − (fTE₁₁/f)²)")
-        Text("P = λ₀/4     A = λg/4     L ≈ 3λg/4")
-        Text("Dmin = 1.841183781 c / (π fmin)\nDmax = 2.404825558 c / (π fmax)")
-        Text("s = √(H² + (r₂ − r₁)²)\nR₁ = s·r₁/(r₂ − r₁)     R₂ = s·r₂/(r₂ − r₁)\nα = 360°·(r₂ − r₁)/s")
+        SelectableText("c = 299 792 458 m/s\nfTE₁₁ = 1.841183781 c / (πD)\nfTM₀₁ = 2.404825558 c / (πD)\nλ₀ = c/f\nλg = λ₀ / √(1 − (fTE₁₁/f)²)")
+        SelectableText("P = λ₀/4     A = λg/4     L ≈ 3λg/4")
+        SelectableText("Dmin = 1.841183781 c / (π fmin)\nDmax = 2.404825558 c / (π fmax)")
+        SelectableText("s = √(H² + (r₂ − r₁)²)\nR₁ = s·r₁/(r₂ − r₁)     R₂ = s·r₂/(r₂ − r₁)\nα = 360°·(r₂ − r₁)/s")
     }
 }
 

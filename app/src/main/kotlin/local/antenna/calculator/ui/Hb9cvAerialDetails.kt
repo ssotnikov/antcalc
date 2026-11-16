@@ -2,6 +2,7 @@ package local.antenna.calculator.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -125,7 +126,7 @@ internal fun Hb9cvAerialDetails(
     }
     Column { dimensions.forEach { (label, value) -> AerialRow(label, value) } }
     val scalingNote = stringResource(R.string.hb9cv_aerial_scaling_note)
-    Text(scalingNote, style = MaterialTheme.typography.bodySmall)
+    SelectableText(scalingNote, style = MaterialTheme.typography.bodySmall)
 
     Text(stringResource(R.string.yagi_cuts), style = MaterialTheme.typography.titleMedium)
     AerialInput(rearRaw, { rearRaw = it }, R.string.hb9cv_rear, R.string.hb9cv_aerial_overhang_range,
@@ -141,7 +142,7 @@ internal fun Hb9cvAerialDetails(
     Column { cutRows.forEach { (label, value) -> AerialRow(label, value) } }
     if (boom == null) Text(stringResource(R.string.hb9cv_aerial_boom_hint), style = MaterialTheme.typography.bodySmall)
     val blankNote = stringResource(R.string.hb9cv_aerial_gamma_blank)
-    Text(blankNote, style = MaterialTheme.typography.bodySmall)
+    SelectableText(blankNote, style = MaterialTheme.typography.bodySmall)
 
     val enabled = result != null && !rearInvalid && !frontInvalid
     val frequencyLabel = stringResource(R.string.hb9cv_aerial_frequency)
@@ -191,7 +192,7 @@ internal fun Hb9cvAerialDetails(
         Text(stringResource(R.string.hb9cv_formulas) + if (formulasOpen) "  ▴" else "  ▾")
     }
     if (formulasOpen) {
-        Text(stringResource(R.string.hb9cv_aerial_formulas))
+        SelectableText(stringResource(R.string.hb9cv_aerial_formulas))
         Column {
             for (dimension in Dimension.entries) {
                 AerialRow(stringResource(dimension.labelResource()), millimeters(dimension.referenceMm))
@@ -235,10 +236,12 @@ private fun AerialInput(raw: String, onEdit: (String) -> Unit, label: Int, hint:
 
 @Composable
 private fun AerialRow(label: String, value: String?) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 7.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
-        Text(value ?: "—", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth().padding(vertical = 7.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(label, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+            Text(value ?: "—", color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.bodyMedium)
+        }
     }
     HorizontalDivider()
 }

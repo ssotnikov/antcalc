@@ -1,6 +1,7 @@
 package local.antenna.calculator.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -88,7 +89,7 @@ internal fun YagiConstructionScreen(
                     "overview",
                     Modifier.fillMaxWidth().height(192.dp),
                 )
-                Text(stringResource(R.string.construction_yagi_intro))
+                SelectableText(stringResource(R.string.construction_yagi_intro))
                 TextButton(onClick = onOpenCalculator, modifier = Modifier.testTag("yagi-guide-open-calculator")) {
                     Text(stringResource(R.string.construction_yagi_open_calculator))
                 }
@@ -179,7 +180,9 @@ private fun YagiMeasurementGuide(onOpenMeasurements: (() -> Unit)?) {
             append(paragraph.substring(start + linkText.length))
         }
     }
-    Text(text, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+    SelectionContainer {
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = colors.onSurfaceVariant)
+    }
 }
 
 @Composable
@@ -199,9 +202,11 @@ private fun YagiDimensions() {
 private fun YagiDimensionRow(name: String, position: String, length: String, header: Boolean = false) {
     val style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodyMedium
     val color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface
-    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(name, Modifier.weight(1.4f), color = color, style = style)
-        Text(position, Modifier.weight(1f), color = color, style = style, textAlign = TextAlign.End)
-        Text(length, Modifier.weight(1f), color = color, style = style, textAlign = TextAlign.End)
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(name, Modifier.weight(1.4f), color = color, style = style)
+            Text(position, Modifier.weight(1f), color = color, style = style, textAlign = TextAlign.End)
+            Text(length, Modifier.weight(1f), color = color, style = style, textAlign = TextAlign.End)
+        }
     }
 }

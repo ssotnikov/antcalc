@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
+import local.antenna.calculator.ui.SelectableText
 import local.antenna.calculator.R
 import local.antenna.calculator.ui.rememberPageLazyListState
 import local.antenna.calculator.ui.trapNumber
@@ -178,11 +179,11 @@ internal fun SwrBandwidthScreen(
                     bandIndex >= 0 -> stringResource(R.string.bandwidth_cursor_in_band, bandIndex + 1)
                     else -> stringResource(R.string.bandwidth_cursor_above)
                 }
-                Text(formatter.selectedPoint(selected.hertz, swr, status), Modifier.testTag("bandwidth-selected-point"))
+                SelectableText(formatter.selectedPoint(selected.hertz, swr, status), Modifier.testTag("bandwidth-selected-point"))
             }
             item {
                 BandwidthHeading(R.string.bandwidth_intervals)
-                result.minimum?.let { Text(formatter.minimum(R.string.bandwidth_sweep_minimum, it)) }
+                result.minimum?.let { SelectableText(formatter.minimum(R.string.bandwidth_sweep_minimum, it)) }
                 if (result.bands.isEmpty()) Text(stringResource(R.string.bandwidth_no_bands), Modifier.testTag("bandwidth-empty"))
                 if (result.excludedPoints > 0) Text(stringResource(R.string.bandwidth_excluded, result.excludedPoints))
             }
@@ -191,7 +192,7 @@ internal fun SwrBandwidthScreen(
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(stringResource(R.string.bandwidth_interval, index + 1), style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.secondary)
-                        formatter.bandLines(band).forEach { Text(it) }
+                        formatter.bandLines(band).forEach { SelectableText(it) }
                     }
                 }
             }
@@ -200,7 +201,7 @@ internal fun SwrBandwidthScreen(
                 Text(stringResource(R.string.bandwidth_reactance_hint), style = MaterialTheme.typography.bodySmall)
                 if (result.reactanceZeros.isEmpty()) Text(stringResource(R.string.bandwidth_no_reactance))
             }
-            itemsIndexed(result.reactanceZeros) { _, zero -> Text(formatter.reactance(zero)) }
+            itemsIndexed(result.reactanceZeros) { _, zero -> SelectableText(formatter.reactance(zero)) }
             item {
                 OutlinedButton(
                     onClick = {
@@ -220,7 +221,7 @@ internal fun SwrBandwidthScreen(
         item {
             val method = stringResource(R.string.bandwidth_method)
             val symbol = "|S11|"
-            Text(method.replace(symbol, symbol.toList().joinToString("\u2060")), style = MaterialTheme.typography.bodySmall)
+            SelectableText(method.replace(symbol, symbol.toList().joinToString("\u2060")), style = MaterialTheme.typography.bodySmall)
             Text(stringResource(R.string.bandwidth_scope), style = MaterialTheme.typography.bodySmall)
             TextButton(onClick = { showFormula = !showFormula }) {
                 Text(stringResource(if (showFormula) R.string.bandwidth_hide_formula else R.string.bandwidth_show_formula))

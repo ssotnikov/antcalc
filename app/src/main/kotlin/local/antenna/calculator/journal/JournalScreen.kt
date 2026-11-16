@@ -1,5 +1,6 @@
 package local.antenna.calculator.journal
 
+import local.antenna.calculator.ui.SelectableText
 import local.antenna.calculator.core.trimming.AntennaType
 
 import android.content.ActivityNotFoundException
@@ -8,6 +9,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -22,6 +25,8 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -30,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import java.util.UUID
@@ -283,12 +289,22 @@ internal fun JournalScreen(
                 val trap = record.calculation?.takeIf { it.model == local.antenna.calculator.ui.TRAP_DIPOLE_MODEL }
                 val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
-                    JournalHeading(record.title)
+                    SelectionContainer { JournalHeading(record.title) }
                     JournalDetails(presentation.recordFacts(record))
                     if (calculation != null) {
                         JournalDetails(listOf(calculation.model))
-                        JournalCalculationSection(stringResource(R.string.journal_calculation_input), calculation.inputs)
-                        JournalCalculationSection(stringResource(R.string.journal_calculation_output), calculation.outputs)
+                        JournalCalculationSection(
+                            stringResource(R.string.journal_calculation_input),
+                            calculation.inputs,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                            accentColor = MaterialTheme.colorScheme.secondary,
+                        )
+                        JournalCalculationSection(
+                            stringResource(R.string.journal_calculation_output),
+                            calculation.outputs,
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                            accentColor = MaterialTheme.colorScheme.primary,
+                        )
                         JournalDetails(calculation.metadata)
                     }
                     presentation.recordNote(record)?.let { JournalDetails(listOf(it)) }
@@ -333,7 +349,7 @@ internal fun JournalScreen(
             text = {
                 Column(Modifier.heightIn(max = 330.dp).verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     JournalHeading(preview.title)
-                    JournalDetails(presentation.projectDetails(preview))
+                    JournalDetails(presentation.projectDetails(preview), spacing = 8.dp)
                     Text(stringResource(R.string.journal_count, preview.records.size))
                     Text(stringResource(R.string.journal_import_note))
                     state.problem?.let { Text(stringResource(it.label()), color = MaterialTheme.colorScheme.error) }
@@ -492,7 +508,7 @@ private fun ProjectHistory(
         item {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.weight(1f)) {
-                    JournalHeading(project.title, MaterialTheme.colorScheme.secondary)
+                    SelectionContainer { JournalHeading(project.title, MaterialTheme.colorScheme.secondary) }
                 }
                 Box {
                     IconButton(onClick = { actions = true }, enabled = enabled, modifier = Modifier.testTag("journal-project-actions")) {
@@ -502,10 +518,12 @@ private fun ProjectHistory(
                 }
             }
             JournalAntennaIllustration(project.antennaType, Modifier.padding(vertical = 8.dp))
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                for ((label, value) in presentation.projectDetails(project, includeNote = false)) {
-                    Text(stringResource(R.string.journal_property, label, value),
-                        style = MaterialTheme.typography.bodyMedium)
+            SelectionContainer {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    for ((label, value) in presentation.projectDetails(project, includeNote = false)) {
+                        Text(stringResource(R.string.journal_property, label, value),
+                            style = MaterialTheme.typography.bodyMedium)
+                    }
                 }
             }
             if (project.note.isNotBlank()) {
@@ -517,7 +535,7 @@ private fun ProjectHistory(
                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(stringResource(R.string.journal_note), style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.secondary)
-                        Text(project.note, style = MaterialTheme.typography.bodyMedium)
+                        SelectableText(project.note, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
@@ -608,20 +626,42 @@ internal fun JournalColumn(modifier: Modifier = Modifier, content: @Composable C
 }
 
 @Composable
-private fun JournalCalculationSection(title: String, details: List<Pair<String, String>>) {
+private fun JournalCalculationSection(
+    title: String,
+    details: List<Pair<String, String>>,
+    containerColor: Color,
+    accentColor: Color,
+) {
     if (details.isEmpty()) return
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
-        JournalDetails(details)
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        color = containerColor,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth().drawBehind {
+                drawRect(accentColor, size = Size(4.dp.toPx(), size.height))
+            }.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
+            JournalDetails(details, spacing = 8.dp)
+        }
     }
 }
 
 @Composable
-internal fun JournalDetails(details: List<Pair<String, String>>) {
-    for ((label, value) in details) {
-        Column(Modifier.semantics(mergeDescendants = true) {}) {
-            Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
-            Text(value, style = MaterialTheme.typography.bodyMedium)
+internal fun JournalDetails(details: List<Pair<String, String>>, spacing: Dp = 12.dp) {
+    if (details.isEmpty()) return
+    SelectionContainer {
+        Column(verticalArrangement = Arrangement.spacedBy(spacing)) {
+            for ((label, value) in details) {
+                Column(Modifier.semantics(mergeDescendants = true) {}) {
+                    Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
+                    Text(value, style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         }
     }
 }

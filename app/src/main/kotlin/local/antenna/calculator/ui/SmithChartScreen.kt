@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -132,7 +133,7 @@ internal fun SmithChartScreen(notify: (String) -> Unit) {
             Text(stringResource(R.string.smith_distance), style = MaterialTheme.typography.bodyMedium)
             Slider(distance.toFloat(), { distance = it.roundToInt() }, valueRange = 0f..500f,
                 modifier = Modifier.testTag("smith-distance").semantics { stateDescription = lineValue })
-            Text(lineValue, style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("smith-line-value"))
+            SelectableText(lineValue, style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag("smith-line-value"))
             SmithHint(R.string.smith_drag_hint)
             SmithInput(SmithField.REFERENCE, reference, z0) { reference = it }
             SmithInput(SmithField.RESISTANCE, resistance, r) { resistance = it }
@@ -203,7 +204,7 @@ internal fun SmithHeading(label: Int) {
 
 @Composable
 internal fun SmithHint(label: Int) {
-    Text(stringResource(label), Modifier.fillMaxWidth(), style = MaterialTheme.typography.bodySmall,
+    SelectableText(stringResource(label), Modifier.fillMaxWidth(), style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
@@ -211,7 +212,7 @@ internal fun SmithHint(label: Int) {
 private fun SmithLegendRow(symbol: String, color: Color, explanation: String) {
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         Text(symbol, color = color, style = MaterialTheme.typography.labelMedium)
-        Text(explanation, style = MaterialTheme.typography.bodySmall)
+        SelectableText(explanation, style = MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -219,9 +220,11 @@ private fun SmithLegendRow(symbol: String, color: Color, explanation: String) {
 private fun SmithRows(rows: List<Pair<String, String>>) {
     Column(Modifier.fillMaxWidth().testTag("smith-results")) {
         rows.forEachIndexed { index, (label, value) ->
-            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(label, Modifier.weight(1.25f), style = MaterialTheme.typography.bodySmall)
-                Text(value, Modifier.weight(1f), style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.End)
+            SelectionContainer {
+                Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(label, Modifier.weight(1.25f), style = MaterialTheme.typography.bodySmall)
+                    Text(value, Modifier.weight(1f), style = MaterialTheme.typography.labelLarge, textAlign = TextAlign.End)
+                }
             }
             if (index < rows.lastIndex) HorizontalDivider()
         }

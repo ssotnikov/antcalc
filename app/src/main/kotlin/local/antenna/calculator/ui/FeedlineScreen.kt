@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -170,14 +171,16 @@ internal fun FeedlineScreen(
         } else {
             Surface(color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large,
                 modifier = Modifier.fillMaxWidth().testTag("feedline-result")) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    rows(context, result).forEach { (label, value) ->
-                        Column(Modifier.semantics(mergeDescendants = true) {}) {
-                            Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
-                            Text(value, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                SelectionContainer {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        rows(context, result).forEach { (label, value) ->
+                            Column(Modifier.semantics(mergeDescendants = true) {}) {
+                                Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
+                                Text(value, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                            }
                         }
+                        LinearProgressIndicator(progress = { result.transmittedFraction.toFloat() }, modifier = Modifier.fillMaxWidth())
                     }
-                    LinearProgressIndicator(progress = { result.transmittedFraction.toFloat() }, modifier = Modifier.fillMaxWidth())
                 }
             }
         }
@@ -198,7 +201,7 @@ internal fun FeedlineScreen(
             Text(stringResource(if (details) R.string.matching_less else R.string.cable_details))
         }
         if (details) {
-            Text("A = α × L / L₀\nT = 10⁽⁻ᴬ/¹⁰⁾\nP₂ = P₁ × T\nΔP = P₁ × (1 − T)")
+            SelectableText("A = α × L / L₀\nT = 10⁽⁻ᴬ/¹⁰⁾\nP₂ = P₁ × T\nΔP = P₁ × (1 − T)")
             HelpText(R.string.feedline_formula_help)
         }
         HelpText(R.string.feedline_limits)

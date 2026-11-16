@@ -139,7 +139,7 @@ internal val haloSourceAddresses = haloPublicationCredits.flatMap { credit ->
 private fun PublicationCreditCard(credit: PublicationCredit) {
     val context = LocalContext.current
     Column {
-        Text(
+        SelectableText(
             stringResource(credit.author),
             modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
@@ -201,7 +201,7 @@ internal fun LicensesScreen() {
         publicationCredits.forEach { PublicationCreditCard(it) }
         MoxonSource.entries.groupBy { it.author }.forEach { (author, sources) ->
             Column {
-                Text(author, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium,
+                SelectableText(author, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary)
                 sources.forEach { source ->
                     TextButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {

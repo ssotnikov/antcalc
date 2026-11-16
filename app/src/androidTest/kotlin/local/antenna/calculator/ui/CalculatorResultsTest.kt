@@ -1,6 +1,10 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.*
+import androidx.test.platform.app.InstrumentationRegistry
+import android.accessibilityservice.AccessibilityServiceInfo
+import android.view.accessibility.AccessibilityNodeInfo
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.state.*
 import org.junit.Assert.*
@@ -32,6 +36,38 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         compose.onNodeWithTag("dipole-arm").assertTextContains("Длина одного плеча").assertTextContains("491 мм")
         compose.onNodeWithTag("wavelength").assertTextContains("2068 мм")
         compose.onNodeWithContentDescription("Lₐ — длина каждого из двух равных плеч. Полная длина Lᵈ равна 2Lₐ и исключает зазор питания.").assertExists()
+    }
+
+    @Test fun longPressCopiesPartOfDisplayedResult() {
+        start()
+        compose.onNodeWithTag("dipole-total").performScrollTo()
+        compose.onNodeWithText("982 мм", useUnmergedTree = true).performTouchInput {
+            longClick(Offset(8.dp.toPx(), center.y))
+        }
+
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val automation = instrumentation.uiAutomation
+        val config = automation.serviceInfo
+        config.flags = config.flags or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+        automation.serviceInfo = config
+        val copyLabels = listOf("Copy", "Копировать")
+        var copied = false
+        compose.waitUntil(5_000) {
+            copied = automation.windows.any { window ->
+                copyLabels.any { label ->
+                    window.root?.findAccessibilityNodeInfosByText(label).orEmpty().any { action ->
+                        action.text?.toString() == label &&
+                            action.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+                    }
+                }
+            }
+            copied
+        }
+        assertTrue(copied)
+        compose.runOnUiThread {
+            val clipboard = compose.activity.getSystemService(ClipboardManager::class.java)
+            assertEquals("982", clipboard?.primaryClip?.getItemAt(0)?.text?.toString())
+        }
     }
 
     @Test fun frequencyAndLengthUnitsPreservePhysicalSize() {

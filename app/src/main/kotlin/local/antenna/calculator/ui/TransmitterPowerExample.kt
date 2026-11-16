@@ -1,5 +1,6 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -75,18 +76,20 @@ private fun PowerExampleRow(values: List<String>, header: Boolean = false) {
     val colors = MaterialTheme.colorScheme
     val style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodyMedium
     val weights = listOf(1f, 0.9f, 2.4f, 1f)
-    Row(
-        Modifier.fillMaxWidth().padding(vertical = 10.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        values.forEachIndexed { index, value ->
-            Text(
-                value,
-                Modifier.weight(weights[index]).then(if (header) Modifier.semantics { heading() } else Modifier),
-                style = style,
-                color = if (header) colors.secondary else colors.onSurface,
-                textAlign = if (index == 1 || index == 3) TextAlign.End else TextAlign.Start,
-            )
+    SelectionContainer {
+        Row(
+            Modifier.fillMaxWidth().padding(vertical = 10.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            values.forEachIndexed { index, value ->
+                Text(
+                    value,
+                    Modifier.weight(weights[index]).then(if (header) Modifier.semantics { heading() } else Modifier),
+                    style = style,
+                    color = if (header) colors.secondary else colors.onSurface,
+                    textAlign = if (index == 1 || index == 3) TextAlign.End else TextAlign.Start,
+                )
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,10 +96,12 @@ private fun CantennaReferencePanel(label: Int, tag: String, content: @Composable
 
 @Composable
 private fun CantennaReferenceRow(cells: List<String>, header: Boolean) {
-    Row {
-        cells.forEach { cell ->
-            Text(cell, Modifier.width(106.dp).padding(horizontal = 8.dp, vertical = 6.dp),
-                style = if (header) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium)
+    SelectionContainer {
+        Row {
+            cells.forEach { cell ->
+                Text(cell, Modifier.width(106.dp).padding(horizontal = 8.dp, vertical = 6.dp),
+                    style = if (header) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium)
+            }
         }
     }
     HorizontalDivider()

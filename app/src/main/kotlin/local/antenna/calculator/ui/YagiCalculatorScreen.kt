@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -395,11 +396,13 @@ private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Bool
 
 @Composable
 private fun YagiRow(cells: List<String>, header: Boolean = false) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        cells.forEachIndexed { index, cell ->
-            Text(cell, Modifier.weight(if (index == 0) 1.5f else 1f),
-                color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium)
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            cells.forEachIndexed { index, cell ->
+                Text(cell, Modifier.weight(if (index == 0) 1.5f else 1f),
+                    color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium)
+            }
         }
     }
 }

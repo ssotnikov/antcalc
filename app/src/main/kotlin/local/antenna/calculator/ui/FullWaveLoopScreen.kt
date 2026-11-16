@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.graphics.Paint
 import android.content.ClipboardManager
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -204,9 +205,11 @@ private fun LoopHeading(label: Int) {
 
 @Composable
 private fun LoopValue(label: Int, value: String, modifier: Modifier = Modifier) {
-    Column(modifier.semantics(mergeDescendants = true) {}) {
-        Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
-        Text(value, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+    SelectionContainer {
+        Column(modifier.semantics(mergeDescendants = true) {}) {
+            Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
+            Text(value, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+        }
     }
 }
 

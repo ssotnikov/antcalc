@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -105,15 +106,17 @@ internal fun InvertedVScreen(
                 color = MaterialTheme.colorScheme.surfaceContainerLow,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    rows.forEach { (label, value) ->
-                        Column(Modifier.testTag("inverted-v-result-${label}").semantics(mergeDescendants = true) {}) {
-                            Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
-                            Text(
-                                value, style = MaterialTheme.typography.titleLarge,
-                                color = if (label == R.string.inverted_v_end_height && result.endHeightMeters < 0)
-                                    MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                            )
+                SelectionContainer {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        rows.forEach { (label, value) ->
+                            Column(Modifier.testTag("inverted-v-result-${label}").semantics(mergeDescendants = true) {}) {
+                                Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    value, style = MaterialTheme.typography.titleLarge,
+                                    color = if (label == R.string.inverted_v_end_height && result.endHeightMeters < 0)
+                                        MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                                )
+                            }
                         }
                     }
                 }

@@ -1,5 +1,6 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -87,12 +88,14 @@ private fun SmithReferenceTable(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun SmithTableRow(values: List<String>, header: Boolean = false) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-        values.forEachIndexed { index, value ->
-            Text(value, Modifier.weight(if (index == 0) 1.2f else 1f),
-                style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodySmall,
-                color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                textAlign = if (index == 0) TextAlign.Start else TextAlign.End)
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            values.forEachIndexed { index, value ->
+                Text(value, Modifier.weight(if (index == 0) 1.2f else 1f),
+                    style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodySmall,
+                    color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    textAlign = if (index == 0) TextAlign.Start else TextAlign.End)
+            }
         }
     }
     HorizontalDivider()

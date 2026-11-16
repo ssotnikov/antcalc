@@ -3,6 +3,8 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.text.selection.DisableSelection
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
@@ -112,23 +114,35 @@ internal fun CalculationScreen(
 private fun ResultPanel(group: ResultGroup) {
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(stringResource(group.title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-            group.warning?.let {
-                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
-            }
-            group.rows.forEachIndexed { index, row ->
-                if (group.diagrams && row.label == R.string.radiator_length) AntennaDiagram(dipole = false)
-                if (group.diagrams && row.label == R.string.dipole_total) AntennaDiagram(dipole = true)
-                Column(Modifier.fillMaxWidth().testTag(row.tag).semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(row.label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text(row.value, style = if (index == 0) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary)
+        SelectionContainer {
+            Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Text(stringResource(group.title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                group.warning?.let {
+                    Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
                 }
-                if (index != group.rows.lastIndex) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                group.rows.forEachIndexed { index, row ->
+                    if (group.diagrams && row.label == R.string.radiator_length) {
+                        DisableSelection { AntennaDiagram(dipole = false) }
+                    }
+                    if (group.diagrams && row.label == R.string.dipole_total) {
+                        DisableSelection { AntennaDiagram(dipole = true) }
+                    }
+                    Column(Modifier.fillMaxWidth().testTag(row.tag).semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(stringResource(row.label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(row.value, style = if (index == 0) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary)
+                    }
+                    if (index != group.rows.lastIndex) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                }
+                group.notes.forEach {
+                    Text(
+                        stringResource(it),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                group.tuningDirection?.let { DisableSelection { TuningDiagram(it) } }
             }
-            group.notes.forEach { HelpText(it) }
-            group.tuningDirection?.let { TuningDiagram(it) }
         }
     }
 }

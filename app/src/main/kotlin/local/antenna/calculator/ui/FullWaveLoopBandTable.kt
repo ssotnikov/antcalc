@@ -1,5 +1,6 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -110,13 +111,15 @@ internal fun FullWaveLoopBandTable() {
 
 @Composable
 private fun LoopBandRow(values: List<String>, header: Boolean = false) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        val weights = listOf(0.9f, 1.0f, 1.0f, 1.2f, 1.4f)
-        values.forEachIndexed { index, value ->
-            Text(value, Modifier.weight(weights[index]),
-                color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodySmall,
-                textAlign = if (index == 0) TextAlign.Start else TextAlign.End)
+    SelectionContainer {
+        Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            val weights = listOf(0.9f, 1.0f, 1.0f, 1.2f, 1.4f)
+            values.forEachIndexed { index, value ->
+                Text(value, Modifier.weight(weights[index]),
+                    color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
+                    style = if (header) MaterialTheme.typography.labelMedium else MaterialTheme.typography.bodySmall,
+                    textAlign = if (index == 0) TextAlign.Start else TextAlign.End)
+            }
         }
     }
     HorizontalDivider()

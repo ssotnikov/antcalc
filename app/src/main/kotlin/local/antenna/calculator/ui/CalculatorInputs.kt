@@ -179,5 +179,5 @@ fun <T> ChoicePicker(label: String, options: List<T>, selected: T, text: @Compos
 
 @Composable
 fun HelpText(resource: Int) {
-    Text(stringResource(resource), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    SelectableText(stringResource(resource), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }

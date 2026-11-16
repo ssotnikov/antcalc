@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
@@ -201,10 +202,12 @@ internal fun SlimJimScreen(
         BoxWithConstraints(Modifier.fillMaxWidth()) {
             ScrollableTable(Modifier.width(maxWidth.coerceAtLeast(300.dp))) {
                 dimensions.forEach { dimension ->
-                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text(dimension.mark, Modifier.widthIn(min = 28.dp), color = MaterialTheme.colorScheme.secondary)
-                        Text(stringResource(dimension.label), Modifier.weight(1f))
-                        Text(formatLength(context, dimension.meters, unit))
+                    SelectionContainer {
+                        Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Text(dimension.mark, Modifier.widthIn(min = 28.dp), color = MaterialTheme.colorScheme.secondary)
+                            Text(stringResource(dimension.label), Modifier.weight(1f))
+                            Text(formatLength(context, dimension.meters, unit))
+                        }
                     }
                     HorizontalDivider()
                 }

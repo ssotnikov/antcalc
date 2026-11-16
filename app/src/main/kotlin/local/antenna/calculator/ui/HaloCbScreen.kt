@@ -2,6 +2,7 @@ package local.antenna.calculator.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -150,8 +151,8 @@ internal fun HaloCbScreen(
                 }
             }
             HaloDisclosure(R.string.halo_formulas) {
-                Text("λ = 299.792458 / f\nP = kλ / 2\nk = P / (λ / 2)")
-                Text(if (variant == HaloVariant.ROUND) "D = P / π\nΔ = D · asin(g / D)\nL = P − Δ" else "S = P / 4\nL = P − g")
+                SelectableText("λ = 299.792458 / f\nP = kλ / 2\nk = P / (λ / 2)")
+                SelectableText(if (variant == HaloVariant.ROUND) "D = P / π\nΔ = D · asin(g / D)\nL = P − Δ" else "S = P / 4\nL = P − g")
                 HelpText(R.string.halo_formula_units)
             }
             HaloDisclosure(R.string.halo_gamma) {
@@ -234,9 +235,11 @@ private fun HaloComparison() {
             listOf("KP4MD · 2 m", stringResource(R.string.halo_kp_size), stringResource(R.string.halo_gamma)),
         )
         rows.forEachIndexed { index, row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                row.forEach { cell -> Text(cell, Modifier.weight(1f),
-                    style = if (index == 0) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium) }
+            SelectionContainer {
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    row.forEach { cell -> Text(cell, Modifier.weight(1f),
+                        style = if (index == 0) MaterialTheme.typography.titleSmall else MaterialTheme.typography.bodyMedium) }
+                }
             }
         }
     }
@@ -258,9 +261,11 @@ private fun HaloField(raw: String, label: Int, invalid: Boolean, tag: String, su
 
 @Composable
 private fun HaloRow(label: String, value: String, modifier: Modifier = Modifier) {
-    Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(label, Modifier.weight(1f))
-        Text(value)
+    SelectionContainer {
+        Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(label, Modifier.weight(1f))
+            Text(value)
+        }
     }
 }
 

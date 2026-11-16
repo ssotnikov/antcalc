@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -91,17 +92,19 @@ internal fun GroundPlaneScreen(
                 GroundPlaneDiagram(result, draft.lengthUnit)
                 Surface(color = MaterialTheme.colorScheme.surfaceContainerLow, shape = MaterialTheme.shapes.large,
                     modifier = Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        val rows = result.rows().map { (label, value) ->
-                            label to formatLength(context, value, draft.lengthUnit)
-                        } + listOfNotNull(draft.estimatedFundamentalHertz()?.let {
-                            R.string.antenna_fundamental_estimate to context.estimatedFundamentalFrequency(it)
-                        })
-                        rows.forEach { (label, value) ->
-                            Column(Modifier.semantics(mergeDescendants = true) {}) {
-                                Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
-                                Text(value, style = MaterialTheme.typography.titleLarge,
-                                    color = MaterialTheme.colorScheme.primary)
+                    SelectionContainer {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            val rows = result.rows().map { (label, value) ->
+                                label to formatLength(context, value, draft.lengthUnit)
+                            } + listOfNotNull(draft.estimatedFundamentalHertz()?.let {
+                                R.string.antenna_fundamental_estimate to context.estimatedFundamentalFrequency(it)
+                            })
+                            rows.forEach { (label, value) ->
+                                Column(Modifier.semantics(mergeDescendants = true) {}) {
+                                    Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
+                                    Text(value, style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.primary)
+                                }
                             }
                         }
                     }

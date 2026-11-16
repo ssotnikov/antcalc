@@ -2,6 +2,7 @@ package local.antenna.calculator.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -111,7 +112,7 @@ internal fun JPoleScreen(
         if (result != null) {
             JPoleHeading(R.string.jpole_sizes)
             reportRows.forEach { (key, label, meters) ->
-                Text(stringResource(R.string.journal_property, stringResource(label), formatLength(context, meters, unit)),
+                SelectableText(stringResource(R.string.journal_property, stringResource(label), formatLength(context, meters, unit)),
                     modifier = Modifier.testTag(key), style = MaterialTheme.typography.bodyLarge)
                 HorizontalDivider()
             }
@@ -188,7 +189,7 @@ private fun Ok1ikeJPoleProfile(
         { stringResource(it.labelResource()) }, onUnit, "jpole-ribbon-unit")
     JPoleHeading(R.string.jpole_sizes)
     ok1ikeRows.forEach { (key, label, meters) ->
-        Text(stringResource(R.string.journal_property, stringResource(label), formatLength(context, meters, unit)),
+        SelectableText(stringResource(R.string.journal_property, stringResource(label), formatLength(context, meters, unit)),
             Modifier.testTag(key))
     }
     if (onSave != null) Button(
@@ -256,7 +257,7 @@ private fun JPolePanel(label: Int, content: @Composable ColumnScope.() -> Unit) 
 
 @Composable
 private fun JPoleList(vararg labels: Int) {
-    labels.forEachIndexed { index, label -> Text(stringResource(R.string.jpole_step, index + 1, stringResource(label))) }
+    labels.forEachIndexed { index, label -> SelectableText(stringResource(R.string.jpole_step, index + 1, stringResource(label))) }
 }
 
 @Composable
@@ -309,8 +310,10 @@ private fun JPoleFormulaContent() {
 @Composable
 private fun JPoleTableRow(cells: List<String>) {
     val cellWidth = 78.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
-    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        cells.forEach { Text(it, Modifier.width(cellWidth), style = MaterialTheme.typography.bodySmall) }
+    SelectionContainer {
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            cells.forEach { Text(it, Modifier.width(cellWidth), style = MaterialTheme.typography.bodySmall) }
+        }
     }
 }
 
