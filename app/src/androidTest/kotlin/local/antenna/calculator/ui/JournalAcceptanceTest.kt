@@ -68,6 +68,14 @@ class JournalAcceptanceTest {
         val record = hasText(after.records.first().title) and hasClickAction()
         compose.onNodeWithTag("journal-history").performScrollToNode(record)
         compose.onAllNodes(record).onFirst().performClick()
+        val inputs = hasText("Calculation inputs") or hasText("Исходные данные расчета")
+        val outputs = hasText("Calculation results") or hasText("Результаты расчета")
+        compose.onAllNodes(inputs).assertCountEquals(1)
+        compose.onAllNodes(outputs).assertCountEquals(1)
+        compose.onAllNodes(hasText("Calculation inputs ·", substring = true) or
+            hasText("Исходные данные расчета ·", substring = true)).assertCountEquals(0)
+        compose.onAllNodes(hasText("Calculation results ·", substring = true) or
+            hasText("Результаты расчета ·", substring = true)).assertCountEquals(0)
         click("journal-open-halo")
         compose.onNodeWithTag("halo-frequency").performScrollTo().assertTextContains("27.405")
         click("halo-section-${R.string.halo_tuning}")

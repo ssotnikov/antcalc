@@ -43,7 +43,7 @@ internal fun BindPageScrollToTop(scroll: LazyListState) = BindPageScrollToTop(sc
 }
 
 @Composable
-private fun BindPageScrollToTop(scrollState: Any, scrollToTop: suspend () -> Unit) {
+internal fun BindPageScrollToTop(scrollState: Any, scrollToTop: suspend () -> Unit) {
     val target = LocalPageScrollToTop.current ?: return
     val scope = rememberCoroutineScope()
     val currentScrollToTop by rememberUpdatedState(scrollToTop)

@@ -54,6 +54,15 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 @media(max-width:880px){.shell{grid-template-columns:minmax(0,1fr);gap:1.2rem}aside{position:static;max-height:none;padding-bottom:1rem;border-bottom:1px solid var(--rule)}aside ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.with-images{grid-template-columns:minmax(0,1fr)}.gallery{max-width:390px;grid-template-columns:repeat(auto-fit,minmax(min(100%,125px),1fr))}.gallery-wide{max-width:none}.mast{padding-bottom:1.55rem}.shell{padding-top:1.35rem}th,td{padding:.55rem .42rem}}
 @media print{.mast{background:white;color:black;border-bottom:1px solid #888;padding:0 0 1rem}.mast p,.mast .version{color:black}.shell{display:block;padding:0}.chapter h2,figure{break-inside:avoid}aside,footer,.skip,.language{display:none}.with-images{grid-template-columns:minmax(0,1fr) 1.8in}.gallery-wide{grid-template-columns:repeat(4,minmax(0,1fr))}body{background:white;color:black}}
+.app-links{display:none}
+.in-app .app-links{display:flex;flex-wrap:wrap;gap:.4rem .6rem;margin:0 0 1rem}
+.in-app th .app-links{flex-direction:column;align-items:flex-start;margin:.2rem 0;gap:.3rem}
+.in-app th .web-label,.in-app:not(.direct) .direct-link{display:none}
+.app-links a{border:1px solid var(--rule);border-radius:.55rem;padding:.44rem .68rem;line-height:1.25;text-decoration:none;font-weight:600}
+.app-links a:active{background:var(--note-bg,#e8f1ee)}
+.in-app th .app-links a{padding:.25rem 0;border:0;text-decoration:underline}
+body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule:#3c535f;--link:#a8e1d3;--panel:#152832;--note-bg:#1b303a}
+.dark thead th,.dark .note,.dark .skip,.dark aside a:hover,.dark aside a:focus-visible{background:var(--note-bg)}
 </style>
 </head>
 <body>
@@ -62,7 +71,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
   <div class="brand"><strong>AntCalc</strong><a class="language" href="en.html" lang="en" hreflang="en">English</a></div>
   <h1>Руководство пользователя</h1>
   <p>Рассчитайте размеры, соберите и настройте антенну, затем сохраните результаты измерений в проекте.</p>
-  <span class="version">Для AntCalc 1.32.0</span>
+  <span class="version">Для AntCalc 1.33.0</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -83,6 +92,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
   <main id="guide">
     <section class="chapter" id="start" aria-labelledby="start-title">
       <h2 id="start-title">Первые шаги</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/settings">Настройки</a><a href="https://appassets.androidplatform.net/open/sizing">Расчёт размеров</a><a href="https://appassets.androidplatform.net/open/tuning">Подстройка антенны</a><a href="https://appassets.androidplatform.net/open/tools">Инструменты</a></div>
       <div>
         <div class="prose">
 <p>AntCalc помогает рассчитать начальные размеры, подстроить собранную антенну и сохранить результаты измерений. Приложение работает на Android 8.0 и новее. Расчёты, модели и встроенные материалы доступны без интернета.</p>
@@ -93,6 +103,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
     </section>
     <section class="chapter" id="sizing" aria-labelledby="sizing-title">
       <h2 id="sizing-title">Расчёт размеров и подстройка</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/sizing">Открыть расчёт размеров</a><a href="https://appassets.androidplatform.net/open/tuning">Открыть подстройку антенны</a></div>
       <div class="with-images">
         <div class="prose">
 <h3>Начальные размеры</h3><ol><li>Откройте <strong>Расчет размеров</strong> и укажите частоту в выбранных единицах. Например, для диполя на 145,5 МГц введите <strong>145,5</strong> при выбранных МГц.</li><li>В результатах найдите длину штыря или диполя. Для симметричного диполя проверьте отдельно полную длину и длину одного плеча.</li><li>Если нужен запас на подстройку, заложите его при раскрое. Сохраните расчёт в проект через кнопку копирования.</li></ol>
@@ -100,94 +111,100 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 <p class="note">Введите резонанс, определённый по измерению. Если в рабочем окне несколько минимумов КСВ, сопоставьте их с графиком реактивности и выберите нужный режим антенны.</p>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/01-dimensions.webp"><img src="images/ru/01-dimensions.webp" alt="Расчёт размеров на 145 МГц" loading="lazy" decoding="async"></a><figcaption>Расчёт размеров на 145 МГц</figcaption></figure>
-<figure><a href="images/ru/02-tuning.webp"><img src="images/ru/02-tuning.webp" alt="Подстройка по измеренной частоте" loading="lazy" decoding="async"></a><figcaption>Подстройка по измеренной частоте</figcaption></figure>
+<figure><a href="images/ru/01-dimensions.webp"><img src="images/ru/01-dimensions.webp" width="1080" height="1920" alt="Расчёт размеров на 145 МГц" loading="lazy" decoding="async"></a><figcaption>Расчёт размеров на 145 МГц</figcaption></figure>
+<figure><a href="images/ru/02-tuning.webp"><img src="images/ru/02-tuning.webp" width="1080" height="1920" alt="Подстройка по измеренной частоте" loading="lazy" decoding="async"></a><figcaption>Подстройка по измеренной частоте</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="calculators" aria-labelledby="calculators-title">
       <h2 id="calculators-title">Калькуляторы антенн</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/antenna-calculators">Открыть калькуляторы антенн</a></div>
       <div>
         <div class="prose">
 <p>Откройте <strong>Инструменты → Расчет параметров антенн</strong>. Выберите конструкцию или расчётный режим. Читайте единицы в таблице и обозначения на схеме перед раскроем. Если экран даёт ведомость заготовок, сверяйте её с габаритами готовых деталей.</p>
 <p class="note">Если результат пуст, проверьте единицы и допустимый диапазон полей.</p>
 <table><thead><tr><th scope="col">Калькулятор</th><th scope="col">Что сделать</th></tr></thead><tbody>
-<tr><th scope="row">Инвертированная V и Ground Plane</th><td>Введите частоту и параметры конструкции. Сверьте длины плеч либо штыря и противовесов с выбранной конфигурацией.</td></tr>
-<tr><th scope="row">Полноволновая рамка</th><td>Выберите Quad или Delta Loop. Рассчитайте периметр и стороны по частоте либо частоту по известному периметру. Выберите расположение точки питания на схеме.</td></tr>
-<tr><th scope="row">J-антенна и Slim Jim</th><td>Выберите вариант или диапазон. Сверьте размеры секций, зазор и точку питания с обозначениями на схеме. Подгонку начинайте с опубликованных размеров своего варианта.</td></tr>
-<tr><th scope="row">Яги — Уда</th><td>Выберите профиль автора и монтажный вариант. Сверьте позиции от рефлектора, диаметры, заготовки и длину траверсы. Для таблиц с фиксированным монтажом соблюдайте заданные отступы и способ крепления.</td></tr>
-<tr><th scope="row">Антенна Моксон</th><td>Выберите опубликованный профиль или расчёт по частоте и диаметру проводника. Для разметки возьмите размеры и зазоры выбранной конфигурации.</td></tr>
-<tr><th scope="row">Антенна HB9CV</th><td>Выберите опубликованную конструкцию или расчёт по частоте в диапазоне 100–1500 МГц. Проверьте фазовую линию и поля размеров, зависящих от монтажа.</td></tr>
-<tr><th scope="row">Баночная антенна (Cantenna)</th><td>Задайте частоту или полосу, подберите диаметр и сравните заготовки. Сверьте положение зонда и допустимую полосу. Для раструба воспользуйтесь развёрткой.</td></tr>
-<tr><th scope="row">Halo CB</th><td>Выберите круглый или квадратный контур, задайте частоту, коэффициент <var>k</var> и разрыв. Проверьте длину проводника по схеме и параметры гамма-согласования.</td></tr>
-<tr><th scope="row">Траповый диполь</th><td>Выберите профиль R2AUK, VK2EVB или AA4LR и диапазон 20, 40 или 80 м. Сверьте секции A, B, C и трапы T20, T40. Для отдельного расчёта используйте поля LC и катушки.</td></tr>
+<tr><th scope="row"><span class="web-label">Инвертированная V и Ground Plane</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/inverted-v">Инвертированная V</a><a href="https://appassets.androidplatform.net/open/ground-plane">Ground Plane</a></span></th><td>Введите частоту и параметры конструкции. Сверьте длины плеч либо штыря и противовесов с выбранной конфигурацией.</td></tr>
+<tr><th scope="row"><span class="web-label">Полноволновая рамка</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/full-wave-loop">Полноволновая рамка</a><a href="https://appassets.androidplatform.net/open/quad-loop">Quad Loop</a><a href="https://appassets.androidplatform.net/open/delta-loop">Delta Loop</a></span></th><td>Выберите Quad или Delta Loop. Рассчитайте периметр и стороны по частоте либо частоту по известному периметру. Выберите расположение точки питания на схеме.</td></tr>
+<tr><th scope="row"><span class="web-label">J-антенна и Slim Jim</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/j-pole">J-антенна</a><a href="https://appassets.androidplatform.net/open/slim-jim">Slim Jim</a></span></th><td>Выберите вариант или диапазон. Сверьте размеры секций, зазор и точку питания с обозначениями на схеме. Подгонку начинайте с опубликованных размеров своего варианта.</td></tr>
+<tr><th scope="row"><span class="web-label">Яги — Уда</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Яги — Уда</a></span></th><td>Выберите профиль автора и монтажный вариант. Сверьте позиции от рефлектора, диаметры, заготовки и длину траверсы. Для таблиц с фиксированным монтажом соблюдайте заданные отступы и способ крепления.</td></tr>
+<tr><th scope="row"><span class="web-label">Антенна Моксон</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/moxon">Антенна Моксон</a></span></th><td>Выберите опубликованный профиль или расчёт по частоте и диаметру проводника. Для разметки возьмите размеры и зазоры выбранной конфигурации.</td></tr>
+<tr><th scope="row"><span class="web-label">Антенна HB9CV</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/hb9cv">Антенна HB9CV</a></span></th><td>Выберите опубликованную конструкцию или расчёт по частоте в диапазоне 100–1500 МГц. Проверьте фазовую линию и поля размеров, зависящих от монтажа.</td></tr>
+<tr><th scope="row"><span class="web-label">Баночная антенна (Cantenna)</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/cantenna">Баночная антенна (Cantenna)</a></span></th><td>Задайте частоту или полосу, подберите диаметр и сравните заготовки. Сверьте положение зонда и допустимую полосу. Для раструба воспользуйтесь развёрткой.</td></tr>
+<tr><th scope="row"><span class="web-label">Halo CB</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/halo">Halo CB</a></span></th><td>Выберите круглый или квадратный контур, задайте частоту, коэффициент <var>k</var> и разрыв. Проверьте длину проводника по схеме и параметры гамма-согласования.</td></tr>
+<tr><th scope="row"><span class="web-label">Траповый диполь</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/trap-dipole">Траповый диполь</a></span></th><td>Выберите профиль R2AUK, VK2EVB или AA4LR и диапазон 20, 40 или 80 м. Сверьте секции A, B, C и трапы T20, T40. Для отдельного расчёта используйте поля LC и катушки.</td></tr>
 </tbody></table>
 <h3>Просмотр моделей и чертежей</h3><p>Проведите пальцем по векторной модели, чтобы повернуть её. Двойное касание или лупа с плюсом открывает полный экран. Разведите пальцы для увеличения, переместите модель двумя пальцами. Лупа с минусом и системная кнопка «Назад» закрывают просмотр. В руководстве двойное касание или лупа также открывают фотографии и чертежи. Их можно масштабировать, перемещать и возвращать к исходному масштабу.</p>
 <h3>Траповый диполь</h3><p>Откройте панель <strong>Конструкции и работа по диапазонам</strong> внизу экрана, чтобы прочитать справку о W3DZZ и работе на разных диапазонах. В панели <strong>Настройка по измерениям</strong> можно открыть S1P и анализировать КСВ в окне выбранного диапазона.</p>
         </div>
       </div>
 <div class="gallery gallery-wide">
-<figure><a href="images/ru/06-quad-loop.webp"><img src="images/ru/06-quad-loop.webp" alt="Полноволновая рамка Quad" loading="lazy" decoding="async"></a><figcaption>Полноволновая рамка Quad</figcaption></figure>
-<figure><a href="images/ru/07-j-pole.webp"><img src="images/ru/07-j-pole.webp" alt="Калькулятор J-антенны" loading="lazy" decoding="async"></a><figcaption>Калькулятор J-антенны</figcaption></figure>
-<figure><a href="images/ru/08-yagi.webp"><img src="images/ru/08-yagi.webp" alt="Калькулятор Яги — Уда" loading="lazy" decoding="async"></a><figcaption>Калькулятор Яги — Уда</figcaption></figure>
-<figure><a href="images/ru/09-moxon.webp"><img src="images/ru/09-moxon.webp" alt="Калькулятор Моксона" loading="lazy" decoding="async"></a><figcaption>Калькулятор Моксона</figcaption></figure>
-<figure><a href="images/ru/trap-dipole.webp"><img src="images/ru/trap-dipole.webp" alt="Конструкция трапового диполя" loading="lazy" decoding="async"></a><figcaption>Конструкция трапового диполя</figcaption></figure>
-<figure><a href="images/ru/cantenna.webp"><img src="images/ru/cantenna.webp" alt="Калькулятор баночной антенны" loading="lazy" decoding="async"></a><figcaption>Калькулятор баночной антенны</figcaption></figure>
-<figure><a href="images/ru/halo.webp"><img src="images/ru/halo.webp" alt="Начальные размеры Halo CB" loading="lazy" decoding="async"></a><figcaption>Начальные размеры Halo CB</figcaption></figure>
-<figure><a href="images/ru/hb9cv.webp"><img src="images/ru/hb9cv.webp" alt="Конструкция и модель HB9CV" loading="lazy" decoding="async"></a><figcaption>Конструкция и модель HB9CV</figcaption></figure>
-<figure><a href="images/ru/slim-jim.webp"><img src="images/ru/slim-jim.webp" alt="Профили калькулятора Slim Jim" loading="lazy" decoding="async"></a><figcaption>Профили калькулятора Slim Jim</figcaption></figure>
+<figure><a href="images/ru/06-quad-loop.webp"><img src="images/ru/06-quad-loop.webp" width="1080" height="1920" alt="Полноволновая рамка Quad" loading="lazy" decoding="async"></a><figcaption>Полноволновая рамка Quad</figcaption></figure>
+<figure><a href="images/ru/07-j-pole.webp"><img src="images/ru/07-j-pole.webp" width="1080" height="1920" alt="Калькулятор J-антенны" loading="lazy" decoding="async"></a><figcaption>Калькулятор J-антенны</figcaption></figure>
+<figure><a href="images/ru/08-yagi.webp"><img src="images/ru/08-yagi.webp" width="1080" height="1920" alt="Калькулятор Яги — Уда" loading="lazy" decoding="async"></a><figcaption>Калькулятор Яги — Уда</figcaption></figure>
+<figure><a href="images/ru/09-moxon.webp"><img src="images/ru/09-moxon.webp" width="1080" height="1920" alt="Калькулятор Моксона" loading="lazy" decoding="async"></a><figcaption>Калькулятор Моксона</figcaption></figure>
+<figure><a href="images/ru/trap-dipole.webp"><img src="images/ru/trap-dipole.webp" width="680" height="1209" alt="Конструкция трапового диполя" loading="lazy" decoding="async"></a><figcaption>Конструкция трапового диполя</figcaption></figure>
+<figure><a href="images/ru/cantenna.webp"><img src="images/ru/cantenna.webp" width="680" height="1209" alt="Калькулятор баночной антенны" loading="lazy" decoding="async"></a><figcaption>Калькулятор баночной антенны</figcaption></figure>
+<figure><a href="images/ru/halo.webp"><img src="images/ru/halo.webp" width="680" height="1209" alt="Начальные размеры Halo CB" loading="lazy" decoding="async"></a><figcaption>Начальные размеры Halo CB</figcaption></figure>
+<figure><a href="images/ru/hb9cv.webp"><img src="images/ru/hb9cv.webp" width="680" height="1209" alt="Конструкция и модель HB9CV" loading="lazy" decoding="async"></a><figcaption>Конструкция и модель HB9CV</figcaption></figure>
+<figure><a href="images/ru/slim-jim.webp"><img src="images/ru/slim-jim.webp" width="680" height="1209" alt="Профили калькулятора Slim Jim" loading="lazy" decoding="async"></a><figcaption>Профили калькулятора Slim Jim</figcaption></figure>
 </div>
     </section>
     <section class="chapter" id="construction" aria-labelledby="construction-title">
       <h2 id="construction-title">Конструирование волнового канала</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/construction">Конструирование антенн</a><a href="https://appassets.androidplatform.net/open/r3udk-guide">Открыть руководство R3UDK</a><a href="https://appassets.androidplatform.net/open/r3udk-calculator">Открыть калькулятор R3UDK</a><a href="https://appassets.androidplatform.net/open/vna">Импорт измерений VNA</a></div>
       <div class="with-images">
         <div class="prose">
 <p>Откройте <strong>Инструменты → Конструирование антенн → Волновой канал Яги — Уда</strong>. Руководство описывает четырёхэлементную антенну R3UDK на 145 МГц с разборным креплением и траверсой из ПВХ.</p>
 <ol><li>Разверните <strong>Схема и размеры</strong>. Позиции отсчитываются от рефлектора. Для вибратора учитывайте габарит готовой детали и размер заготовки до гибки.</li><li>В разделе материалов откройте иллюстрации креплений и при необходимости сохраните встроенный ZIP с файлами STL. Затем прочитайте шаги подготовки креплений, элементов, фидера и сборки.</li><li>Для изменения припуска или отступов нажмите <strong>Открыть калькулятор R3UDK</strong>. Он открывает профиль этой конструкции.</li><li>Чтобы сохранить исходную конструкцию, прокрутите руководство до конца и нажмите <strong>Добавить в проект</strong>. Можно выбрать существующий проект Яги или создать новый с целевой частотой 145 МГц. Из руководства сохраняются опубликованные размеры без дополнительного припуска и пользовательских отступов.</li><li>После сборки проверьте КСВ и импеданс в рабочем положении. В разделе проверки можно перейти к импорту S1P.</li></ol>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/yagi-guide.webp"><img src="images/ru/yagi-guide.webp" alt="Руководство по конструкции R3UDK" loading="lazy" decoding="async"></a><figcaption>Руководство по конструкции R3UDK</figcaption></figure>
-<figure><a href="images/ru/yagi-guide-project.webp"><img src="images/ru/yagi-guide-project.webp" alt="Добавление конструкции в проект" loading="lazy" decoding="async"></a><figcaption>Добавление конструкции в проект</figcaption></figure>
+<figure><a href="images/ru/yagi-guide.webp"><img src="images/ru/yagi-guide.webp" width="680" height="1209" alt="Руководство по конструкции R3UDK" loading="lazy" decoding="async"></a><figcaption>Руководство по конструкции R3UDK</figcaption></figure>
+<figure><a href="images/ru/yagi-guide-project.webp"><img src="images/ru/yagi-guide-project.webp" width="680" height="1209" alt="Добавление конструкции в проект" loading="lazy" decoding="async"></a><figcaption>Добавление конструкции в проект</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="swr" aria-labelledby="swr-title">
       <h2 id="swr-title">КСВ и отражение</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/swr">Открыть КСВ и отражение</a></div>
       <div class="with-images">
         <div class="prose">
 <ol><li>Откройте <strong>Инструменты → КСВ и отражение</strong> и выберите известную величину. Доступны КСВ, модуль коэффициента отражения |Γ|, возвратные потери и комплексный импеданс <var>R + jX</var>.</li><li>При расчёте по импедансу задайте опорное сопротивление. Для большинства 50-омных измерений это 50 Ом.</li><li>Сверьте пересчитанные величины. При КСВ 2:1 отражается около 11,11% падающей мощности. Потери рассогласования в плоскости нагрузки составляют около 0,51 дБ при неизменной падающей мощности. Передатчик может снизить её дополнительно.</li></ol>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/03-swr.webp"><img src="images/ru/03-swr.webp" alt="Пересчёт КСВ и отражения" loading="lazy" decoding="async"></a><figcaption>Пересчёт КСВ и отражения</figcaption></figure>
+<figure><a href="images/ru/03-swr.webp"><img src="images/ru/03-swr.webp" width="1080" height="1920" alt="Пересчёт КСВ и отражения" loading="lazy" decoding="async"></a><figcaption>Пересчёт КСВ и отражения</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="smith" aria-labelledby="smith-title">
       <h2 id="smith-title">Диаграмма Смита</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/smith">Открыть диаграмму Смита</a></div>
       <div class="with-images">
         <div class="prose">
 <ol><li>Откройте <strong>Инструменты → Диаграмма Смита</strong> и задайте импеданс нагрузки и опорное сопротивление.</li><li>Перемещайте маркер нагрузки, чтобы увидеть изменения импеданса, КСВ и коэффициента отражения.</li><li>Меняйте расстояние от нагрузки к генератору, чтобы проследить трансформацию импеданса вдоль линии. Используйте подписи под диаграммой для чтения маркеров.</li></ol>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/04-smith.webp"><img src="images/ru/04-smith.webp" alt="Нагрузка и преобразование вдоль линии" loading="lazy" decoding="async"></a><figcaption>Нагрузка и преобразование вдоль линии</figcaption></figure>
+<figure><a href="images/ru/04-smith.webp"><img src="images/ru/04-smith.webp" width="1080" height="1920" alt="Нагрузка и преобразование вдоль линии" loading="lazy" decoding="async"></a><figcaption>Нагрузка и преобразование вдоль линии</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="cables" aria-labelledby="cables-title">
       <h2 id="cables-title">Кабель и потери в фидере</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/cable">Открыть расчёт электрической длины</a><a href="https://appassets.androidplatform.net/open/feedline">Открыть расчёт потерь в фидере</a></div>
       <div class="with-images">
         <div class="prose">
 <h3>Электрическая длина кабеля</h3><p>Откройте одноимённый инструмент. Задайте частоту, коэффициент укорочения кабеля и известную длину. Выберите направление пересчёта между физической и электрической длиной. Фаза и задержка относятся к введённым параметрам линии.</p>
 <h3>Потери в фидере</h3><p>Укажите частоту, длину и тип кабеля из каталога. При ручном вводе берите затухание для указанной частоты и проверяйте единицы, например дБ/100 м. Результат показывает потери в согласованной линии и мощность на дальнем конце. Для оценки отражения откройте «КСВ и отражение».</p>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/12-cable-electrical-length.webp"><img src="images/ru/12-cable-electrical-length.webp" alt="Электрическая длина кабеля" loading="lazy" decoding="async"></a><figcaption>Электрическая длина кабеля</figcaption></figure>
-<figure><a href="images/ru/13-feedline-loss.webp"><img src="images/ru/13-feedline-loss.webp" alt="Расчёт потерь в фидере" loading="lazy" decoding="async"></a><figcaption>Расчёт потерь в фидере</figcaption></figure>
+<figure><a href="images/ru/12-cable-electrical-length.webp"><img src="images/ru/12-cable-electrical-length.webp" width="1080" height="1920" alt="Электрическая длина кабеля" loading="lazy" decoding="async"></a><figcaption>Электрическая длина кабеля</figcaption></figure>
+<figure><a href="images/ru/13-feedline-loss.webp"><img src="images/ru/13-feedline-loss.webp" width="1080" height="1920" alt="Расчёт потерь в фидере" loading="lazy" decoding="async"></a><figcaption>Расчёт потерь в фидере</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="vna" aria-labelledby="vna-title">
       <h2 id="vna-title">Измерения VNA и полоса по КСВ</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/additional-tools">Дополнительные инструменты</a><a href="https://appassets.androidplatform.net/open/vna">Импорт измерений VNA</a><a href="https://appassets.androidplatform.net/open/bandwidth">Открыть полосу по КСВ</a></div>
       <div class="with-images">
         <div class="prose">
 <ol><li>Экспортируйте измерение <strong>S11</strong> из анализатора в однопортовый файл Touchstone <code>.s1p</code>.</li><li>Откройте <strong>Инструменты → Дополнительные инструменты → Импорт измерений VNA анализатора</strong> и нажмите <strong>Открыть файл S1P</strong>.</li><li>Укажите плоскость калибровки, например у точки питания или со стороны трансивера. Чтобы сравнить замеры, добавьте вторую трассу и проверьте частотное перекрытие, опорное сопротивление и плоскость калибровки.</li><li>Просмотрите КСВ, импеданс и диаграмму Смита. На графике КСВ найдите минимум, а по реактивности проверьте, где она близка к нулю. Эти частоты могут различаться.</li><li>В инструменте <strong>Рабочая полоса по КСВ</strong> выберите трассу и порог, например 2,0. Граница на краю прохода означает, что для определения полной полосы нужно расширить измерение.</li><li>Чтобы сохранить трассы с расчётом или замером, нажмите <strong>Сохранить в проект</strong>.</li></ol>
@@ -195,28 +212,35 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 <p><a href="../examples/demo-dipole-145mhz-before.s1p" download>Пример S1P до подстройки</a> · <a href="../examples/demo-dipole-145mhz-after.s1p" download>Пример S1P после подстройки</a></p>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/11-vna.webp"><img src="images/ru/11-vna.webp" alt="Две трассы в экране измерений VNA" loading="lazy" decoding="async"></a><figcaption>Две трассы в экране измерений VNA</figcaption></figure>
+<figure><a href="images/ru/11-vna.webp"><img src="images/ru/11-vna.webp" width="1080" height="1920" alt="Две трассы в экране измерений VNA" loading="lazy" decoding="async"></a><figcaption>Две трассы в экране измерений VNA</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="projects" aria-labelledby="projects-title">
       <h2 id="projects-title">Проекты и журнал подстройки</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/projects">Открыть проекты</a></div>
       <div class="with-images">
         <div class="prose">
+<h3>Поиск и порядок проектов</h3>
+<p>На экране <strong>Проекты</strong> введите часть названия, частоты или типа антенны в поле под кнопками. Список отфильтруется, а совпадения в карточках будут выделены жёлтым. Для частоты можно использовать запятую или точку.</p>
+<p>Удерживайте карточку, перетащите её вверх или вниз и отпустите на нужном месте. Приложение сохранит порядок. При активном поиске скрытые карточки сохраняют свои места.</p>
 <h3>Сохранение расчёта</h3><ol><li>Нажмите <strong>Копировать в проект</strong> в калькуляторе. В руководстве по Яги кнопка называется <strong>Добавить в проект</strong>.</li><li>Выберите подходящий проект и нажмите <strong>Сохранить в выбранный проект</strong> или выберите <strong>Создать новый проект</strong> и введите название.</li></ol>
+<p>Откройте сохранённый расчёт в журнале проекта. В записи отдельно показаны <strong>Исходные данные расчета</strong> и <strong>Результаты расчета</strong>.</p>
 <h3>Замеры и перенос данных</h3><ol><li>Откройте <strong>Инструменты → Проекты и журналы подстройки</strong>, выберите проект и добавьте запись. Укажите условия установки, внесите результаты замера и добавьте фото с комментарием, если это нужно для повторения опыта.</li><li>В <strong>Сравнить записи</strong> выберите две записи. Сопоставляйте КСВ и импеданс при одинаковых условиях и точке подключения.</li><li>Для переноса проекта используйте <strong>Экспорт JSON</strong> и <strong>Импорт JSON</strong>. При импорте создаётся отдельный проект. Для передачи фото используйте экспорт фото в ZIP.</li></ol>
 <p><a href="../examples/demo-dipole-journal-145mhz-ru.json" download>Демо-проект диполя на 145 МГц</a></p>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/05-dipole-journal.webp"><img src="images/ru/05-dipole-journal.webp" alt="Журнал проекта с записями" loading="lazy" decoding="async"></a><figcaption>Журнал проекта с записями</figcaption></figure>
+<figure><a href="images/ru/project-search.webp"><img src="images/ru/project-search.webp" width="680" height="1209" alt="Совпадения по частоте выделены жёлтым на двух карточках" loading="lazy" decoding="async"></a><figcaption>Поиск проектов по частоте</figcaption></figure>
+<figure><a href="images/ru/05-dipole-journal.webp"><img src="images/ru/05-dipole-journal.webp" width="1080" height="1920" alt="Журнал проекта с записями" loading="lazy" decoding="async"></a><figcaption>Журнал проекта с записями</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="help" aria-labelledby="help-title">
       <h2 id="help-title">Справка и обновления</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/help">Открыть справку</a><a href="https://appassets.androidplatform.net/open/references">Открыть материалы и источники</a><a href="https://appassets.androidplatform.net/open/licenses">Открыть лицензии</a><a class="direct-link" href="https://appassets.androidplatform.net/open/check-updates">Проверить обновления</a></div>
       <div>
         <div class="prose">
-<ul><li><strong>Справка</strong> в меню содержит сведения о приложении. <strong>Описания и материалы</strong> ведут к статьям и формулам, а <strong>Лицензии</strong> перечисляют условия использования и источники конструкций.</li><li>В сборке GitHub Direct выберите <strong>Проверить обновления</strong>. При наличии новой версии приложение показывает её и предлагает системную установку.</li></ul>
+<ul><li><strong>Справка</strong> в меню содержит сведения о приложении. <strong>Материалы и источники</strong> ведут к статьям и формулам, а <strong>Лицензии</strong> перечисляют условия использования и источники конструкций.</li><li>Откройте <strong>Руководство пользователя</strong> из меню приложения, чтобы читать его офлайн и переходить к описанным здесь инструментам.</li><li>В сборке GitHub Direct выберите <strong>Проверить обновления</strong>. При наличии новой версии приложение показывает её и предлагает системную установку.</li></ul>
 <p><a href="../PRIVACY.md">Политика конфиденциальности</a> · <a href="https://github.com/ssotnikov/antcalc/issues">Сообщить об ошибке</a></p>
         </div>
       </div>

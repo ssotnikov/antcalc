@@ -8,7 +8,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -62,7 +61,7 @@ internal enum class JournalPage(val title: Int) {
     }
 }
 
-private enum class ProjectAction(val label: Int) {
+internal enum class ProjectAction(val label: Int) {
     EDIT(R.string.journal_edit_project),
     DUPLICATE(R.string.journal_duplicate),
     EXPORT(R.string.journal_export),
@@ -219,7 +218,8 @@ internal fun JournalScreen(
         val enabled = !state.busy
         when (page) {
             JournalPage.PROJECTS -> ProjectList(state.projects, presentation, enabled,
-                onNew = { navigate(JournalPage.CREATE) }, onOpen = ::openProject, onAction = ::onProjectAction, onImport = {
+                onNew = { navigate(JournalPage.CREATE) }, onOpen = ::openProject, onAction = ::onProjectAction,
+                onReorder = model::reorderProjects, onImport = {
                     try {
                         openDocument.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
                     } catch (_: ActivityNotFoundException) {
@@ -279,12 +279,19 @@ internal fun JournalScreen(
                 }
             } else MissingItem()
             JournalPage.RECORD -> if (record != null) {
-                val details = presentation.recordDetails(record)
+                val calculation = record.calculation?.let { presentation.snapshotFields(it, record.antennaType) }
                 val trap = record.calculation?.takeIf { it.model == local.antenna.calculator.ui.TRAP_DIPOLE_MODEL }
                 val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
                     JournalHeading(record.title)
-                    JournalDetails(details)
+                    JournalDetails(presentation.recordFacts(record))
+                    if (calculation != null) {
+                        JournalDetails(listOf(calculation.model))
+                        JournalCalculationSection(stringResource(R.string.journal_calculation_input), calculation.inputs)
+                        JournalCalculationSection(stringResource(R.string.journal_calculation_output), calculation.outputs)
+                        JournalDetails(calculation.metadata)
+                    }
+                    presentation.recordNote(record)?.let { JournalDetails(listOf(it)) }
                     JournalScope()
                     if (trap != null && onOpenTrapDipole != null) {
                         TextButton(onClick = { onOpenTrapDipole(trap) }, enabled = enabled, modifier = Modifier.testTag("journal-open-trap-dipole")) {
@@ -297,6 +304,7 @@ internal fun JournalScreen(
                         }
                     }
                     OutlinedButton(onClick = {
+                        val details = presentation.recordDetails(record)
                         copy(listOf(record.title, presentation.formatFields(details), scopeNote).joinToString("\n"))
                     }, enabled = enabled) { Text(stringResource(R.string.journal_copy)) }
                     TextButton(onClick = { confirmRecordDeletion = true }, enabled = enabled) { Text(stringResource(R.string.journal_delete)) }
@@ -410,59 +418,7 @@ private fun AntennaProject.comparisonRejection(keys: List<String>): Int? {
 private val journalChronology = compareBy<JournalRecord> { it.time.toInstant() }
 
 @Composable
-private fun ProjectList(
-    projects: List<AntennaProject>, presentation: JournalPresentation, enabled: Boolean,
-    onNew: () -> Unit, onOpen: (UUID) -> Unit, onImport: () -> Unit,
-    onAction: (AntennaProject, ProjectAction) -> Unit,
-) {
-    val scroll = rememberPageLazyListState()
-    LazyColumn(
-        Modifier.fillMaxSize().cardListBounce(scroll.isScrollInProgress).testTag("journal-projects"),
-        state = scroll, overscrollEffect = null, contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = onNew, enabled = enabled, modifier = Modifier.weight(1f).testTag("journal-new-project")) {
-                    Text(stringResource(R.string.journal_new_project))
-                }
-                OutlinedButton(onClick = onImport, enabled = enabled, modifier = Modifier.weight(1f).testTag("journal-import")) {
-                    Text(stringResource(R.string.journal_import))
-                }
-            }
-        }
-        if (projects.isEmpty()) item { Text(stringResource(R.string.journal_no_projects)) }
-        items(projects, key = { it.id.toString() }) { project ->
-            var actions by remember { mutableStateOf(false) }
-            val actionsLabel = stringResource(R.string.journal_project_actions)
-            Box {
-                OutlinedCard(Modifier.fillMaxWidth()) {
-                    Column(
-                        Modifier.fillMaxWidth().testTag("journal-project")
-                            .combinedClickable(
-                                enabled = enabled,
-                                onLongClickLabel = actionsLabel,
-                                onLongClick = { actions = true },
-                                onClick = { onOpen(project.id) },
-                            )
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        JournalHeading(project.title, MaterialTheme.colorScheme.secondary)
-                        val antenna = stringResource(project.antennaType.journalLabel())
-                        Text(project.target?.let {
-                            stringResource(R.string.journal_project_summary, antenna, presentation.frequency(it.hertz))
-                        } ?: antenna)
-                        Text(stringResource(R.string.journal_count, project.records.size), style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-                ProjectActionsMenu(actions && enabled, { actions = false }) { onAction(project, it) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProjectActionsMenu(expanded: Boolean, onDismiss: () -> Unit, onAction: (ProjectAction) -> Unit) {
+internal fun ProjectActionsMenu(expanded: Boolean, onDismiss: () -> Unit, onAction: (ProjectAction) -> Unit) {
     DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
         ProjectAction.entries.forEach { action ->
             DropdownMenuItem(
@@ -649,6 +605,15 @@ private fun JournalSelectionCheckbox(
 internal fun JournalColumn(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Column(modifier.fillMaxSize().verticalScroll(rememberPageScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp), content = content)
+}
+
+@Composable
+private fun JournalCalculationSection(title: String, details: List<Pair<String, String>>) {
+    if (details.isEmpty()) return
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(title, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium)
+        JournalDetails(details)
+    }
 }
 
 @Composable

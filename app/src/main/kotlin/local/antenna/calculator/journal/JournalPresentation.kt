@@ -75,6 +75,13 @@ internal fun JournalProblem.label(): Int = when (this) {
     JournalProblem.MISSING -> R.string.journal_problem_missing
 }
 
+internal data class JournalSnapshotFields(
+    val model: Pair<String, String>,
+    val inputs: List<Pair<String, String>>,
+    val outputs: List<Pair<String, String>>,
+    val metadata: List<Pair<String, String>>,
+)
+
 internal class JournalPresentation(private val context: Context) {
     private val locale = context.resources.configuration.locales[0]
     private val frequencies = FrequencyNumberFormat(locale)
@@ -106,6 +113,12 @@ internal class JournalPresentation(private val context: Context) {
     }
 
     fun recordDetails(r: JournalRecord): List<Pair<String, String>> = buildList {
+        addAll(recordFacts(r))
+        r.calculation?.let { addAll(snapshotDetails(it, r.antennaType)) }
+        recordNote(r)?.let(::add)
+    }
+
+    fun recordFacts(r: JournalRecord): List<Pair<String, String>> = buildList {
         add(text(R.string.journal_date) to date(r.time))
         add(text(R.string.antenna_type) to text(r.antennaType.journalLabel()))
         if (r.installation.isNotBlank()) add(text(R.string.journal_installation) to r.installation)
@@ -120,94 +133,110 @@ internal class JournalPresentation(private val context: Context) {
             m.resistanceOhms?.let { add(text(R.string.journal_r_label) to withUnit(it, R.string.journal_ohms)) }
             m.reactanceOhms?.let { add(text(R.string.journal_x_label) to withUnit(it, R.string.journal_ohms)) }
         }
-        r.calculation?.let { addAll(snapshotDetails(it, r.antennaType)) }
-        if (r.note.isNotBlank()) add(text(R.string.journal_note) to r.note)
     }
 
-    fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> = buildList {
-            val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
-            val yagi = YagiProfile.entries.firstOrNull { it.design.model == s.model }
-            val moxon = moxonProfiles.firstOrNull { it.id == s.model && it.revision == s.revision }
-            val cantenna = CantennaDesign.entries.firstOrNull { it.model == s.model && s.revision == 1 }
-            val cantennaText = CantennaText(context.resources).takeIf { s.model.startsWith("cantenna_") }
-            val label = profile?.let { text(it.title) } ?: when (s.model) {
-                "sizing" -> text(R.string.journal_sizing_model)
-                "trimming" -> text(R.string.journal_trim_model)
-                "ground_plane" -> text(R.string.ground_plane_title)
-                "yagi_r3udk" -> text(R.string.yagi_record_model)
-                "j_pole" -> text(R.string.jpole_title)
-                Ok1ikeJPoleModel -> text(R.string.jpole_ok1ike_profile)
-                "full_wave_loop" -> text(R.string.loop_title)
-                "inverted_v" -> text(R.string.inverted_v_title)
-                MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
-                Hb9cvAerial.MODEL -> text(R.string.hb9cv_aerial_name)
-                "cantenna_calculated" -> text(R.string.cantenna_title)
-                HALO_CB_MODEL -> text(R.string.halo_estimate)
-                TRAP_DIPOLE_MODEL -> text(R.string.trap_title)
-                "cantenna_mit", "cantenna_ve4ma", "cantenna_flare" -> cantenna?.let { text(it.title) } ?: s.model
-                else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
+    fun recordNote(r: JournalRecord): Pair<String, String>? =
+        r.note.takeIf { it.isNotBlank() }?.let { text(R.string.journal_note) to it }
+
+    fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> =
+        snapshotFields(s, type).let { fields ->
+            listOf(fields.model) +
+                fields.inputs.map { (label, value) -> "${text(R.string.journal_calculation_input)} · $label" to value } +
+                fields.outputs.map { (label, value) -> "${text(R.string.journal_calculation_output)} · $label" to value } +
+                fields.metadata
+        }
+
+    fun snapshotFields(s: CalculationSnapshot, type: AntennaType): JournalSnapshotFields {
+        val profile = SlimJimProfile.entries.firstOrNull { it.model == s.model && it.revision == s.revision }
+        val yagi = YagiProfile.entries.firstOrNull { it.design.model == s.model }
+        val moxon = moxonProfiles.firstOrNull { it.id == s.model && it.revision == s.revision }
+        val cantenna = CantennaDesign.entries.firstOrNull { it.model == s.model && s.revision == 1 }
+        val cantennaText = CantennaText(context.resources).takeIf { s.model.startsWith("cantenna_") }
+        val label = profile?.let { text(it.title) } ?: when (s.model) {
+            "sizing" -> text(R.string.journal_sizing_model)
+            "trimming" -> text(R.string.journal_trim_model)
+            "ground_plane" -> text(R.string.ground_plane_title)
+            "yagi_r3udk" -> text(R.string.yagi_record_model)
+            "j_pole" -> text(R.string.jpole_title)
+            Ok1ikeJPoleModel -> text(R.string.jpole_ok1ike_profile)
+            "full_wave_loop" -> text(R.string.loop_title)
+            "inverted_v" -> text(R.string.inverted_v_title)
+            MoxonEstimate.MODEL -> text(R.string.moxon_estimate)
+            Hb9cvAerial.MODEL -> text(R.string.hb9cv_aerial_name)
+            "cantenna_calculated" -> text(R.string.cantenna_title)
+            HALO_CB_MODEL -> text(R.string.halo_estimate)
+            TRAP_DIPOLE_MODEL -> text(R.string.trap_title)
+            "cantenna_mit", "cantenna_ve4ma", "cantenna_flare" -> cantenna?.let { text(it.title) } ?: s.model
+            else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
+        }
+        val model = text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision)
+        val aerialMhz = if (s.model == Hb9cvAerial.MODEL) {
+            s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
+        } else null
+        fun render(metric: SnapshotValue): String {
+            if (s.model == TRAP_DIPOLE_MODEL) {
+                trapMetricDisplay(context.resources, metric, ::trapNumberFormat)?.let { return it }
             }
-            add(text(R.string.journal_calculation) to context.getString(R.string.journal_model, label, s.revision))
-            val aerialMhz = if (s.model == Hb9cvAerial.MODEL) {
-                s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
+            if (s.model == HALO_CB_MODEL) {
+                if (metric.key == "halo_shape") return when (metric.value) {
+                    1.0 -> text(R.string.halo_round)
+                    2.0 -> text(R.string.halo_square)
+                    else -> metricValue(metric)
+                }
+                if (metric.unit == SnapshotUnit.METERS &&
+                    (metric.key == "halo_gap" || HaloGammaField.entries.any { it.key == metric.key })) {
+                    return CantennaText(context.resources).mm(metric.value)
+                }
+            }
+            if (cantennaText != null) {
+                if (metric.key == "cantenna_objective") return text(if (metric.value == 1.0) R.string.cantenna_gain else R.string.cantenna_noise)
+                if (metric.unit == SnapshotUnit.METERS) return cantennaText.mm(metric.value)
+            }
+            return metricValue(metric, aerialMhz)
+        }
+        val inputs = s.inputs.map { metric -> metricLabel(metric.key, type) to render(metric) }
+        val outputs = s.outputsForAntenna(type).map { metric ->
+            val ok1ikeLabel = if (s.model == Ok1ikeJPoleModel) {
+                ok1ikeRows.firstOrNull { it.first == metric.key }?.second
             } else null
-            fun render(metric: SnapshotValue): String {
-                if (s.model == TRAP_DIPOLE_MODEL) {
-                    trapMetricDisplay(context.resources, metric, ::trapNumberFormat)?.let { return it }
-                }
-                if (s.model == HALO_CB_MODEL) {
-                    if (metric.key == "halo_shape") return when (metric.value) {
-                        1.0 -> text(R.string.halo_round)
-                        2.0 -> text(R.string.halo_square)
-                        else -> metricValue(metric)
-                    }
-                    if (metric.unit == SnapshotUnit.METERS &&
-                        (metric.key == "halo_gap" || HaloGammaField.entries.any { it.key == metric.key })) {
-                        return CantennaText(context.resources).mm(metric.value)
-                    }
-                }
-                if (cantennaText != null) {
-                    if (metric.key == "cantenna_objective") return text(if (metric.value == 1.0) R.string.cantenna_gain else R.string.cantenna_noise)
-                    if (metric.unit == SnapshotUnit.METERS) return cantennaText.mm(metric.value)
-                }
-                return metricValue(metric, aerialMhz)
+            val metricName = ok1ikeLabel?.let(::text) ?: metricLabel(metric.key, type, moxon)
+            metricName to render(metric)
+        }
+        val metadata = snapshotMetadata(s, cantennaText, cantenna, profile)
+        return JournalSnapshotFields(model, inputs, outputs, metadata)
+    }
+
+    private fun snapshotMetadata(
+        s: CalculationSnapshot, cantennaText: CantennaText?, cantenna: CantennaDesign?, profile: SlimJimProfile?,
+    ): List<Pair<String, String>> = buildList {
+        if (cantennaText != null) add(text(R.string.cantenna_reference) to (cantenna?.source ?: CantennaSource.CHANGPUAK).url)
+        if (s.model == Hb9cvAerial.MODEL) {
+            add(text(R.string.hb9cv_source) to Hb9cvSource.AERIAL.url)
+        }
+        if (profile != null) {
+            add(text(R.string.slim_jim_construction) to text(profile.material))
+            add(text(R.string.slim_jim_diagram) to text(profile.connectionText()))
+            add(text(R.string.slim_jim_sizes) to text(profile.explanation))
+            add(text(R.string.slim_jim_source) to text(profile.sourceUrl))
+        }
+        for (warning in s.warnings) {
+            val message = when (warning) {
+                "YAGI_PARTIAL_CUT_LIST" -> text(R.string.yagi_partial_cut_list)
+                "LARGE_FREQUENCY_CHANGE" -> text(R.string.large_change_note)
+                "RESULT_OUTSIDE_INPUT_LENGTH_RANGE" -> text(R.string.outside_length_note)
+                "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
+                "RADIALS_TOUCH_GROUND" -> text(R.string.ground_plane_contact)
+                "ENDS_TOUCH_GROUND" -> text(R.string.inverted_v_ground_contact)
+                "CANTENNA_BELOW" -> text(R.string.cantenna_below)
+                "CANTENNA_HIGHER" -> text(R.string.cantenna_higher)
+                "CANTENNA_BAND" -> text(R.string.cantenna_misses)
+                "CANTENNA_SHORT" -> text(R.string.cantenna_short)
+                "CANTENNA_CONTACT" -> text(R.string.cantenna_contact_long)
+                "CANTENNA_TOLERANCE" -> text(R.string.cantenna_offset_loss)
+                else -> warning
             }
-            for (metric in s.inputs) add(text(R.string.journal_calculation_input) + " · " + metricLabel(metric.key, type) to render(metric))
-            for (metric in s.outputsForAntenna(type)) {
-                val ok1ikeLabel = if (s.model == Ok1ikeJPoleModel) {
-                    ok1ikeRows.firstOrNull { it.first == metric.key }?.second
-                } else null
-                val metricName = ok1ikeLabel?.let(::text) ?: metricLabel(metric.key, type, moxon)
-                add(text(R.string.journal_calculation_output) + " · " + metricName to render(metric))
-            }
-            if (cantennaText != null) add(text(R.string.cantenna_reference) to (cantenna?.source ?: CantennaSource.CHANGPUAK).url)
-            if (s.model == Hb9cvAerial.MODEL) {
-                add(text(R.string.hb9cv_source) to Hb9cvSource.AERIAL.url)
-            }
-            if (profile != null) {
-                add(text(R.string.slim_jim_construction) to text(profile.material))
-                add(text(R.string.slim_jim_diagram) to text(profile.connectionText()))
-                add(text(R.string.slim_jim_sizes) to text(profile.explanation))
-                add(text(R.string.slim_jim_source) to text(profile.sourceUrl))
-            }
-            for (warning in s.warnings) {
-                val message = when (warning) {
-                    "YAGI_PARTIAL_CUT_LIST" -> text(R.string.yagi_partial_cut_list)
-                    "LARGE_FREQUENCY_CHANGE" -> text(R.string.large_change_note)
-                    "RESULT_OUTSIDE_INPUT_LENGTH_RANGE" -> text(R.string.outside_length_note)
-                    "LENGTH_DIFFERS_FROM_MODEL" -> text(R.string.trimming_model_warning)
-                    "RADIALS_TOUCH_GROUND" -> text(R.string.ground_plane_contact)
-                    "ENDS_TOUCH_GROUND" -> text(R.string.inverted_v_ground_contact)
-                    "CANTENNA_BELOW" -> text(R.string.cantenna_below)
-                    "CANTENNA_HIGHER" -> text(R.string.cantenna_higher)
-                    "CANTENNA_BAND" -> text(R.string.cantenna_misses)
-                    "CANTENNA_SHORT" -> text(R.string.cantenna_short)
-                    "CANTENNA_CONTACT" -> text(R.string.cantenna_contact_long)
-                    "CANTENNA_TOLERANCE" -> text(R.string.cantenna_offset_loss)
-                    else -> warning
-                }
-                add(text(R.string.approximate) to message)
-            }
+            add(text(R.string.approximate) to message)
+        }
     }
 
     fun changes(c: JournalComparison): List<Pair<String, String>> = buildList {

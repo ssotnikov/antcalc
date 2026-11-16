@@ -54,6 +54,15 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 @media(max-width:880px){.shell{grid-template-columns:minmax(0,1fr);gap:1.2rem}aside{position:static;max-height:none;padding-bottom:1rem;border-bottom:1px solid var(--rule)}aside ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.with-images{grid-template-columns:minmax(0,1fr)}.gallery{max-width:390px;grid-template-columns:repeat(auto-fit,minmax(min(100%,125px),1fr))}.gallery-wide{max-width:none}.mast{padding-bottom:1.55rem}.shell{padding-top:1.35rem}th,td{padding:.55rem .42rem}}
 @media print{.mast{background:white;color:black;border-bottom:1px solid #888;padding:0 0 1rem}.mast p,.mast .version{color:black}.shell{display:block;padding:0}.chapter h2,figure{break-inside:avoid}aside,footer,.skip,.language{display:none}.with-images{grid-template-columns:minmax(0,1fr) 1.8in}.gallery-wide{grid-template-columns:repeat(4,minmax(0,1fr))}body{background:white;color:black}}
+.app-links{display:none}
+.in-app .app-links{display:flex;flex-wrap:wrap;gap:.4rem .6rem;margin:0 0 1rem}
+.in-app th .app-links{flex-direction:column;align-items:flex-start;margin:.2rem 0;gap:.3rem}
+.in-app th .web-label,.in-app:not(.direct) .direct-link{display:none}
+.app-links a{border:1px solid var(--rule);border-radius:.55rem;padding:.44rem .68rem;line-height:1.25;text-decoration:none;font-weight:600}
+.app-links a:active{background:var(--note-bg,#e8f1ee)}
+.in-app th .app-links a{padding:.25rem 0;border:0;text-decoration:underline}
+body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule:#3c535f;--link:#a8e1d3;--panel:#152832;--note-bg:#1b303a}
+.dark thead th,.dark .note,.dark .skip,.dark aside a:hover,.dark aside a:focus-visible{background:var(--note-bg)}
 </style>
 </head>
 <body>
@@ -62,7 +71,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
   <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
-  <span class="version">For AntCalc 1.32.0</span>
+  <span class="version">For AntCalc 1.33.0</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -83,6 +92,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
   <main id="guide">
     <section class="chapter" id="start" aria-labelledby="start-title">
       <h2 id="start-title">Getting started</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/settings">Settings</a><a href="https://appassets.androidplatform.net/open/sizing">Antenna dimensions</a><a href="https://appassets.androidplatform.net/open/tuning">Antenna tuning</a><a href="https://appassets.androidplatform.net/open/tools">Tools</a></div>
       <div>
         <div class="prose">
 <p>AntCalc helps you estimate dimensions, tune a built antenna and save measurement results. It runs on Android 8.0 or later. Calculations, models and built-in guides work offline.</p>
@@ -93,6 +103,7 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
     </section>
     <section class="chapter" id="sizing" aria-labelledby="sizing-title">
       <h2 id="sizing-title">Sizing and tuning</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/sizing">Open antenna dimensions</a><a href="https://appassets.androidplatform.net/open/tuning">Open antenna tuning</a></div>
       <div class="with-images">
         <div class="prose">
 <h3>Starting dimensions</h3><ol><li>Open <strong>Antenna dimensions</strong> and enter a frequency in the selected units. For a dipole at 145.5 MHz, enter <strong>145.5</strong> with MHz selected.</li><li>Find the monopole or dipole length in the results. For a symmetric dipole, check the total length and the length per arm.</li><li>Allow room for tuning when cutting the elements. Use the copy button to save the calculation to a project.</li></ol>
@@ -100,94 +111,100 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 <p class="note">Enter the resonance identified in the measurement. If several SWR dips appear in the working range, compare them with the reactance plot and identify the intended antenna mode.</p>
         </div>
 <div class="gallery">
-<figure><a href="images/en/01-dimensions.webp"><img src="images/en/01-dimensions.webp" alt="Sizing at 145 MHz" loading="lazy" decoding="async"></a><figcaption>Sizing at 145 MHz</figcaption></figure>
-<figure><a href="images/en/02-tuning.webp"><img src="images/en/02-tuning.webp" alt="Tuning from a measured frequency" loading="lazy" decoding="async"></a><figcaption>Tuning from a measured frequency</figcaption></figure>
+<figure><a href="images/en/01-dimensions.webp"><img src="images/en/01-dimensions.webp" width="1080" height="1920" alt="Sizing at 145 MHz" loading="lazy" decoding="async"></a><figcaption>Sizing at 145 MHz</figcaption></figure>
+<figure><a href="images/en/02-tuning.webp"><img src="images/en/02-tuning.webp" width="1080" height="1920" alt="Tuning from a measured frequency" loading="lazy" decoding="async"></a><figcaption>Tuning from a measured frequency</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="calculators" aria-labelledby="calculators-title">
       <h2 id="calculators-title">Antenna calculators</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/antenna-calculators">Open antenna calculators</a></div>
       <div>
         <div class="prose">
 <p>Open <strong>Tools → Antenna parameter calculators</strong>. Choose a design or calculation mode. Check the table units and diagram labels before cutting. If the screen provides a cut list, compare it with the finished part dimensions.</p>
 <p class="note">If a result is blank, check the input units and allowed ranges.</p>
 <table><thead><tr><th scope="col">Calculator</th><th scope="col">What to do</th></tr></thead><tbody>
-<tr><th scope="row">Inverted-V dipole and Ground Plane</th><td>Enter frequency and design parameters. Check the arm lengths, or the radiator and radials, for the selected setup.</td></tr>
-<tr><th scope="row">Full-wave loop</th><td>Choose Quad or Delta Loop. Calculate perimeter and sides from frequency, or frequency from a known perimeter. Choose the feedpoint shown on the diagram.</td></tr>
-<tr><th scope="row">J-pole and Slim Jim</th><td>Choose a variant or band. Check the lengths, gap and feedpoint against the labelled diagram. Start with the dimensions published for your variant.</td></tr>
-<tr><th scope="row">Yagi–Uda</th><td>Choose an author’s design and mounting variant. Check positions from the reflector, diameters, blanks and boom length. Follow the specified offsets and mounting method for tables based on a fixed setup.</td></tr>
-<tr><th scope="row">Moxon antenna</th><td>Choose a published design or calculate one from frequency and conductor diameter. Use the dimensions and gaps for your selected configuration.</td></tr>
-<tr><th scope="row">HB9CV antenna</th><td>Choose a published design or calculate by frequency within 100–1500 MHz. Check the phasing line and any fields for dimensions that depend on assembly.</td></tr>
-<tr><th scope="row">Cantenna</th><td>Enter a frequency or band, find a diameter and compare candidate cans. Check the probe position and usable band. Use the flat pattern when making a flare.</td></tr>
-<tr><th scope="row">Halo CB</th><td>Choose a circular or square loop and enter frequency, <var>k</var> and the gap. Check the conductor length on the diagram and review the gamma match.</td></tr>
-<tr><th scope="row">Trap Dipole</th><td>Select R2AUK, VK2EVB or AA4LR and the 20, 40 or 80 m band. Check sections A, B and C and traps T20 and T40. Use the separate LC and coil calculations as needed.</td></tr>
+<tr><th scope="row"><span class="web-label">Inverted-V dipole and Ground Plane</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/inverted-v">Inverted-V dipole</a><a href="https://appassets.androidplatform.net/open/ground-plane">Ground Plane</a></span></th><td>Enter frequency and design parameters. Check the arm lengths, or the radiator and radials, for the selected setup.</td></tr>
+<tr><th scope="row"><span class="web-label">Full-wave loop</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/full-wave-loop">Full-wave loop</a><a href="https://appassets.androidplatform.net/open/quad-loop">Quad Loop</a><a href="https://appassets.androidplatform.net/open/delta-loop">Delta Loop</a></span></th><td>Choose Quad or Delta Loop. Calculate perimeter and sides from frequency, or frequency from a known perimeter. Choose the feedpoint shown on the diagram.</td></tr>
+<tr><th scope="row"><span class="web-label">J-pole and Slim Jim</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/j-pole">J-pole</a><a href="https://appassets.androidplatform.net/open/slim-jim">Slim Jim</a></span></th><td>Choose a variant or band. Check the lengths, gap and feedpoint against the labelled diagram. Start with the dimensions published for your variant.</td></tr>
+<tr><th scope="row"><span class="web-label">Yagi–Uda</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Yagi–Uda</a></span></th><td>Choose an author’s design and mounting variant. Check positions from the reflector, diameters, blanks and boom length. Follow the specified offsets and mounting method for tables based on a fixed setup.</td></tr>
+<tr><th scope="row"><span class="web-label">Moxon antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/moxon">Moxon antenna</a></span></th><td>Choose a published design or calculate one from frequency and conductor diameter. Use the dimensions and gaps for your selected configuration.</td></tr>
+<tr><th scope="row"><span class="web-label">HB9CV antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/hb9cv">HB9CV antenna</a></span></th><td>Choose a published design or calculate by frequency within 100–1500 MHz. Check the phasing line and any fields for dimensions that depend on assembly.</td></tr>
+<tr><th scope="row"><span class="web-label">Cantenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/cantenna">Cantenna</a></span></th><td>Enter a frequency or band, find a diameter and compare candidate cans. Check the probe position and usable band. Use the flat pattern when making a flare.</td></tr>
+<tr><th scope="row"><span class="web-label">Halo CB</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/halo">Halo CB</a></span></th><td>Choose a circular or square loop and enter frequency, <var>k</var> and the gap. Check the conductor length on the diagram and review the gamma match.</td></tr>
+<tr><th scope="row"><span class="web-label">Trap Dipole</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/trap-dipole">Trap Dipole</a></span></th><td>Select R2AUK, VK2EVB or AA4LR and the 20, 40 or 80 m band. Check sections A, B and C and traps T20 and T40. Use the separate LC and coil calculations as needed.</td></tr>
 </tbody></table>
 <h3>Models and drawings</h3><p>Drag across a vector model to rotate it. Double-tap or tap the plus magnifier to open it full-screen. Spread two fingers to zoom and drag with two fingers to pan the model. The minus magnifier and Android Back close the viewer. The construction guide also opens photos and drawings with a double tap or the magnifier. You can zoom, pan and reset their scale.</p>
 <h3>Trap Dipole</h3><p>Expand <strong>Trap Dipole Designs and Band Behaviour</strong> near the bottom to read about W3DZZ and operation on different bands. Open <strong>Tuning and measurements</strong> to import S1P and analyse SWR within the selected band.</p>
         </div>
       </div>
 <div class="gallery gallery-wide">
-<figure><a href="images/en/06-quad-loop.webp"><img src="images/en/06-quad-loop.webp" alt="Full-wave Quad Loop" loading="lazy" decoding="async"></a><figcaption>Full-wave Quad Loop</figcaption></figure>
-<figure><a href="images/en/07-j-pole.webp"><img src="images/en/07-j-pole.webp" alt="J-pole calculator" loading="lazy" decoding="async"></a><figcaption>J-pole calculator</figcaption></figure>
-<figure><a href="images/en/08-yagi.webp"><img src="images/en/08-yagi.webp" alt="Yagi–Uda calculator" loading="lazy" decoding="async"></a><figcaption>Yagi–Uda calculator</figcaption></figure>
-<figure><a href="images/en/09-moxon.webp"><img src="images/en/09-moxon.webp" alt="Moxon calculator" loading="lazy" decoding="async"></a><figcaption>Moxon calculator</figcaption></figure>
-<figure><a href="images/en/trap-dipole.webp"><img src="images/en/trap-dipole.webp" alt="Trap Dipole design" loading="lazy" decoding="async"></a><figcaption>Trap Dipole design</figcaption></figure>
-<figure><a href="images/en/cantenna.webp"><img src="images/en/cantenna.webp" alt="Cantenna calculator" loading="lazy" decoding="async"></a><figcaption>Cantenna calculator</figcaption></figure>
-<figure><a href="images/en/halo.webp"><img src="images/en/halo.webp" alt="Halo CB starting dimensions" loading="lazy" decoding="async"></a><figcaption>Halo CB starting dimensions</figcaption></figure>
-<figure><a href="images/en/hb9cv.webp"><img src="images/en/hb9cv.webp" alt="HB9CV design and model" loading="lazy" decoding="async"></a><figcaption>HB9CV design and model</figcaption></figure>
-<figure><a href="images/en/slim-jim.webp"><img src="images/en/slim-jim.webp" alt="Slim Jim calculator profiles" loading="lazy" decoding="async"></a><figcaption>Slim Jim calculator profiles</figcaption></figure>
+<figure><a href="images/en/06-quad-loop.webp"><img src="images/en/06-quad-loop.webp" width="1080" height="1920" alt="Full-wave Quad Loop" loading="lazy" decoding="async"></a><figcaption>Full-wave Quad Loop</figcaption></figure>
+<figure><a href="images/en/07-j-pole.webp"><img src="images/en/07-j-pole.webp" width="1080" height="1920" alt="J-pole calculator" loading="lazy" decoding="async"></a><figcaption>J-pole calculator</figcaption></figure>
+<figure><a href="images/en/08-yagi.webp"><img src="images/en/08-yagi.webp" width="1080" height="1920" alt="Yagi–Uda calculator" loading="lazy" decoding="async"></a><figcaption>Yagi–Uda calculator</figcaption></figure>
+<figure><a href="images/en/09-moxon.webp"><img src="images/en/09-moxon.webp" width="1080" height="1920" alt="Moxon calculator" loading="lazy" decoding="async"></a><figcaption>Moxon calculator</figcaption></figure>
+<figure><a href="images/en/trap-dipole.webp"><img src="images/en/trap-dipole.webp" width="680" height="1209" alt="Trap Dipole design" loading="lazy" decoding="async"></a><figcaption>Trap Dipole design</figcaption></figure>
+<figure><a href="images/en/cantenna.webp"><img src="images/en/cantenna.webp" width="680" height="1209" alt="Cantenna calculator" loading="lazy" decoding="async"></a><figcaption>Cantenna calculator</figcaption></figure>
+<figure><a href="images/en/halo.webp"><img src="images/en/halo.webp" width="680" height="1209" alt="Halo CB starting dimensions" loading="lazy" decoding="async"></a><figcaption>Halo CB starting dimensions</figcaption></figure>
+<figure><a href="images/en/hb9cv.webp"><img src="images/en/hb9cv.webp" width="680" height="1209" alt="HB9CV design and model" loading="lazy" decoding="async"></a><figcaption>HB9CV design and model</figcaption></figure>
+<figure><a href="images/en/slim-jim.webp"><img src="images/en/slim-jim.webp" width="680" height="1209" alt="Slim Jim calculator profiles" loading="lazy" decoding="async"></a><figcaption>Slim Jim calculator profiles</figcaption></figure>
 </div>
     </section>
     <section class="chapter" id="construction" aria-labelledby="construction-title">
       <h2 id="construction-title">Building the Yagi–Uda</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/construction">Antenna construction</a><a href="https://appassets.androidplatform.net/open/r3udk-guide">Open R3UDK guide</a><a href="https://appassets.androidplatform.net/open/r3udk-calculator">Open R3UDK calculator</a><a href="https://appassets.androidplatform.net/open/vna">Import VNA measurements</a></div>
       <div class="with-images">
         <div class="prose">
 <p>Open <strong>Tools → Antenna construction → Yagi-Uda antenna</strong>. The guide covers R3UDK’s portable four-element 145 MHz antenna with removable mounts and a PVC boom.</p>
 <ol><li>Expand <strong>Layout and dimensions</strong>. Positions are measured from the reflector. For the driven element, check the finished span and the blank length before bending.</li><li>Open the materials section to view the mounts and save the bundled STL ZIP when needed. Follow the steps for preparing the mounts, elements and feedline, then assembling the antenna.</li><li>To adjust cut allowances or offsets, tap <strong>Open the R3UDK calculator</strong>. It opens the matching design profile.</li><li>To save the published design, scroll to the end of the guide and tap <strong>Add to project</strong>. Choose an existing Yagi project or create one with a target of 145 MHz. The guide saves the published dimensions with zero additional allowance and no custom offsets.</li><li>Once assembled, check SWR and impedance in the intended mounting position. The measurement section links to S1P import.</li></ol>
         </div>
 <div class="gallery">
-<figure><a href="images/en/yagi-guide.webp"><img src="images/en/yagi-guide.webp" alt="R3UDK construction guide" loading="lazy" decoding="async"></a><figcaption>R3UDK construction guide</figcaption></figure>
-<figure><a href="images/en/yagi-guide-project.webp"><img src="images/en/yagi-guide-project.webp" alt="Adding the design to a project" loading="lazy" decoding="async"></a><figcaption>Adding the design to a project</figcaption></figure>
+<figure><a href="images/en/yagi-guide.webp"><img src="images/en/yagi-guide.webp" width="680" height="1209" alt="R3UDK construction guide" loading="lazy" decoding="async"></a><figcaption>R3UDK construction guide</figcaption></figure>
+<figure><a href="images/en/yagi-guide-project.webp"><img src="images/en/yagi-guide-project.webp" width="680" height="1209" alt="Adding the design to a project" loading="lazy" decoding="async"></a><figcaption>Adding the design to a project</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="swr" aria-labelledby="swr-title">
       <h2 id="swr-title">SWR and reflection</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/swr">Open SWR and reflection</a></div>
       <div class="with-images">
         <div class="prose">
 <ol><li>Open <strong>Tools → SWR and reflection</strong> and select the quantity you know. You can start with SWR, reflection magnitude |Γ|, return loss or complex impedance <var>R + jX</var>.</li><li>When calculating from impedance, enter the reference impedance. Use 50 Ω for a measurement referenced to 50 Ω.</li><li>Review the conversions. At 2:1 SWR, about 11.11% of incident power is reflected. Mismatch loss at the load is about 0.51 dB for unchanged incident power. A transmitter may also reduce its output.</li></ol>
         </div>
 <div class="gallery">
-<figure><a href="images/en/03-swr.webp"><img src="images/en/03-swr.webp" alt="SWR and reflection conversions" loading="lazy" decoding="async"></a><figcaption>SWR and reflection conversions</figcaption></figure>
+<figure><a href="images/en/03-swr.webp"><img src="images/en/03-swr.webp" width="1080" height="1920" alt="SWR and reflection conversions" loading="lazy" decoding="async"></a><figcaption>SWR and reflection conversions</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="smith" aria-labelledby="smith-title">
       <h2 id="smith-title">Smith Chart</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/smith">Open Smith Chart</a></div>
       <div class="with-images">
         <div class="prose">
 <ol><li>Open <strong>Tools → Smith Chart</strong> and set the load impedance and reference impedance.</li><li>Drag the load marker to see how impedance, SWR and reflection change.</li><li>Change the distance from the load toward the generator to follow the impedance transformation along the line. Use the legend beneath the chart to identify the markers.</li></ol>
         </div>
 <div class="gallery">
-<figure><a href="images/en/04-smith.webp"><img src="images/en/04-smith.webp" alt="Load and transmission-line transformation" loading="lazy" decoding="async"></a><figcaption>Load and transmission-line transformation</figcaption></figure>
+<figure><a href="images/en/04-smith.webp"><img src="images/en/04-smith.webp" width="1080" height="1920" alt="Load and transmission-line transformation" loading="lazy" decoding="async"></a><figcaption>Load and transmission-line transformation</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="cables" aria-labelledby="cables-title">
       <h2 id="cables-title">Cable length and feedline loss</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/cable">Open cable electrical length</a><a href="https://appassets.androidplatform.net/open/feedline">Open feedline loss</a></div>
       <div class="with-images">
         <div class="prose">
 <h3>Cable electrical length</h3><p>Open the tool of the same name. Enter frequency, cable velocity factor and the length you know. Choose the conversion direction between physical and electrical length. Phase and delay use the line parameters you entered.</p>
 <h3>Feedline loss</h3><p>Enter frequency and length and choose the cable from the catalog. When entering attenuation manually, use the value for the stated frequency and check the units, for example dB per 100 m. The result shows matched-line loss and power at the far end. Use SWR and reflection to estimate reflected power.</p>
         </div>
 <div class="gallery">
-<figure><a href="images/en/12-cable-electrical-length.webp"><img src="images/en/12-cable-electrical-length.webp" alt="Cable electrical length" loading="lazy" decoding="async"></a><figcaption>Cable electrical length</figcaption></figure>
-<figure><a href="images/en/13-feedline-loss.webp"><img src="images/en/13-feedline-loss.webp" alt="Feedline loss calculator" loading="lazy" decoding="async"></a><figcaption>Feedline loss calculator</figcaption></figure>
+<figure><a href="images/en/12-cable-electrical-length.webp"><img src="images/en/12-cable-electrical-length.webp" width="1080" height="1920" alt="Cable electrical length" loading="lazy" decoding="async"></a><figcaption>Cable electrical length</figcaption></figure>
+<figure><a href="images/en/13-feedline-loss.webp"><img src="images/en/13-feedline-loss.webp" width="1080" height="1920" alt="Feedline loss calculator" loading="lazy" decoding="async"></a><figcaption>Feedline loss calculator</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="vna" aria-labelledby="vna-title">
       <h2 id="vna-title">VNA measurements and SWR bandwidth</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/additional-tools">Additional tools</a><a href="https://appassets.androidplatform.net/open/vna">Import VNA measurements</a><a href="https://appassets.androidplatform.net/open/bandwidth">Open SWR bandwidth</a></div>
       <div class="with-images">
         <div class="prose">
 <ol><li>Export the <strong>S11</strong> sweep from your analyser as a one-port Touchstone <code>.s1p</code> file.</li><li>Open <strong>Tools → Additional tools → Import VNA measurements</strong> and tap <strong>Open S1P file</strong>.</li><li>Set the calibration plane, such as the feedpoint or transceiver end. To compare sweeps, add a second measurement and check frequency overlap, reference impedance and calibration plane.</li><li>Review SWR, impedance and Smith Chart views. Find the SWR minimum, then check where reactance approaches zero. The two frequencies can differ.</li><li>Open <strong>SWR bandwidth</strong>, select a sweep and set a threshold, for example 2.0. An edge at the sweep boundary means a wider sweep is needed to determine the full bandwidth.</li><li>Use <strong>Save to project</strong> to keep sweeps with your calculations or measurements.</li></ol>
@@ -195,28 +212,35 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 <p><a href="../examples/demo-dipole-145mhz-before.s1p" download>Example S1P before tuning</a> · <a href="../examples/demo-dipole-145mhz-after.s1p" download>Example S1P after tuning</a></p>
         </div>
 <div class="gallery">
-<figure><a href="images/en/11-vna.webp"><img src="images/en/11-vna.webp" alt="Two sweeps in the VNA workspace" loading="lazy" decoding="async"></a><figcaption>Two sweeps in the VNA workspace</figcaption></figure>
+<figure><a href="images/en/11-vna.webp"><img src="images/en/11-vna.webp" width="1080" height="1920" alt="Two sweeps in the VNA workspace" loading="lazy" decoding="async"></a><figcaption>Two sweeps in the VNA workspace</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="projects" aria-labelledby="projects-title">
       <h2 id="projects-title">Projects and tuning journals</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/projects">Open projects</a></div>
       <div class="with-images">
         <div class="prose">
+<h3>Finding and reordering projects</h3>
+<p>On the <strong>Projects</strong> screen, use the field below the buttons to search by project name, frequency or antenna type. The list filters as you type and highlights matches in yellow. Use a decimal point or comma when entering a frequency.</p>
+<p>Press and hold a card, drag it up or down, then release it at the desired position. The app saves the order. When the list is filtered, hidden cards keep their places.</p>
 <h3>Saving a calculation</h3><ol><li>Tap <strong>Copy to project</strong> in the calculator. In the Yagi guide, the button is labelled <strong>Add to project</strong>.</li><li>Choose a compatible project and tap <strong>Save to selected project</strong>, or choose <strong>Create a new project</strong> and enter a name.</li></ol>
+<p>Open a saved calculation from the project journal to see <strong>Calculation inputs</strong> and <strong>Calculation results</strong> in separate sections.</p>
 <h3>Measurements and data transfer</h3><ol><li>Open <strong>Tools → Projects and tuning journals</strong>, choose a project and add a record. Include mounting conditions and measurement results, plus an annotated photo if it helps you reproduce the setup.</li><li>Use <strong>Compare records</strong> to select two entries. Compare SWR and impedance under the same conditions and at the same connection point.</li><li>Use <strong>Export JSON</strong> and <strong>Import JSON</strong> to transfer a project. Import creates a separate project. Use the ZIP export to transfer photos.</li></ol>
 <p><a href="../examples/demo-dipole-journal-145mhz-en.json" download>145 MHz dipole demo project</a></p>
         </div>
 <div class="gallery">
-<figure><a href="images/en/05-dipole-journal.webp"><img src="images/en/05-dipole-journal.webp" alt="Project journal with saved records" loading="lazy" decoding="async"></a><figcaption>Project journal with saved records</figcaption></figure>
+<figure><a href="images/en/project-search.webp"><img src="images/en/project-search.webp" width="680" height="1209" alt="Frequency matches highlighted in yellow on two project cards" loading="lazy" decoding="async"></a><figcaption>Finding projects by frequency</figcaption></figure>
+<figure><a href="images/en/05-dipole-journal.webp"><img src="images/en/05-dipole-journal.webp" width="1080" height="1920" alt="Project journal with saved records" loading="lazy" decoding="async"></a><figcaption>Project journal with saved records</figcaption></figure>
 </div>
       </div>
     </section>
     <section class="chapter" id="help" aria-labelledby="help-title">
       <h2 id="help-title">Help and updates</h2>
+      <div class="app-links"><a href="https://appassets.androidplatform.net/open/help">Open Help</a><a href="https://appassets.androidplatform.net/open/references">Open References</a><a href="https://appassets.androidplatform.net/open/licenses">Open Licenses</a><a class="direct-link" href="https://appassets.androidplatform.net/open/check-updates">Check for updates</a></div>
       <div>
         <div class="prose">
-<ul><li><strong>Help</strong> in the menu contains information about the app. <strong>References</strong> links to articles and formulas. <strong>Licenses</strong> lists source publications and their terms.</li><li>In the GitHub Direct build, select <strong>Check for updates</strong>. When a newer version is available, the app shows its details and opens the Android installer.</li></ul>
+<ul><li><strong>Help</strong> in the menu contains information about the app. <strong>References</strong> links to articles and formulas. <strong>Licenses</strong> lists source publications and their terms.</li><li>Open <strong>User guide</strong> from the app menu to read it offline and jump directly to the tools described here.</li><li>In the GitHub Direct build, select <strong>Check for updates</strong>. When a newer version is available, the app shows its details and opens the Android installer.</li></ul>
 <p><a href="../PRIVACY.md">Privacy policy</a> · <a href="https://github.com/ssotnikov/antcalc/issues">Report an issue</a></p>
         </div>
       </div>

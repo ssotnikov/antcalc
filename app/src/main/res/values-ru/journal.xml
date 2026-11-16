@@ -1,4 +1,9 @@
 <resources>
+    <string name="journal_project_search">Название, частота или тип антенны</string>
+    <string name="journal_project_no_match">Проекты по запросу не найдены.</string>
+    <string name="journal_project_reorder_hint">Удерживайте карточку и перетащите её вверх или вниз.</string>
+    <string name="journal_project_move_up">Переместить проект выше</string>
+    <string name="journal_project_move_down">Переместить проект ниже</string>
     <string name="journal_ideal_quarter_monopole">Идеальная λ/4 — штырь</string>
     <string name="journal_ideal_quarter_arm">Идеальная λ/4 — каждое плечо диполя</string>
     <string name="journal_title">Проекты и журналы подстройки</string>

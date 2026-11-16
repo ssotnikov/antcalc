@@ -1,6 +1,7 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.annotation.StringRes
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
@@ -60,25 +61,12 @@ internal fun ProjectPicker(
             .testTag("project-transfer-project-picker"),
     ) {
         header()
-        OutlinedTextField(
+        ProjectSearchField(
             query, {
-                if (it.length <= JournalLimits.TITLE) {
-                    query = it
-                    selectedId = null
-                }
+                query = it
+                selectedId = null
             },
-            label = { Text(stringResource(R.string.project_transfer_search)) },
-            leadingIcon = {
-                Icon(
-                    painterResource(R.drawable.ic_search),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                    tint = MaterialTheme.colorScheme.outline,
-                )
-            },
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
+            R.string.project_transfer_search,
             modifier = Modifier.fillMaxWidth().testTag("project-transfer-project-search"),
         )
         if (antennaType != null) Text(
@@ -160,4 +148,24 @@ internal fun ProjectPicker(
             }
         }
     }
+}
+
+@Composable
+internal fun ProjectSearchField(
+    query: String, onQueryChange: (String) -> Unit, @StringRes label: Int, modifier: Modifier = Modifier,
+) {
+    val focus = LocalFocusManager.current
+    OutlinedTextField(
+        value = query,
+        onValueChange = { if (it.length <= JournalLimits.TITLE) onQueryChange(it) },
+        label = { Text(stringResource(label)) },
+        leadingIcon = {
+            Icon(painterResource(R.drawable.ic_search), contentDescription = null,
+                modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.outline)
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
+        modifier = modifier,
+    )
 }

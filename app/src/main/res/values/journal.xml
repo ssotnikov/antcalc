@@ -1,4 +1,9 @@
 <resources>
+    <string name="journal_project_search">Project name, frequency or antenna type</string>
+    <string name="journal_project_no_match">No projects match your search.</string>
+    <string name="journal_project_reorder_hint">Hold and drag a card to change its position.</string>
+    <string name="journal_project_move_up">Move project up</string>
+    <string name="journal_project_move_down">Move project down</string>
     <string name="journal_ideal_quarter_monopole">Ideal λ/4 — monopole</string>
     <string name="journal_ideal_quarter_arm">Ideal λ/4 — each dipole arm</string>
     <string name="journal_title">Projects and tuning journals</string>

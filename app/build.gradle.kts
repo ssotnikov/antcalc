@@ -20,10 +20,12 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 119
-        versionName = "1.32.0"
+        versionCode = 120
+        versionName = "1.33.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
+    sourceSets.getByName("main").assets.srcDir(rootProject.file("userguide"))
 
     if (githubDirect) {
         flavorDimensions += "distribution"

@@ -125,6 +125,7 @@ internal fun validatedSourceAddress(address: String): String? {
     val url = uri.toASCIIString()
     if (url == authorSupportPaymentUrl) return url
     if (url == PRIVACY_POLICY_URL) return url
+    if (url in guideExampleUrls) return url
     return when (url) {
         BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
         else -> url.takeIf { it in additionalSourceAddresses || it in moxonSourceAddresses || it in hb9cvSourceAddresses ||

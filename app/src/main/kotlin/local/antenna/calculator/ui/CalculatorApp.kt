@@ -3,6 +3,7 @@ package local.antenna.calculator.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +24,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import java.io.Serializable
 import java.util.UUID
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
@@ -42,7 +44,9 @@ import local.antenna.calculator.measurements.SwrBandwidthScreen
 import local.antenna.calculator.core.TrapDipole.Band
 
 // Keep ABOUT as the persisted route identifier for Help.
-internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE }
+internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE, USER_GUIDE }
+
+private data class GuideVisit(val page: Page, val menuDepth: Int, val previousSection: Section?) : Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -77,6 +81,7 @@ private fun LocalizedCalculatorApp(
 ) {
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var menuParents by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
+    var guideVisits by rememberSaveable { mutableStateOf<List<GuideVisit>>(emptyList()) }
     var menu by remember { mutableStateOf(false) }
     var cableParent by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
@@ -98,6 +103,14 @@ private fun LocalizedCalculatorApp(
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
+    val returnToGuide = guideVisits.lastOrNull()?.takeIf { visit ->
+        visit.page == page && visit.menuDepth == menuParents.size && when (page) {
+            Page.JOURNAL -> journalPage == JournalPage.PROJECTS
+            Page.HALO_CB -> haloRestore == null
+            Page.TRAP_DIPOLE -> trapRestore == null
+            else -> true
+        }
+    }
     val journalStatus = journal?.state?.collectAsState()?.value
     val measurementState = measurements?.state?.collectAsState()?.value
     val sweepTraces = measurementState?.takeIf { !it.busy && it.showTraces }?.traces?.filterNotNull().orEmpty()
@@ -128,8 +141,14 @@ private fun LocalizedCalculatorApp(
     fun goBack() {
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
+        if (returnToGuide != null) {
+            returnToGuide.previousSection?.let { onEvent(CalculatorEvent.Settings(settings.copy(section = it))) }
+            guideVisits = guideVisits.dropLast(1)
+            page = Page.USER_GUIDE
+            return
+        }
         when (page) {
-            Page.SETTINGS, Page.ABOUT, Page.REFERENCES, Page.LICENSES -> {
+            Page.SETTINGS, Page.ABOUT, Page.REFERENCES, Page.LICENSES, Page.USER_GUIDE -> {
                 page = menuParents.lastOrNull()?.let(Page::valueOf) ?: Page.CALCULATOR
                 menuParents = ArrayList(menuParents.dropLast(1))
             }
@@ -208,6 +227,41 @@ private fun LocalizedCalculatorApp(
         menuParents = ArrayList(menuParents + page.name)
         page = destination
     }
+    fun openGuideDestination(destination: GuideDestination) {
+        leaveInput()
+        guideVisits = guideVisits + GuideVisit(destination.page, menuParents.size,
+            settings.section.takeIf { destination.section != null })
+        destination.section?.let { onEvent(CalculatorEvent.Settings(settings.copy(section = it))) }
+        destination.shape?.let { onEvent(CalculatorEvent.FullWaveLoop(currentState().draft.fullWaveLoop.chooseShape(it))) }
+        when (destination.page) {
+            Page.YAGI_CALCULATOR, Page.CONSTRUCTION_YAGI -> {
+                yagiLinkOrigin = null
+                if (destination == GuideDestination.R3UDK_CALCULATOR) {
+                    context.selectYagiCalculatorProfile(YagiProfile.R3)
+                    screenStates.removeState("yagi-calculator")
+                }
+            }
+            Page.JOURNAL -> {
+                linkedProjectId = null
+                journalPage = JournalPage.PROJECTS
+            }
+            Page.HALO_CB -> haloRestore = null
+            Page.TRAP_DIPOLE -> trapRestore = null
+            Page.CABLE -> cableParent = Page.CALCULATOR
+            Page.MEASUREMENTS -> {
+                measurementsParent = Page.ADDITIONAL_TOOLS
+                measurements?.showWorkspace()
+            }
+            Page.SWR_BANDWIDTH -> {
+                bandwidthFromMeasurements = false
+                bandwidthParent = Page.ADDITIONAL_TOOLS
+                bandwidthEntrySlot = null
+                measurements?.showWorkspace()
+            }
+            else -> Unit
+        }
+        page = destination.page
+    }
     val transferring = page == Page.TRANSFER_TYPE || page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW
     LaunchedEffect(transferring, pending) {
         if (transferring && pending == null && sweepTransferId == null) finishTransfer()
@@ -231,10 +285,11 @@ private fun LocalizedCalculatorApp(
     LaunchedEffect(page, menuParents) {
         if (page != Page.MEASUREMENTS && Page.MEASUREMENTS.name !in menuParents) measurements?.cancelImport()
     }
-    BackHandler(page != Page.CALCULATOR, onBack = ::goBack)
+    BackHandler(page != Page.CALCULATOR || returnToGuide != null, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
         val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
+        val guideUpdateAction = updateActions.firstOrNull { it.tag == "check-for-updates" }
         val title = when (page) {
             Page.ANTENNA_CONSTRUCTION -> R.string.construction_title
             Page.CONSTRUCTION_YAGI -> R.string.construction_yagi_title
@@ -244,6 +299,7 @@ private fun LocalizedCalculatorApp(
             Page.SWR_BANDWIDTH -> R.string.bandwidth_title
             Page.SETTINGS -> R.string.settings
             Page.ABOUT -> R.string.about
+            Page.USER_GUIDE -> R.string.user_guide
             Page.REFERENCES -> R.string.references_title
             Page.LICENSES -> R.string.licenses_title
             Page.MATCHING -> R.string.matching_title
@@ -294,7 +350,7 @@ private fun LocalizedCalculatorApp(
                 },
                     expandedHeight = 64.dp * LocalDensity.current.fontScale,
                     navigationIcon = {
-                        if (page != Page.CALCULATOR) IconButton(onClick = ::goBack,
+                        if (page != Page.CALCULATOR || returnToGuide != null) IconButton(onClick = ::goBack,
                             modifier = Modifier.testTag("back")) { Icon(painterResource(R.drawable.ic_back), stringResource(R.string.back)) }
                     },
                     actions = {
@@ -307,6 +363,11 @@ private fun LocalizedCalculatorApp(
                             DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
                                 DropdownMenuItem(text = { Text(stringResource(R.string.settings)) }, onClick = { openMenuPage(Page.SETTINGS) }, modifier = Modifier.testTag("open-settings"))
                                 DropdownMenuItem(text = { Text(stringResource(R.string.about)) }, onClick = { openMenuPage(Page.ABOUT) }, modifier = Modifier.testTag("open-about"))
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.user_guide)) },
+                                    onClick = { openMenuPage(Page.USER_GUIDE) },
+                                    modifier = Modifier.testTag("open-user-guide"),
+                                )
                                 DropdownMenuItem(text = { Text(stringResource(R.string.references_title)) }, onClick = {
                                     openMenuPage(Page.REFERENCES)
                                 }, modifier = Modifier.testTag("open-references"))
@@ -353,6 +414,10 @@ private fun LocalizedCalculatorApp(
                     for (section in Section.entries) {
                         val label = when (section) { Section.SIZING -> R.string.sizes; Section.TRIMMING -> R.string.trimming; Section.TOOLS -> R.string.tools }
                         NavigationBarItem(selected = settings.section == section, onClick = {
+                            if (guideVisits.isNotEmpty()) {
+                                guideVisits = emptyList()
+                                menuParents = arrayListOf()
+                            }
                             leaveInput(); page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
                         }, icon = {
                             val icon = when (section) {
@@ -489,6 +554,18 @@ private fun LocalizedCalculatorApp(
                         SettingsScreen(state, onEvent) { openMenuPage(Page.ABOUT) }
                     }
                     Page.ABOUT -> screenStates.SaveableStateProvider("help-${menuParents.size}") { HelpScreen() }
+                    Page.USER_GUIDE -> screenStates.SaveableStateProvider("user-guide-${menuParents.size}") {
+                        val dark = when (settings.theme) {
+                            AppTheme.SYSTEM -> isSystemInDarkTheme()
+                            AppTheme.LIGHT -> false
+                            AppTheme.DARK -> true
+                        }
+                        UserGuideScreen(settings.language, dark, guideUpdateAction != null) { destination ->
+                            if (destination == GuideDestination.CHECK_UPDATES) {
+                                guideUpdateAction?.takeIf { it.enabled }?.onClick?.invoke()
+                            } else openGuideDestination(destination)
+                        }
+                    }
                     Page.REFERENCES -> screenStates.SaveableStateProvider("references-${menuParents.size}") { ReferencesScreen(settings.language) }
                     Page.LICENSES -> screenStates.SaveableStateProvider("licenses-${menuParents.size}") { LicensesScreen() }
                     Page.MATCHING -> screenStates.SaveableStateProvider("matching") {

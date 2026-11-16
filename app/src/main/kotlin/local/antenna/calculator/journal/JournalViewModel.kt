@@ -180,6 +180,19 @@ internal class JournalViewModel(private val repository: ProjectsRepository) : Vi
             }
         }) { done(project.id) }
 
+    fun reorderProjects(visibleIds: List<UUID>, movedId: UUID, targetId: UUID) =
+        mutate({ projects ->
+            val slots = visibleIds.toSet()
+            val visible = projects.filter { it.id in slots }.toMutableList()
+            val from = visible.indexOfFirst { it.id == movedId }
+            val to = visible.indexOfFirst { it.id == targetId }
+            if (from < 0 || to < 0 || from == to) projects else {
+                visible.add(to, visible.removeAt(from))
+                val order = visible.iterator()
+                projects.map { if (it.id in slots) order.next() else it }
+            }
+        }) {}
+
     fun addRecord(projectId: UUID, record: JournalRecord, done: () -> Unit) =
         mutate({ projects ->
             projects.replace(projectId) {

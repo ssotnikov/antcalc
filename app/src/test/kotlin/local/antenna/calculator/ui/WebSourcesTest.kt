@@ -113,6 +113,31 @@ class WebSourcesTest {
         assertNull(validatedSourceAddress("https://antcalc.ssotnikov.pro/"))
     }
 
+    @Test fun userGuidePermitsOnlyThePublishedExampleDownloads() {
+        assertEquals(4, guideExampleUrls.size)
+        for (url in guideExampleUrls) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress("$url?redirect=unexpected"))
+        }
+        assertNull(validatedSourceAddress("https://github.com/ssotnikov/antcalc/raw/refs/heads/main/examples/other.s1p"))
+    }
+
+    @Test fun guideRoutesAndAssetsRequireExactBundledAddresses() {
+        assertEquals(GuideDestination.MOXON, guideDestination("$GUIDE_ORIGIN/open/moxon"))
+        assertEquals("ru.html", guideAssetPath("$GUIDE_ORIGIN/userguide/ru.html"))
+        assertEquals("images/en/08-yagi.webp", guideAssetPath("$GUIDE_ORIGIN/userguide/images/en/08-yagi.webp"))
+        val invalid = listOf(
+            "$GUIDE_ORIGIN/open/settings?anything", "$GUIDE_ORIGIN/open/%73ettings",
+            "$GUIDE_ORIGIN/open/settings#fragment", "$GUIDE_ORIGIN.evil.example/open/settings",
+            "$GUIDE_ORIGIN/userguide/../ru.html", "$GUIDE_ORIGIN/userguide/images/en/%2e%2e/test.webp",
+            "file:///android_asset/ru.html", "content://local.antenna.calculator/ru.html",
+        )
+        for (address in invalid) {
+            assertNull(address, guideDestination(address))
+            assertNull(address, guideAssetPath(address))
+        }
+    }
+
     @Test fun unsafeOrAmbiguousUrisFailClosed() {
         for (url in listOf("", "http://www.arrl.org/", "javascript:alert(1)", "file:///sdcard/test",
             "content://www.arrl.org/test", "intent://www.arrl.org/", "https://www.arrl.org.evil.example/",
