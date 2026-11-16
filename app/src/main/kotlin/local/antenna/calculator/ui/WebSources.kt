@@ -128,7 +128,8 @@ internal fun validatedSourceAddress(address: String): String? {
     return when (url) {
         BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
         else -> url.takeIf { it in additionalSourceAddresses || it in moxonSourceAddresses || it in hb9cvSourceAddresses ||
-            it in haloSourceAddresses ||
+            it in haloSourceAddresses || it in trapPublications ||
+            it == TRAP_WHEELER_URL || it == TRAP_ARRL_URL || it == TRAP_ZL1BJQ_URL ||
             CantennaSource.entries.any { source -> source.url == it || source.termsUrl == it } ||
             directReleaseAddress.matches(it) ||
             cableDatasheetAddress.matches(it) || uri.host?.lowercase(Locale.ROOT) in allowedHosts }

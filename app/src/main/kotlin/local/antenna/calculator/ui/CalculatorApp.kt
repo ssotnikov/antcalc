@@ -39,9 +39,10 @@ import local.antenna.calculator.journal.ProjectForm
 import local.antenna.calculator.measurements.MeasurementScreen
 import local.antenna.calculator.measurements.MeasurementViewModel
 import local.antenna.calculator.measurements.SwrBandwidthScreen
+import local.antenna.calculator.core.TrapDipole.Band
 
 // Keep ABOUT as the persisted route identifier for Help.
-internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB }
+internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +88,8 @@ private fun LocalizedCalculatorApp(
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
+    var trapRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
+    var trapBand by rememberSaveable { mutableStateOf(Band.M20) }
     var haloRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var sweepTransferId by rememberSaveable { mutableStateOf<UUID?>(null) }
     var transferType by rememberSaveable { mutableStateOf(AntennaType.SYMMETRIC_DIPOLE) }
@@ -136,6 +139,7 @@ private fun LocalizedCalculatorApp(
                 yagiLinkOrigin = null
             }
             Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.MOXON, Page.HB9CV, Page.CANTENNA -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.TRAP_DIPOLE -> page = if (trapRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.HALO_CB -> page = if (haloRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.CABLE -> page = cableParent
             Page.MEASUREMENTS -> page = measurementsParent
@@ -255,6 +259,7 @@ private fun LocalizedCalculatorApp(
             Page.HB9CV -> R.string.hb9cv_title
             Page.CANTENNA -> R.string.cantenna_title
             Page.HALO_CB -> R.string.halo_title
+            Page.TRAP_DIPOLE -> R.string.trap_title
             Page.J_POLE -> R.string.jpole_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
             Page.TRANSFER_PICKER -> if (sweepTransferId != null) R.string.sweep_save else R.string.project_transfer_title
@@ -342,7 +347,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB || page == Page.TRAP_DIPOLE) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -383,6 +388,11 @@ private fun LocalizedCalculatorApp(
                             onOpenMoxon = { leaveInput(); page = Page.MOXON },
                             onOpenHb9cv = { leaveInput(); page = Page.HB9CV },
                             onOpenCantenna = { leaveInput(); page = Page.CANTENNA },
+                            onOpenTrapDipole = {
+                                leaveInput()
+                                trapRestore = null
+                                page = Page.TRAP_DIPOLE
+                            },
                             onOpenHalo = {
                                 leaveInput()
                                 haloRestore = null
@@ -430,17 +440,25 @@ private fun LocalizedCalculatorApp(
                             },
                         )
                     }
-                    Page.SWR_BANDWIDTH -> if (measurements != null) screenStates.SaveableStateProvider("swr-bandwidth") {
-                        SwrBandwidthScreen(
-                            measurements,
-                            onOpenMeasurements = {
-                                leaveInput()
-                                if (!bandwidthFromMeasurements) measurementsParent = Page.SWR_BANDWIDTH
-                                page = Page.MEASUREMENTS
-                            },
-                            entrySlot = bandwidthEntrySlot,
-                            onEntryApplied = { bandwidthEntrySlot = null },
-                        ) { message -> scope.launch { snackbar.showSnackbar(message) } }
+                    Page.SWR_BANDWIDTH -> if (measurements != null) {
+                        val initialBand = trapBand.takeIf {
+                            if (bandwidthFromMeasurements) measurementsParent == Page.TRAP_DIPOLE
+                            else bandwidthParent == Page.TRAP_DIPOLE
+                        }
+                        val screenKey = initialBand?.let { "swr-bandwidth-trap-${it.meters}" } ?: "swr-bandwidth"
+                        screenStates.SaveableStateProvider(screenKey) {
+                            SwrBandwidthScreen(
+                                measurements,
+                                onOpenMeasurements = {
+                                    leaveInput()
+                                    if (!bandwidthFromMeasurements) measurementsParent = Page.SWR_BANDWIDTH
+                                    page = Page.MEASUREMENTS
+                                },
+                                entrySlot = bandwidthEntrySlot,
+                                initialBand = initialBand,
+                                onEntryApplied = { bandwidthEntrySlot = null },
+                            ) { message -> scope.launch { snackbar.showSnackbar(message) } }
+                        }
                     }
                     Page.MEASUREMENTS -> if (measurements != null) screenStates.SaveableStateProvider("measurements") {
                         MeasurementScreen(
@@ -509,6 +527,35 @@ private fun LocalizedCalculatorApp(
                                 startTransfer(PendingProjectCalculation(snapshot, note = note), AntennaType.YAGI)
                             },
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
+                        )
+                    }
+                    Page.TRAP_DIPOLE -> screenStates.SaveableStateProvider(if (trapRestore == null) "trap-dipole" else "trap-dipole-record") {
+                        TrapDipoleScreen(
+                            initial = trapRestore?.snapshot,
+                            onMeasurements = measurements?.let { model ->
+                                { band ->
+                                    leaveInput()
+                                    trapBand = band
+                                    measurementsParent = Page.TRAP_DIPOLE
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
+                            },
+                            onBandwidth = measurements?.let { model ->
+                                { band ->
+                                    leaveInput()
+                                    trapBand = band
+                                    bandwidthFromMeasurements = false
+                                    bandwidthParent = Page.TRAP_DIPOLE
+                                    bandwidthEntrySlot = null
+                                    model.showWorkspace()
+                                    page = Page.SWR_BANDWIDTH
+                                }
+                            },
+                            onSave = if (journal == null) null else { snapshot ->
+                                startTransfer(PendingProjectCalculation(snapshot), AntennaType.TRAP_DIPOLE)
+                            },
+                            onMessage = { message -> scope.launch { snackbar.showSnackbar(message) } },
                         )
                     }
                     Page.HALO_CB -> screenStates.SaveableStateProvider(if (haloRestore == null) "halo-cb" else "halo-cb-record") {
@@ -691,6 +738,12 @@ private fun LocalizedCalculatorApp(
                                     screenStates.removeState("halo-cb-record")
                                     haloRestore = PendingProjectCalculation(snapshot)
                                     page = Page.HALO_CB
+                                },
+                                onOpenTrapDipole = { snapshot ->
+                                    leaveInput()
+                                    screenStates.removeState("trap-dipole-record")
+                                    trapRestore = PendingProjectCalculation(snapshot)
+                                    page = Page.TRAP_DIPOLE
                                 },
                                 onOpenSweeps = measurements?.let { model ->
                                     { sweep, project ->

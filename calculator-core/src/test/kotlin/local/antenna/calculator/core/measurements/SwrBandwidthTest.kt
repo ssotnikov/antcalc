@@ -55,6 +55,17 @@ class SwrBandwidthTest {
         assertTrue(openOnly.reactanceZeros.isEmpty())
     }
 
+    @Test fun restrictsTheResultAndKeepsWindowAndGapEdgesDistinct() {
+        val source = sweep(0.5, 0.2, 0.1, 0.0, 1.2, 0.1, 0.5)
+        val limited = requireNotNull(source.swrBandwidth(2.0, 115e6..138e6))
+        assertEquals(BandEdge(115e6, BandEdgeKind.WINDOW_LIMIT), limited.bands.single().lower)
+        assertEquals(BandEdge(130e6, BandEdgeKind.INVALID_NEIGHBOR), limited.bands.single().upper)
+        assertEquals(SwrMinimum(130e6, 1.0), limited.minimum)
+        assertNull(source.swrBandwidth(2.0, 141e6..149e6))
+        assertNull(source.swrBandwidth(2.0, 135e6..145e6))
+        assertEquals(2, requireNotNull(source.swrBandwidth(2.0)).bands.size)
+    }
+
     @Test fun findsReactanceCrossingsIndependentlyOfSwrMinimum() {
         val source = S11Sweep(50.0, listOf(
             S11Point(100e6, 0.0, -0.1),

@@ -30,6 +30,9 @@ import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
 import local.antenna.calculator.R
 import local.antenna.calculator.ui.rememberPageLazyListState
+import local.antenna.calculator.ui.trapNumber
+import local.antenna.calculator.state.boundedNumericText
+import local.antenna.calculator.core.TrapDipole.Band
 import local.antenna.calculator.core.input.FieldState
 import local.antenna.calculator.core.input.PositiveDecimalParser
 import local.antenna.calculator.core.measurements.*
@@ -44,6 +47,7 @@ internal fun SwrBandwidthScreen(
     onOpenMeasurements: () -> Unit,
     entrySlot: Int? = null,
     onEntryApplied: () -> Unit = {},
+    initialBand: Band? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -71,8 +75,20 @@ internal fun SwrBandwidthScreen(
     val active = entries.firstOrNull { it.first == (entrySlot ?: selectedSlot) } ?: entries.firstOrNull()
     val trace = active?.second
     val threshold = parseBandwidthThreshold(rawThreshold)
-    val result = remember(trace?.sweep, threshold) {
-        if (threshold == null) null else trace?.sweep?.swrBandwidth(threshold.toDouble())
+    var lower by rememberSaveable(initialBand) { mutableStateOf(initialBand?.lowerMhz?.toString().orEmpty()) }
+    var upper by rememberSaveable(initialBand) { mutableStateOf(initialBand?.upperMhz?.toString().orEmpty()) }
+    val low = trapNumber(lower, 1.0..50.0)
+    val high = trapNumber(upper, 1.0..50.0)
+    val window = if (initialBand != null && low != null && high != null && low < high) low * 1e6..high * 1e6 else null
+    val invalidWindow = initialBand != null && window == null
+    val result = remember(trace?.sweep, threshold, window, invalidWindow) {
+        if (threshold == null || invalidWindow) null
+        else if (window == null) trace?.sweep?.swrBandwidth(threshold.toDouble())
+        else trace?.sweep?.swrBandwidth(threshold.toDouble(), window)
+    }
+    val plotTrace = remember(trace, window) {
+        if (trace == null || window == null) trace
+        else trace.copy(sweep = trace.sweep.copy(points = trace.sweep.points.filter { it.hertz in window }))
     }
     val copied = stringResource(R.string.copied)
     val failed = stringResource(R.string.bandwidth_copy_failed)
@@ -125,14 +141,28 @@ internal fun SwrBandwidthScreen(
                 modifier = Modifier.fillMaxWidth().testTag("bandwidth-threshold"),
             )
         }
-        if (active != null && trace != null && result != null && threshold != null) {
+        if (initialBand != null) item {
+            BandwidthHeading(R.string.trap_window)
+            OutlinedTextField(lower, { if (it.acceptsDecimalEdit()) lower = it.boundedNumericText() },
+                label = { Text(stringResource(R.string.trap_lower)) }, modifier = Modifier.fillMaxWidth().testTag("trap-window-lower"),
+                isError = invalidWindow, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+            OutlinedTextField(upper, { if (it.acceptsDecimalEdit()) upper = it.boundedNumericText() },
+                label = { Text(stringResource(R.string.trap_upper)) }, modifier = Modifier.fillMaxWidth().testTag("trap-window-upper"),
+                isError = invalidWindow, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+            if (invalidWindow) Text(stringResource(R.string.trap_window_invalid), color = MaterialTheme.colorScheme.error)
+            else if (trace != null && threshold != null && result == null) {
+                Text(stringResource(R.string.trap_window_none), Modifier.testTag("trap-window-empty"))
+            }
+        }
+        if (active != null && trace != null && plotTrace != null && result != null && threshold != null) {
             item {
-                val points = trace.sweep.points
+                val points = plotTrace.sweep.points
                 val requested = cursor.takeIf { it.isFinite() } ?: result.minimum?.hertz ?: points.first().hertz
-                val selected = points[trace.sweep.nearestIndex(requested) ?: 0]
+                val selected = points[plotTrace.sweep.nearestIndex(requested.coerceIn(points.first().hertz, points.last().hertz)) ?: 0]
                 val frequency = selected.hertz
                 BandwidthHeading(R.string.bandwidth_chart)
-                MeasurementChart(listOf(active), SweepMetric.SWR, frequency, active.first, bandwidth = result) {
+                MeasurementChart(listOf(active.first to plotTrace), SweepMetric.SWR, frequency, active.first,
+                    bandwidth = result, frequencyWindow = window) {
                     cursor = it.coerceIn(points.first().hertz, points.last().hertz)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top) {
@@ -232,12 +262,13 @@ internal class BandwidthPresentation(
         BandEdgeKind.ESTIMATED -> R.string.bandwidth_edge_estimated
         BandEdgeKind.SWEEP_LIMIT -> R.string.bandwidth_edge_sweep
         BandEdgeKind.INVALID_NEIGHBOR -> R.string.bandwidth_edge_gap
+        BandEdgeKind.WINDOW_LIMIT -> R.string.trap_window_edge
     }))
 
     fun bandLines(band: SwrBand): List<String> {
         val widthLabel = when {
             band.widthHertz == 0.0 -> R.string.bandwidth_single_point
-            listOf(band.lower, band.upper).any { it.kind == BandEdgeKind.SWEEP_LIMIT || it.kind == BandEdgeKind.INVALID_NEIGHBOR } ->
+            listOf(band.lower, band.upper).any { it.kind in setOf(BandEdgeKind.SWEEP_LIMIT, BandEdgeKind.INVALID_NEIGHBOR, BandEdgeKind.WINDOW_LIMIT) } ->
                 R.string.bandwidth_partial_width
             listOf(band.lower, band.upper).any { it.kind == BandEdgeKind.ESTIMATED } -> R.string.bandwidth_estimated_width
             else -> R.string.bandwidth_width

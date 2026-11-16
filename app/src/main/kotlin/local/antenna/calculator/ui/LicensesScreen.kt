@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
+import local.antenna.calculator.core.TrapDipole.Profile
 
 private data class CreditedPublication(val title: Int, val url: String)
 private data class PublicationTerms(val description: Int, val url: String)
@@ -162,6 +163,27 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
 }
 
 @Composable
+internal fun TrapPublicationLinks(profile: Profile? = null) {
+    val titles = listOf(R.string.trap_source_r2auk, R.string.trap_source_vk2evb, R.string.trap_source_aa4lr)
+    val context = LocalContext.current
+    val profiles = profile?.let(::listOf) ?: Profile.entries
+    profiles.forEach {
+        PublicationCreditCard(PublicationCredit(trapAuthors[it.ordinal],
+            listOf(CreditedPublication(titles[it.ordinal], trapPublications[it.ordinal]))))
+    }
+    if (profile == null || profile == Profile.VK2EVB) {
+        TextButton(onClick = { openSourceWithFeedback(context, TRAP_ZL1BJQ_URL) }, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(R.string.trap_zl1bjq_source), modifier = Modifier.fillMaxWidth())
+        }
+    }
+    listOf(R.string.trap_arrl_source to TRAP_ARRL_URL, R.string.trap_wheeler_source to TRAP_WHEELER_URL).forEach { (title, url) ->
+        TextButton(onClick = { openSourceWithFeedback(context, url) }, modifier = Modifier.fillMaxWidth()) {
+            Text(stringResource(title), modifier = Modifier.fillMaxWidth())
+        }
+    }
+}
+
+@Composable
 internal fun HaloPublicationLinks() {
     haloPublicationCredits.forEach { PublicationCreditCard(it) }
 }
@@ -215,6 +237,9 @@ internal fun LicensesScreen() {
             style = MaterialTheme.typography.titleLarge,
         )
         HaloPublicationLinks()
+        Text(stringResource(R.string.trap_sources), Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
+        HelpText(R.string.trap_rights)
+        TrapPublicationLinks()
         HelpText(R.string.licenses_rights)
     }
 }

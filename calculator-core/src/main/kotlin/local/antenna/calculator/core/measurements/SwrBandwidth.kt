@@ -2,7 +2,7 @@ package local.antenna.calculator.core.measurements
 
 import kotlin.math.abs
 
-enum class BandEdgeKind { MEASURED, ESTIMATED, SWEEP_LIMIT, INVALID_NEIGHBOR }
+enum class BandEdgeKind { MEASURED, ESTIMATED, SWEEP_LIMIT, INVALID_NEIGHBOR, WINDOW_LIMIT }
 
 data class BandEdge(val hertz: Double, val kind: BandEdgeKind)
 
@@ -62,6 +62,29 @@ fun S11Sweep.swrBandwidth(threshold: Double): SwrBandwidth? {
         if (magnitudes[index] == null) null else point.impedance(referenceOhms)?.second
     }
     return SwrBandwidth(threshold, bands, minimum, reactanceZeros(points, reactance), magnitudes.count { it == null })
+}
+
+/** Restricts a measured result without treating a window boundary as a measured crossing. */
+fun S11Sweep.swrBandwidth(threshold: Double, window: ClosedFloatingPointRange<Double>): SwrBandwidth? {
+    if (!window.start.isFinite() || !window.endInclusive.isFinite() || window.start >= window.endInclusive) return null
+    val candidates = points.filter { it.hertz in window }
+    val measured = candidates.mapNotNull { point -> point.swr?.let { SwrMinimum(point.hertz, it) } }
+    val minimum = measured.minByOrNull { it.swr } ?: return null
+    val result = swrBandwidth(threshold) ?: return null
+    var index = 0
+    val bands = result.bands.mapNotNull { band ->
+        if (band.upper.hertz < window.start || band.lower.hertz > window.endInclusive) return@mapNotNull null
+        val lower = if (band.lower.hertz < window.start) BandEdge(window.start, BandEdgeKind.WINDOW_LIMIT) else band.lower
+        val upper = if (band.upper.hertz > window.endInclusive) BandEdge(window.endInclusive, BandEdgeKind.WINDOW_LIMIT) else band.upper
+        while (index < measured.size && measured[index].hertz < lower.hertz) index++
+        val start = index
+        while (index < measured.size && measured[index].hertz <= upper.hertz) index++
+        val bandMinimum = measured.subList(start, index).minByOrNull { it.swr } ?: return@mapNotNull null
+        SwrBand(lower, upper, bandMinimum)
+    }
+    val zeros = result.reactanceZeros.filter { it.lastHertz >= window.start && it.firstHertz <= window.endInclusive }
+        .map { it.copy(firstHertz = maxOf(it.firstHertz, window.start), lastHertz = minOf(it.lastHertz, window.endInclusive)) }
+    return SwrBandwidth(threshold, bands, minimum, zeros, candidates.size - measured.size)
 }
 
 private fun reactanceZeros(points: List<S11Point>, reactance: List<Double?>): List<ReactanceZero> = buildList {

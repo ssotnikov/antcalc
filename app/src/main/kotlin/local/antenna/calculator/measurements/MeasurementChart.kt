@@ -47,14 +47,15 @@ internal fun MeasurementChart(
     selectedHz: Double,
     activeSlot: Int,
     bandwidth: SwrBandwidth? = null,
+    frequencyWindow: ClosedFloatingPointRange<Double>? = null,
     select: (Double) -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
     val traceColors = listOf(measurementTraceColor(0), measurementTraceColor(1))
     val locale = LocalConfiguration.current.locales[0]
     val label = stringResource(R.string.sweep_graph_description, stringResource(metric.title))
-    val first = traces.minOf { it.second.sweep.points.first().hertz }
-    val last = traces.maxOf { it.second.sweep.points.last().hertz }
+    val first = frequencyWindow?.start ?: traces.minOf { it.second.sweep.points.first().hertz }
+    val last = frequencyWindow?.endInclusive ?: traces.maxOf { it.second.sweep.points.last().hertz }
     val series = remember(traces, metric) {
         traces.flatMap { (slot, trace) ->
             val components = if (metric == SweepMetric.IMPEDANCE) listOf(false, true) else listOf(false)

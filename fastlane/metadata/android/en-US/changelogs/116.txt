@@ -1,0 +1,3 @@
+• Added the 20/40/80 m trap dipole calculator with designs by R2AUK, VK2EVB and AA4LR.
+• Rotatable models, band diagrams, wire cut lists and project saving.
+• LC trap and Wheeler coil calculations, plus SWR analysis within a selected frequency window.

@@ -79,6 +79,7 @@ internal fun JournalScreen(
     initialProjectId: String? = null,
     onOpenSweeps: ((SweepComparison, AntennaProject) -> Unit)? = null,
     onOpenHalo: ((CalculationSnapshot) -> Unit)? = null,
+    onOpenTrapDipole: ((CalculationSnapshot) -> Unit)? = null,
     onMessage: (String) -> Unit,
 ) {
     val state by model.state.collectAsState()
@@ -279,11 +280,17 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.RECORD -> if (record != null) {
                 val details = presentation.recordDetails(record)
+                val trap = record.calculation?.takeIf { it.model == local.antenna.calculator.ui.TRAP_DIPOLE_MODEL }
                 val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
                     JournalHeading(record.title)
                     JournalDetails(details)
                     JournalScope()
+                    if (trap != null && onOpenTrapDipole != null) {
+                        TextButton(onClick = { onOpenTrapDipole(trap) }, enabled = enabled, modifier = Modifier.testTag("journal-open-trap-dipole")) {
+                            Text(stringResource(R.string.trap_reopen))
+                        }
+                    }
                     if (halo != null && onOpenHalo != null) {
                         TextButton(onClick = { onOpenHalo(halo) }, enabled = enabled, modifier = Modifier.testTag("journal-open-halo")) {
                             Text(stringResource(R.string.halo_reopen))

@@ -41,6 +41,8 @@
 - **Баночная антенна (Cantenna).** Подбор диаметра круглого волновода, проверка допусков, сравнение заготовок, три опубликованные конструкции и развёртка раструба. Ведомость сохраняется в проект, а трассы S1P сравниваются по общему порогу КСВ.
 - **Halo CB.** Начальные размеры круглой и квадратной антенн на 27 МГц, схемы питания, справка по Squalo CSQ‑11 и сохранение расчёта в проект.
 
+- **Траповый диполь.** Три конструкции на 20, 40 и 80 м, вращаемые модели, раскрой полотна, расчёт LC-трапов, сохранение в проект и анализ S1P в выбранной полосе.
+
 ### Лицензии
 
 [LICENSE.md](LICENSE.md) · Код приложения распространяется по лицензии MIT.
@@ -134,6 +136,16 @@
 - **Г. Пол Шух (N6TX)** — [облучатель VE4MA и регулируемое кольцо](https://www.setileague.org/hardware/feedchok.htm). The SETI League сохраняет права на оригинальную публикацию. [Условия The SETI League](https://www.setileague.org/admin/copyrigh.htm)
 - **Юрий Пилипенко** — [баночная антенна с коническим раструбом на 2440 МГц](https://ypylypenko.livejournal.com/43582.html), опубликованный чертёж и модель.
 
+#### Материалы по траповому диполю
+
+- Александр, R2AUK — [Самодельный траповый диполь: теория и практика](https://eax.me/2019/2019-02-25-diy-trap-dipole.html).
+- Питер Макадам, VK2EVB — [The Multiband Coaxial Trap Antenna](https://earc.org.au/?mdocs-file=696).
+- ZL1BJQ — [Трёхдиапазонный траповый диполь и размеры каркасов Ø43 мм](https://www.zl1bjq.co.nz/dipole1.html).
+- Билл Коулман, AA4LR — [80/40/20m Trap Dipole](https://boringhamradiopart.blogspot.com/2020/09/804020m-trap-dipole.html).
+- Гарольд А. Уилер — [Simple Inductance Formulas for Radio Coils](https://doi.org/10.1109/JRPROC.1928.221309). ARRL — [HF Trap Antennas](https://www.arrl.org/hf-trap-antennas).
+
+В приложении использованы технические размеры и формулы. Условия использования опубликованных материалов смотрите в оригиналах.
+
 #### Материалы по Halo CB
 
 - **Cush Craft / Cushcraft** — [заводские данные CSQ‑11 на 11 м, 73 Magazine, июнь 1964, с. 13](https://www.worldradiohistory.com/Archive-DX/73-magazine/73-magazine-1964/73-magazine-06-june-1964.pdf) · [руководство ASQ‑10 для диапазона 10 м, © 2013 Cushcraft](https://moonrakeronline.com/us/amfile/file/download/file/68/product/7978/).
@@ -185,6 +197,8 @@ Calculations, formulas and diagrams are available offline. Choose English or Rus
 
 - **Cantenna.** Find a circular waveguide diameter, check tolerances, compare cans, explore three published designs and develop a conical flare. Save the dimensions to a project and compare S1P traces at a shared SWR threshold.
 - **Halo CB.** Estimate round and square 27 MHz antenna dimensions, view feed diagrams and the Squalo CSQ‑11 reference, and save calculations to a project.
+
+- **Trap dipole.** Three 20/40/80 m designs with rotatable models, wire cut lists, LC trap calculations, project saving, and band-limited S1P analysis.
 
 ### Licenses
 
@@ -278,6 +292,16 @@ The authors and other rights holders retain the rights to the original designs a
 - **Alan J. Fenn** — [MIT Laptop Radar, slides 20–25](https://ocw.mit.edu/courses/res-ll-003-build-a-small-radar-system-capable-of-sensing-range-doppler-and-synthetic-aperture-radar-imaging-january-iap-2011/fa61f02356be7efc88142b258d031110_MITRES_LL_003IAP11_lec02.pdf). The lecture is published under CC BY-NC-SA 4.0, with exceptions for third-party material. [MIT OpenCourseWare terms](https://ocw.mit.edu/pages/privacy-and-terms-of-use/)
 - **H. Paul Shuch (N6TX)** — [VE4MA feed and adjustable choke ring](https://www.setileague.org/hardware/feedchok.htm). The SETI League reserves rights to the original publication. [The SETI League terms](https://www.setileague.org/admin/copyrigh.htm)
 - **Yurii Pylypenko** — [2440 MHz cantenna with a conical flare](https://ypylypenko.livejournal.com/43582.html), published drawing and simulation.
+
+#### Trap dipole sources
+
+- Alexander, R2AUK — [DIY trap dipole: theory and practice](https://eax.me/2019/2019-02-25-diy-trap-dipole.html).
+- Peter McAdam, VK2EVB — [The Multiband Coaxial Trap Antenna](https://earc.org.au/?mdocs-file=696).
+- ZL1BJQ — [Three-band trap dipole and 43 mm former dimensions](https://www.zl1bjq.co.nz/dipole1.html).
+- Bill Coleman, AA4LR — [80/40/20m Trap Dipole](https://boringhamradiopart.blogspot.com/2020/09/804020m-trap-dipole.html).
+- Harold A. Wheeler — [Simple Inductance Formulas for Radio Coils](https://doi.org/10.1109/JRPROC.1928.221309). ARRL — [HF Trap Antennas](https://www.arrl.org/hf-trap-antennas).
+
+The app uses technical dimensions and formulas. See the original publications for their terms of use.
 
 #### Halo CB sources
 

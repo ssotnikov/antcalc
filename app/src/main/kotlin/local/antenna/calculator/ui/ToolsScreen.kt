@@ -71,6 +71,7 @@ internal fun AntennaParameterToolsScreen(
     onOpenHb9cv: () -> Unit,
     onOpenCantenna: () -> Unit = {},
     onOpenHalo: () -> Unit = {},
+    onOpenTrapDipole: () -> Unit = {},
 ) {
     val scroll = rememberPageScrollState()
     Column(
@@ -88,6 +89,7 @@ internal fun AntennaParameterToolsScreen(
         ToolCard(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv, showChevron = true)
         ToolCard(R.string.cantenna_title, R.string.cantenna_intro, "open-cantenna", onOpenCantenna, showChevron = true)
         ToolCard(R.string.halo_title, R.string.halo_intro, "open-halo", onOpenHalo, showChevron = true)
+        ToolCard(R.string.trap_title, R.string.trap_intro, "open-trap-dipole", onOpenTrapDipole, showChevron = true)
     }
 }
 

@@ -23,6 +23,8 @@ import local.antenna.calculator.ui.RotatingAntenna
 import local.antenna.calculator.ui.cantennaVector
 import local.antenna.calculator.ui.HaloVariant
 import local.antenna.calculator.ui.haloVector
+import local.antenna.calculator.ui.trapDipoleVector
+import local.antenna.calculator.core.TrapDipole.Profile
 
 @Composable
 internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = Modifier) {
@@ -46,7 +48,14 @@ internal fun JournalAntennaIllustration(type: AntennaType, modifier: Modifier = 
             interactive = false, baseHeight = 144.dp)
         return
     }
+    if (type == AntennaType.TRAP_DIPOLE) {
+        RotatingAntenna("trap-journal", stringResource(R.string.trap_title),
+            modifier.testTag("journal-antenna-image-TRAP_DIPOLE"), geometry = remember { trapDipoleVector(Profile.R2AUK) },
+            interactive = false, baseHeight = 144.dp)
+        return
+    }
     val painter = when (type) {
+        AntennaType.TRAP_DIPOLE -> error("Trap dipole is drawn directly")
         AntennaType.HB9CV -> error("HB9CV is drawn directly")
         AntennaType.CANTENNA -> error("Cantenna is drawn directly")
         AntennaType.HALO_CB -> error("Halo CB is drawn directly")

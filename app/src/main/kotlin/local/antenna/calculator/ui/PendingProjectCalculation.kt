@@ -34,6 +34,7 @@ private enum class TransferSource(
     HB9CV("hb9cv", Page.HB9CV, R.string.hb9cv_title),
     CANTENNA("cantenna", Page.CANTENNA, R.string.cantenna_title),
     HALO(HALO_CB_MODEL, Page.HALO_CB, R.string.halo_title),
+    TRAP(TRAP_DIPOLE_MODEL, Page.TRAP_DIPOLE, R.string.trap_title),
     J_POLE("j_pole", Page.J_POLE, R.string.jpole_title),
     YAGI("yagi_r3udk", Page.YAGI_CALCULATOR, R.string.yagi_title),
     FULL_WAVE_LOOP("full_wave_loop", Page.FULL_WAVE_LOOP, R.string.loop_title, "loop_frequency");
@@ -67,13 +68,13 @@ internal class PendingProjectCalculation(
         outputLengthNanometers("new_length") else null
 
     val hasInitialLength get() = when (source) {
-        TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV, TransferSource.CANTENNA, TransferSource.HALO -> false
+        TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV, TransferSource.CANTENNA, TransferSource.HALO, TransferSource.TRAP -> false
         else -> true
     }
 
     fun initialLength(type: AntennaType): PhysicalLength? {
         val nanometers = when (source) {
-            TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV, TransferSource.CANTENNA, TransferSource.HALO -> return null
+            TransferSource.YAGI, TransferSource.SLIM_JIM, TransferSource.MOXON, TransferSource.HB9CV, TransferSource.CANTENNA, TransferSource.HALO, TransferSource.TRAP -> return null
             TransferSource.J_POLE -> outputLengthNanometers("jpole_long")
             TransferSource.GROUND_PLANE -> outputLengthNanometers("gp_whip")
             TransferSource.FULL_WAVE_LOOP -> outputLengthNanometers("loop_perimeter")

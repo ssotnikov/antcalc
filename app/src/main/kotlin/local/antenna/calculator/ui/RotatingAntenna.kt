@@ -101,6 +101,7 @@ internal fun initialAntennaView(id: String): AntennaView = when {
     id.startsWith("yagi-") -> AntennaView(-8f, 65f, -12f)
     id.startsWith("hb-") -> AntennaView(8f, 69f, 28f)
     id.startsWith("cantenna") -> AntennaView(36f, 22f, -10f)
+    id.startsWith("trap-") -> AntennaView(-12f, 20f)
     id.startsWith("halo-") -> AntennaView(-16f, 32f, -11f)
     id.startsWith("gp-") -> AntennaView(22f, 23f)
     id.startsWith("v-") || id.startsWith("loop-") -> AntennaView(-10f, 9f)
