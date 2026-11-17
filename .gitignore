@@ -4,6 +4,7 @@
 openspec/
 .gradle/
 .kotlin/
+.cxx/
 .idea/
 **/build/
 local.properties

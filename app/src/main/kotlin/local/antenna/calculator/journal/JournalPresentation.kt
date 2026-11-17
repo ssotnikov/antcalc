@@ -189,6 +189,7 @@ internal class JournalPresentation(private val context: Context) {
                 "ys_unit" -> R.string.ys_unit
                 "ys_gap" -> R.string.ys_gap
                 "ys_factor" -> R.string.ys_scale_name
+                "ys_nec_version" -> R.string.opennec_version
                 else -> null
             }
             if (simple != null) return text(simple)
@@ -202,12 +203,14 @@ internal class JournalPresentation(private val context: Context) {
                 "ys_pos" -> R.string.ys_position
                 "ys_len" -> R.string.ys_length
                 "ys_dia" -> R.string.ys_d
+                "ys_analytic_len" -> R.string.opennec_analytic_length
                 else -> return null
             }
             return "$element · ${text(field)}"
         }
         fun render(metric: SnapshotValue): String {
             if (s.model == YagiScaling.MODEL) {
+                if (metric.key == "ys_nec_version") return local.antenna.calculator.nec.necVersion(metric.value.toInt())
                 if (metric.key == "ys_mode") YagiScaling.Mode.entries.firstOrNull { it.ordinal.toDouble() == metric.value }
                     ?.let { return text(it.scalingLabel()) }
                 if (metric.key == "ys_geometry") YagiScaling.Geometry.entries.firstOrNull { it.ordinal.toDouble() == metric.value }

@@ -556,7 +556,8 @@ private fun LocalizedCalculatorApp(
                         ) { message -> scope.launch { snackbar.showSnackbar(message) } }
                     }
                     Page.SETTINGS -> screenStates.SaveableStateProvider("settings-${menuParents.size}") {
-                        SettingsScreen(state, onEvent) { openMenuPage(Page.ABOUT) }
+                        SettingsScreen(state, onEvent, onAbout = { openMenuPage(Page.ABOUT) },
+                            onOpenNecLicense = { openMenuPage(Page.LICENSES) })
                     }
                     Page.ABOUT -> screenStates.SaveableStateProvider("help-${menuParents.size}") { HelpScreen() }
                     Page.USER_GUIDE -> screenStates.SaveableStateProvider("user-guide-${menuParents.size}") {

@@ -72,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
-  <span class="version">Version 1.35.1</span>
+  <span class="version">Version 1.37.0</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -135,7 +135,54 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <tr><th scope="row"><span class="web-label">Halo CB</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/halo">Halo CB</a></span></th><td>Choose a circular or square loop and enter frequency, <var>k</var> and the gap. Check the conductor length on the diagram and review the gamma match.</td></tr>
 <tr><th scope="row"><span class="web-label">Trap Dipole</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/trap-dipole">Trap Dipole</a></span></th><td>Select R2AUK, VK2EVB or AA4LR and the 20, 40 or 80 m band. Check sections A, B and C and traps T20 and T40. Use the separate LC and coil calculations as needed.</td></tr>
 </tbody></table>
-<h3>Yagi–Uda scaling</h3><div class="app-links"><a href="https://appassets.androidplatform.net/open/yagi-scaling">Yagi–Uda scaling</a></div><p>In Tools, choose what to change. Frequency scaling changes lengths, diameters and positions together. A diameter change at the same frequency adjusts the lengths of straight round elements. Enter the original antenna frequency and default diameter above the target parameters. In Element geometry above Load demonstration dimensions, enter each length and the positions of the driven element and directors measured from the reflector. The reflector is the origin. Override individual diameters as needed. Once the geometry is valid, New dimensions appears below automatically and includes the diagram. Tap an element to compare its dimensions. Open Dimensions for all elements for the complete list. Save the calculation to a Yagi project.</p>
+<h3 id="yagi-scaling">Yagi–Uda scaling</h3>
+<div class="app-links"><a href="https://appassets.androidplatform.net/open/yagi-scaling">Yagi–Uda scaling</a></div>
+<p>Open <strong>Tools → Yagi–Uda scaling</strong> when you already have antenna dimensions and want to move the design to another frequency, use tubing of a different diameter, or do both.</p>
+<h4>Choose the source geometry</h4>
+<ul>
+  <li><strong>Straight round elements from a model.</strong> Use model dimensions for straight round rods or tubing without a correction for the boom or mounts. All three operations are available.</li>
+  <li><strong>Mounted dimensions.</strong> Use dimensions from a cut list or measurements of a built antenna. You can scale them proportionally to another frequency. This assumes the mounting geometry scales in the same proportion. If you keep the original boom or use different holders, check their effect separately.</li>
+</ul>
+<p>Switching source geometry keeps the values you entered. The switch performs no conversion between mounted and model dimensions and applies no boom correction. If you select a diameter change with mounted dimensions, the result is hidden and an explanation appears below the operation buttons.</p>
+<h4>Enter the original and target dimensions</h4>
+<ol>
+  <li>Choose an operation. For frequency scaling or the combined operation, enter the original and new frequencies in MHz. To change tubing diameter at the same frequency, enter just the <strong>Operating frequency</strong>.</li>
+  <li>Choose the length unit. Enter a default original diameter if the tubing is uniform. An element's own diameter takes priority over the default. When changing diameters, the same rule applies to the default new diameter and individual new diameters.</li>
+  <li>Under <strong>Element geometry</strong>, enter the full length of each element and the distance from the reflector to the driven element and to each director. The reflector is fixed at 0. If the driven element is 215 mm from the reflector and the first director is another 200 mm along the boom, enter 415 mm for that director. Positions must increase along the boom. Tap <strong>Add director</strong> as needed.</li>
+  <li>For a split driven element, enter the distance between its halves under <strong>Feed gap</strong>. The <strong>Full length</strong> is the span from end to end, including the gap. With a 970 mm span and a 10 mm gap, each conducting half of a symmetrical driven element is 480 mm long.</li>
+</ol>
+<h4>Three worked examples</h4>
+<p>To follow the examples, tap <strong>Load demonstration dimensions</strong>. This loads sample frequencies and dimensions, clears the feed gap and selects model geometry. The original frequency is 145 MHz, the diameter is 8 mm, the reflector is 1040 mm long, and the 970 mm driven element is 215 mm from the reflector.</p>
+<ul>
+  <li><strong>Move to another frequency.</strong> Scaling to 175 MHz gives a factor of 145 ÷ 175 ≈ 0.828571. The reflector becomes 861.71 mm long. The driven element becomes 803.71 mm long and moves to 178.14 mm from the reflector. The element diameter becomes 6.63 mm. If you enter a 10 mm feed gap, it becomes 8.29 mm. Both source geometry options give these proportional results for the same inputs.</li>
+  <li><strong>Change tubing diameter.</strong> Keep the operating frequency at 145 MHz and set the default new diameter to 6 mm. The calculated reflector length becomes 1039.63 mm. The driven element stays 215 mm from the reflector.</li>
+  <li><strong>Change frequency and diameter.</strong> Enter 175 MHz and a new diameter of 6 mm. The app first scales the antenna by frequency, then adjusts element lengths for the specified diameter. The reflector becomes 861.6 mm long with a diameter of 6 mm. The driven element is still 178.14 mm from the reflector.</li>
+</ul>
+<p class="note">A positive feed gap excludes the split driven element from diameter correction. In the combined example with a 10 mm gap, its full length is 803.7 mm, its gap is 8.29 mm and its diameter is 6.63 mm, even if the other elements are set to 6 mm. Changing tubing diameter alone at the original frequency leaves the split driven element's dimensions as entered.</p>
+<h4>Choose a tubing diameter when scaling to 50.1 MHz</h4>
+<p>Scaling from 144.1 to 50.1 MHz gives a factor of about 2.876. The ratio of diameter to wavelength stays the same, so the original 10 mm tube scales to 28.76 mm. If you have 10, 12 or 15 mm tubing, select <strong>Change frequency and diameter</strong> and enter the available diameter. The app determines the element positions during frequency scaling, then calculates a length correction for each tube diameter.</p>
+<p>To follow the example, load the demonstration dimensions, enter <strong>144.1 and 50.1 MHz</strong>, select millimetres and set the default original diameter to 10 mm. For the first director, enter a full length of <strong>900 mm</strong> and a new diameter of <strong>12 mm</strong>. Select the first director in the diagram.</p>
+<ul>
+  <li><strong>Length after frequency scaling is 2588.6 mm.</strong> Multiply 900 by 144.1 ÷ 50.1. The diameter also scales to about 28.7625 mm at this stage.</li>
+  <li><strong>Diameter correction is +67.9 mm.</strong> Changing the scaled diameter to 12 mm gives a final full length of <strong>2656.5 mm</strong>.</li>
+  <li><strong>Total change in length is +1756.5 mm.</strong> This is the difference between the final length of 2656.5 mm and the original 900 mm. The screen and copied report both show all three values. Intermediate values are rounded only for display.</li>
+</ul>
+<p>For the same director, <strong>10 mm</strong> tubing gives a full length of <strong>2667.9 mm</strong> (a correction of +79.3 mm), and <strong>15 mm</strong> tubing gives <strong>2641.5 mm</strong> (+52.8 mm). Check the correction separately for each element. In the app’s formula, reducing the diameter lengthens elements shorter than half a wavelength and shortens elements longer than half a wavelength.</p>
+<h4>Review and save the result</h4>
+<p><strong>New dimensions</strong> appears automatically. Dashed lines in the diagram show the original elements and solid lines show the result. Tap an element to see its length, position and diameter in the <strong>Before</strong> and <strong>After</strong> columns. Expand <strong>Dimensions for all elements</strong> for the complete list. You can copy the result or save it with <strong>Add to project</strong>.</p>
+<p>If <strong>More data is needed to calculate</strong> appears above the demonstration button, check the frequencies, the length and position of each element, and the default or individual diameters. If the fields are filled, check that positions increase along the boom, the gap is smaller than the full driven-element length, and a diameter correction uses model geometry. See <strong>Formulas</strong> and <strong>Method and sources</strong> for the equations and publications. For a large diameter change, a long Yagi or frequencies above 144 MHz, verify the estimate by modelling and measurement.</p>
+<h4>Check the antenna in NEC and optimize its lengths</h4>
+<ol>
+  <li>After scaling, open <strong>Check in NEC</strong>. OpenNEC models straight, perfectly conducting round elements in free space, with a voltage source at the driven-element center and a 50 Ω reference impedance. Mounted dimensions and driven elements with a physical gap remain available for analytical scaling.</li>
+  <li>Enter the band limits and the SWR threshold. Tap <strong>Calculate</strong> to check 21 frequencies and view impedance, SWR, forward gain toward the directors, F/B and the pattern in the element plane. The figures next to the pattern are for the point closest to the target frequency. When changing frequency and diameter, the reference is the proportional frequency-scaled geometry. When changing diameter alone, the original geometry is the reference.</li>
+  <li>Tap <strong>Optimize element lengths for SWR</strong>. The app starts from the calculated geometry, keeps positions and diameters fixed and checks lengths within ±5%. Compare the worst SWR on the grid, gain and F/B. If the goal is missed, the app shows the best candidate it tested.</li>
+  <li>Tap <strong>Apply lengths</strong> to use the proposed lengths in the report and project. Reopen the saved calculation to compare the original, calculated and applied lengths. In Settings, tap <strong>NEC2 Engine</strong> to open the NEC-2 website or <strong>OpenNEC license</strong> to view the details of the embedded engine.</li>
+</ol>
+<div class="gallery gallery-wide">
+<figure><a href="images/en/nec-comparison.webp"><img src="images/en/nec-comparison.webp" width="720" height="1600" alt="OpenNEC results for the proportionally scaled and diameter-adjusted geometries at 50.1 MHz" loading="lazy" decoding="async"></a><figcaption>Two geometries on the same frequency grid</figcaption></figure>
+<figure><a href="images/en/nec-optimization.webp"><img src="images/en/nec-optimization.webp" width="720" height="1600" alt="OpenNEC optimization with the calculated and proposed results for the same Yagi–Uda antenna" loading="lazy" decoding="async"></a><figcaption>Comparison before and after optimization</figcaption></figure>
+</div>
+<p>Use the calculated lengths as a starting point. Before cutting the tubes, account for the metal boom and mounting method, and check stiffness if the tubes are long. After a trial assembly, measure SWR across the operating band and adjust the matching network if needed.</p>
 <h3>Models and drawings</h3><p>Drag across a vector model to rotate it. Double-tap or tap the plus magnifier to open it full-screen. Spread two fingers to zoom and drag with two fingers to pan the model. The minus magnifier and Android Back close the viewer. The construction guide also opens photos and drawings with a double tap or the magnifier. You can zoom, pan and reset their scale.</p>
 <h3>Trap Dipole</h3><p>Expand <strong>Trap Dipole Designs and Band Behaviour</strong> near the bottom to read about W3DZZ and operation on different bands. Open <strong>Tuning and measurements</strong> to import S1P and analyse SWR within the selected band.</p>
         </div>

@@ -191,7 +191,7 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         compose.setContent {
             MaterialTheme {
                 Box(Modifier.size(320.dp, height.intValue.dp).testTag("settings-viewport")) {
-                    SettingsScreen(CalculatorUiState(loading = false), {}, {})
+                    SettingsScreen(CalculatorUiState(loading = false), {}, {}, {})
                 }
             }
         }

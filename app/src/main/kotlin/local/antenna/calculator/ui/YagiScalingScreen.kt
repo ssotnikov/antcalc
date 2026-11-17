@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
@@ -36,7 +37,10 @@ import local.antenna.calculator.core.layout.YagiScaling.Element
 import local.antenna.calculator.core.layout.YagiScaling.Geometry
 import local.antenna.calculator.core.layout.YagiScaling.Mode
 import local.antenna.calculator.core.units.LengthUnit
+import local.antenna.calculator.nec.OpenNec
+import local.antenna.calculator.nec.necVersion
 import local.antenna.calculator.state.boundedNumericText
+import kotlin.math.roundToLong
 
 internal fun Mode.scalingLabel() = when (this) {
     Mode.FREQUENCY -> R.string.ys_frequency
@@ -53,6 +57,7 @@ internal fun Geometry.scalingLabel() = when (this) {
 internal fun YagiScalingScreen(
     initial: CalculationSnapshot?,
     onSave: ((CalculationSnapshot) -> Unit)?,
+    necAvailable: () -> Boolean = { OpenNec.available },
     onCopied: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -61,11 +66,36 @@ internal fun YagiScalingScreen(
     var draft by rememberSaveable(stateSaver = YagiScalingDraft.saver) { mutableStateOf(loaded ?: YagiScalingDraft()) }
     var selected by rememberSaveable { mutableIntStateOf(1) }
     val result = remember(draft) { draft.result() }
+    val adjustmentGeometry = result?.elements?.map { element ->
+        listOf(element.position, element.length, element.diameter).map { (it * 1e9).roundToLong() }
+    }
+    var appliedLengths by rememberSaveable(draft.mode, draft.geometry, draft.sourceHz, draft.targetHz,
+        draft.split, adjustmentGeometry) {
+        mutableStateOf(if (draft == loaded && result != null) initial?.appliedNecLengths(result) else null)
+    }
+    var appliedVersion by rememberSaveable(draft.mode, draft.geometry, draft.sourceHz, draft.targetHz,
+        draft.split, adjustmentGeometry) {
+        mutableIntStateOf(if (draft == loaded) initial?.appliedNecVersion() ?: OpenNec.VERSION_CODE else OpenNec.VERSION_CODE)
+    }
     val geometryIncomplete = draft.rows.any { it.position.isBlank() || it.length.isBlank() }
     val diameterMode = draft.mode != Mode.FREQUENCY
     val unitLabel = stringResource(draft.unit.labelResource())
     val before = if (result == null) emptyList() else draft.rows.mapIndexed { index, row -> requireNotNull(draft.element(row, index)) }
     val scaleNumber: (Double) -> String = { matchingNumber(context, it * 1e9 / draft.unit.nanometersPerUnit, 4) }
+    val lengthPlaces = when (draft.unit) {
+        LengthUnit.MILLIMETERS -> 1
+        LengthUnit.CENTIMETERS -> 2
+        LengthUnit.METERS -> 4
+    }
+    val lengthNumber: (Double) -> String = if (draft.mode == Mode.BOTH) {
+        { matchingNumber(context, it * 1e9 / draft.unit.nanometersPerUnit, lengthPlaces) }
+    } else scaleNumber
+    val signedNumber: (Double) -> String = { value ->
+        when (val formatted = lengthNumber(value)) {
+            "0", "-0" -> "0"
+            else -> if (value > 0) "+$formatted" else formatted
+        }
+    }
     val source = stringResource(if (draft.mode == Mode.FREQUENCY) R.string.ys_frequency_source else R.string.ys_formula_source)
 
     Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberPageScrollState())
@@ -195,13 +225,31 @@ internal fun YagiScalingScreen(
             HorizontalDivider()
             Text(stringResource(R.string.ys_result), style = MaterialTheme.typography.titleMedium)
             val factor = matchingNumber(context, result.factor, 6)
+            val frequencyLengths = if (draft.mode == Mode.BOTH) before.map { it.length * result.factor } else null
             val rows = result.elements.mapIndexed { index, element ->
-                val delta = element.length - before[index].length
-                listOf(scalingElementName(index), scaleNumber(element.position), scaleNumber(element.length),
-                    scaleNumber(element.diameter), (if (delta > 0) "+" else "") + scaleNumber(delta))
+                val appliedLength = appliedLengths?.get(index)
+                buildList {
+                    add(scalingElementName(index))
+                    add(scaleNumber(element.position))
+                    add(appliedLength?.let(scaleNumber) ?: lengthNumber(element.length))
+                    add(scaleNumber(element.diameter))
+                    frequencyLengths?.get(index)?.let { frequencyLength ->
+                        add(lengthNumber(frequencyLength))
+                        add(signedNumber(element.length - frequencyLength))
+                    }
+                    add(signedNumber(element.length - before[index].length))
+                    if (appliedLength != null) {
+                        add(lengthNumber(element.length))
+                        add(scaleNumber(appliedLength - element.length))
+                    }
+                }
             }
-            val labels = listOf(R.string.ys_element, R.string.ys_position, R.string.ys_length, R.string.ys_d, R.string.ys_delta)
-                .map { stringResource(it) }
+            val outputLengthLabel = if (appliedLengths == null) R.string.ys_length else R.string.opennec_applied_length
+            val labelIds = listOf(R.string.ys_element, R.string.ys_position, outputLengthLabel, R.string.ys_d) +
+                (if (frequencyLengths == null) listOf(R.string.ys_delta)
+                else listOf(R.string.ys_frequency_length, R.string.ys_diameter_delta, R.string.ys_total_delta)) +
+                if (appliedLengths == null) emptyList() else listOf(R.string.opennec_analytic_length, R.string.opennec_applied_delta)
+            val labels = labelIds.map { stringResource(it) }
             val gapText = result.feedGap?.let { "${stringResource(R.string.ys_gap)} ${scaleNumber(it)} $unitLabel" }
             SelectionContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
@@ -210,22 +258,50 @@ internal fun YagiScalingScreen(
                 }
             }
             val current = selected.coerceIn(result.elements.indices)
-            ScalingDrawing(before, result.elements, current) { selected = it }
+            val working = result.elements.mapIndexed { index, element ->
+                appliedLengths?.get(index)?.let { element.copy(length = it) } ?: element
+            }
+            ScalingDrawing(before, working, current) { selected = it }
             ChoicePicker(stringResource(R.string.ys_element), result.elements.indices.toList(), current,
                 { scalingElementLabel(it) }, { selected = it }, "ys-diagram-selection")
             SelectionContainer {
-                ScalingComparison(before[current], result.elements[current], scaleNumber, unitLabel)
+                ScalingComparison(before[current], result.elements[current], frequencyLengths?.get(current),
+                    scaleNumber, lengthNumber, signedNumber, unitLabel, appliedLengths?.get(current))
             }
             ScalingDetails(R.string.ys_all) {
                 before.indices.forEach { index ->
                     Text(scalingElementLabel(index), style = MaterialTheme.typography.titleSmall)
-                    ScalingComparison(before[index], result.elements[index], scaleNumber, unitLabel)
+                    ScalingComparison(before[index], result.elements[index], frequencyLengths?.get(index),
+                        scaleNumber, lengthNumber, signedNumber, unitLabel, appliedLengths?.get(index))
                 }
             }
             SelectableText(source)
             if (diameterMode) HelpText(R.string.ys_estimate)
             if (draft.geometry == Geometry.MOUNTED) HelpText(R.string.ys_similarity)
-            if (onSave != null) Button({ onSave(draft.snapshot(result)) },
+            val necReference = when (draft.mode) {
+                Mode.FREQUENCY -> null
+                Mode.DIAMETER -> before
+                Mode.BOTH -> before.map { element ->
+                    element.copy(position = element.position * result.factor, length = element.length * result.factor,
+                        diameter = element.diameter * result.factor)
+                }
+            }
+            if (appliedLengths != null) {
+                Text(stringResource(R.string.opennec_applied, necVersion(appliedVersion)),
+                    Modifier.testTag("opennec-applied"), color = MaterialTheme.colorScheme.primary)
+                TextButton({ appliedLengths = null }) { Text(stringResource(R.string.opennec_reset_applied)) }
+            }
+            val blockedNec = when {
+                draft.geometry == Geometry.MOUNTED -> R.string.opennec_mounted
+                draft.split -> R.string.opennec_split
+                !necAvailable() -> R.string.opennec_unavailable
+                else -> null
+            }
+            YagiNecPanel(necReference, result.elements, requireNotNull(draft.targetHz), blockedNec, appliedLengths) { found ->
+                appliedLengths = ArrayList(found.map { it.length })
+                appliedVersion = OpenNec.VERSION_CODE
+            }
+            if (onSave != null) Button({ onSave(draft.snapshot(result, appliedLengths, appliedVersion)) },
                 modifier = Modifier.fillMaxWidth().testTag("ys-save")) { Text(stringResource(R.string.ys_save)) }
             OutlinedButton({
                 val report = buildString {
@@ -233,6 +309,7 @@ internal fun YagiScalingScreen(
                     appendLine(resources.getString(R.string.ys_report_frequency, draft.source, (if (draft.mode == Mode.DIAMETER) draft.source else draft.target)))
                     appendLine(resources.getString(draft.mode.scalingLabel()))
                     appendLine(resources.getString(draft.geometry.scalingLabel()))
+                    if (appliedLengths != null) appendLine(resources.getString(R.string.opennec_applied, necVersion(appliedVersion)))
                     appendLine(resources.getString(R.string.ys_factor, factor))
                     appendLine(resources.getString(R.string.ys_table_unit, unitLabel))
                     appendLine(labels.joinToString(" | "))
@@ -368,29 +445,38 @@ private fun ScalingDrawing(before: List<Element>, after: List<Element>, selected
     val all = before + after
     val span = all.maxOf(Element::position).coerceAtLeast(0.000001)
     val length = all.maxOf(Element::length)
-    fun xAt(position: Double, width: Float, height: Float): Float {
-        val scale = minOf(width * .82 / span, height * .82 / length)
-        return (width / 2 + (position - span / 2) * scale).toFloat()
+    val layers = listOf(before, after)
+    fun elementSegment(element: Element, canvasSize: Size): Pair<Offset, Offset> {
+        val scale = minOf(canvasSize.width * .82 / span, canvasSize.height * .82 / length)
+        val x = (canvasSize.width / 2 + (element.position - span / 2) * scale).toFloat()
+        val center = canvasSize.height / 2
+        val half = (element.length * scale / 2).toFloat()
+        return Offset(x, center - half) to Offset(x, center + half)
     }
     Surface(shape = MaterialTheme.shapes.large, color = colors.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(12.dp)) {
-            Canvas(Modifier.fillMaxWidth().height(154.dp).semantics { contentDescription = description }
-                .pointerInput(after, span, length) {
+            Canvas(Modifier.fillMaxWidth().height(154.dp).testTag("ys-result-diagram").semantics { contentDescription = description }
+                .pointerInput(before, after) {
                     detectTapGestures { tap ->
-                        val nearest = after.indices.minBy { kotlin.math.abs(xAt(after[it].position, size.width.toFloat(), size.height.toFloat()) - tap.x) }
+                        val canvasSize = Size(size.width.toFloat(), size.height.toFloat())
+                        fun distance(element: Element): Float {
+                            val (top, bottom) = elementSegment(element, canvasSize)
+                            val nearestPoint = Offset(top.x, tap.y.coerceIn(top.y, bottom.y))
+                            return (tap - nearestPoint).getDistanceSquared()
+                        }
+                        val nearest = after.indices.minBy { minOf(distance(before[it]), distance(after[it])) }
                         onSelect(nearest)
                     }
                 }) {
-                val scale = minOf(size.width * .82 / span, size.height * .82 / length)
                 val center = size.height / 2
                 drawLine(colors.outline, Offset(0f, center), Offset(size.width, center), 1.dp.toPx())
                 val dash = PathEffect.dashPathEffect(floatArrayOf(5.dp.toPx(), 4.dp.toPx()))
-                for ((elements, original) in listOf(before to true, after to false)) {
+                layers.forEachIndexed { layer, elements ->
+                    val original = layer == 0
                     elements.forEachIndexed { index, element ->
-                        val x = xAt(element.position, size.width, size.height)
-                        val half = (element.length * scale / 2).toFloat()
+                        val (top, bottom) = elementSegment(element, size)
                         val color = if (original) colors.onSurfaceVariant else if (index == selected) colors.tertiary else colors.primary
-                        drawLine(color, Offset(x, center - half), Offset(x, center + half),
+                        drawLine(color, top, bottom,
                             (if (original) 2 else 3).dp.toPx(), pathEffect = if (original) dash else null)
                     }
                 }
@@ -409,11 +495,29 @@ internal fun scalingElementLabel(index: Int): String = when (index) {
 }
 
 @Composable
-private fun ScalingComparison(before: Element, after: Element, number: (Double) -> String, unit: String) {
+private fun ScalingComparison(
+    before: Element,
+    after: Element,
+    frequencyLength: Double?,
+    number: (Double) -> String,
+    lengthNumber: (Double) -> String,
+    signedNumber: (Double) -> String,
+    unit: String,
+    appliedLength: Double?,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         ScalingTableRow(listOf(unit, stringResource(R.string.ys_before), stringResource(R.string.ys_after)))
-        ScalingTableRow(listOf(stringResource(R.string.ys_length), number(before.length), number(after.length)))
+        ScalingTableRow(listOf(stringResource(R.string.ys_length), number(before.length), lengthNumber(after.length)))
         ScalingTableRow(listOf(stringResource(R.string.ys_position), number(before.position), number(after.position)))
         ScalingTableRow(listOf(stringResource(R.string.ys_d), number(before.diameter), number(after.diameter)))
+        if (frequencyLength != null) {
+            ScalingTableRow(listOf(stringResource(R.string.ys_frequency_length), "—", lengthNumber(frequencyLength)))
+            ScalingTableRow(listOf(stringResource(R.string.ys_diameter_delta), "—", signedNumber(after.length - frequencyLength)))
+            ScalingTableRow(listOf(stringResource(R.string.ys_total_delta), "—", signedNumber(after.length - before.length)))
+        }
+        if (appliedLength != null) {
+            ScalingTableRow(listOf(stringResource(R.string.opennec_applied_length), "—", number(appliedLength)))
+            ScalingTableRow(listOf(stringResource(R.string.opennec_applied_delta), "—", number(appliedLength - after.length)))
+        }
     }
 }

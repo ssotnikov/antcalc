@@ -71,7 +71,7 @@ class AuthorSupportTest : CalculatorUiFixture() {
             CompositionLocalProvider(LocalDensity provides Density(density, 2f)) {
                 MaterialTheme {
                     Box(Modifier.width(260.dp)) {
-                        SettingsScreen(CalculatorUiState(draft = draft, loading = false), {}, {})
+                        SettingsScreen(CalculatorUiState(draft = draft, loading = false), {}, {}, {})
                     }
                 }
             }

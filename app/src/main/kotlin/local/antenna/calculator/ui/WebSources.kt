@@ -6,6 +6,7 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.core.net.toUri
 import local.antenna.calculator.R
+import local.antenna.calculator.nec.OpenNec
 import java.net.URI
 import java.net.URISyntaxException
 import java.util.Locale
@@ -102,6 +103,7 @@ internal const val LIZAALERT_URL = "https://lizaalert.org/"
 internal const val LIZAALERT_YAGI_URL = "https://wiki.app.lizaalert.ru/s/8a0ac7fb-4e86-4453-8778-5a45f9f0ca3e"
 internal const val BUG_REPORT_URL = "https://github.com/ssotnikov/antcalc/issues/new"
 internal const val PRIVACY_POLICY_URL = "https://antcalc.ssotnikov.pro/privacy/"
+internal const val NEC2_URL = "https://www.nec2.org/"
 private const val AUTHOR_TELEGRAM = "tg://resolve?domain=ssotnikov"
 internal const val AUTHOR_TELEGRAM_WEB = "https://t.me/ssotnikov"
 
@@ -135,6 +137,7 @@ internal fun validatedSourceAddress(address: String): String? {
     val url = uri.toASCIIString()
     if (url == authorSupportPaymentUrl) return url
     if (url == PRIVACY_POLICY_URL) return url
+    if (url == NEC2_URL || url == OpenNec.SOURCE) return url
     if (url in guideExampleUrls) return url
     return when (url) {
         YAGI_SCALING_URL, YAGI_SCALING_BOOK, BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url

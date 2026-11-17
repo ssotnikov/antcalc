@@ -31,6 +31,9 @@
     <string name="ys_factor">Коэффициент масштаба %1$s</string>
     <string name="ys_element">Элемент</string>
     <string name="ys_delta">Изменение длины</string>
+    <string name="ys_frequency_length">Длина после переноса частоты</string>
+    <string name="ys_diameter_delta">Поправка на диаметр</string>
+    <string name="ys_total_delta">Полное изменение длины</string>
     <string name="ys_table_unit">Размеры в %1$s</string>
     <string name="ys_estimate">Поправка даёт оценку для прямых круглых элементов без учёта траверсы. При заметной смене диаметра, для длинной Яги или выше 144 МГц проверьте результат моделированием и измерениями.</string>
     <string name="ys_similarity">Перенос предполагает, что размеры крепления изменятся в той же пропорции.</string>

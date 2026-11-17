@@ -10,6 +10,7 @@ import local.antenna.calculator.core.layout.YagiScaling.Element
 import local.antenna.calculator.core.layout.YagiScaling.Geometry
 import local.antenna.calculator.core.layout.YagiScaling.Mode
 import local.antenna.calculator.core.units.LengthUnit
+import local.antenna.calculator.nec.OpenNec
 
 internal const val YAGI_SCALING_URL = "https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm"
 internal const val YAGI_SCALING_BOOK = "https://www.qsl.net/vu2msy/homebrew/Yagi_Design_Basics_by_DL6WU.pdf"
@@ -78,13 +79,17 @@ internal data class YagiScalingDraft(
             rows = rows.map { ScalingRow(convert(it.position), convert(it.length), convert(it.diameter), convert(it.target)) })
     }
 
-    fun snapshot(result: YagiScaling.Result): CalculationSnapshot {
+    fun snapshot(
+        result: YagiScaling.Result,
+        appliedLengths: List<Double>? = null,
+        necVersion: Int = OpenNec.VERSION_CODE,
+    ): CalculationSnapshot {
         fun values(rows: List<Element>) = rows.flatMapIndexed { i, row ->
             listOf(SnapshotValue("ys_pos_${i + 1}", row.position, SnapshotUnit.METERS),
                 SnapshotValue("ys_len_${i + 1}", row.length, SnapshotUnit.METERS),
                 SnapshotValue("ys_dia_${i + 1}", row.diameter, SnapshotUnit.METERS))
         }
-        return CalculationSnapshot(YagiScaling.MODEL, 1, buildList {
+        return CalculationSnapshot(YagiScaling.MODEL, if (appliedLengths == null) 1 else 2, buildList {
             add(SnapshotValue("ys_source", requireNotNull(sourceHz).toDouble(), SnapshotUnit.HERTZ))
             add(SnapshotValue("frequency", requireNotNull(targetHz).toDouble(), SnapshotUnit.HERTZ))
             add(SnapshotValue("ys_mode", mode.ordinal.toDouble(), SnapshotUnit.FACTOR))
@@ -95,7 +100,15 @@ internal data class YagiScalingDraft(
         }, buildList {
             add(SnapshotValue("ys_factor", result.factor, SnapshotUnit.FACTOR))
             result.feedGap?.let { add(SnapshotValue("ys_gap", it, SnapshotUnit.METERS)) }
-            addAll(values(result.elements))
+            addAll(values(if (appliedLengths == null) result.elements else result.elements.mapIndexed { i, element ->
+                element.copy(length = appliedLengths[i])
+            }))
+            if (appliedLengths != null) {
+                add(SnapshotValue("ys_nec_version", necVersion.toDouble(), SnapshotUnit.FACTOR))
+                result.elements.forEachIndexed { i, element ->
+                    add(SnapshotValue("ys_analytic_len_${i + 1}", element.length, SnapshotUnit.METERS))
+                }
+            }
         })
     }
 
@@ -114,7 +127,7 @@ internal data class YagiScalingDraft(
             rows = listOf(ScalingRow("0", "1040"), ScalingRow("215", "970"), ScalingRow("415", "945"), ScalingRow("810", "908")))
 
         fun restore(snapshot: CalculationSnapshot): YagiScalingDraft? {
-            if (snapshot.model != YagiScaling.MODEL || snapshot.revision != 1) return null
+            if (snapshot.model != YagiScaling.MODEL || snapshot.revision !in 1..2) return null
             val inputs = snapshot.inputs.associateBy { it.key }
             val outputs = snapshot.outputs.associateBy { it.key }
             fun Map<String, SnapshotValue>.value(key: String, unit: SnapshotUnit) =
@@ -132,9 +145,26 @@ internal data class YagiScalingDraft(
                 ?: LengthUnit.MILLIMETERS
             val draft = YagiScalingDraft(mode, geometry, MHz("ys_source") ?: return null, MHz("frequency") ?: return null,
                 gap = mm(inputs, "ys_gap").orEmpty(), rows = rows).inUnit(unit)
-            return draft.takeIf { it.result() != null }
+            val result = draft.result() ?: return null
+            if (snapshot.revision == 2 && (draft.geometry != Geometry.FREE_ELEMENTS || draft.split ||
+                    snapshot.appliedNecVersion() == null || snapshot.appliedNecLengths(result) == null)) return null
+            return draft
         }
     }
+}
+
+internal fun CalculationSnapshot.appliedNecVersion(): Int? =
+    outputs.singleOrNull { it.key == "ys_nec_version" && it.unit == SnapshotUnit.FACTOR }
+        ?.value?.takeIf { it in 10000.0..999999.0 && it == it.toInt().toDouble() }?.toInt()
+
+internal fun CalculationSnapshot.appliedNecLengths(result: YagiScaling.Result): ArrayList<Double>? {
+    if (revision != 2) return null
+    val values = outputs.associateBy { it.key }
+    return ArrayList(result.elements.mapIndexed { index, element ->
+        val length = values["ys_len_${index + 1}"]?.takeIf { it.unit == SnapshotUnit.METERS }?.value ?: return null
+        if (length <= element.diameter || length / element.length !in .949999999..1.050000001) return null
+        length
+    })
 }
 
 internal fun scalingDecimal(raw: String): Double? = raw.trim().takeIf { it.length <= 32 && scalingNumber.matches(it) }
@@ -142,7 +172,7 @@ internal fun scalingDecimal(raw: String): Double? = raw.trim().takeIf { it.lengt
 
 private val scalingNumber = Regex("[0-9]+(?:[.,][0-9]+)?")
 
-private fun scalingFrequency(raw: String): Long? {
+internal fun scalingFrequency(raw: String): Long? {
     if (scalingDecimal(raw) == null) return null
     return runCatching { BigDecimal(raw.trim().replace(',', '.')).movePointRight(6).longValueExact() }.getOrNull()
         ?.takeIf { it in 100_000L..6_000_000_000L }

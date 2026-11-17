@@ -1,0 +1,8 @@
+CM AntCalc dipole reference
+CE
+GW 1 21 0 -0.5 0 0 0.5 0 0.004
+GE 0
+FR 0 3 0 0 144 1
+EX 0 1 11 0 1 0
+RP 0 1 73 1000 90 0 0 5
+EN

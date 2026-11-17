@@ -1,0 +1,3 @@
+• Yagi–Uda scaling: compare geometries in OpenNEC by impedance, SWR, gain and radiation pattern.
+• Optimize element lengths for SWR across a selected band. Apply, copy and save the selected lengths to a project.
+• The user guide now includes NEC examples and screenshots.

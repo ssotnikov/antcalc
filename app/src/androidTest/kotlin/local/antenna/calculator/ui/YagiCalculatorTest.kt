@@ -1,10 +1,16 @@
 package local.antenna.calculator.ui
 
+import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
+import android.app.Activity
+import android.app.Instrumentation
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import java.io.ByteArrayInputStream
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.layout.YagiDesign
@@ -88,6 +94,112 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         compose.onNodeWithTag("ys-example").performScrollTo().performClick()
         compose.onNodeWithTag("ys-missing-data").assertDoesNotExist()
         diagramElement.performScrollTo().assertIsDisplayed()
+    }
+
+    @Test fun scalingDiagramSelectsAnElementFromEitherGeometry() {
+        compose.setContent {
+            MaterialTheme { YagiScalingScreen(initial = null, onSave = null, onCopied = {}) }
+        }
+
+        compose.onNodeWithTag("ys-example").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-target").performScrollTo().performTextReplacement("290")
+        val diagram = compose.onNodeWithTag("ys-result-diagram").performScrollTo()
+        fun tapElement(positionMm: Double) {
+            diagram.performTouchInput {
+                val scale = minOf(width * .82 / 810, height * .82 / 1040)
+                click(Offset((width / 2f + (positionMm - 405) * scale).toFloat(), height / 2f))
+            }
+        }
+        // The original first director is close to the scaled second director.
+        tapElement(415.0)
+        compose.onNodeWithTag("ys-diagram-selection-2").assertIsSelected()
+        tapElement(405.0)
+        compose.onNodeWithTag("ys-diagram-selection-3").assertIsSelected()
+    }
+
+    @Test fun scalingShowsAndCopiesFrequencyAndDiameterSteps() {
+        start()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-yagi-scaling").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-example").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().performClick()
+        fun edit(tag: String, value: String) {
+            compose.onNodeWithTag(tag).performScrollTo().performTextReplacement(value)
+        }
+        edit("ys-source", "144,1")
+        edit("ys-target", "50,1")
+        edit("ys-diameter", "10")
+        edit("ys-length-2", "900")
+        edit("ys-target-d-2", "12")
+        compose.onNodeWithTag("ys-diagram-selection-2").performScrollTo().performClick()
+        for (line in listOf("Длина после переноса частоты", "Поправка на диаметр", "Полное изменение длины",
+            "2656,5", "2588,6", "+67,9", "+1756,5")) {
+            compose.onNodeWithText(line).performScrollTo().assertIsDisplayed()
+        }
+        compose.onNodeWithTag("ys-copy").performScrollTo().performClick()
+        compose.runOnIdle {
+            val clipboard = compose.activity.getSystemService(ClipboardManager::class.java)
+            val report = checkNotNull(clipboard.primaryClip).getItemAt(0).text.toString()
+            val columns = report.lineSequence().first { it.startsWith("Элемент |") }.split(" | ")
+            assertEquals(listOf("Длина после переноса частоты", "Поправка на диаметр", "Полное изменение длины"),
+                columns.takeLast(3))
+            val director = report.lineSequence().first { it.startsWith("D1 |") }.split(" | ")
+            assertEquals(listOf("2656,5", "12", "2588,6", "+67,9", "+1756,5"), director.drop(2))
+        }
+    }
+
+    @Test fun scalingCanCheckBothModelsAndRejectsAGapWithoutLosingTheResult() {
+        start()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-yagi-scaling").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-example").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().performClick()
+        compose.onNodeWithTag("opennec-expand").performScrollTo().performClick()
+        compose.onNodeWithTag("opennec-run").performScrollTo().performClick()
+        compose.waitUntil(15_000) { compose.onAllNodesWithTag("opennec-result").fetchSemanticsNodes().isNotEmpty() }
+        compose.onNodeWithText("Опорная геометрия").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Пересчитанная геометрия").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("opennec-low").performScrollTo().performTextReplacement("174")
+        compose.onNodeWithTag("opennec-result").assertDoesNotExist()
+        compose.onNodeWithTag("ys-gap").performScrollTo().performTextReplacement("10")
+        compose.onNodeWithText("Модель питания для вибратора с физическим зазором ещё не проверена.",
+            substring = true).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("ys-result-diagram").assertExists()
+    }
+
+    @Test fun openNecLicenseIsAvailableFromSettings() {
+        start()
+        settings()
+        compose.onNodeWithTag("settings-opennec-license").performScrollTo().performClick()
+        compose.onNodeWithTag("opennec-license").assertExists()
+        compose.onNodeWithText("Original NEC-2 source licence:", substring = true).assertExists()
+        back()
+        compose.onNodeWithTag("settings-scroll").assertExists()
+        compose.onNodeWithTag("language-ENGLISH").performScrollTo().performClick()
+        compose.onNodeWithTag("settings-opennec-license").assertTextContains("OpenNEC license")
+            .performScrollTo().performClick()
+        compose.onNodeWithText("Original NEC-2 source licence:", substring = true).assertExists()
+    }
+
+    @Test fun nec2SettingsBadgeOpensTheWebsite() {
+        start()
+        settings()
+        val requests = mutableListOf<String>()
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val monitor = object : Instrumentation.ActivityMonitor() {
+            override fun onStartActivity(intent: Intent): Instrumentation.ActivityResult? {
+                if (intent.action != Intent.ACTION_VIEW) return null
+                requests += intent.dataString.orEmpty()
+                return Instrumentation.ActivityResult(Activity.RESULT_CANCELED, null)
+            }
+        }
+        instrumentation.addMonitor(monitor)
+        try {
+            compose.onNodeWithTag("settings-nec2-website").performScrollTo().assertIsDisplayed().performClick()
+            compose.runOnIdle { assertEquals(listOf("https://www.nec2.org/"), requests) }
+        } finally {
+            instrumentation.removeMonitor(monitor)
+        }
     }
 
     @Test fun driverInputsProduceSeparateCutLengthsAndSurviveProjectExchange() {

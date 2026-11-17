@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="opennec_component">OpenNEC %1$s · Maury Markowitz · MIT</string>
+    <string name="opennec_license_link">OpenNEC license</string>
+    <string name="opennec_badge_link">NEC2 Engine. Open the NEC-2 website</string>
+    <string name="opennec_source">OpenNEC source code</string>
+    <string name="opennec_check">Check in NEC</string>
+    <string name="opennec_conditions">OpenNEC 2.4.1. Free space, perfectly conducting round elements, a voltage source at the driven element center and 50 Ω reference impedance. Forward gain is along the boom toward the directors. F/B compares 0° and 180°.</string>
+    <string name="opennec_mounted">NEC requires straight-element model dimensions. Mounted dimensions support proportional scaling.</string>
+    <string name="opennec_split">The feed model for a driven element with a physical gap is awaiting verification. Scaling remains available.</string>
+    <string name="opennec_unavailable">The OpenNEC engine is unavailable on this device.</string>
+    <string name="opennec_low">From, MHz</string>
+    <string name="opennec_high">To, MHz</string>
+    <string name="opennec_swr_limit">SWR threshold</string>
+    <string name="opennec_sampling">Grid: 21 frequencies. Segments per scaled element: %1$s</string>
+    <string name="opennec_reference_sampling">Segments per reference element: %1$s</string>
+    <string name="opennec_invalid_band">Enter increasing frequencies at least 20 Hz apart and an SWR threshold from 1 to 99.</string>
+    <string name="opennec_invalid_model">The dimensions or segment count are outside the NEC model limits.</string>
+    <string name="opennec_run">Calculate</string>
+    <string name="opennec_cancel">Cancel simulation</string>
+    <string name="opennec_cancelled">NEC simulation canceled.</string>
+    <string name="opennec_inputs_changed">Inputs changed. Run the simulation for the new inputs.</string>
+    <string name="opennec_failed">NEC could not solve this geometry.</string>
+    <string name="opennec_at_frequency">Metrics at %1$s MHz</string>
+    <string name="opennec_reference">Reference geometry</string>
+    <string name="opennec_adjusted">Scaled geometry</string>
+    <string name="opennec_impedance">Impedance · R %1$s Ω · X %2$s Ω</string>
+    <string name="opennec_metrics">SWR %1$s · gain %2$s dBi · F/B %3$s dB</string>
+    <string name="opennec_band_result">Sampled ranges at SWR ≤ %1$s · %2$s MHz</string>
+    <string name="opennec_no_band">No sampled points in the band meet the SWR threshold.</string>
+    <string name="opennec_swr_plot">SWR by frequency</string>
+    <string name="opennec_azimuth_plot">Azimuth pattern in the element plane · 40 dB below the common peak</string>
+    <string name="opennec_plot_legend">Gray line shows the reference geometry. The accent line shows the scaled geometry.</string>
+    <string name="opennec_optimize">Optimize element lengths for SWR</string>
+    <string name="opennec_proposed">Proposed geometry</string>
+    <string name="opennec_goal_reached">Goal reached on the grid. Maximum SWR %1$s.</string>
+    <string name="opennec_goal_missed">Best tested candidate. Goal missed, maximum SWR %1$s.</string>
+    <string name="opennec_length_proposal">%1$s · %2$s → %3$s mm</string>
+    <string name="opennec_optimization_legend">Gray line shows the calculated geometry. The accent line shows the NEC proposal.</string>
+    <string name="opennec_apply">Apply lengths</string>
+    <string name="opennec_applied">Lengths applied from OpenNEC %1$s</string>
+    <string name="opennec_applied_length">Applied length</string>
+    <string name="opennec_applied_delta">Change from NEC</string>
+    <string name="opennec_analytic_length">Calculated length</string>
+    <string name="opennec_version">OpenNEC version</string>
+    <string name="opennec_reset_applied">Restore calculated lengths</string>
+</resources>

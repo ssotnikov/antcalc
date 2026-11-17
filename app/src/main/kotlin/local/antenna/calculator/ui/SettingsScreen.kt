@@ -1,9 +1,11 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -20,13 +22,21 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.BuildConfig
 import local.antenna.calculator.R
 import local.antenna.calculator.state.*
 
 @Composable
-internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) -> Unit, onAbout: () -> Unit) {
+internal fun SettingsScreen(
+    state: CalculatorUiState,
+    onEvent: (CalculatorEvent) -> Unit,
+    onAbout: () -> Unit,
+    onOpenNecLicense: () -> Unit,
+) {
     val settings = state.draft.settings
     val context = LocalContext.current
     val website = stringResource(R.string.author_website_url)
@@ -81,6 +91,12 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                     }
                 }
                 Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Nec2EngineBadge { openSourceWithFeedback(context, NEC2_URL) }
+                    TextButton(onClick = onOpenNecLicense, modifier = Modifier.testTag("settings-opennec-license")) {
+                        Text(stringResource(R.string.opennec_license_link))
+                    }
+                }
                 HorizontalDivider()
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -113,6 +129,26 @@ internal fun SettingsScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                     .clickable(role = Role.Button) { openSourceWithFeedback(context, LIZAALERT_URL) }
                     .testTag("lizaalert-banner"),
             )
+        }
+    }
+}
+
+@Composable
+private fun Nec2EngineBadge(onClick: () -> Unit) {
+    val description = stringResource(R.string.opennec_badge_link)
+    Box(
+        modifier = Modifier.heightIn(min = 48.dp)
+            .testTag("settings-nec2-website")
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = description }
+            .padding(vertical = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(Modifier.clip(RoundedCornerShape(4.dp)).clearAndSetSemantics {}) {
+            Text("NEC2", Modifier.background(Color(0xFF4F5356)).padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White, style = MaterialTheme.typography.labelLarge)
+            Text("Engine", Modifier.background(Color(0xFFE86C29)).padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color(0xFF1A100B), style = MaterialTheme.typography.labelLarge)
         }
     }
 }

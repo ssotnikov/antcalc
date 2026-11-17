@@ -31,6 +31,9 @@
     <string name="ys_factor">Scale factor %1$s</string>
     <string name="ys_element">Element</string>
     <string name="ys_delta">Change in length</string>
+    <string name="ys_frequency_length">Length after frequency scaling</string>
+    <string name="ys_diameter_delta">Diameter correction</string>
+    <string name="ys_total_delta">Total change in length</string>
     <string name="ys_table_unit">Dimensions in %1$s</string>
     <string name="ys_estimate">The diameter correction estimates the dimensions of straight round elements without boom correction. For a large diameter change, a long Yagi or frequencies above 144 MHz, verify by modelling and measurement.</string>
     <string name="ys_similarity">This scaling assumes the mounting geometry changes in the same proportion.</string>

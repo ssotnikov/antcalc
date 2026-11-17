@@ -12,6 +12,12 @@ JDK 21, Android SDK platform 37 and Build Tools 36.0.0 are required. Set
 The sdkmanager package is `platforms;android-37.0`; the project's compileSdk
 remains 37.
 
+Для OpenNEC установите пакеты Android SDK `ndk;28.2.13676358` и `cmake;3.22.1`.
+Исходники ядра входят в репозиторий и собираются без загрузки библиотек во время сборки.
+
+OpenNEC requires Android SDK packages `ndk;28.2.13676358` and `cmake;3.22.1`.
+The engine source is included in the repository and builds without downloading native libraries.
+
 ## Маршруты сборки и выпуска / Build and release paths
 
 | Цель / Goal | Команда и артефакты / Entry point and artifacts | Проверки / Checks |

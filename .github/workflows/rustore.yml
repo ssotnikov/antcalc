@@ -73,7 +73,7 @@ jobs:
         run: |
           python -m venv "$RUNNER_TEMP/rustore-venv"
           "$RUNNER_TEMP/rustore-venv/bin/python" -m pip install --require-hashes --only-binary=:all: -r tooling/scripts/rustore-requirements.txt
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.0.0"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "build-tools;36.0.0" "ndk;28.2.13676358" "cmake;3.22.1"
       - name: Verify public release, freeze listing and restore an owned checkpoint
         env:
           GH_TOKEN: ${{ github.token }}

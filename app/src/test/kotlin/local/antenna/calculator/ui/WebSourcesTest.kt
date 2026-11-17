@@ -1,9 +1,17 @@
 package local.antenna.calculator.ui
 
+import local.antenna.calculator.nec.OpenNec
 import org.junit.Assert.*
 import org.junit.Test
 
 class WebSourcesTest {
+    @Test fun necLinksPermitOnlyTheApprovedAddresses() {
+        assertEquals("https://www.nec2.org/", validatedSourceAddress(NEC2_URL))
+        assertEquals(OpenNec.SOURCE, validatedSourceAddress(OpenNec.SOURCE))
+        assertNull(validatedSourceAddress("https://www.nec2.org/other"))
+        assertNull(validatedSourceAddress("http://www.nec2.org/"))
+    }
+
     @Test fun moxonAuthorLinkUsesOnlyTheVerifiedPage() {
         val url = "https://dx-antennas.com/wire-antennas/2el-moxon/"
         assertEquals(url, MoxonSource.CBWIRE.url)

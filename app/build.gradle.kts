@@ -15,13 +15,21 @@ android {
     namespace = "local.antenna.calculator"
     compileSdk = 37
     buildToolsVersion = "36.0.0"
+    ndkVersion = "28.2.13676358"
+
+    externalNativeBuild {
+        cmake {
+            path = file("src/main/cpp/CMakeLists.txt")
+            version = "3.22.1"
+        }
+    }
 
     defaultConfig {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 128
-        versionName = "1.36.1"
+        versionCode = 129
+        versionName = "1.37.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -78,7 +86,11 @@ tasks.register("writeReleaseDependencyInventory") {
         val modules = configurations.getByName(classpath).incoming.resolutionResult.allComponents
             .mapNotNull { it.id as? org.gradle.api.artifacts.component.ModuleComponentIdentifier }
             .map { "${it.group}:${it.module}:${it.version}" }.sorted()
-        output.get().asFile.apply { parentFile.mkdirs(); writeText(modules.joinToString("\n", postfix = "\n")) }
+        val nativeComponents = listOf("OpenNEC:2.4.1 (MIT, c9ee90bb7fa49bed7302f6b7ba1208cad6a69415)")
+        output.get().asFile.apply {
+            parentFile.mkdirs()
+            writeText((modules + nativeComponents).sorted().joinToString("\n", postfix = "\n"))
+        }
     }
 }
 

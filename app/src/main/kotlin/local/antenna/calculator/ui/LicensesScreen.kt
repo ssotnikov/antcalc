@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -20,6 +21,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.TrapDipole.Profile
+import local.antenna.calculator.nec.OpenNec
 
 private data class CreditedPublication(val title: Int, val url: String)
 private data class PublicationTerms(val description: Int, val url: String)
@@ -206,6 +208,7 @@ internal fun LicensesScreen() {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         HelpText(R.string.licenses_mit)
+        OpenNecLicense()
         HelpText(R.string.licenses_intro)
         publicationCredits.forEach { PublicationCreditCard(it) }
         MoxonSource.entries.groupBy { it.author }.forEach { (author, sources) ->
@@ -250,5 +253,24 @@ internal fun LicensesScreen() {
         HelpText(R.string.trap_rights)
         TrapPublicationLinks()
         HelpText(R.string.licenses_rights)
+    }
+}
+
+@Composable
+private fun OpenNecLicense() {
+    val context = LocalContext.current
+    val license = remember(context) {
+        context.resources.openRawResource(R.raw.opennec_license).bufferedReader().use { it.readText() }
+    }
+    Column(Modifier.testTag("opennec-license"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            stringResource(R.string.opennec_component, OpenNec.VERSION),
+            Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleMedium,
+        )
+        TextButton(onClick = { openSourceWithFeedback(context, OpenNec.SOURCE) }) {
+            Text(stringResource(R.string.opennec_source))
+        }
+        SelectableText(license, style = MaterialTheme.typography.bodySmall)
     }
 }

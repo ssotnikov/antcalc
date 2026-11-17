@@ -42,13 +42,24 @@ class YagiScalingDraftTest {
     }
 
     @Test fun savedCombinedCalculationRestoresEffectiveDiametersAndGeometry() {
-        val draft = YagiScalingDraft.example().copy(mode = YagiScaling.Mode.BOTH, gap = "14,5")
+        val example = YagiScalingDraft.example()
+        val draft = example.copy(mode = YagiScaling.Mode.BOTH, gap = "14,5",
+            rows = example.rows.mapIndexed { index, row -> if (index == 2) row.copy(diameter = "10", target = "7") else row })
+            .inUnit(LengthUnit.CENTIMETERS)
         val result = requireNotNull(draft.result())
         val snapshot = draft.snapshot(result)
         val reopened = requireNotNull(YagiScalingDraft.restore(snapshot))
 
         assertEquals(draft.mode, reopened.mode)
+        assertEquals(draft.unit, reopened.unit)
+        assertEquals(draft.geometry, reopened.geometry)
+        assertEquals(draft.sourceHz, reopened.sourceHz)
+        assertEquals(draft.targetHz, reopened.targetHz)
         assertEquals(draft.enteredGap!!, reopened.enteredGap!!, 1e-12)
+        assertEquals(0.007, result.elements[2].diameter, 1e-12)
+        assertEquals(0.970 * result.factor, result.elements[1].length, 1e-12)
+        assertEquals(0.008 * result.factor, result.elements[1].diameter, 1e-12)
+        assertEquals(0.0145 * result.factor, result.feedGap!!, 1e-12)
         val newResult = requireNotNull(reopened.result())
         assertEquals(result.factor, newResult.factor, 1e-12)
         result.elements.zip(newResult.elements).forEach { (before, after) ->
@@ -65,5 +76,24 @@ class YagiScalingDraftTest {
         assertEquals(millimetres.elements[1].length, metres.elements[1].length, 1e-12)
         assertNull(draft.copy(target = "400,0000001").result())
         assertNull(draft.copy(target = "0").result())
+    }
+
+    @Test fun necSnapshotRetainsOriginalFormulaAndAppliedGeometry() {
+        val draft = YagiScalingDraft.example().copy(mode = YagiScaling.Mode.BOTH)
+        val analytic = checkNotNull(draft.result())
+        val lengths = analytic.elements.map { it.length * 1.02 }
+        val saved = draft.snapshot(analytic, lengths)
+        assertEquals(2, saved.revision)
+        assertEquals(20401, saved.appliedNecVersion())
+        val reopened = checkNotNull(YagiScalingDraft.restore(saved))
+        val restored = checkNotNull(reopened.result())
+        assertEquals(lengths, saved.appliedNecLengths(restored))
+        analytic.elements.zip(restored.elements).forEach { (expected, actual) ->
+            assertEquals(expected.length, actual.length, 1e-12)
+            assertEquals(expected.position, actual.position, 1e-12)
+            assertEquals(expected.diameter, actual.diameter, 1e-12)
+        }
+        val invalid = draft.snapshot(analytic, analytic.elements.map { it.length * 1.1 })
+        assertNull(YagiScalingDraft.restore(invalid))
     }
 }
