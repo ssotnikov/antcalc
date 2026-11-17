@@ -334,7 +334,7 @@ The app uses technical dimensions and formulas. See the original publications fo
 
 ### Acknowledgements
 
-- Thanks to **R3UDK** for writing a practical guide to building a Yagi–Uda antenna and for supporting.
+- Thanks to **R3UDK** for sharing his practical guide to building a Yagi–Uda antenna and for allowing us to use its materials.
 - Thanks to **LizaAlert’s Radio Communications Group** for supporting the project.
 
 ### Contact
