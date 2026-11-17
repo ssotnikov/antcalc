@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -78,6 +79,7 @@ internal fun FeedlineScreen(
     onCopied: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val appName = stringResource(R.string.app_name)
     val catalog = remember(context) { CableCatalog.read(context) }
     val focus = LocalFocusManager.current
@@ -100,7 +102,7 @@ internal fun FeedlineScreen(
         StorageNotice(state, onEvent)
         fun watts(value: Double?) = value?.let {
             val shown = if (it > 0 && it < .01) "< " + number(context, .01, 2) else number(context, it, 2)
-            context.getString(R.string.feedline_watts, shown)
+            resources.getString(R.string.feedline_watts, shown)
         } ?: "—"
         TransmissionDiagram(TransmissionIllustration.POWER,
             stringResource(R.string.hero_power_in) + "\n" + watts(draft.watts()?.toDouble()),

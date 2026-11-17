@@ -87,6 +87,7 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
     val draft = state.draft.matching
     val result = draft.result()
     val context = LocalContext.current
+    val resources = LocalResources.current
     val focus = LocalFocusManager.current
     val appName = stringResource(R.string.app_name)
     var details by rememberSaveable { mutableStateOf(false) }
@@ -95,10 +96,10 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StorageNotice(state, onEvent)
         val known = draft.active.joinToString(" · ") { field ->
-            context.getString(field.label()) + " = " + (draft.number(field).value?.let { matchingNumber(context, it, 6) } ?: "—")
+            resources.getString(field.label()) + " = " + (draft.number(field).value?.let { matchingNumber(context, it, 6) } ?: "—")
         }
         val reflected = result?.let {
-            context.getString(R.string.hero_reflected_power, matchingRows(context, it).last().second)
+            resources.getString(R.string.hero_reflected_power, matchingRows(context, it).last().second)
         }
         TransmissionDiagram(TransmissionIllustration.REFLECTION, stringResource(R.string.hero_incident),
             stringResource(R.string.hero_reflected), listOfNotNull(known, reflected).joinToString("\n"),

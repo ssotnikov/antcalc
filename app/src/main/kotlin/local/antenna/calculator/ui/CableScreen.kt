@@ -97,6 +97,7 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
     val catalog = remember(context) { CableCatalog.read(context) }
     val profile = catalog.profile(draft.profileId)
     val result = draft.result(profile?.velocity)
+    val resources = LocalResources.current
     val appName = stringResource(R.string.app_name)
     val focus = LocalFocusManager.current
     var details by rememberSaveable { mutableStateOf(false) }
@@ -108,8 +109,8 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
         val velocity = if (draft.profileId == null) draft.value(CableField.VELOCITY)?.div(10_000.0)
             else profile?.velocity?.tenThousandths?.div(10_000.0)
         val freeWave = frequency?.let { 299_792_458.0 / it }
-        fun wavelength(value: Double?) = value?.let { context.getString(R.string.cable_value_unit,
-            cableNumber(context, BigDecimal.valueOf(it), 5), context.getString(LengthUnit.METERS.labelResource())) } ?: "—"
+        fun wavelength(value: Double?) = value?.let { resources.getString(R.string.cable_value_unit,
+            cableNumber(context, BigDecimal.valueOf(it), 5), resources.getString(LengthUnit.METERS.labelResource())) } ?: "—"
         TransmissionDiagram(TransmissionIllustration.WAVELENGTH, "λ₀\n" + wavelength(freeWave),
             stringResource(R.string.hero_cable_lambda) + "\n" + wavelength(velocity?.let { v -> freeWave?.times(v) }),
             null, velocity, R.string.hero_wave_legend)

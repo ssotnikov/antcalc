@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -51,6 +52,7 @@ internal fun YagiScalingScreen(
     onCopied: () -> Unit,
 ) {
     val context = LocalContext.current
+    val resources = LocalResources.current
     val loaded = remember(initial) { initial?.let(YagiScalingDraft::restore) }
     var draft by rememberSaveable(stateSaver = YagiScalingDraft.saver) { mutableStateOf(loaded ?: YagiScalingDraft()) }
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -193,22 +195,22 @@ internal fun YagiScalingScreen(
                 modifier = Modifier.fillMaxWidth().testTag("ys-save")) { Text(stringResource(R.string.ys_save)) }
             OutlinedButton({
                 val report = buildString {
-                    appendLine(context.getString(R.string.ys_title))
-                    appendLine(context.getString(R.string.ys_report_frequency, draft.source, (if (draft.mode == Mode.DIAMETER) draft.source else draft.target)))
-                    appendLine(context.getString(draft.mode.scalingLabel()))
-                    appendLine(context.getString(draft.geometry.scalingLabel()))
-                    appendLine(context.getString(R.string.ys_factor, factor))
-                    appendLine(context.getString(R.string.ys_table_unit, unitLabel))
+                    appendLine(resources.getString(R.string.ys_title))
+                    appendLine(resources.getString(R.string.ys_report_frequency, draft.source, (if (draft.mode == Mode.DIAMETER) draft.source else draft.target)))
+                    appendLine(resources.getString(draft.mode.scalingLabel()))
+                    appendLine(resources.getString(draft.geometry.scalingLabel()))
+                    appendLine(resources.getString(R.string.ys_factor, factor))
+                    appendLine(resources.getString(R.string.ys_table_unit, unitLabel))
                     appendLine(labels.joinToString(" | "))
                     rows.forEach { appendLine(it.joinToString(" | ")) }
                     gapText?.let { appendLine(it) }
                     appendLine(source)
-                    if (diameterMode) appendLine(context.getString(R.string.ys_estimate))
-                    if (draft.geometry == Geometry.MOUNTED) appendLine(context.getString(R.string.ys_similarity))
+                    if (diameterMode) appendLine(resources.getString(R.string.ys_estimate))
+                    if (draft.geometry == Geometry.MOUNTED) appendLine(resources.getString(R.string.ys_similarity))
                     append(YAGI_SCALING_URL)
                 }
                 val clipboard = context.getSystemService(ClipboardManager::class.java)
-                clipboard.setPrimaryClip(ClipData.newPlainText(context.getString(R.string.ys_title), report))
+                clipboard.setPrimaryClip(ClipData.newPlainText(resources.getString(R.string.ys_title), report))
                 onCopied()
             }, Modifier.fillMaxWidth().testTag("ys-copy")) { Text(stringResource(R.string.copy_result)) }
         }
