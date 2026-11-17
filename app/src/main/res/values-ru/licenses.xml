@@ -68,4 +68,7 @@
     <string name="licenses_halo_aerial_gamma">Гамма-согласующее устройство · схема и параметры</string>
     <string name="licenses_halo_ra3poy">Алексей (RA3POY)</string>
     <string name="licenses_halo_w2eey">W2EEY/1 · отчёт о сборке объёмной антенны на Си-Би</string>
+    <string name="licenses_ybn_dubus">YBN 2-5m · DUBUS 4/2012, рис. 17</string>
+    <string name="licenses_gtv_bending">Гибка вибраторов GTV и калькулятор раскроя</string>
+    <string name="licenses_dk7zb_duoband_article">Двухдиапазонные Яги · FUNKAMATEUR 6/2008, с. 638–639</string>
 </resources>

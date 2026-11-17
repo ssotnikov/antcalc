@@ -25,7 +25,6 @@
     <string name="ys_d">Диаметр</string>
     <string name="ys_target_d">Новый диаметр</string>
     <string name="ys_add">Добавить директор</string>
-    <string name="ys_results">Было → Стало</string>
     <string name="ys_mounted_error">Для поправки на диаметр нужны размеры прямых круглых элементов из модели.</string>
     <string name="ys_pending">Укажите допустимые частоты и размеры. Положения элементов вдоль траверсы должны возрастать от отражателя.</string>
     <string name="ys_invalid_saved">Этот расчёт нельзя восстановить в текущей версии. Сохранённые размеры доступны в записи проекта.</string>
@@ -55,7 +54,9 @@
     <string name="ys_effect_diameter">Частота и места крепления остаются прежними. Длины элементов пересчитываются под указанные новые диаметры.</string>
     <string name="ys_effect_both">Сначала исходная геометрия и диаметры масштабируются на новую частоту. Затем длины элементов уточняются под диаметры трубок, которые вы указали.</string>
     <string name="ys_scheme">Открыть схему антенны</string>
-    <string name="ys_all">Все элементы</string>
+    <string name="ys_result">Новые размеры</string>
+    <string name="ys_geometry_required">Введите полную длину отражателя и вибратора, а также расстояние от отражателя до вибратора. Новые размеры появятся ниже автоматически.</string>
+    <string name="ys_all">Размеры всех элементов</string>
     <string name="ys_reflector">Отражатель</string>
     <string name="ys_driven">Вибратор</string>
     <string name="ys_director">Директор %1$d</string>

@@ -111,7 +111,8 @@ internal fun initialAntennaView(id: String): AntennaView = when {
     id.startsWith("v-") || id.startsWith("loop-") -> AntennaView(-10f, 9f)
     id.startsWith("jpole") || id.startsWith("slim-") -> AntennaView(-14f, 8f)
     id in setOf("moxon_cb_field", "moxon_cb_field_2") -> AntennaView(24f, 9f)
-    id in setOf("moxon_w1cdn", "moxon_baker_v", "moxon_ea2bd") -> AntennaView(-13f, 9f)
+    id == "moxon_ea2bd" -> AntennaView(74f, 9f)
+    id in setOf("moxon_w1cdn", "moxon_baker_v") -> AntennaView(-13f, 9f)
     id.startsWith("moxon") -> AntennaView(-13f, 69f, -9f)
     else -> AntennaView(-14f, 18f)
 }

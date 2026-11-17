@@ -1,0 +1,1 @@
+Set the feed gap for 70 cm DK7ZB Yagis and enter separate bend dimensions and gaps for the H and V planes of GTV xpol and SAT. Projects retain inputs and cut lengths. Updated the YBN, Duoband and GTV/DATV cut lists and the EA2BD Moxon model.

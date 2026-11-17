@@ -59,9 +59,9 @@ internal fun YagiScalingScreen(
     val resources = LocalResources.current
     val loaded = remember(initial) { initial?.let(YagiScalingDraft::restore) }
     var draft by rememberSaveable(stateSaver = YagiScalingDraft.saver) { mutableStateOf(loaded ?: YagiScalingDraft()) }
-    var expanded by rememberSaveable { mutableStateOf(false) }
     var selected by rememberSaveable { mutableIntStateOf(1) }
     val result = remember(draft) { draft.result() }
+    val geometryIncomplete = draft.rows.any { it.position.isBlank() || it.length.isBlank() }
     val diameterMode = draft.mode != Mode.FREQUENCY
     val unitLabel = stringResource(draft.unit.labelResource())
     val before = if (result == null) emptyList() else draft.rows.mapIndexed { index, row -> requireNotNull(draft.element(row, index)) }
@@ -90,15 +90,23 @@ internal fun YagiScalingScreen(
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
-            Text(
-                stringResource(when (draft.mode) {
-                    Mode.FREQUENCY -> R.string.ys_effect_frequency
-                    Mode.DIAMETER -> R.string.ys_effect_diameter
-                    Mode.BOTH -> R.string.ys_effect_both
-                }),
+            Column(
                 Modifier.fillMaxWidth().padding(12.dp),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    stringResource(when (draft.mode) {
+                        Mode.FREQUENCY -> R.string.ys_effect_frequency
+                        Mode.DIAMETER -> R.string.ys_effect_diameter
+                        Mode.BOTH -> R.string.ys_effect_both
+                    }),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                if (result == null) HelpText(
+                    if (draft.geometry == Geometry.MOUNTED && diameterMode) R.string.ys_mounted_error
+                    else R.string.ys_pending,
+                )
+            }
         }
         Text(stringResource(R.string.ys_source_parameters), style = MaterialTheme.typography.titleMedium)
         ScalingField(draft.source, if (draft.mode == Mode.DIAMETER) R.string.ys_working_hz else R.string.ys_source_hz,
@@ -118,55 +126,50 @@ internal fun YagiScalingScreen(
         }
         if (diameterMode) ScalingField(draft.targetDiameter, R.string.ys_common_target_d, "ys-target-diameter",
             Modifier.fillMaxWidth(), unitLabel) { draft = draft.copy(targetDiameter = it) }
-        TextButton({ draft = YagiScalingDraft.example().copy(mode = draft.mode) }, Modifier.testTag("ys-example")) {
-            Text(stringResource(R.string.ys_example))
-        }
-        TextButton({ expanded = !expanded }) {
-            Text(stringResource(R.string.ys_elements, draft.rows.size) + if (expanded) " ▴" else " ▾")
-        }
-        if (expanded) {
-            ChoicePicker(stringResource(R.string.ys_geometry), Geometry.entries, draft.geometry,
-                { stringResource(it.scalingLabel()) }, { draft = draft.copy(geometry = it) }, "ys-geometry")
-            ScalingField(draft.gap, R.string.ys_gap, "ys-gap", Modifier.fillMaxWidth(), unitLabel) { draft = draft.copy(gap = it) }
-            HelpText(R.string.ys_gap_help)
-            draft.rows.forEachIndexed { index, row ->
-                fun edit(next: ScalingRow) {
-                    draft = draft.copy(rows = draft.rows.toMutableList().also { it[index] = next })
-                }
-                OutlinedCard(Modifier.fillMaxWidth()) {
-                    Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween) {
-                            Text(scalingElementLabel(index), style = MaterialTheme.typography.titleMedium)
-                            if (index > 1) TextButton({
-                                draft = draft.copy(rows = draft.rows.filterIndexed { i, _ -> i != index })
-                            }) { Text(stringResource(R.string.ys_remove)) }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            ScalingField(row.position, R.string.ys_position, "ys-position-$index",
-                                Modifier.weight(1f), unitLabel, enabled = index > 0) { edit(row.copy(position = it)) }
-                            ScalingField(row.length, R.string.ys_length, "ys-length-$index",
-                                Modifier.weight(1f), unitLabel) { edit(row.copy(length = it)) }
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            ScalingField(row.diameter, R.string.ys_d, "ys-d-$index",
-                                Modifier.weight(1f), unitLabel) { edit(row.copy(diameter = it)) }
-                            if (diameterMode && !(index == 1 && draft.split)) {
-                                ScalingField(row.target, R.string.ys_target_d, "ys-target-d-$index",
-                                    Modifier.weight(1f), unitLabel) { edit(row.copy(target = it)) }
-                            }
+        Text(stringResource(R.string.ys_elements, draft.rows.size), style = MaterialTheme.typography.titleMedium)
+        if (geometryIncomplete) HelpText(R.string.ys_geometry_required)
+        ChoicePicker(stringResource(R.string.ys_geometry), Geometry.entries, draft.geometry,
+            { stringResource(it.scalingLabel()) }, { draft = draft.copy(geometry = it) }, "ys-geometry")
+        ScalingField(draft.gap, R.string.ys_gap, "ys-gap", Modifier.fillMaxWidth(), unitLabel) { draft = draft.copy(gap = it) }
+        HelpText(R.string.ys_gap_help)
+        draft.rows.forEachIndexed { index, row ->
+            fun edit(next: ScalingRow) {
+                draft = draft.copy(rows = draft.rows.toMutableList().also { it[index] = next })
+            }
+            OutlinedCard(Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(scalingElementLabel(index), style = MaterialTheme.typography.titleMedium)
+                        if (index > 1) TextButton({
+                            draft = draft.copy(rows = draft.rows.filterIndexed { i, _ -> i != index })
+                        }) { Text(stringResource(R.string.ys_remove)) }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ScalingField(row.position, R.string.ys_position, "ys-position-$index",
+                            Modifier.weight(1f), unitLabel, enabled = index > 0) { edit(row.copy(position = it)) }
+                        ScalingField(row.length, R.string.ys_length, "ys-length-$index",
+                            Modifier.weight(1f), unitLabel) { edit(row.copy(length = it)) }
+                    }
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ScalingField(row.diameter, R.string.ys_d, "ys-d-$index",
+                            Modifier.weight(1f), unitLabel) { edit(row.copy(diameter = it)) }
+                        if (diameterMode && !(index == 1 && draft.split)) {
+                            ScalingField(row.target, R.string.ys_target_d, "ys-target-d-$index",
+                                Modifier.weight(1f), unitLabel) { edit(row.copy(target = it)) }
                         }
                     }
                 }
             }
-            OutlinedButton({ draft = draft.copy(rows = draft.rows + ScalingRow("", "")) },
-                enabled = draft.rows.size < YagiScaling.MAX_ELEMENTS) { Text(stringResource(R.string.ys_add)) }
         }
-        HorizontalDivider()
-        Text(stringResource(R.string.ys_results), style = MaterialTheme.typography.titleMedium)
-        if (result == null) {
-            HelpText(if (draft.geometry == Geometry.MOUNTED && diameterMode) R.string.ys_mounted_error else R.string.ys_pending)
-        } else {
+        OutlinedButton({ draft = draft.copy(rows = draft.rows + ScalingRow("", "")) },
+            enabled = draft.rows.size < YagiScaling.MAX_ELEMENTS) { Text(stringResource(R.string.ys_add)) }
+        TextButton({ draft = YagiScalingDraft.example().copy(mode = draft.mode) }, Modifier.testTag("ys-example")) {
+            Text(stringResource(R.string.ys_example))
+        }
+        if (result != null) {
+            HorizontalDivider()
+            Text(stringResource(R.string.ys_result), style = MaterialTheme.typography.titleMedium)
             val factor = matchingNumber(context, result.factor, 6)
             val rows = result.elements.mapIndexed { index, element ->
                 val delta = element.length - before[index].length

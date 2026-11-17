@@ -17,6 +17,24 @@ class PublishedAntennaGeometryTest {
         assertTrue(coupled.first.z > rods.first().first.z)
     }
 
+    @Test fun portableEa2bdShowsTheMastAndGuysInItsInitialView() {
+        val profile = moxonProfiles.single { it.id == "moxon_ea2bd" }
+        val rods = checkNotNull(moxonPublishedVector(profile)).rods
+        val mast = rods.single { it.material == 1 }
+        val guys = rods.filter { it.material == 2 }
+        assertEquals(4, guys.size)
+        assertEquals(2, guys.count { it.first == mast.first })
+        assertEquals(2, guys.count { it.first.y < 0f && it.last.y < it.first.y })
+        val supports = rods.filter { it.material == 3 && it.first.x < 0f }
+        val top = supports.maxBy { it.first.y }
+        assertTrue(mast.first.y > top.first.y)
+        assertTrue(mast.last.y < supports.minOf { it.first.y })
+
+        val project = initialAntennaView(profile.id).projection()
+        val width = kotlin.math.abs(project(top.first).x - project(top.last).x)
+        assertTrue(width > (top.last.z - top.first.z) * 0.9f)
+    }
+
     @Test fun stockRetainsBothTubeSizesAndCutQuantities() {
         val baker = moxonProfiles.single { it.view == MoxonView.STEPPED_H }.stock
         assertEquals(listOf("7/8″", "1″"), baker.takeLast(2).map { it.name })

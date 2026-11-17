@@ -7,6 +7,21 @@ import org.junit.Assert.assertNull
 import org.junit.Test
 
 class YagiScalingDraftTest {
+    @Test fun frequenciesAndDiameterNeedElementLengthsAndSpacing() {
+        val draft = YagiScalingDraft(source = "145", target = "152", diameter = "6")
+        assertNull(draft.result())
+        val reflector = ScalingRow("0", "1040")
+        assertNull(draft.copy(rows = listOf(reflector, ScalingRow("", "970"))).result())
+
+        val complete = draft.copy(rows = listOf(reflector, ScalingRow("215", "970")))
+        val result = requireNotNull(complete.result())
+        val factor = 145.0 / 152.0
+        assertEquals(1.040 * factor, result.elements[0].length, 1e-12)
+        assertEquals(0.970 * factor, result.elements[1].length, 1e-12)
+        assertEquals(0.215 * factor, result.elements[1].position, 1e-12)
+        assertEquals(0.006 * factor, result.elements[1].diameter, 1e-12)
+    }
+
     @Test fun savedCombinedCalculationRestoresEffectiveDiametersAndGeometry() {
         val draft = YagiScalingDraft.example().copy(mode = YagiScaling.Mode.BOTH, gap = "14,5")
         val result = requireNotNull(draft.result())

@@ -92,7 +92,8 @@ private fun ReferenceCard(material: TechnicalReference) {
     val context = LocalContext.current
     val url = stringResource(material.address)
     val language = stringResource(
-        if (material.language == AppLanguage.RUSSIAN) R.string.references_language_ru else R.string.references_language_en,
+        material.sourceLanguageLabel ?: if (material.language == AppLanguage.RUSSIAN)
+            R.string.references_language_ru else R.string.references_language_en,
     )
     OutlinedCard(
         onClick = { openSourceWithFeedback(context, url) },

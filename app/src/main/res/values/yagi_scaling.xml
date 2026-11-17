@@ -25,7 +25,6 @@
     <string name="ys_d">Diameter</string>
     <string name="ys_target_d">New diameter</string>
     <string name="ys_add">Add director</string>
-    <string name="ys_results">Before and after</string>
     <string name="ys_mounted_error">Diameter correction requires model dimensions for straight round elements.</string>
     <string name="ys_pending">Enter valid frequencies and dimensions. Positions along the boom must increase from the reflector.</string>
     <string name="ys_invalid_saved">This saved calculation cannot be reopened in this version. Its recorded dimensions remain in the project.</string>
@@ -55,7 +54,9 @@
     <string name="ys_effect_diameter">At the original frequency, changing tubing diameter adjusts element lengths. Mounting distances stay the same.</string>
     <string name="ys_effect_both">The app first scales the original geometry and diameters to the new frequency. It then recalculates element lengths for the tubing diameters you specify.</string>
     <string name="ys_scheme">Open antenna diagram</string>
-    <string name="ys_all">All elements</string>
+    <string name="ys_result">New dimensions</string>
+    <string name="ys_geometry_required">Enter the full lengths of the reflector and driven element, and the distance between them. The new dimensions will appear below automatically.</string>
+    <string name="ys_all">Dimensions for all elements</string>
     <string name="ys_reflector">Reflector</string>
     <string name="ys_driven">Driven element</string>
     <string name="ys_director">Director %1$d</string>

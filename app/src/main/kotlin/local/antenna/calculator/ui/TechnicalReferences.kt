@@ -13,6 +13,7 @@ internal data class TechnicalReference(
     val section: String? = null,
     val subsection: Int? = null,
     val interfaceLanguageOnly: Boolean = false,
+    val sourceLanguageLabel: Int? = null,
 )
 
 internal data class ReferenceGroup(
@@ -30,6 +31,13 @@ internal val referenceGroups = listOf(
             "DL6WU · G3SEK", AppLanguage.ENGLISH),
         TechnicalReference("yagi-dg7ybn", R.string.source_yagi_dg7ybn, R.string.source_yagi_dg7ybn_description,
             R.string.source_yagi_dg7ybn_url, "DG7YBN", AppLanguage.ENGLISH),
+        TechnicalReference("dk7zb-pvc", R.string.licenses_work_3_4, R.string.references_dk7zb_pvc,
+            R.string.reference_dk7zb_pvc_url, "DK7ZB", AppLanguage.ENGLISH),
+        TechnicalReference("dk7zb-five-elements", R.string.licenses_work_3_2, R.string.references_dk7zb_five,
+            R.string.reference_dk7zb_five_url, "DK7ZB", AppLanguage.ENGLISH),
+        TechnicalReference("nuxcom-dk7zb", R.string.licenses_nuxcom_dk7zb, R.string.references_nuxcom_dk7zb,
+            R.string.reference_nuxcom_dk7zb_url, "NUXCOM", AppLanguage.ENGLISH,
+            sourceLanguageLabel = R.string.references_language_de),
     )),
     ReferenceGroup(R.string.slim_jim_title, listOf(
         TechnicalReference("sj-wire-ru", R.string.slim_jim_wire_ru_title, R.string.slim_jim_wire_ru_summary,

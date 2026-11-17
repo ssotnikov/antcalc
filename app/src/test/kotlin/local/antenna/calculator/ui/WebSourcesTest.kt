@@ -4,6 +4,13 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class WebSourcesTest {
+    @Test fun moxonAuthorLinkUsesOnlyTheVerifiedPage() {
+        val url = "https://dx-antennas.com/wire-antennas/2el-moxon/"
+        assertEquals(url, MoxonSource.CBWIRE.url)
+        assertEquals(url, validatedSourceAddress(url))
+        assertNull(validatedSourceAddress("https://dx-antennas.com/wire-antennas/other/"))
+    }
+
     @Test fun approvedHttpsSourcesAreAccepted() {
         for (url in listOf(
             "https://physics.nist.gov/cuu/Constants/Value/c.html",
@@ -64,6 +71,7 @@ class WebSourcesTest {
         assertEquals(7, profiles.take(7).map { it.image }.distinct().size)
         for (profile in profiles) {
             assertEquals(profile.original, validatedSourceAddress(profile.original))
+            profile.drivenCutSource?.let { assertEquals(it, validatedSourceAddress(it)) }
             profile.terms?.let { assertEquals(it, validatedSourceAddress(it)) }
             assertTrue(profile.hz.zipWithNext().all { (first, second) -> first < second })
         }

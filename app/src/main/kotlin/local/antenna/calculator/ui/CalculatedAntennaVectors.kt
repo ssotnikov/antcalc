@@ -125,11 +125,29 @@ internal fun moxonPublishedVector(profile: MoxonProfile): AntennaVector? {
             point(y = -5, z = back - 957 * scale), 8f, 1)
         return base.copy(rods = base.rods + extra + boom)
     }
-    if (profile.view !in setOf(MoxonView.CB_PENNANT, MoxonView.CB_VERTICAL)) return null
+    if (profile.view !in setOf(MoxonView.CB_PENNANT, MoxonView.CB_VERTICAL, MoxonView.MAST_VERTICAL)) return null
     val base = moxonVector(model, includeMount = false)
     fun upright(p: AntennaPoint) = AntennaPoint(-p.y, p.x, p.z)
     val rods = base.rods.map { it.copy(first = upright(it.first), last = upright(it.last)) }
     val joints = base.joints.map { it.copy(point = upright(it.point)) }
+    if (profile.view == MoxonView.MAST_VERTICAL) {
+        val halfHeight = model.widthMm * scale / 2
+        val mastTop = point(x = -5, y = halfHeight + 23)
+        val mastFoot = point(x = -5, y = -halfHeight - 44)
+        val mast = AntennaRod(mastTop, mastFoot, 7f, 1)
+        val supports = listOf(-halfHeight, halfHeight).map { height ->
+            AntennaRod(point(x = -3, y = height, z = front - 7),
+                point(x = -3, y = height, z = back + 7), 4f, 3)
+        }
+        val guys = listOf(front, back).flatMap { edge ->
+            listOf(
+                AntennaRod(mastTop, point(x = -3, y = halfHeight, z = edge), 2f, 2),
+                AntennaRod(point(x = -5, y = -30), point(y = -halfHeight - 38, z = edge * 1.75f), 2f, 2),
+            )
+        }
+        val cross = AntennaJoint(point(x = -5, y = halfHeight), 9f, 1)
+        return AntennaVector(rods + mast + supports + guys, joints + cross)
+    }
     val mast = point(x = -10, z = front + 650 * scale)
     val supportLength = 1470 * scale
     val halfHeight = model.widthMm * scale / 2

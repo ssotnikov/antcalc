@@ -2,6 +2,7 @@ package local.antenna.calculator.ui
 
 import android.content.Context
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.io.ByteArrayInputStream
@@ -73,6 +74,59 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         }
     }
 
+    @Test fun driverInputsProduceSeparateCutLengthsAndSurviveProjectExchange() {
+        val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
+        val previous = prefs.all
+        prefs.edit().clear().putString("profile", YagiDesign.DK50.id).commit()
+        try {
+            lateinit var pending: PendingProjectCalculation
+            compose.setContent {
+                MaterialTheme {
+                    YagiCalculatorScreen(onGuide = {}, onMeasurements = null,
+                        onSave = { snapshot, note -> pending = PendingProjectCalculation(snapshot, note = note) },
+                        onCopied = {})
+                }
+            }
+            val save = compose.onNodeWithTag("yagi-save")
+            fun input(index: Int, text: String) {
+                compose.onNodeWithTag("yagi-driver-$index").performScrollTo().performTextReplacement(text)
+            }
+            input(0, "101")
+            save.assertIsNotEnabled()
+            input(0, "10")
+            save.performScrollTo().performClick()
+            compose.runOnIdle {
+                assertEquals(0.1565, pending.snapshot.outputs.single { it.key == "yagi_driven_half_blank" }.value, 1e-9)
+                assertEquals(0.010, pending.snapshot.inputs.single { it.key == "yagi_driven_gap" }.value, 1e-9)
+            }
+            compose.onNodeWithTag("yagi-profile").performScrollTo().performClick()
+            compose.onNodeWithTag("yagi-profile-gtv_sat").performScrollTo().performClick()
+            listOf("10", "103", "83").forEachIndexed(::input)
+            save.performScrollTo().performClick()
+            compose.runOnIdle {
+                assertEquals(listOf("YAGI_PARTIAL_CUT_LIST"), pending.snapshot.warnings)
+                assertEquals(0.4822, pending.snapshot.outputs.single { it.key == "yagi_hdriven_half_blank" }.value, 1e-9)
+                assertEquals(false, pending.snapshot.outputs.any { it.key == "yagi_vdriven_half_blank" })
+            }
+            listOf("12", "100", "82").forEachIndexed { index, text -> input(index + 3, text) }
+            save.performScrollTo().performClick()
+            compose.runOnIdle {
+                val type = AntennaType.YAGI
+                val project = pending.newProject(type, "SAT").copy(records = listOf(pending.record(type, "Cut list")))
+                val restored = JournalJson.decodeTransfer(ByteArrayInputStream(JournalJson.encodeTransfer(project)))
+                assertEquals(project, restored)
+                val snapshot = checkNotNull(restored.records.single().calculation)
+                assertEquals(emptyList<String>(), snapshot.warnings)
+                assertEquals(0.012, snapshot.inputs.single { it.key == "yagi_vdriven_gap" }.value, 1e-9)
+                assertEquals(0.4824, snapshot.outputs.single { it.key == "yagi_vdriven_half_blank" }.value, 1e-9)
+            }
+        } finally {
+            val editor = prefs.edit().clear()
+            previous.forEach { (key, value) -> if (value is String) editor.putString(key, value) }
+            editor.commit()
+        }
+    }
+
     @Test fun profileCutListsSurviveJsonAndDraftsStaySeparate() {
         val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
         val original = prefs.all
@@ -124,8 +178,40 @@ class YagiCalculatorTest : CalculatorUiFixture() {
                     assertEquals(project, restored)
                     val snapshot = checkNotNull(restored.records.single().calculation)
                     assertEquals(design.model, snapshot.model)
-                    assertEquals(listOf("YAGI_PARTIAL_CUT_LIST"), snapshot.warnings)
+                    val expectedHalf = when (design) {
+                        YagiDesign.YBN -> 492.95
+                        YagiDesign.DUO -> 464.0
+                        YagiDesign.GTV -> 490.2
+                        YagiDesign.GTV_DATV -> 481.7
+                        YagiDesign.GTV_DATV_THROUGH -> 482.7
+                        else -> null
+                    }
+                    val half = snapshot.outputs.singleOrNull { it.key == "yagi_driven_half_blank" }
+                    val gap = snapshot.outputs.singleOrNull { it.key == "yagi_driven_gap" }
+                    if (expectedHalf == null) {
+                        assertEquals(listOf("YAGI_PARTIAL_CUT_LIST"), snapshot.warnings)
+                        assertEquals(null, half)
+                        assertEquals(null, gap)
+                    } else {
+                        assertEquals(2, snapshot.revision)
+                        assertEquals(emptyList<String>(), snapshot.warnings)
+                        assertEquals(expectedHalf, checkNotNull(half).value * 1000, 1e-9)
+                        assertEquals(10.0, checkNotNull(gap).value * 1000, 1e-9)
+                    }
                     assertEquals(false, snapshot.outputs.any { it.key == "yagi_de_blank" })
+                    if (design.verticalElements.isNotEmpty()) {
+                        assertEquals(design.elements.size + design.verticalElements.size,
+                            snapshot.inputs.count { it.key.endsWith("_table") })
+                        val h = snapshot.inputs.single { it.key == "yagi_de_table" }
+                        val v = snapshot.inputs.single { it.key == "yagi_vde_table" }
+                        assertEquals(design.elements[1].overallMm, h.value * 1000, 1e-9)
+                        assertEquals(design.verticalElements[1].overallMm, v.value * 1000, 1e-9)
+                        assertEquals(false, snapshot.outputs.any { it.key == "yagi_vde_blank" })
+                        if (design == YagiDesign.GTV_SAT) {
+                            assertEquals(956.23, h.value * 1000, 1e-9)
+                            assertEquals(959.23, v.value * 1000, 1e-9)
+                        }
+                    }
                     if (design == YagiDesign.DK28) {
                         assertEquals(0.120, snapshot.outputs.first { it.key == "yagi_match_rg179" }.value, 1e-9)
                     }
@@ -136,7 +222,7 @@ class YagiCalculatorTest : CalculatorUiFixture() {
             }
             compose.onNodeWithTag("yagi-save").assertIsEnabled()
             compose.onNodeWithTag("yagi-profile").performScrollTo().performClick()
-            compose.onNodeWithTag("yagi-profile-r3udk").performClick()
+            compose.onNodeWithTag("yagi-profile-r3udk").performSemanticsAction(SemanticsActions.OnClick)
             compose.onNodeWithTag("yagi-input-1").performScrollTo().assertTextContains("30")
         } finally {
             prefs.edit().clear().apply {

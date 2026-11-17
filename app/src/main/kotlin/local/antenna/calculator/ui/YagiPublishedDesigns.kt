@@ -18,6 +18,7 @@ internal val YagiProfile.publishedNotes: Int?
         YagiProfile.DK28 -> R.string.yagi_dk28_published
         YagiProfile.DUO -> R.string.yagi_duo_published
         YagiProfile.GTV -> R.string.yagi_gtv_published
+        YagiProfile.GTV_DATV, YagiProfile.GTV_DATV_THROUGH -> R.string.yagi_datv_published
         else -> R.string.yagi_gtv_extension_published
     }
 

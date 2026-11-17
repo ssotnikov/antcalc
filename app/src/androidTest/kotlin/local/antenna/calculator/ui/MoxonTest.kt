@@ -9,6 +9,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.journal.JournalJson
 import local.antenna.calculator.state.AppLanguage
+import local.antenna.calculator.state.AppTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Before
@@ -45,19 +46,25 @@ class MoxonTest : CalculatorUiFixture() {
         compose.onNodeWithTag("moxon-copy").assertDoesNotExist()
     }
 
-    @Test fun allProfilesShowTheirIllustrationAndAvailableActionsInBothLanguages() {
+    @Test fun allProfilesShowTheirIllustrationAndAvailableActionsInBothLanguagesAndThemes() {
         val language = mutableStateOf(AppLanguage.ENGLISH)
+        val theme = mutableStateOf(AppTheme.LIGHT)
         compose.setContent {
             LocalizedContent(language.value) {
-                MaterialTheme { MoxonScreen({ _, _ -> }, null, {}) }
+                CalculatorTheme(theme.value) { MoxonScreen({ _, _ -> }, null, {}) }
             }
         }
         for (locale in AppLanguage.entries) {
-            compose.runOnIdle { language.value = locale }
-            for (profile in moxonCalculatorProfiles) {
-                choose(profile.id)
-                compose.onNodeWithTag("moxon-art-${profile.view.name}").performScrollTo().assertIsDisplayed()
-                compose.onNodeWithTag("moxon-save").performScrollTo().assertIsEnabled()
+            for (appearance in listOf(AppTheme.LIGHT, AppTheme.DARK)) {
+                compose.runOnIdle {
+                    language.value = locale
+                    theme.value = appearance
+                }
+                for (profile in moxonCalculatorProfiles) {
+                    choose(profile.id)
+                    compose.onNodeWithTag("moxon-art-${profile.view.name}").performScrollTo().assertIsDisplayed()
+                    compose.onNodeWithTag("moxon-save").performScrollTo().assertIsEnabled()
+                }
             }
         }
     }

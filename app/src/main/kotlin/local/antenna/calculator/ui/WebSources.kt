@@ -32,7 +32,17 @@ internal const val SLIM_JIM_CEBIK_URL = "https://antenna2.github.io/cebik/conten
 private val moxonSourceAddresses = MoxonSource.entries.map { it.url }.toSet()
 private val hb9cvSourceAddresses = Hb9cvSource.entries.map { it.url }.toSet()
 
+internal const val YBN_DUBUS_URL = "https://www.ok2kkw.com/next/dubus412w.pdf"
+internal const val DG7YBN_BENT_DIPOLE_URL = "https://dg7ybn.de/Bent_DE/Bent_DE.htm#Online_Calc"
+internal const val DK7ZB_DUOBAND_ARTICLE_URL = "https://www.worldradiohistory.com/INTERNATIONAL/Funkschau/FunkAmateur-2008-06.pdf"
+
+internal const val NUXCOM_DK7ZB_URL = "https://web.archive.org/web/20241110203403id_/http://www.nuxcom.de/pdf/nuxcom_bauanweisungen_144_430_50hm.pdf"
+
 private val additionalSourceAddresses = setOf(
+    NUXCOM_DK7ZB_URL,
+    YBN_DUBUS_URL,
+    DG7YBN_BENT_DIPOLE_URL,
+    DK7ZB_DUOBAND_ARTICLE_URL,
     "https://radio3rt.ru/2-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2%D0%B0%D1%8F-%D0%BF%D0%BE%D0%BB%D1%83%D0%B2%D0%BE%D0%BB%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0/",
     "https://radio3rt.ru/%D0%B0%D0%B2%D0%B0%D1%80%D0%B8%D0%B9%D0%BD%D0%B0%D1%8F-%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-%D0%BA%D0%B2-%D0%B8-%D1%83%D0%BA%D0%B2/",
     "https://radio3rt.ru/%D0%B0%D0%BD%D1%82%D0%B5%D0%BD%D0%BD%D0%B0-slim-jim-%D0%B4%D0%BB%D1%8F-%D0%B4%D0%B8%D0%B0%D0%BF%D0%B0%D0%B7%D0%BE%D0%BD%D0%B0-10-%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2/",

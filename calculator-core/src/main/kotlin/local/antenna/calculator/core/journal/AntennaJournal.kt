@@ -56,8 +56,12 @@ data class SnapshotValue(val key: String, val value: Double, val unit: SnapshotU
 }
 
 fun calculationSnapshotValueLimit(model: String): Int =
-    if (model == local.antenna.calculator.core.layout.YagiScaling.MODEL)
-        local.antenna.calculator.core.layout.YagiScaling.MAX_SNAPSHOT_VALUES else 24
+    when {
+        model == local.antenna.calculator.core.layout.YagiScaling.MODEL ->
+            local.antenna.calculator.core.layout.YagiScaling.MAX_SNAPSHOT_VALUES
+        local.antenna.calculator.core.layout.YagiDesign.entries.any { it.model == model && it.verticalElements.isNotEmpty() } -> 28
+        else -> 24
+    }
 
 data class CalculationSnapshot(
     val model: String,

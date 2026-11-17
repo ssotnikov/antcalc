@@ -46,6 +46,8 @@ private val publicationCredits = listOf(
     PublicationCredit(R.string.licenses_author_2, listOf(
         CreditedPublication(R.string.licenses_work_2_1, "https://www.dg7ybn.de/144MHz/144_5elem.htm"),
         CreditedPublication(R.string.ys_article, YAGI_SCALING_URL),
+        CreditedPublication(R.string.licenses_ybn_dubus, YBN_DUBUS_URL),
+        CreditedPublication(R.string.licenses_gtv_bending, DG7YBN_BENT_DIPOLE_URL),
         CreditedPublication(R.string.licenses_work_2_2, "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm"),
     ), PublicationTerms(R.string.yagi_dg_rights, "https://www.dg7ybn.de/")),
     PublicationCredit(R.string.ys_book_authors, listOf(CreditedPublication(R.string.ys_book, YAGI_SCALING_BOOK)),
@@ -54,10 +56,14 @@ private val publicationCredits = listOf(
         CreditedPublication(R.string.licenses_work_3_1, "https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm"),
         CreditedPublication(R.string.licenses_work_3_2, "https://dk7zb.darc.de/70cm/5.htm"),
         CreditedPublication(R.string.licenses_work_3_3, "https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm"),
+        CreditedPublication(R.string.licenses_dk7zb_duoband_article, DK7ZB_DUOBAND_ARTICLE_URL),
         CreditedPublication(R.string.licenses_work_3_4, "https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm"),
         CreditedPublication(R.string.licenses_work_3_5, "https://dk7zb.darc.de/70cm/70cm-kurz.htm"),
         CreditedPublication(R.string.licenses_work_3_6, "https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm"),
     ), PublicationTerms(R.string.yagi_dk_rights, "https://dk7zb.darc.de/")),
+    PublicationCredit(R.string.licenses_nuxcom_author, listOf(
+        CreditedPublication(R.string.licenses_nuxcom_dk7zb, NUXCOM_DK7ZB_URL),
+    ), PublicationTerms(R.string.licenses_nuxcom_terms, NUXCOM_DK7ZB_URL)),
     PublicationCredit(R.string.licenses_author_4, listOf(
         CreditedPublication(R.string.licenses_work_4_1, SLIM_JIM_DU1ANV_URL),
     )),

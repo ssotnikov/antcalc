@@ -21,7 +21,7 @@ internal enum class MoxonSource(val author: String, val title: String, val url: 
     W1CDN("W1CDN", "70 cm Moxon Antenna", "https://w1cdn.net/2024/09/70-cm-moxon-antenna/"),
     BAKER("A. W. Baker (KG4JJH)", "6 Meter Moxon Rectangle", "https://moxonantennaproject.net/6m%20Moxon%20drawings%20in%20Acrobat%20format.pdf"),
     G6GVI("Ross (G6GVI)", "A Moxon Rectangle Antenna for 4 m", "https://www.qsl.net/g6gvi/4m_Moxon.pdf"),
-    CBWIRE("Henry HPSD (19DX348)", "2el Moxon for CB", "https://web.archive.org/web/20260212152810/https://cb-antennas.com/wire-antennas/2el-moxon/"),
+    CBWIRE("Henry HPSD (19DX348)", "2el Moxon for CB", "https://dx-antennas.com/wire-antennas/2el-moxon/"),
     CBFIELD("Andreas (Krampfader)", "Moxon-Richtantenne für CB-Funk", "https://antennenbau.dxfreun.de/krampfader/moxon.php"),
     EA2BD("Ignacio (EA2BD)", "Antena Moxon para 20 m", "https://ea2bd.ure.es/archives/EA2BD_Moxon_20m.pdf"),
     PORTABLE("L. B. Cebik (W4RNL)", "A Truly Portable Moxon Rectangle", "https://antenna2.github.io/cebik/content/moxon/20moxp.html", R.string.moxon_terms_cebik),

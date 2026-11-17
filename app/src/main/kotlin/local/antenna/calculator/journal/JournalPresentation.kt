@@ -179,6 +179,7 @@ internal class JournalPresentation(private val context: Context) {
             s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
         } else null
         fun fieldLabel(key: String): String? {
+            if (yagi?.dualPlane == true) return yagiMetricLabel(key, dualPlane = true)
             if (s.model != YagiScaling.MODEL) return null
             val simple = when (key) {
                 "ys_source" -> R.string.ys_source_hz
@@ -440,6 +441,18 @@ internal class JournalPresentation(private val context: Context) {
         "yagi_front" -> text(R.string.yagi_front)
         "yagi_span" -> text(R.string.yagi_span)
         "yagi_boom" -> text(R.string.yagi_boom)
+        "yagi_driven_gap" -> text(R.string.yagi_driven_gap)
+        "yagi_driven_half_blank" -> text(R.string.yagi_driven_two_halves)
+        "yagi_driven_bend" -> text(R.string.yagi_bend)
+        "yagi_driven_setback" -> text(R.string.yagi_setback)
+        "yagi_hdriven_gap" -> "${text(R.string.yagi_horizontal_plane)} · ${text(R.string.yagi_driven_gap)}"
+        "yagi_vdriven_gap" -> "${text(R.string.yagi_vertical_plane)} · ${text(R.string.yagi_driven_gap)}"
+        "yagi_hdriven_half_blank" -> "${text(R.string.yagi_horizontal_plane)} · ${text(R.string.yagi_driven_two_halves)}"
+        "yagi_vdriven_half_blank" -> "${text(R.string.yagi_vertical_plane)} · ${text(R.string.yagi_driven_two_halves)}"
+        "yagi_hdriven_bend" -> "${text(R.string.yagi_horizontal_plane)} · ${text(R.string.yagi_bend)}"
+        "yagi_vdriven_bend" -> "${text(R.string.yagi_vertical_plane)} · ${text(R.string.yagi_bend)}"
+        "yagi_hdriven_setback" -> "${text(R.string.yagi_horizontal_plane)} · ${text(R.string.yagi_setback)}"
+        "yagi_vdriven_setback" -> "${text(R.string.yagi_vertical_plane)} · ${text(R.string.yagi_setback)}"
         "yagi_band_1_low" -> text(R.string.yagi_band_1_low)
         "yagi_band_1_high" -> text(R.string.yagi_band_1_high)
         "yagi_band_2_low" -> text(R.string.yagi_band_2_low)
@@ -465,14 +478,14 @@ internal class JournalPresentation(private val context: Context) {
         return "$element · ${text(dimension)}"
     }
 
-    private fun yagiMetricLabel(key: String): String? {
+    private fun yagiMetricLabel(key: String, dualPlane: Boolean = false): String? {
         if (!key.startsWith("yagi_")) return null
         YagiMatchingCable.entries.firstOrNull { it.metricKey == key }?.let { return text(it.label()) }
         val id = key.removePrefix("yagi_").substringBefore('_')
         val vertical = id.startsWith("v")
         val element = yagiElementLabelOrNull(if (vertical) id.removePrefix("v") else id) ?: return null
         val column = when (key.substringAfterLast('_')) {
-            "position" -> R.string.yagi_position
+            "position" -> if (dualPlane) R.string.yagi_gtv_position else R.string.yagi_position
             "overall" -> R.string.yagi_overall
             "table" -> R.string.yagi_gtv_table_length
             "diameter" -> R.string.yagi_diameter
@@ -480,7 +493,11 @@ internal class JournalPresentation(private val context: Context) {
             else -> return null
         }
         val label = context.getString(R.string.yagi_record_column, text(element), text(column))
-        return if (vertical) "V · $label" else label
+        return when {
+            vertical -> "${text(R.string.yagi_vertical_plane)} · $label"
+            dualPlane && column != R.string.yagi_diameter -> "${text(R.string.yagi_horizontal_plane)} · $label"
+            else -> label
+        }
     }
 
     private fun metricValue(metric: SnapshotValue, aerialMhz: Double? = null): String {
