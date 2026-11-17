@@ -6,6 +6,7 @@
 ![Languages](https://img.shields.io/badge/languages-RU%20%7C%20EN-blue)
 ![Offline](https://img.shields.io/badge/works-offline-success)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+![NEC-2](https://img.shields.io/badge/NEC2-engine-orange?style=flat-square)
 
 [Русский](#русский) · [English](#english)
 
@@ -47,6 +48,8 @@
 - **Траповый диполь.** Три конструкции на 20, 40 и 80 м, вращаемые модели, раскрой полотна, расчёт LC-трапов, сохранение в проект и анализ S1P в выбранной полосе.
 
 ### Лицензии
+
+- **OpenNEC 2.4.1, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. AntCalc использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчёта входного импеданса, КСВ, усиления, отношения вперёд/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.1](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · Код приложения распространяется по лицензии MIT.
 
@@ -209,6 +212,8 @@ Calculations, formulas and diagrams are available offline. Choose English or Rus
 - **Trap dipole.** Three 20/40/80 m designs with rotatable models, wire cut lists, LC trap calculations, project saving, and band-limited S1P analysis.
 
 ### Licenses
+
+- **OpenNEC 2.4.1, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. AntCalc uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.1 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · The app’s source code is licensed under the MIT License.
 
