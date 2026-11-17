@@ -48,7 +48,7 @@
 
 ### Лицензии
 
-- **OpenNEC 2.4.1, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. AntCalc использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчёта входного импеданса, КСВ, усиления, отношения вперёд/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.1](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
+- **OpenNEC 2.4.1, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. Приложение использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчёта входного импеданса, КСВ, усиления, отношения вперёд/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.1](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · Код приложения распространяется по лицензии MIT.
 
@@ -165,7 +165,7 @@
 
 ### Благодарности
 
-- **R3UDK** — за практическое руководство по изготовлению антенны «Волновой канал» и поддержку AntCalc.
+- **R3UDK** — за практическое руководство по изготовлению антенны «Волновой канал» и поддержку.
 - **Связистам поисково-спасательного отряда «ЛизаАлерт» (LizaAlert)** — за поддержку проекта.
 
 ### Обратная связь
@@ -217,7 +217,7 @@ Calculations, formulas and diagrams are available offline. Choose English or Rus
 
 ### Licenses
 
-- **OpenNEC 2.4.1, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. AntCalc uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.1 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
+- **OpenNEC 2.4.1, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. The application uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.1 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · The app’s source code is licensed under the MIT License.
 
@@ -334,7 +334,7 @@ The app uses technical dimensions and formulas. See the original publications fo
 
 ### Acknowledgements
 
-- Thanks to **R3UDK** for writing a practical guide to building a Yagi–Uda antenna and for supporting AntCalc.
+- Thanks to **R3UDK** for writing a practical guide to building a Yagi–Uda antenna and for supporting.
 - Thanks to the **communications team of the LizaAlert volunteer search and rescue group** for supporting the project.
 
 ### Contact
