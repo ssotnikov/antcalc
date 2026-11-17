@@ -82,6 +82,7 @@ internal fun JournalScreen(
     initialProjectId: String? = null,
     onOpenSweeps: ((SweepComparison, AntennaProject) -> Unit)? = null,
     onOpenHalo: ((CalculationSnapshot) -> Unit)? = null,
+    onOpenYagiScaling: ((CalculationSnapshot) -> Unit)? = null,
     onOpenTrapDipole: ((CalculationSnapshot) -> Unit)? = null,
     onMessage: (String) -> Unit,
 ) {
@@ -284,6 +285,7 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.RECORD -> if (record != null) {
                 val calculation = record.calculation?.let { presentation.snapshotFields(it, record.antennaType) }
+                val scaling = record.calculation?.takeIf { it.model == local.antenna.calculator.core.layout.YagiScaling.MODEL }
                 val trap = record.calculation?.takeIf { it.model == local.antenna.calculator.ui.TRAP_DIPOLE_MODEL }
                 val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
@@ -307,6 +309,11 @@ internal fun JournalScreen(
                     }
                     presentation.recordNote(record)?.let { JournalDetails(listOf(it)) }
                     JournalScope()
+                    if (scaling != null && onOpenYagiScaling != null) {
+                        TextButton(onClick = { onOpenYagiScaling(scaling) }, enabled = enabled, modifier = Modifier.testTag("journal-open-yagi-scaling")) {
+                            Text(stringResource(R.string.ys_reopen))
+                        }
+                    }
                     if (trap != null && onOpenTrapDipole != null) {
                         TextButton(onClick = { onOpenTrapDipole(trap) }, enabled = enabled, modifier = Modifier.testTag("journal-open-trap-dipole")) {
                             Text(stringResource(R.string.trap_reopen))

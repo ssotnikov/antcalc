@@ -34,6 +34,7 @@
 - **Калькуляторы антенн.** «Перевёрнутая V», Ground Plane, полно-волновая рамка (Quad и Delta Loop), J-антенна, Slim Jim и каталоги конструкций Яги — Уда, Моксон и HB9CV. Для Моксона доступен расчёт по частоте и диаметру, для HB9CV — по частоте 100–1500 МГц. Общий вид можно вращать пальцем и открывать на весь экран двойным касанием.
 - **Конструирование.** Иллюстрированное руководство по сборке четырёхэлементной Яги — Уда.
 - **КСВ и диаграмма Смита.** Пересчитывайте КСВ, отражение и возвратные потери. Изучайте влияние нагрузки на мощность передатчика и перемещайте маркеры на интерактивной диаграмме.
+- **Масштабирование Яги — Уда.** Переносите геометрию на новую частоту, оценивайте длины при смене диаметра и сохраняйте расчёт в проект.
 - **Фидер.** Рассчитывайте электрическую длину, задержку и затухание кабеля по встроенному каталогу или своим данным.
 - **Измерения VNA.** Импортируйте и сравнивайте две трассы Touchstone S1P. Просматривайте КСВ, импеданс и диаграмму Смита, определяйте рабочую полосу по порогу КСВ.
 - **Проекты и журналы подстройки.** Храните расчеты, замеры, трассы и фото с комментариями. Сравнивайте записи, переносите проекты в JSON и экспортируйте фото в ZIP. [Демо-проект](examples/demo-dipole-journal-145mhz-ru.json) · [S1P до подстройки](examples/demo-dipole-145mhz-before.s1p) · [S1P после подстройки](examples/demo-dipole-145mhz-after.s1p).
@@ -55,9 +56,10 @@
 
   По условиям публикации материалы предназначены для некоммерческого использования. Права на 3D-модели сохраняются за R3UDK.
 
-- **Хартмут Клювер (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm)
+- **Хартмут Клювер (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm) · [Scaling Yagi Elements](https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm)
 
   Права на оригинальные конструкции сохраняются за автором. [Условия DG7YBN](https://www.dg7ybn.de/)
+- **Гюнтер Хох (DL6WU) и Иэн Уайт (G3SEK)** — [The VHF/UHF DX Book, стр. 7-28](https://www.qsl.net/vu2msy/homebrew/Yagi_Design_Basics_by_DL6WU.pdf). Использована формула поправки на диаметр. Уведомление об авторских правах приведено в оригинале.
 
 - **Мартин Штайер (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 и 50 Ом)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm) · [PVC Yagi Construction Details](https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm) · [Short Yagis for 70 cm](https://dk7zb.darc.de/70cm/70cm-kurz.htm) · [Wireman J-Poles: 450 и 300 Ом](https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm)
 
@@ -193,6 +195,7 @@ Antenna Calculator helps you estimate antenna dimensions, adjust an antenna usin
 - **Antenna calculators.** Inverted-V dipole, ground plane, full-wave loop (Quad and Delta Loop), J-pole, Slim Jim, and Yagi–Uda, Moxon and HB9CV design catalogs. Calculate Moxon dimensions by frequency and conductor diameter, and HB9CV dimensions from 100 to 1500 MHz. Drag to rotate the antenna model and double-tap to view it full-screen.
 - **Antenna construction.** An illustrated guide to building a four-element Yagi–Uda.
 - **SWR and Smith chart.** Convert between SWR, reflection and return loss. Explore how the load affects transmitter power and drag markers on the interactive chart.
+- **Yagi–Uda scaling.** Move a design to a new frequency, estimate element lengths for new tubing diameters and save the calculation to a project.
 - **Feedlines.** Calculate cable electrical length, delay and attenuation using the built-in cable catalog or your own data.
 - **VNA measurements.** Import and compare two Touchstone S1P traces. View SWR, impedance and Smith chart plots, and find the bandwidth for a given SWR threshold.
 - **Projects and tuning journals.** Keep calculations, measurements, traces and annotated photos. Compare entries, transfer projects as JSON, and export photos as ZIP. [Demo project](examples/demo-dipole-journal-145mhz-en.json) · [Before tuning (S1P)](examples/demo-dipole-145mhz-before.s1p) · [After tuning (S1P)](examples/demo-dipole-145mhz-after.s1p).
@@ -214,9 +217,10 @@ The project draws on materials from the following authors and publishers.
 
   The published terms limit use of the materials to non-commercial purposes. R3UDK retains the rights to the 3D models.
 
-- **Hartmut Klüver (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm)
+- **Hartmut Klüver (DG7YBN)** — [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm) · [Scaling Yagi Elements](https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm)
 
   The author retains the rights to the original designs. [DG7YBN’s terms](https://www.dg7ybn.de/)
+- **Günter Hoch (DL6WU) and Ian White (G3SEK)** — [The VHF/UHF DX Book, p. 7-28](https://www.qsl.net/vu2msy/homebrew/Yagi_Design_Basics_by_DL6WU.pdf). Used for the diameter correction formula. See the original copyright notice.
 
 - **Martin Steyer (DK7ZB)** — [3-Element 2 m Yagi](https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm) · [5-Element 70 cm Yagis (28 and 50 Ω)](https://dk7zb.darc.de/70cm/5.htm) · [Duoband Yagi 2 m / 70 cm (2+2)](https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm) · [PVC Yagi Construction Details](https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm) · [Short Yagis for 70 cm](https://dk7zb.darc.de/70cm/70cm-kurz.htm) · [Wireman J-Poles: 450 and 300 Ω](https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm)
 

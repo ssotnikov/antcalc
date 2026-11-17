@@ -29,6 +29,22 @@ class FeedlineAcceptanceTest {
         compose.onNodeWithText("В паспорте нет точки", substring = true).assertExists()
     }
 
+    @Test fun changingManualFrequencyKeepsEstimateVisibleUntilConfirmation() {
+        prepare(AppLanguage.RUSSIAN)
+        compose.runOnUiThread {
+            val model = ViewModelProvider(compose.activity)[CalculatorViewModel::class.java]
+            model.onEvent(CalculatorEvent.Feedline(FeedlineDraft(profileId = null, frequency = "145",
+                length = "30", power = "100", attenuation = "10", attenuationHertz = 145_000_000)))
+        }
+        compose.onNodeWithTag("open-feedline").performScrollTo().performClick()
+        compose.onNodeWithTag("feedline-frequency").performScrollTo().performTextReplacement("400")
+        compose.onNodeWithTag("feedline-result").performScrollTo()
+        compose.onNodeWithText("50,12 Вт").assertExists()
+        compose.onNodeWithTag("feedline-copy").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithText("Подтвердить затухание").performScrollTo().performClick()
+        compose.onNodeWithTag("feedline-copy").performScrollTo().assertIsEnabled()
+    }
+
     @Test fun cableProfileUsesCatalogAndPreservesManualInput() {
         prepare(AppLanguage.ENGLISH)
         compose.onNodeWithTag("open-cable").performScrollTo().performClick()

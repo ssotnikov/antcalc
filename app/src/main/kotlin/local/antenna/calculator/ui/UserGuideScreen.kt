@@ -57,6 +57,7 @@ internal enum class GuideDestination(
     J_POLE("j-pole", Page.J_POLE),
     SLIM_JIM("slim-jim", Page.SLIM_JIM),
     YAGI("yagi", Page.YAGI_CALCULATOR),
+    YAGI_SCALING("yagi-scaling", Page.YAGI_SCALING),
     MOXON("moxon", Page.MOXON),
     HB9CV("hb9cv", Page.HB9CV),
     CANTENNA("cantenna", Page.CANTENNA),

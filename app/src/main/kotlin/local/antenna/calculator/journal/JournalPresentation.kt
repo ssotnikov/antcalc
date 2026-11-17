@@ -11,6 +11,10 @@ import local.antenna.calculator.ui.CantennaSource
 import local.antenna.calculator.ui.CantennaText
 import local.antenna.calculator.ui.HALO_CB_MODEL
 import local.antenna.calculator.ui.TRAP_DIPOLE_MODEL
+import local.antenna.calculator.core.layout.YagiScaling
+import local.antenna.calculator.ui.YAGI_SCALING_URL
+import local.antenna.calculator.ui.YAGI_SCALING_BOOK
+import local.antenna.calculator.ui.scalingLabel
 import local.antenna.calculator.ui.trapMetricLabel
 import local.antenna.calculator.ui.trapMetricDisplay
 import local.antenna.calculator.ui.HaloGammaField
@@ -166,6 +170,7 @@ internal class JournalPresentation(private val context: Context) {
             "cantenna_calculated" -> text(R.string.cantenna_title)
             HALO_CB_MODEL -> text(R.string.halo_estimate)
             TRAP_DIPOLE_MODEL -> text(R.string.trap_title)
+            YagiScaling.MODEL -> text(R.string.ys_title)
             "cantenna_mit", "cantenna_ve4ma", "cantenna_flare" -> cantenna?.let { text(it.title) } ?: s.model
             else -> yagi?.label ?: moxon?.name ?: if (s.model.startsWith("hb9cv_")) text(R.string.hb9cv_title) else s.model
         }
@@ -173,7 +178,43 @@ internal class JournalPresentation(private val context: Context) {
         val aerialMhz = if (s.model == Hb9cvAerial.MODEL) {
             s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
         } else null
+        fun fieldLabel(key: String): String? {
+            if (s.model != YagiScaling.MODEL) return null
+            val simple = when (key) {
+                "ys_source" -> R.string.ys_source_hz
+                "frequency" -> R.string.ys_target_hz
+                "ys_mode" -> R.string.ys_mode
+                "ys_geometry" -> R.string.ys_geometry
+                "ys_unit" -> R.string.ys_unit
+                "ys_gap" -> R.string.ys_gap
+                "ys_factor" -> R.string.ys_scale_name
+                else -> null
+            }
+            if (simple != null) return text(simple)
+            val index = key.substringAfterLast('_').toIntOrNull() ?: return null
+            val element = when (index) {
+                1 -> text(R.string.ys_reflector)
+                2 -> text(R.string.ys_driven)
+                else -> context.getString(R.string.ys_director, index - 2)
+            }
+            val field = when (key.substringBeforeLast('_')) {
+                "ys_pos" -> R.string.ys_position
+                "ys_len" -> R.string.ys_length
+                "ys_dia" -> R.string.ys_d
+                else -> return null
+            }
+            return "$element · ${text(field)}"
+        }
         fun render(metric: SnapshotValue): String {
+            if (s.model == YagiScaling.MODEL) {
+                if (metric.key == "ys_mode") YagiScaling.Mode.entries.firstOrNull { it.ordinal.toDouble() == metric.value }
+                    ?.let { return text(it.scalingLabel()) }
+                if (metric.key == "ys_geometry") YagiScaling.Geometry.entries.firstOrNull { it.ordinal.toDouble() == metric.value }
+                    ?.let { return text(it.scalingLabel()) }
+                if (metric.key == "ys_unit") local.antenna.calculator.core.units.LengthUnit.entries
+                    .firstOrNull { it.ordinal.toDouble() == metric.value }?.let { return text(it.labelResource()) }
+                if (metric.unit == SnapshotUnit.METERS) return CantennaText(context.resources).mm(metric.value)
+            }
             if (s.model == TRAP_DIPOLE_MODEL) {
                 trapMetricDisplay(context.resources, metric, ::trapNumberFormat)?.let { return it }
             }
@@ -194,12 +235,12 @@ internal class JournalPresentation(private val context: Context) {
             }
             return metricValue(metric, aerialMhz)
         }
-        val inputs = s.inputs.map { metric -> metricLabel(metric.key, type) to render(metric) }
+        val inputs = s.inputs.map { metric -> (fieldLabel(metric.key) ?: metricLabel(metric.key, type)) to render(metric) }
         val outputs = s.outputsForAntenna(type).map { metric ->
             val ok1ikeLabel = if (s.model == Ok1ikeJPoleModel) {
                 ok1ikeRows.firstOrNull { it.first == metric.key }?.second
             } else null
-            val metricName = ok1ikeLabel?.let(::text) ?: metricLabel(metric.key, type, moxon)
+            val metricName = ok1ikeLabel?.let(::text) ?: fieldLabel(metric.key) ?: metricLabel(metric.key, type, moxon)
             metricName to render(metric)
         }
         val metadata = snapshotMetadata(s, cantennaText, cantenna, profile)
@@ -209,6 +250,11 @@ internal class JournalPresentation(private val context: Context) {
     private fun snapshotMetadata(
         s: CalculationSnapshot, cantennaText: CantennaText?, cantenna: CantennaDesign?, profile: SlimJimProfile?,
     ): List<Pair<String, String>> = buildList {
+        if (s.model == YagiScaling.MODEL) {
+            add(text(R.string.ys_article) to YAGI_SCALING_URL)
+            if (s.inputs.firstOrNull { it.key == "ys_mode" }?.value in setOf(1.0, 2.0))
+                add(text(R.string.ys_book) to YAGI_SCALING_BOOK)
+        }
         if (cantennaText != null) add(text(R.string.cantenna_reference) to (cantenna?.source ?: CantennaSource.CHANGPUAK).url)
         if (s.model == Hb9cvAerial.MODEL) {
             add(text(R.string.hb9cv_source) to Hb9cvSource.AERIAL.url)

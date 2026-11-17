@@ -104,6 +104,15 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState()).padding(20.dp).testTag("cable-scroll"),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StorageNotice(state, onEvent)
+        val frequency = draft.value(CableField.FREQUENCY)
+        val velocity = if (draft.profileId == null) draft.value(CableField.VELOCITY)?.div(10_000.0)
+            else profile?.velocity?.tenThousandths?.div(10_000.0)
+        val freeWave = frequency?.let { 299_792_458.0 / it }
+        fun wavelength(value: Double?) = value?.let { context.getString(R.string.cable_value_unit,
+            cableNumber(context, BigDecimal.valueOf(it), 5), context.getString(LengthUnit.METERS.labelResource())) } ?: "—"
+        TransmissionDiagram(TransmissionIllustration.WAVELENGTH, "λ₀\n" + wavelength(freeWave),
+            stringResource(R.string.hero_cable_lambda) + "\n" + wavelength(velocity?.let { v -> freeWave?.times(v) }),
+            null, velocity, R.string.hero_wave_legend)
         ChoicePicker(stringResource(R.string.cable_direction), CableMode.entries, draft.mode, { stringResource(it.label()) },
             { focus.clearFocus(); change(currentState().draft.cable.copy(mode = it)) }, "cable-mode")
         CableCatalogPicker(stringResource(R.string.feedline_model),

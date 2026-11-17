@@ -127,7 +127,7 @@ internal fun validatedSourceAddress(address: String): String? {
     if (url == PRIVACY_POLICY_URL) return url
     if (url in guideExampleUrls) return url
     return when (url) {
-        BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
+        YAGI_SCALING_URL, YAGI_SCALING_BOOK, BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url
         else -> url.takeIf { it in additionalSourceAddresses || it in moxonSourceAddresses || it in hb9cvSourceAddresses ||
             it in haloSourceAddresses || it in trapPublications ||
             it == TRAP_WHEELER_URL || it == TRAP_ARRL_URL || it == TRAP_ZL1BJQ_URL ||

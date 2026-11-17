@@ -24,6 +24,10 @@ internal data class ReferenceGroup(
 
 internal val referenceGroups = listOf(
     ReferenceGroup(R.string.references_yagi, listOf(
+        TechnicalReference("yagi-scaling", R.string.ys_article, R.string.ys_intro, R.string.ys_article_url,
+            "DG7YBN", AppLanguage.ENGLISH),
+        TechnicalReference("yagi-scaling-diameter", R.string.ys_book, R.string.ys_estimate, R.string.ys_book_url,
+            "DL6WU · G3SEK", AppLanguage.ENGLISH),
         TechnicalReference("yagi-dg7ybn", R.string.source_yagi_dg7ybn, R.string.source_yagi_dg7ybn_description,
             R.string.source_yagi_dg7ybn_url, "DG7YBN", AppLanguage.ENGLISH),
     )),

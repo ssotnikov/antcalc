@@ -45,8 +45,11 @@ private val publicationCredits = listOf(
     ), PublicationTerms(R.string.licenses_r3udk_terms, LIZAALERT_YAGI_URL)),
     PublicationCredit(R.string.licenses_author_2, listOf(
         CreditedPublication(R.string.licenses_work_2_1, "https://www.dg7ybn.de/144MHz/144_5elem.htm"),
+        CreditedPublication(R.string.ys_article, YAGI_SCALING_URL),
         CreditedPublication(R.string.licenses_work_2_2, "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm"),
     ), PublicationTerms(R.string.yagi_dg_rights, "https://www.dg7ybn.de/")),
+    PublicationCredit(R.string.ys_book_authors, listOf(CreditedPublication(R.string.ys_book, YAGI_SCALING_BOOK)),
+        PublicationTerms(R.string.ys_book_rights, YAGI_SCALING_BOOK)),
     PublicationCredit(R.string.licenses_author_3, listOf(
         CreditedPublication(R.string.licenses_work_3_1, "https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm"),
         CreditedPublication(R.string.licenses_work_3_2, "https://dk7zb.darc.de/70cm/5.htm"),

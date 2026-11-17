@@ -1,0 +1,1 @@
+Scale Yagi–Uda designs by frequency and element diameter. Compare dimensions and inspect the interactive diagram. Dynamic illustrations for cable electrical length, feedline loss and SWR.

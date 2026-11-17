@@ -94,6 +94,15 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState()).padding(20.dp).testTag("matching-scroll"),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StorageNotice(state, onEvent)
+        val known = draft.active.joinToString(" · ") { field ->
+            context.getString(field.label()) + " = " + (draft.number(field).value?.let { matchingNumber(context, it, 6) } ?: "—")
+        }
+        val reflected = result?.let {
+            context.getString(R.string.hero_reflected_power, matchingRows(context, it).last().second)
+        }
+        TransmissionDiagram(TransmissionIllustration.REFLECTION, stringResource(R.string.hero_incident),
+            stringResource(R.string.hero_reflected), listOfNotNull(known, reflected).joinToString("\n"),
+            result?.magnitude, R.string.hero_reflect_legend)
         ChoicePicker(stringResource(R.string.matching_source), MatchingMode.entries, draft.mode,
             { stringResource(it.label()) }, { focus.clearFocus(); change(draft.copy(mode = it)) }, "matching-mode")
         draft.active.forEach { key ->

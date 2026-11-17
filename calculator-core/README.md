@@ -339,3 +339,16 @@ lengths. Keep those values separate from the regression and from the dimensions
 of a user’s assembled antenna.
 
 [Cebik — Designing Moxon Rectangles by Equation and by Model](https://antenna2.github.io/cebik/content/moxon/moxgen.html)
+
+## Yagi–Uda scaling
+
+YagiScaling.calculate accepts frequencies from 0.1 to 6000 MHz in whole hertz
+and 2 to 24 elements in metres. Positions increase from the reflector at zero.
+Scale all linear dimensions by the ratio of the source and target frequencies.
+In diameter mode, keep the positions fixed and adjust the lengths of free,
+straight round elements with the DL6WU/G3SEK formula. Combined mode applies
+both steps in that order. A specified feed gap preserves the proportional
+dimensions of the driven element. Mounted dimensions support proportional
+scaling. Boom corrections and electrical performance require separate methods.
+
+[DG7YBN — Scaling Yagi Elements](https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm)

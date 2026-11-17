@@ -217,10 +217,12 @@ internal object JournalJson {
         "outputs" to array(s.outputs, ::encodeValue), "warnings" to JSONArray(s.warnings),
     )
 
-    private fun decodeSnapshot(o: JsonObject) = CalculationSnapshot(
-        o.string("model"), o.long("revision").also { require(it in 1..Int.MAX_VALUE.toLong()) }.toInt(),
-        o.list("inputs", 24, ::decodeValue), o.list("outputs", 24, ::decodeValue), o.strings("warnings", 24),
-    )
+    private fun decodeSnapshot(o: JsonObject): CalculationSnapshot {
+        val model = o.string("model")
+        val limit = local.antenna.calculator.core.journal.calculationSnapshotValueLimit(model)
+        return CalculationSnapshot(model, o.long("revision").also { require(it in 1..Int.MAX_VALUE.toLong()) }.toInt(),
+            o.list("inputs", limit, ::decodeValue), o.list("outputs", limit, ::decodeValue), o.strings("warnings", 24))
+    }
 
     private fun encodeValue(v: SnapshotValue) = json("key" to v.key, "value" to v.value, "unit" to v.unit.name)
 

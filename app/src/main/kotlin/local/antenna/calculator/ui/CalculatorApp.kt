@@ -44,7 +44,7 @@ import local.antenna.calculator.measurements.SwrBandwidthScreen
 import local.antenna.calculator.core.TrapDipole.Band
 
 // Keep ABOUT as the persisted route identifier for Help.
-internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE, USER_GUIDE }
+internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE, YAGI_SCALING, USER_GUIDE }
 
 private data class GuideVisit(val page: Page, val menuDepth: Int, val previousSection: Section?) : Serializable
 
@@ -93,6 +93,7 @@ private fun LocalizedCalculatorApp(
     var journalPage by rememberSaveable { mutableStateOf(JournalPage.PROJECTS) }
     val screenStates = rememberSaveableStateHolder()
     var pending by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
+    var scalingRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var trapRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var trapBand by rememberSaveable { mutableStateOf(Band.M20) }
     var haloRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
@@ -108,6 +109,7 @@ private fun LocalizedCalculatorApp(
             Page.JOURNAL -> journalPage == JournalPage.PROJECTS
             Page.HALO_CB -> haloRestore == null
             Page.TRAP_DIPOLE -> trapRestore == null
+            Page.YAGI_SCALING -> scalingRestore == null
             else -> true
         }
     }
@@ -158,6 +160,7 @@ private fun LocalizedCalculatorApp(
                 yagiLinkOrigin = null
             }
             Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.MOXON, Page.HB9CV, Page.CANTENNA -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.YAGI_SCALING -> page = if (scalingRestore != null) Page.JOURNAL else Page.CALCULATOR
             Page.TRAP_DIPOLE -> page = if (trapRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.HALO_CB -> page = if (haloRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.CABLE -> page = cableParent
@@ -246,6 +249,7 @@ private fun LocalizedCalculatorApp(
                 journalPage = JournalPage.PROJECTS
             }
             Page.HALO_CB -> haloRestore = null
+            Page.YAGI_SCALING -> scalingRestore = null
             Page.TRAP_DIPOLE -> trapRestore = null
             Page.CABLE -> cableParent = Page.CALCULATOR
             Page.MEASUREMENTS -> {
@@ -315,6 +319,7 @@ private fun LocalizedCalculatorApp(
             Page.HB9CV -> R.string.hb9cv_title
             Page.CANTENNA -> R.string.cantenna_title
             Page.HALO_CB -> R.string.halo_title
+            Page.YAGI_SCALING -> R.string.ys_title
             Page.TRAP_DIPOLE -> R.string.trap_title
             Page.J_POLE -> R.string.jpole_title
             Page.TRANSFER_TYPE -> R.string.project_transfer_choose_type
@@ -408,7 +413,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB || page == Page.TRAP_DIPOLE) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB || page == Page.TRAP_DIPOLE || page == Page.YAGI_SCALING) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -608,6 +613,11 @@ private fun LocalizedCalculatorApp(
                             },
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
+                    }
+                    Page.YAGI_SCALING -> screenStates.SaveableStateProvider(if (scalingRestore == null) "yagi-scaling" else "yagi-scaling-record") {
+                        YagiScalingScreen(scalingRestore?.snapshot, if (journal == null) null else { snapshot ->
+                            startTransfer(PendingProjectCalculation(snapshot), AntennaType.YAGI)
+                        }) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     }
                     Page.TRAP_DIPOLE -> screenStates.SaveableStateProvider(if (trapRestore == null) "trap-dipole" else "trap-dipole-record") {
                         TrapDipoleScreen(
@@ -819,6 +829,12 @@ private fun LocalizedCalculatorApp(
                                     haloRestore = PendingProjectCalculation(snapshot)
                                     page = Page.HALO_CB
                                 },
+                                onOpenYagiScaling = { snapshot ->
+                                    leaveInput()
+                                    screenStates.removeState("yagi-scaling-record")
+                                    scalingRestore = PendingProjectCalculation(snapshot)
+                                    page = Page.YAGI_SCALING
+                                },
                                 onOpenTrapDipole = { snapshot ->
                                     leaveInput()
                                     screenStates.removeState("trap-dipole-record")
@@ -846,6 +862,7 @@ private fun LocalizedCalculatorApp(
                                     onOpenMatching = { leaveInput(); page = Page.MATCHING },
                                     onOpenCable = { leaveInput(); cableParent = Page.CALCULATOR; page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
+                                    onOpenYagiScaling = { leaveInput(); scalingRestore = null; page = Page.YAGI_SCALING },
                                     onOpenAdditional = measurements?.let { { leaveInput(); page = Page.ADDITIONAL_TOOLS } },
                                     onOpenConstruction = { leaveInput(); page = Page.ANTENNA_CONSTRUCTION },
                                     onOpenAntennaCalculations = { leaveInput(); page = Page.ANTENNA_PARAMETER_TOOLS },

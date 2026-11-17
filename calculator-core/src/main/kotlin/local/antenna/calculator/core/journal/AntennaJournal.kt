@@ -55,6 +55,10 @@ data class SnapshotValue(val key: String, val value: Double, val unit: SnapshotU
     }
 }
 
+fun calculationSnapshotValueLimit(model: String): Int =
+    if (model == local.antenna.calculator.core.layout.YagiScaling.MODEL)
+        local.antenna.calculator.core.layout.YagiScaling.MAX_SNAPSHOT_VALUES else 24
+
 data class CalculationSnapshot(
     val model: String,
     val revision: Int,
@@ -66,7 +70,7 @@ data class CalculationSnapshot(
         require(model.matches(Regex("[a-z][a-z0-9_]{0,47}")) && revision > 0)
         require(warnings.size <= 24 && warnings.all { it.matches(Regex("[A-Z][A-Z0-9_]{0,47}")) })
         for (values in listOf(inputs, outputs)) {
-            require(values.size in 1..24 && values.map { it.key }.toSet().size == values.size)
+            require(values.size in 1..calculationSnapshotValueLimit(model) && values.map { it.key }.toSet().size == values.size)
         }
     }
 }

@@ -56,13 +56,13 @@ private fun rows(context: Context, result: FeedlineLoss): List<Pair<Int, String>
     result.lostWatts?.let { addResult(R.string.feedline_lost, it, R.string.feedline_watts) }
 }
 
-private fun FeedlineDraft.calculate(profile: CableProfile?): FeedlineLoss? {
+private fun FeedlineDraft.calculate(profile: CableProfile?, allowProvisional: Boolean = false): FeedlineLoss? {
     val hertz = hertz() ?: return null
     val length = metres() ?: return null
     val inputWatts = watts()
     if (power.isNotBlank() && inputWatts == null) return null
     return if (profileId == null) {
-        val attenuation = manualAttenuation()?.takeIf { attenuationHertz == hertz } ?: return null
+        val attenuation = manualAttenuation()?.takeIf { allowProvisional || attenuationHertz == hertz } ?: return null
         calculateFeedlineLoss(length, attenuation, enteredAttenuationUnit, inputWatts)
     } else {
         val attenuation = profile?.attenuation?.get(hertz) ?: return null
@@ -85,7 +85,8 @@ internal fun FeedlineScreen(
     val profile = catalog.profile(draft.profileId)
     val hertz = draft.hertz()
     val point = profile?.attenuation?.get(hertz)
-    val result = draft.calculate(profile)
+    val provisional = draft.profileId == null && hertz != null && draft.manualAttenuation() != null && draft.attenuationHertz != hertz
+    val result = draft.calculate(profile, allowProvisional = true)
     val enabled = state.editingEnabled
     var details by rememberSaveable { mutableStateOf(false) }
     fun edit(change: (FeedlineDraft) -> FeedlineDraft) =
@@ -97,6 +98,15 @@ internal fun FeedlineScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         StorageNotice(state, onEvent)
+        fun watts(value: Double?) = value?.let {
+            val shown = if (it > 0 && it < .01) "< " + number(context, .01, 2) else number(context, it, 2)
+            context.getString(R.string.feedline_watts, shown)
+        } ?: "—"
+        TransmissionDiagram(TransmissionIllustration.POWER,
+            stringResource(R.string.hero_power_in) + "\n" + watts(draft.watts()?.toDouble()),
+            stringResource(R.string.hero_power_out) + "\n" + watts(result?.outputWatts),
+            result?.lostWatts?.let { stringResource(R.string.hero_dissipated, watts(it)) },
+            result?.transmittedFraction, R.string.hero_feed_legend)
         HelpText(R.string.feedline_screen_intro)
         FeedlineHeading(R.string.feedline_inputs)
         ChoicePicker(stringResource(R.string.feedline_method), listOf(true, false), draft.profileId != null,
@@ -110,7 +120,7 @@ internal fun FeedlineScreen(
             }
         }
         val frequencyLabel = stringResource(draft.frequencyUnit.labelResource())
-        FeedlineField(draft.frequency, stringResource(R.string.feedline_frequency, frequencyLabel), enabled,
+        FeedlineField(draft.frequency, stringResource(if (draft.profileId == null) R.string.feed_manual_frequency else R.string.feedline_frequency, frequencyLabel), enabled,
             "feedline-frequency", if (draft.frequency.isNotBlank() && hertz == null) R.string.feedline_frequency_error else null,
             megahertz = draft.frequencyUnit == FrequencyUnit.MEGAHERTZ) {
             edit { value -> value.copy(frequency = it.boundedNumericText()) }
@@ -124,8 +134,8 @@ internal fun FeedlineScreen(
             }
             ChoicePicker(stringResource(R.string.feedline_attenuation_unit), AttenuationUnit.entries, draft.attenuationUnit,
                 { stringResource(it.label()) }, { unit -> edit { it.copy(attenuationUnit = unit) } }, "feedline-unit")
-            if (hertz != null && draft.manualAttenuation() != null && draft.attenuationHertz != hertz) {
-                HelpText(R.string.feedline_confirm_frequency)
+            if (provisional) {
+                HelpText(R.string.feed_provisional)
                 OutlinedButton({ edit { it.copy(attenuationHertz = it.hertz()) } }, enabled = enabled) {
                     Text(stringResource(R.string.feedline_confirm_attenuation))
                 }
@@ -166,6 +176,7 @@ internal fun FeedlineScreen(
             edit { value -> value.copy(power = it.boundedNumericText()) }
         }
         FeedlineHeading(R.string.feedline_result)
+        if (provisional && result != null) HelpText(R.string.feed_provisional)
         if (result == null) {
             HelpText(R.string.feedline_pending)
         } else {
@@ -194,7 +205,7 @@ internal fun FeedlineScreen(
                 ClipData.newPlainText(appName, report),
             )
             onCopied()
-        }, enabled = result != null, modifier = Modifier.fillMaxWidth().testTag("feedline-copy")) {
+        }, enabled = result != null && !provisional, modifier = Modifier.fillMaxWidth().testTag("feedline-copy")) {
             Text(stringResource(R.string.copy_result))
         }
         TextButton({ details = !details }) {
