@@ -13,6 +13,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
@@ -157,6 +159,8 @@ internal fun ProjectSearchField(
     clearable: Boolean = false,
 ) {
     val focus = LocalFocusManager.current
+    val colors = MaterialTheme.colorScheme
+    val iconSize = 18.dp
     OutlinedTextField(
         value = query,
         onValueChange = { value ->
@@ -170,12 +174,17 @@ internal fun ProjectSearchField(
         label = { Text(stringResource(label)) },
         leadingIcon = {
             Icon(painterResource(R.drawable.ic_search), contentDescription = null,
-                modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.outline)
+                modifier = Modifier.size(iconSize), tint = colors.outline)
         },
         trailingIcon = if (clearable && query.isNotEmpty()) {
             {
                 IconButton(onClick = { onQueryChange("") }, modifier = Modifier.testTag("journal-clear-search")) {
-                    Icon(painterResource(R.drawable.ic_close), stringResource(R.string.journal_clear_search))
+                    Icon(
+                        painterResource(R.drawable.ic_close),
+                        stringResource(R.string.journal_clear_search),
+                        modifier = Modifier.size(iconSize),
+                        tint = if (colors.surface.luminance() < .5f) Color(0xFFE58197) else Color(0xFF952C46),
+                    )
                 }
             }
         } else null,

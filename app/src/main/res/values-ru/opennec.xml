@@ -44,4 +44,11 @@
     <string name="opennec_analytic_length">Длина по формуле</string>
     <string name="opennec_version">Версия OpenNEC</string>
     <string name="opennec_reset_applied">Вернуть длины по формуле</string>
+    <string name="opennec_panel_title">Проверка в NEC</string>
+    <string name="opennec_smith_plot">Диаграмма Смита · Z₀ = 50 Ом</string>
+    <string name="opennec_smith_single_trace">Цветная линия показывает пересчитанную геометрию на всех частотах сетки.</string>
+    <string name="opennec_smith_markers">Круглые маркеры · импеданс на %1$s МГц.</string>
+    <string name="opennec_smith_boundary">Жёлтый пунктир · КСВ %1$s. Внутри окружности КСВ ниже порога.</string>
+    <string name="opennec_smith_center_only">При пороге КСВ 1 подходит только центр диаграммы.</string>
+    <string name="opennec_smith_grid">Круги сетки показывают постоянное R/Z₀, дуги — постоянное X/Z₀. Выше оси реактивность индуктивная (+j), ниже — ёмкостная (−j). Центр соответствует 50 + j0 Ом.</string>
 </resources>

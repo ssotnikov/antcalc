@@ -38,15 +38,16 @@ class YagiNecGuideCaptureTest : CalculatorUiFixture() {
         click("opennec-run")
         val suffix = "${language.name.lowercase()}-${theme.name.lowercase()}"
         save("opennec-result", "nec-comparison-$suffix.png")
+        save("opennec-result", "nec-smith-$suffix.png", "opennec-smith-plot")
         click("opennec-optimize")
         save("opennec-optimization", "nec-optimization-$suffix.png")
     }
 
-    private fun save(tag: String, fileName: String) {
+    private fun save(tag: String, fileName: String, plotTag: String = "opennec-swr-plot") {
         compose.waitUntil(60_000) {
             compose.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
         }
-        compose.onAllNodesWithTag("opennec-swr-plot").onLast().performScrollTo().assertIsDisplayed()
+        compose.onAllNodesWithTag(plotTag).onLast().performScrollTo().assertIsDisplayed()
         compose.waitForIdle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val folder = checkNotNull(instrumentation.targetContext.getExternalFilesDir("nec-guide"))

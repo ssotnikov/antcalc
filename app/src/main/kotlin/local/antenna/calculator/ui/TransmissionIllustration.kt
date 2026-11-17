@@ -1,6 +1,8 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -21,8 +23,14 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sin
@@ -42,12 +50,21 @@ internal fun TransmissionDiagram(
     val colors = MaterialTheme.colorScheme
     val warm = if (colors.surface.luminance() < .5f) Color(0xFFF3BA80) else Color(0xFF824410)
     val ratio = fraction?.takeIf { it.isFinite() }?.coerceIn(0.0, 1.0)?.toFloat()
-    Surface(Modifier.fillMaxWidth(), color = colors.surfaceContainerLow, shape = MaterialTheme.shapes.large) {
+    val isReflection = style == TransmissionIllustration.REFLECTION
+    val typography = MaterialTheme.typography
+    val endpointStyle = if (isReflection) typography.titleSmall else typography.bodyMedium
+    Surface(
+        Modifier.fillMaxWidth(),
+        color = colors.surfaceContainerLow,
+        shape = MaterialTheme.shapes.large,
+        border = if (isReflection) BorderStroke(1.dp, colors.outlineVariant) else null,
+    ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(upper, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, color = colors.primary)
-                Text(lower, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium,
-                    color = colors.onSurface, textAlign = TextAlign.End)
+                Text(upper, Modifier.weight(1f), style = endpointStyle,
+                    color = if (isReflection) colors.secondary else colors.primary)
+                Text(lower, Modifier.weight(1f), style = endpointStyle, textAlign = TextAlign.End,
+                    color = if (isReflection) colors.secondary else colors.onSurface)
             }
             when (style) {
                 TransmissionIllustration.WAVELENGTH -> {
@@ -88,32 +105,92 @@ internal fun TransmissionDiagram(
                     }
                 }
                 TransmissionIllustration.REFLECTION -> {
-                    Text(stringResource(R.string.hero_incident), Modifier.align(Alignment.CenterHorizontally),
-                        color = colors.primary, style = MaterialTheme.typography.bodySmall)
-                    Canvas(Modifier.fillMaxWidth().height(82.dp)) {
-                        val (left, right) = diagramEdges()
-                        val start = left + 15.dp.toPx()
-                        val end = right - 15.dp.toPx()
-                        val amplitude = 9.dp.toPx()
-                        val incidentY = 12.dp.toPx()
-                        val reflectedY = size.height - incidentY
-                        drawTravellingWave(start, end, incidentY, amplitude, colors.primary, colors.outlineVariant)
-                        drawCoax(left, right, size.height / 2, 5.dp.toPx(), 20.dp.toPx())
-                        if (ratio != null && ratio > 0f) {
-                            drawTravellingWave(end, start, reflectedY, amplitude * ratio, warm, colors.outlineVariant)
+                    Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(stringResource(R.string.hero_incident),
+                            color = colors.primary, style = typography.bodySmall)
+                        Canvas(Modifier.fillMaxWidth().height(78.dp)) {
+                            val (left, right) = diagramEdges()
+                            val inset = 20.dp.toPx().coerceAtMost((right - left) / 4)
+                            val start = left + inset
+                            val end = right - inset
+                            val amplitude = 10.dp.toPx()
+                            drawTravellingWave(start, end, 16.dp.toPx(), amplitude, colors.primary, colors.outlineVariant)
+                            drawReflectionLine(left, right, size.height * .56f, colors.outlineVariant)
+                            val reflectedY = size.height - 11.dp.toPx()
+                            if (ratio != null && ratio > 0f) {
+                                drawTravellingWave(end, start, reflectedY, amplitude * ratio, warm, colors.outlineVariant)
+                            }
                         }
+                        Text(stringResource(if (ratio == 0f) R.string.hero_no_reflection else R.string.hero_reflected),
+                            color = warm, style = typography.bodySmall)
                     }
-                    Text(stringResource(if (ratio == 0f) R.string.hero_no_reflection else R.string.hero_reflected),
-                        Modifier.align(Alignment.CenterHorizontally), color = warm, style = MaterialTheme.typography.bodySmall)
-                    SelectableText(stringResource(R.string.hero_reflect_formula),
-                        Modifier.align(Alignment.CenterHorizontally), color = colors.primary,
-                        style = MaterialTheme.typography.titleSmall)
-                    detail?.let { SelectableText(it, style = MaterialTheme.typography.bodySmall) }
+                    ReflectionFormula(Modifier.align(Alignment.CenterHorizontally))
+                    SelectionContainer(Modifier.fillMaxWidth()) {
+                        Text(detail ?: "—", Modifier.fillMaxWidth(), color = colors.primary,
+                            style = typography.titleSmall, fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center)
+                    }
                 }
             }
             HorizontalDivider(color = colors.outlineVariant)
             Text(stringResource(caption), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
         }
+    }
+}
+
+@Composable
+private fun ReflectionFormula(modifier: Modifier) {
+    val reflected = stringResource(R.string.hero_reflected_subscript)
+    val incident = stringResource(R.string.hero_incident_subscript)
+    val subscript = SpanStyle(fontSize = .72.em, baselineShift = BaselineShift.Subscript)
+    val formula = buildAnnotatedString {
+        append("P")
+        withStyle(subscript) { append(reflected) }
+        append(" / P")
+        withStyle(subscript) { append(incident) }
+        append(" = |Γ|²")
+    }
+    SelectionContainer(modifier) {
+        Text(formula, color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+    }
+}
+
+private fun DrawScope.drawReflectionLine(left: Float, right: Float, center: Float, guide: Color) {
+    val blockWidth = 28.dp.toPx().coerceAtMost((right - left) / 4)
+    val blockHeight = 24.dp.toPx()
+    val top = center - blockHeight / 2
+    val corner = CornerRadius(3.dp.toPx())
+    val edge = Color(0xFF8CA9B6)
+    val band = 6.dp.toPx()
+    val cableTop = center - band
+    val cableSize = Size(right - left - blockWidth, band * 2)
+    val cableStart = left + blockWidth / 2
+    val cableEnd = right - blockWidth / 2
+    drawRect(Brush.verticalGradient(listOf(Color(0xFF698392), Color(0xFF2A3E4C)), cableTop, center + band),
+        Offset(cableStart, cableTop), cableSize)
+    drawRect(edge, Offset(cableStart, cableTop), cableSize, style = Stroke(1.dp.toPx()))
+    drawLine(edge, Offset(left + blockWidth, cableTop + 2.dp.toPx()),
+        Offset(right - blockWidth, cableTop + 2.dp.toPx()), 1.dp.toPx())
+
+    val blockFill = Brush.verticalGradient(
+        listOf(Color(0xFF698392), Color(0xFF486272), Color(0xFF2A3E4C)), top, top + blockHeight)
+    for (x in listOf(left, right - blockWidth)) {
+        val guideX = x + blockWidth / 2
+        drawLine(guide, Offset(guideX, 0f), Offset(guideX, top), 1.dp.toPx(),
+            pathEffect = PathEffect.dashPathEffect(floatArrayOf(2.dp.toPx(), 3.dp.toPx())))
+        val blockSize = Size(blockWidth, blockHeight)
+        drawRoundRect(blockFill, Offset(x, top), blockSize, corner)
+        drawRoundRect(edge, Offset(x, top), blockSize, corner, style = Stroke(1.dp.toPx()))
+        val pulse = Path().apply {
+            moveTo(x + blockWidth * .18f, center)
+            lineTo(x + blockWidth * .30f, center)
+            lineTo(x + blockWidth * .41f, center - 4.dp.toPx())
+            lineTo(x + blockWidth * .54f, center + 4.dp.toPx())
+            lineTo(x + blockWidth * .66f, center)
+            lineTo(x + blockWidth * .82f, center)
+        }
+        drawPath(pulse, Color(0xFFCDE0EA), style = Stroke(1.dp.toPx(), cap = StrokeCap.Round))
     }
 }
 
@@ -132,7 +209,9 @@ private fun DrawScope.drawTravellingWave(start: Float, end: Float, y: Float, amp
     drawLine(axis, Offset(start, y), Offset(end, y), 1.dp.toPx(),
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(2.dp.toPx(), 3.dp.toPx())))
     drawPath(wave(start, end, 3f, amplitude, y), color, style = Stroke(2.dp.toPx()))
-    drawArrow(Offset(end - (end - start) * .025f, y + amplitude * .45f), Offset(end, y), color)
+    val arrowStart = .975f
+    val arrowY = y - amplitude * sin(6 * PI * arrowStart).toFloat()
+    drawArrow(Offset(start + (end - start) * arrowStart, arrowY), Offset(end, y), color)
 }
 
 private fun DrawScope.drawArrow(from: Offset, tip: Offset, color: Color) {

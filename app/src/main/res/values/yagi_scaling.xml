@@ -76,13 +76,14 @@
     <string name="hero_incident">V⁺ · incident</string>
     <string name="hero_reflected">V⁻ · reflected</string>
     <string name="hero_no_reflection">No reflection</string>
-    <string name="hero_reflect_formula">P(reflected) / P(incident) = |Γ|²</string>
+    <string name="hero_reflected_subscript">ref</string>
+    <string name="hero_incident_subscript">inc</string>
+    <string name="hero_impedance_reading">Zₗ = %1$s %2$s j%3$s Ω · Z₀ = %4$s Ω</string>
     <string name="hero_feed_loss">Cable loss</string>
     <string name="hero_power_in">Input P₁</string>
     <string name="hero_power_out">Output P₂</string>
     <string name="hero_dissipated">Dissipated %1$s</string>
     <string name="hero_cable_lambda">λ in cable</string>
-    <string name="hero_reflected_power">Reflected power %1$s</string>
     <string name="ys_article_url" translatable="false">https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm</string>
     <string name="ys_book_url" translatable="false">https://www.qsl.net/vu2msy/homebrew/Yagi_Design_Basics_by_DL6WU.pdf</string>
     <string name="ys_scale_name">Scale factor</string>

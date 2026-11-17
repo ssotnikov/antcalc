@@ -62,6 +62,27 @@ internal fun matchingRows(context: Context, result: MatchingResult): List<Pair<I
         matchingMeasure(context, MatchingMeasure.Finite(result.reflectedFraction * 100), 2)),
 )
 
+private fun matchingDiagramReading(context: Context, draft: MatchingDraft): String {
+    fun number(field: MatchingField) = checkNotNull(draft.number(field).value)
+    fun format(value: Double) = matchingNumber(context, value, 6)
+
+    return when (draft.mode) {
+        MatchingMode.SWR -> {
+            val ratio = context.getString(R.string.matching_ratio, format(number(MatchingField.SWR)))
+            "${context.getString(R.string.matching_swr)} $ratio"
+        }
+        MatchingMode.GAMMA -> "|Γ| = ${format(number(MatchingField.GAMMA))}"
+        MatchingMode.RETURN_LOSS -> "RL = " +
+            context.getString(R.string.matching_db, format(number(MatchingField.RETURN_LOSS)))
+        MatchingMode.IMPEDANCE -> {
+            val reactance = number(MatchingField.REACTANCE)
+            context.getString(R.string.hero_impedance_reading,
+                format(number(MatchingField.RESISTANCE)), if (reactance < 0) "−" else "+",
+                format(kotlin.math.abs(reactance)), format(number(MatchingField.REFERENCE)))
+        }
+    }
+}
+
 private fun complexText(context: Context, result: MatchingResult): String? = result.complex?.let {
     "Γ = ${matchingNumber(context, it.real, 6)} ${if (it.imaginary < 0) "−" else "+"} j${matchingNumber(context, kotlin.math.abs(it.imaginary), 6)}"
 }
@@ -95,14 +116,8 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
     Column(Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState()).padding(20.dp).testTag("matching-scroll"),
         verticalArrangement = Arrangement.spacedBy(16.dp)) {
         StorageNotice(state, onEvent)
-        val known = draft.active.joinToString(" · ") { field ->
-            resources.getString(field.label()) + " = " + (draft.number(field).value?.let { matchingNumber(context, it, 6) } ?: "—")
-        }
-        val reflected = result?.let {
-            resources.getString(R.string.hero_reflected_power, matchingRows(context, it).last().second)
-        }
         TransmissionDiagram(TransmissionIllustration.REFLECTION, stringResource(R.string.hero_generator),
-            stringResource(R.string.hero_load), listOfNotNull(known, reflected).joinToString("\n").ifBlank { null },
+            stringResource(R.string.hero_load), result?.let { matchingDiagramReading(context, draft) },
             result?.magnitude, R.string.hero_reflect_legend)
         MatchingModePicker(draft.mode) { mode ->
             focus.clearFocus()

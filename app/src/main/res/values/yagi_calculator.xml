@@ -90,9 +90,11 @@
     <string name="yagi_datv_scheme">Top view. Each bend is 100 mm from the feed centre. The driven-element tips are 186 mm from the reflector along the boom. The feed gap is schematic.</string>
     <string name="yagi_datv_published">The cut list gives starting tube lengths for a 10 mm feed gap and a bend of about 12.7°. The on-boom build uses the 6.83 mm correction in the mounting table. The through-boom build uses 8.84 mm. Check final geometry by measuring SWR.</string>
     <string name="yagi_driver_setup">Driven-element geometry</string>
-    <string name="yagi_dk_gap_help">Enter the gap between the metal ends in your mount. Use 10 mm as a starting point for a trial build. The length of each half is (published span − gap) / 2.</string>
+    <string name="yagi_dk_gap_help">Measure the distance between the metal ends with the tubes seated against their stops. For a custom spacer, you can choose a 10 mm gap following the DK7ZB lightweight series. The length of each half is (span − gap) / 2.</string>
     <string name="yagi_xpol_input_help">Enter the gap between the metal ends, the distance from feed centre to the bend and the tip setback towards the reflector along the boom. Cut lengths are calculated separately for H and V. Check the assembled antenna by measuring SWR.</string>
-    <string name="yagi_sat_estimate">Model estimates for a 10 mm gap. H: bend at 103 mm, setback 83 mm, blank about 482 mm. V: bend at 100 mm, setback 82 mm, blank about 483 mm.</string>
+    <string name="yagi_sat_estimate">Bend positions and setbacks are estimated from the model view. This trial cut list uses a 10 mm gap. H: bend at 103 mm, setback 83 mm, blank about 482 mm. V: bend at 100 mm, setback 82 mm, blank about 483 mm.</string>
+    <string name="yagi_driver_example">Fill empty fields from example</string>
+    <string name="yagi_driver_input_basis">Driven-element cut lengths are based on the entered dimensions. Check them against your feed assembly before cutting.</string>
     <string name="yagi_driven_gap_mm">Gap between halves, mm</string>
     <string name="yagi_bend">Feed centre to bend</string>
     <string name="yagi_bend_mm">Feed centre to bend, mm</string>

@@ -207,10 +207,14 @@ internal fun YagiCalculatorScreen(
         val isGtv = profile.hasBentDipole
         YagiHeading(R.string.yagi_geometry)
         if (profile.dualPlane) {
+            val horizontal = driverGeometry.getOrNull(0)
+            val vertical = driverGeometry.getOrNull(1)
             YagiHeading(R.string.yagi_horizontal_plane)
-            YagiDiagram(elements, isGtv, elements[1].positionMm - 87.0)
+            YagiDiagram(elements, isGtv, elements[1].positionMm - 87.0,
+                measuredDriver = horizontal, modelSpanMm = driverPlanes[0].spanMm)
             YagiHeading(R.string.yagi_vertical_plane)
-            YagiDiagram(profile.design.verticalElements, isGtv, profile.design.verticalElements[1].positionMm - 87.0)
+            YagiDiagram(profile.design.verticalElements, isGtv, profile.design.verticalElements[1].positionMm - 87.0,
+                measuredDriver = vertical, modelSpanMm = driverPlanes[1].spanMm)
             HelpText(R.string.yagi_xpol_scheme)
         } else {
             val tip = if (profile.datv) 186.0 else GTV_TIP_FROM_REFLECTOR_MM
@@ -261,7 +265,24 @@ internal fun YagiCalculatorScreen(
         if (driverLabels.isNotEmpty()) {
             YagiHeading(R.string.yagi_driver_setup)
             HelpText(if (profile.dualPlane) R.string.yagi_xpol_input_help else R.string.yagi_dk_gap_help)
+            val example = when (profile) {
+                YagiProfile.DK50, YagiProfile.DK28 -> listOf("10")
+                YagiProfile.GTV_SAT -> listOf("10", "103", "83", "10", "100", "82")
+                else -> emptyList()
+            }
             if (profile == YagiProfile.GTV_SAT) HelpText(R.string.yagi_sat_estimate)
+            if (example.isNotEmpty()) {
+                OutlinedButton(
+                    onClick = {
+                        example.forEachIndexed { index, value ->
+                            val field = fields[inputFields.size + index]
+                            if (field.text.isBlank()) field.edit { replace(0, length, value) }
+                        }
+                    },
+                    enabled = driverLabels.indices.any { draft[inputFields.size + it].isBlank() },
+                    modifier = Modifier.testTag("yagi-driver-example"),
+                ) { Text(stringResource(R.string.yagi_driver_example)) }
+            }
             driverLabels.forEachIndexed { index, label ->
                 if (profile.dualPlane && index % 3 == 0) {
                     YagiHeading(if (index == 0) R.string.yagi_horizontal_plane else R.string.yagi_vertical_plane)
@@ -401,9 +422,17 @@ private fun YagiProperty(label: Int, value: String) {
 private fun YagiDiagram(
     elements: List<YagiElement>, isGtv: Boolean, tipPositionMm: Double,
     descriptionId: Int = R.string.yagi_xpol_scheme,
+    measuredDriver: YagiDriverGeometry? = null,
+    modelSpanMm: Double? = null,
 ) {
     val colors = MaterialTheme.colorScheme
-    val description = stringResource(descriptionId)
+    val context = LocalContext.current
+    val description = if (measuredDriver == null) stringResource(descriptionId) else stringResource(
+        R.string.yagi_xpol_measured_scheme,
+        yagiLength(context, measuredDriver.gapMm, LengthUnit.MILLIMETERS),
+        yagiLength(context, checkNotNull(measuredDriver.bendMm), LengthUnit.MILLIMETERS),
+        yagiLength(context, checkNotNull(measuredDriver.setbackMm), LengthUnit.MILLIMETERS),
+    )
     val textMeasurer = rememberTextMeasurer()
     val labelStyle = MaterialTheme.typography.labelMedium
     Canvas(Modifier.fillMaxWidth().height(140.dp).semantics { contentDescription = description }) {
@@ -416,7 +445,9 @@ private fun YagiDiagram(
         val boomScale = (right - left) / (elements.last().positionMm - origin).toFloat()
         elements.forEachIndexed { index, element ->
             val x = left + boomScale * (element.positionMm - origin).toFloat()
-            val half = center * .72f * (element.overallMm / longest).toFloat()
+            val transverseScale = center * 1.44f / longest.toFloat()
+            val span = if (element.id == "de" && measuredDriver != null) checkNotNull(modelSpanMm) else element.overallMm
+            val half = transverseScale * (span / 2).toFloat()
             val stroke = 2.5.dp.toPx()
             val labelColor = if (element.id == "de") colors.tertiary else colors.secondary
             val label = if (element.id == "de") "DE" else element.id.uppercase()
@@ -424,13 +455,16 @@ private fun YagiDiagram(
             val labelY = if (index % 2 == 0) 0f else size.height - layout.size.height
             drawText(layout, color = labelColor, topLeft = Offset(x - layout.size.width / 2f, labelY))
             if (element.id == "de") {
-                val bendHalf = if (isGtv) half * GTV_BEND_FRACTION.toFloat() else half
-                val feedGapHalf = minOf(5.dp.toPx(), bendHalf / 2f)
+                val bendHalf = measuredDriver?.bendMm?.let { transverseScale * it.toFloat() }
+                    ?: if (isGtv) half * GTV_BEND_FRACTION.toFloat() else half
+                val feedGapHalf = measuredDriver?.let { transverseScale * (it.gapMm / 2).toFloat() }
+                    ?: minOf(5.dp.toPx(), bendHalf / 2f)
+                val tipMm = measuredDriver?.setbackMm?.let { element.positionMm - it } ?: tipPositionMm
                 for (side in listOf(-1f, 1f)) {
                     val bend = Offset(x, center + side * bendHalf)
                     drawLine(colors.tertiary, Offset(x, center + side * feedGapHalf), bend, stroke)
                     if (isGtv) {
-                        val tip = Offset(left + boomScale * (tipPositionMm - origin).toFloat(), center + side * half)
+                        val tip = Offset(left + boomScale * (tipMm - origin).toFloat(), center + side * half)
                         drawLine(colors.tertiary, bend, tip, stroke)
                     }
                 }
@@ -656,6 +690,7 @@ private fun yagiReport(
         line(cable.label(), context.getString(R.string.yagi_matching_pair, yagiLength(context, cable.sectionMm, unit)))
     }
     appendLine(context.getString(if (profile == YagiProfile.R3) R.string.yagi_formed else R.string.yagi_limited))
+    if (driverGeometry.any { it != null }) appendLine(context.getString(R.string.yagi_driver_input_basis))
     profile.publishedNotes?.let { appendLine(context.getString(it)) }
     if (profile.buildSource != profile.original) appendLine(profile.buildSource)
     profile.drivenCutSource?.let { appendLine(it) }

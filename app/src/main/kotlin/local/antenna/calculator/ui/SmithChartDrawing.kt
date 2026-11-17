@@ -21,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
@@ -167,21 +168,54 @@ internal fun SmithSweepGraphic(
                 }
             },
     ) {
-        val canvas = drawContext.canvas.nativeCanvas
-        canvas.save()
-        canvas.scale(size.width / WIDTH, size.height / HEIGHT)
-        val drawing = SmithDrawing(canvas, palette)
-        drawing.grid(format, labels = true)
-        drawingOrder.forEach { index ->
-            val color = colors[index].toArgb()
-            drawing.sweep(paths[index], color, active = index == active)
-        }
-        drawingOrder.forEach { index ->
-            val point = sweeps[index].nearestIndex(selectedHz)?.let(paths[index].positions::get)
-            if (point != null) drawing.sweepMarker(point, colors[index].toArgb(), active = index == active)
-        }
-        canvas.restore()
+        drawSmithSweeps(sweeps, paths, colors, drawingOrder, active, selectedHz, palette, format)
     }
+}
+
+@Composable
+internal fun SmithComparisonGraphic(
+    sweeps: List<S11Sweep>,
+    colors: List<Color>,
+    selectedHz: Double,
+    swrLimit: Double,
+    description: String,
+    format: (Double) -> String,
+    modifier: Modifier = Modifier,
+) {
+    val palette = smithPalette()
+    val paths = remember(sweeps) { sweeps.map(::SmithSweepPath) }
+    Canvas(modifier.widthIn(max = 440.dp).fillMaxWidth().aspectRatio(WIDTH / HEIGHT)
+        .semantics { contentDescription = description }) {
+        drawSmithSweeps(sweeps, paths, colors, paths.indices.toList(), paths.lastIndex,
+            selectedHz, palette, format, swrLimit)
+    }
+}
+
+private fun DrawScope.drawSmithSweeps(
+    sweeps: List<S11Sweep>,
+    paths: List<SmithSweepPath>,
+    colors: List<Color>,
+    drawingOrder: List<Int>,
+    active: Int,
+    selectedHz: Double,
+    palette: SmithPalette,
+    format: (Double) -> String,
+    swrLimit: Double? = null,
+) {
+    val canvas = drawContext.canvas.nativeCanvas
+    canvas.save()
+    canvas.scale(size.width / WIDTH, size.height / HEIGHT)
+    val drawing = SmithDrawing(canvas, palette)
+    drawing.grid(format, labels = true)
+    swrLimit?.let(drawing::swrBoundary)
+    drawingOrder.forEach { index ->
+        drawing.sweep(paths[index], colors[index].toArgb(), active = index == active)
+    }
+    drawingOrder.forEach { index ->
+        val point = sweeps[index].nearestIndex(selectedHz)?.let(paths[index].positions::get)
+        if (point != null) drawing.sweepMarker(point, colors[index].toArgb(), active = index == active)
+    }
+    canvas.restore()
 }
 
 private class SmithSweepPath(sweep: S11Sweep) {
@@ -312,6 +346,12 @@ private class SmithDrawing(private val canvas: AndroidCanvas, private val palett
         val align = if (point.x > 223f) Paint.Align.RIGHT else Paint.Align.LEFT
         val x = if (align == Paint.Align.RIGHT) point.x - 10 else point.x + 10
         label(diagram.loadLabel, x.coerceIn(63f, 298f), maxOf(29f, point.y - 10f), 11f, palette.ink, align)
+    }
+
+    fun swrBoundary(swr: Double) {
+        val magnitude = ((swr - 1) / (swr + 1)).toFloat()
+        if (magnitude > 0f) dashedCircle(RADIUS * magnitude, palette.load)
+        circle(CENTER_X, CENTER_Y, 2.5f, palette.load)
     }
 
     fun sweep(series: SmithSweepPath, color: Int, active: Boolean) {

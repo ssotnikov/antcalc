@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -37,6 +38,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
 import local.antenna.calculator.core.layout.YagiScaling.Element
+import local.antenna.calculator.core.matching.matchingFromImpedance
+import local.antenna.calculator.core.measurements.S11Point
+import local.antenna.calculator.core.measurements.S11Sweep
 import local.antenna.calculator.nec.OpenNec
 import local.antenna.calculator.nec.NecOptimization
 import local.antenna.calculator.nec.optimizeNecLengths
@@ -93,15 +97,21 @@ internal fun YagiNecPanel(
         comparison = null
         optimization = null
     }
+    val colors = MaterialTheme.colorScheme
+    val actionColors = ButtonDefaults.buttonColors(
+        containerColor = colors.secondaryContainer,
+        contentColor = colors.onSecondaryContainer,
+    )
     if (!expanded) {
-        TextButton({ expanded = true }, Modifier.testTag("opennec-expand")) {
+        Button(onClick = { expanded = true }, modifier = Modifier.testTag("opennec-expand"),
+            colors = actionColors) {
             Text(stringResource(R.string.opennec_check))
         }
         return
     }
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            Text(stringResource(R.string.opennec_check), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.opennec_panel_title), style = MaterialTheme.typography.titleMedium)
             HelpText(R.string.opennec_conditions)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 NecInput(lower, R.string.opennec_low, "opennec-low", Modifier.weight(1f)) { lower = it }
@@ -142,10 +152,12 @@ internal fun YagiNecPanel(
                         job = null
                     }
                 }
-                Button(onClick = { start(false) }, enabled = canRun, modifier = Modifier.testTag("opennec-run")) {
+                Button(onClick = { start(false) }, enabled = canRun, modifier = Modifier.testTag("opennec-run"),
+                    colors = actionColors) {
                     Text(stringResource(R.string.opennec_run))
                 }
-                TextButton(onClick = { start(true) }, enabled = canRun, modifier = Modifier.testTag("opennec-optimize")) {
+                Button(onClick = { start(true) }, enabled = canRun, modifier = Modifier.testTag("opennec-optimize"),
+                    colors = actionColors) {
                     Text(stringResource(R.string.opennec_optimize))
                 }
             } else {
@@ -260,6 +272,7 @@ private fun NecPlots(
         reference?.let { line(it, colors.onSurfaceVariant) }
         line(adjusted, colors.primary)
     }
+    NecSmithPlot(selected.frequencyHz, adjusted, reference, limit, legend)
     Text(azimuthTitle, style = MaterialTheme.typography.titleSmall)
     Canvas(Modifier.fillMaxWidth().height(170.dp).semantics { contentDescription = azimuthTitle }) {
         val radius = size.minDimension * .46f
@@ -276,5 +289,38 @@ private fun NecPlots(
         referencePoint?.let { line(it, colors.onSurfaceVariant) }
         line(selected, colors.primary)
     }
+}
+
+@Composable
+private fun NecSmithPlot(
+    selectedHz: Long,
+    adjusted: List<OpenNec.Point>,
+    reference: List<OpenNec.Point>?,
+    limit: Double,
+    legend: Int,
+) {
+    val colors = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val title = stringResource(R.string.opennec_smith_plot)
+    val sweeps = remember(adjusted, reference) {
+        listOfNotNull(reference, adjusted).map { series ->
+            S11Sweep(50.0, series.map { point ->
+                val gamma = checkNotNull(matchingFromImpedance(point.resistance, point.reactance, 50.0).complex)
+                S11Point(point.frequencyHz.toDouble(), gamma.real, gamma.imaginary)
+            })
+        }
+    }
+    val lineColors = if (reference == null) listOf(colors.primary)
+        else listOf(colors.onSurfaceVariant, colors.primary)
+    Text(title, style = MaterialTheme.typography.titleSmall)
+    SmithComparisonGraphic(sweeps, lineColors, selectedHz.toDouble(), limit, title,
+        format = { matchingNumber(context, it, 1) }, modifier = Modifier.testTag("opennec-smith-plot"))
     if (reference != null) HelpText(legend)
+    else HelpText(R.string.opennec_smith_single_trace)
+    Text(stringResource(R.string.opennec_smith_markers, matchingNumber(context, selectedHz / 1e6, 6)),
+        style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+    val boundaryText = if (limit == 1.0) stringResource(R.string.opennec_smith_center_only)
+        else stringResource(R.string.opennec_smith_boundary, matchingNumber(context, limit, 3))
+    Text(boundaryText, style = MaterialTheme.typography.bodySmall, color = Color(smithPalette().load))
+    HelpText(R.string.opennec_smith_grid)
 }

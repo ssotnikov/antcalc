@@ -71,15 +71,21 @@ class CalculatorToolsUiTest : CalculatorUiFixture() {
             compose.onNodeWithTag("matching-mode").performScrollTo().performClick()
             compose.onNodeWithTag("matching-mode-$mode").performClick()
         }
+        compose.onNodeWithText("КСВ 2 : 1").assertIsDisplayed()
+        compose.onNodeWithTag("matching-SWR").performTextReplacement("3")
+        compose.onNodeWithText("КСВ 3 : 1").assertIsDisplayed()
         compose.onNodeWithTag("matching-SWR").performTextReplacement("3,")
+        compose.onNodeWithText("КСВ 3 : 1").assertDoesNotExist()
         chooseMode("IMPEDANCE")
         compose.onNodeWithTag("matching-REACTANCE").performTextReplacement("-50")
+        compose.onNodeWithText("Zₗ = 100 − j50 Ом · Z₀ = 50 Ом").assertExists()
         compose.onNodeWithTag("matching-copy").performScrollTo().assertIsEnabled()
         chooseMode("SWR")
         compose.onNodeWithTag("matching-SWR").assertTextContains("3,")
         compose.onNodeWithTag("matching-copy").performScrollTo().assertIsNotEnabled()
         chooseMode("GAMMA")
         compose.onNodeWithTag("matching-GAMMA").performTextReplacement("1")
+        compose.onNodeWithText("|Γ| = 1").assertExists()
         compose.onNodeWithText("∞ : 1").assertExists()
     }
 

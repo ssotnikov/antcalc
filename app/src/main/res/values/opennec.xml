@@ -44,4 +44,11 @@
     <string name="opennec_analytic_length">Calculated length</string>
     <string name="opennec_version">OpenNEC version</string>
     <string name="opennec_reset_applied">Restore calculated lengths</string>
+    <string name="opennec_panel_title">NEC check</string>
+    <string name="opennec_smith_plot">Smith chart · Z₀ = 50 Ω</string>
+    <string name="opennec_smith_single_trace">The colored trace shows the scaled geometry across the frequency grid.</string>
+    <string name="opennec_smith_markers">Round markers · impedance at %1$s MHz.</string>
+    <string name="opennec_smith_boundary">Dashed yellow circle · SWR %1$s. Inside the circle, SWR is below the limit.</string>
+    <string name="opennec_smith_center_only">At an SWR limit of 1, only the chart center meets the limit.</string>
+    <string name="opennec_smith_grid">Grid circles show constant R/Z₀ and arcs show constant X/Z₀. Above the axis, reactance is inductive (+j). Below it, reactance is capacitive (−j). The center is 50 + j0 Ω.</string>
 </resources>

@@ -12,9 +12,11 @@ import androidx.compose.ui.test.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import java.io.ByteArrayInputStream
+import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.layout.YagiDesign
 import local.antenna.calculator.core.trimming.AntennaType
+import local.antenna.calculator.core.units.LengthUnit
 import local.antenna.calculator.journal.JournalJson
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -155,10 +157,13 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         compose.onNodeWithTag("ys-example").performScrollTo().performClick()
         compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().performClick()
         compose.onNodeWithTag("opennec-expand").performScrollTo().performClick()
+        compose.onNodeWithText("Проверка в NEC").assertExists()
         compose.onNodeWithTag("opennec-run").performScrollTo().performClick()
         compose.waitUntil(15_000) { compose.onAllNodesWithTag("opennec-result").fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Опорная геометрия").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Пересчитанная геометрия").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("opennec-smith-plot").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Жёлтый пунктир", substring = true).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("opennec-low").performScrollTo().performTextReplacement("174")
         compose.onNodeWithTag("opennec-result").assertDoesNotExist()
         compose.onNodeWithTag("ys-gap").performScrollTo().performTextReplacement("10")
@@ -221,7 +226,10 @@ class YagiCalculatorTest : CalculatorUiFixture() {
             }
             input(0, "101")
             save.assertIsNotEnabled()
-            input(0, "10")
+            val example = compose.onNodeWithTag("yagi-driver-example")
+            example.assertIsNotEnabled()
+            input(0, "")
+            example.performScrollTo().performClick()
             save.performScrollTo().performClick()
             compose.runOnIdle {
                 assertEquals(0.1565, pending.snapshot.outputs.single { it.key == "yagi_driven_half_blank" }.value, 1e-9)
@@ -236,7 +244,17 @@ class YagiCalculatorTest : CalculatorUiFixture() {
                 assertEquals(0.4822, pending.snapshot.outputs.single { it.key == "yagi_hdriven_half_blank" }.value, 1e-9)
                 assertEquals(false, pending.snapshot.outputs.any { it.key == "yagi_vdriven_half_blank" })
             }
-            listOf("12", "100", "82").forEachIndexed { index, text -> input(index + 3, text) }
+            input(3, "12")
+            example.performScrollTo().performClick()
+            example.assertIsNotEnabled()
+            val context = compose.activity
+            fun diagram(gap: Double, bend: Double, setback: Double) =
+                context.getString(R.string.yagi_xpol_measured_scheme,
+                    yagiLength(context, gap, LengthUnit.MILLIMETERS),
+                    yagiLength(context, bend, LengthUnit.MILLIMETERS),
+                    yagiLength(context, setback, LengthUnit.MILLIMETERS))
+            compose.onNodeWithContentDescription(diagram(10.0, 103.0, 83.0)).assertExists()
+            compose.onNodeWithContentDescription(diagram(12.0, 100.0, 82.0)).assertExists()
             save.performScrollTo().performClick()
             compose.runOnIdle {
                 val type = AntennaType.YAGI

@@ -1,0 +1,3 @@
+• Fill empty fields with trial dimensions for DK7ZB 70 cm and GTV SAT. Existing entries are preserved.
+• The Yagi NEC check has a more detailed Smith chart and a legend.
+• Refined the reflection and feedline-loss diagrams and clarified driven-element data in the antenna catalog.

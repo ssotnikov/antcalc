@@ -18,5 +18,6 @@
     <string name="yagi_sat_feed">The driven elements are 514 mm apart along the boom. The author uses equal lengths of 50 Ω coax and a two-way splitter for circular polarization.</string>
     <string name="yagi_horizontal_plane">Horizontal plane (H)</string>
     <string name="yagi_vertical_plane">Vertical plane (V)</string>
-    <string name="yagi_xpol_scheme">The sketches show each plane separately. Table positions are measured from the rear end of the same boom. The drawn bends are schematic. Use the source drawing for fabrication.</string>
+    <string name="yagi_xpol_scheme">The sketches show each plane separately. Table positions are measured from the rear end of the same boom. The driven elements are schematic until you enter dimensions. Enter your feed assembly dimensions to update the diagram and cut list.</string>
+    <string name="yagi_xpol_measured_scheme">Diagram from entered dimensions. Gap %1$s, feed centre to bend %2$s, tip setback towards reflector %3$s.</string>
 </resources>

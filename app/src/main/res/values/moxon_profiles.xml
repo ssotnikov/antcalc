@@ -76,7 +76,7 @@
     <string name="moxon_fact_wire_1">40–10 m models · feed impedance, average gain and free-space F/B — ≈ 56–58 Ω · 5.8 dBi · &gt; 32 dB</string>
     <string name="moxon_desc_fdim">W4RNL wire frame using AWG 14 copper. The author gives dimensions for this specific frequency. A fixed installation can use four corner suspension points.</string>
     <string name="moxon_material_fdim">AWG 14 copper wire</string>
-    <string name="moxon_desc_satellite">The 145.825 MHz frame is fed directly by coax and couples to the driven element of a five-element 436.500 MHz Yagi. The article describes a wooden boom and a coiled-coax choke.</string>
+    <string name="moxon_desc_satellite">The 145.825 MHz frame is fed directly by coax and couples to the driven element of a five-element 436.500 MHz Yagi. The article describes a wooden boom and a coiled-coax choke. The build uses 3.2 mm diameter wire. The downloadable MMANA-GAL model specifies a 3.2 mm radius (6.4 mm diameter). SWR, gain and F/B come from the published simulation.</string>
     <string name="moxon_material_satellite">3.2 mm aluminum wire</string>
     <string name="moxon_fact_satellite_1">70 cm · coupled element · position / length — 127 / 334 mm</string>
     <string name="moxon_fact_satellite_2">70 cm · director 1 · position / length — 293 / 324 mm</string>
