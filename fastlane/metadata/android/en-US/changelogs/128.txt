@@ -1,0 +1,1 @@
+The Yagi scaling diagram appears as soon as a result is available. The reflector is shown as the origin, and the driven element and director positions can be edited. A warning above the example button flags missing inputs.

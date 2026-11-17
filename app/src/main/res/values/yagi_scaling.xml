@@ -53,7 +53,8 @@
     <string name="ys_effect_frequency">Enter the original and target frequencies. The app multiplies lengths, mounting distances and original tubing diameters by the ratio of the original frequency to the target frequency.</string>
     <string name="ys_effect_diameter">At the original frequency, changing tubing diameter adjusts element lengths. Mounting distances stay the same.</string>
     <string name="ys_effect_both">The app first scales the original geometry and diameters to the new frequency. It then recalculates element lengths for the tubing diameters you specify.</string>
-    <string name="ys_scheme">Open antenna diagram</string>
+    <string name="ys_missing_data">More data is needed to calculate</string>
+    <string name="ys_reflector_origin">Reference point · 0 %1$s</string>
     <string name="ys_result">New dimensions</string>
     <string name="ys_geometry_required">Enter the full lengths of the reflector and driven element, and the distance between them. The new dimensions will appear below automatically.</string>
     <string name="ys_all">Dimensions for all elements</string>

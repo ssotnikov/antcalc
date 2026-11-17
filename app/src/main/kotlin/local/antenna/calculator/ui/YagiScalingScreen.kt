@@ -145,11 +145,21 @@ internal fun YagiScalingScreen(
                             draft = draft.copy(rows = draft.rows.filterIndexed { i, _ -> i != index })
                         }) { Text(stringResource(R.string.ys_remove)) }
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ScalingField(row.position, R.string.ys_position, "ys-position-$index",
-                            Modifier.weight(1f), unitLabel, enabled = index > 0) { edit(row.copy(position = it)) }
+                    if (index == 0) {
+                        Text(
+                            stringResource(R.string.ys_reflector_origin, unitLabel),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
                         ScalingField(row.length, R.string.ys_length, "ys-length-$index",
-                            Modifier.weight(1f), unitLabel) { edit(row.copy(length = it)) }
+                            Modifier.fillMaxWidth(), unitLabel) { edit(row.copy(length = it)) }
+                    } else {
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            ScalingField(row.position, R.string.ys_position, "ys-position-$index",
+                                Modifier.weight(1f), unitLabel) { edit(row.copy(position = it)) }
+                            ScalingField(row.length, R.string.ys_length, "ys-length-$index",
+                                Modifier.weight(1f), unitLabel) { edit(row.copy(length = it)) }
+                        }
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         ScalingField(row.diameter, R.string.ys_d, "ys-d-$index",
@@ -164,6 +174,20 @@ internal fun YagiScalingScreen(
         }
         OutlinedButton({ draft = draft.copy(rows = draft.rows + ScalingRow("", "")) },
             enabled = draft.rows.size < YagiScaling.MAX_ELEMENTS) { Text(stringResource(R.string.ys_add)) }
+        if (result == null && draft.hasMissingRequiredData()) {
+            Surface(
+                modifier = Modifier.fillMaxWidth().testTag("ys-missing-data"),
+                shape = MaterialTheme.shapes.medium,
+                color = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer,
+            ) {
+                Text(
+                    stringResource(R.string.ys_missing_data),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
         TextButton({ draft = YagiScalingDraft.example().copy(mode = draft.mode) }, Modifier.testTag("ys-example")) {
             Text(stringResource(R.string.ys_example))
         }
@@ -182,17 +206,14 @@ internal fun YagiScalingScreen(
             SelectionContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
                     if (draft.mode != Mode.DIAMETER) Text(stringResource(R.string.ys_factor, factor), color = MaterialTheme.colorScheme.primary)
-                    Text(scalingElementLabel(1), style = MaterialTheme.typography.titleSmall)
-                    ScalingComparison(before[1], result.elements[1], scaleNumber, unitLabel)
                     gapText?.let { Text(it) }
                 }
             }
-            ScalingDetails(R.string.ys_scheme) {
-                val current = selected.coerceIn(result.elements.indices)
-                ScalingDrawing(before, result.elements, current) { selected = it }
-                ChoicePicker(stringResource(R.string.ys_element), result.elements.indices.toList(), current,
-                    { scalingElementLabel(it) }, { selected = it }, "ys-diagram-selection")
-                Text(scalingElementLabel(current), style = MaterialTheme.typography.titleSmall)
+            val current = selected.coerceIn(result.elements.indices)
+            ScalingDrawing(before, result.elements, current) { selected = it }
+            ChoicePicker(stringResource(R.string.ys_element), result.elements.indices.toList(), current,
+                { scalingElementLabel(it) }, { selected = it }, "ys-diagram-selection")
+            SelectionContainer {
                 ScalingComparison(before[current], result.elements[current], scaleNumber, unitLabel)
             }
             ScalingDetails(R.string.ys_all) {
@@ -244,10 +265,10 @@ internal fun YagiScalingScreen(
 @Composable
 private fun ScalingField(
     value: String, label: Int, tag: String, modifier: Modifier, unit: String = "",
-    invalid: Boolean = false, enabled: Boolean = true, onChange: (String) -> Unit,
+    invalid: Boolean = false, onChange: (String) -> Unit,
 ) {
     var focused by remember { mutableStateOf(false) }
-    val restingHint = enabled && value.isEmpty() && !focused && !invalid
+    val restingHint = value.isEmpty() && !focused && !invalid
     OutlinedTextField(
         value, { if (it.acceptsDecimalEdit()) onChange(it.boundedNumericText()) },
         modifier.testTag(tag).onFocusChanged { focused = it.isFocused },
@@ -260,7 +281,7 @@ private fun ScalingField(
                 overflow = TextOverflow.Ellipsis,
             )
         },
-        singleLine = true, enabled = enabled,
+        singleLine = true,
         isError = invalid || value.isNotBlank() && scalingDecimal(value) == null,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
     )

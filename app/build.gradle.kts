@@ -20,8 +20,8 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 127
-        versionName = "1.36.0"
+        versionCode = 128
+        versionName = "1.36.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 

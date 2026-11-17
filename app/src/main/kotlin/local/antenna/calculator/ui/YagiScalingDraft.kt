@@ -36,6 +36,15 @@ internal data class YagiScalingDraft(
     val split get() = (scalingDecimal(gap) ?: 0.0) > 0
     val enteredGap get() = scalingDecimal(gap)?.times(metresPerUnit)
 
+    fun hasMissingRequiredData(): Boolean {
+        if (source.isBlank() || mode != Mode.DIAMETER && target.isBlank()) return true
+        return rows.withIndex().any { (index, row) ->
+            val needsTargetDiameter = mode != Mode.FREQUENCY && !(index == 1 && split)
+            row.position.isBlank() || row.length.isBlank() || row.diameter.ifBlank { diameter }.isBlank() ||
+                needsTargetDiameter && row.target.ifBlank { targetDiameter }.isBlank()
+        }
+    }
+
     fun element(row: ScalingRow, index: Int): Element? {
         fun dimension(raw: String) = scalingDecimal(raw)?.times(metresPerUnit)
         val from = dimension(row.diameter.ifBlank { diameter }) ?: return null

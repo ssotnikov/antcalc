@@ -3,10 +3,29 @@ package local.antenna.calculator.ui
 import local.antenna.calculator.core.layout.YagiScaling
 import local.antenna.calculator.core.units.LengthUnit
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class YagiScalingDraftTest {
+    @Test fun missingDataOnlyIncludesFieldsRequiredByTheSelectedMode() {
+        val frequency = YagiScalingDraft.example().copy(targetDiameter = "")
+        assertFalse(frequency.hasMissingRequiredData())
+        assertTrue(frequency.copy(target = "").hasMissingRequiredData())
+
+        val diameter = frequency.copy(mode = YagiScaling.Mode.DIAMETER, target = "")
+        assertTrue(diameter.hasMissingRequiredData())
+        val individualDiameters = diameter.rows.mapIndexed { index, row ->
+            row.copy(target = if (index == 1) "" else "6")
+        }
+        assertTrue(diameter.copy(rows = individualDiameters).hasMissingRequiredData())
+        val split = diameter.copy(rows = individualDiameters, gap = "10")
+        assertFalse(split.hasMissingRequiredData())
+        assertFalse(split.copy(source = "0").hasMissingRequiredData())
+        assertNull(split.copy(source = "0").result())
+    }
+
     @Test fun frequenciesAndDiameterNeedElementLengthsAndSpacing() {
         val draft = YagiScalingDraft(source = "145", target = "152", diameter = "6")
         assertNull(draft.result())

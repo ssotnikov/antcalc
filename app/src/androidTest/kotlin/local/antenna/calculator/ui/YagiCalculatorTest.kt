@@ -74,6 +74,22 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         }
     }
 
+    @Test fun scalingShowsMissingDataAndOpensResultDiagramAutomatically() {
+        compose.setContent {
+            MaterialTheme { YagiScalingScreen(initial = null, onSave = null, onCopied = {}) }
+        }
+
+        compose.onNodeWithTag("ys-position-0").assertDoesNotExist()
+        compose.onNodeWithTag("ys-position-1").performScrollTo().assertIsEnabled()
+        compose.onNodeWithTag("ys-missing-data").performScrollTo().assertIsDisplayed()
+        val diagramElement = compose.onNodeWithTag("ys-diagram-selection-1")
+        diagramElement.assertDoesNotExist()
+
+        compose.onNodeWithTag("ys-example").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-missing-data").assertDoesNotExist()
+        diagramElement.performScrollTo().assertIsDisplayed()
+    }
+
     @Test fun driverInputsProduceSeparateCutLengthsAndSurviveProjectExchange() {
         val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)
         val previous = prefs.all
