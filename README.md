@@ -166,7 +166,7 @@
 ### Благодарности
 
 - **R3UDK** — за практическое руководство по изготовлению антенны «Волновой канал» и поддержку.
-- **Связистам поисково-спасательного отряда «ЛизаАлерт» (LizaAlert)** — за поддержку проекта.
+- **Связистам поисково-спасательного отряда «ЛизаАлерт»** — за поддержку проекта.
 
 ### Обратная связь
 
@@ -335,7 +335,7 @@ The app uses technical dimensions and formulas. See the original publications fo
 ### Acknowledgements
 
 - Thanks to **R3UDK** for writing a practical guide to building a Yagi–Uda antenna and for supporting.
-- Thanks to the **communications team of the LizaAlert volunteer search and rescue group** for supporting the project.
+- Thanks to **LizaAlert’s Radio Communications Group** for supporting the project.
 
 ### Contact
 
