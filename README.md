@@ -3,10 +3,9 @@
 # Antenna Calculator · Антенный калькулятор
 
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84)
-![Languages](https://img.shields.io/badge/languages-RU%20%7C%20EN-blue)
-![Offline](https://img.shields.io/badge/works-offline-success)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![NEC-2](https://img.shields.io/badge/NEC2-engine-orange?style=flat-square)
+![Languages](https://img.shields.io/badge/Languages-RU%20%7C%20EN-blue)
+![License](https://img.shields.io/badge/License-MIT-blue)
+![NEC-2](https://img.shields.io/badge/NEC2-Engine-orange?style=flat-square)
 
 [Русский](#русский) · [English](#english)
 
