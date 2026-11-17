@@ -2,10 +2,10 @@
 
 # Antenna Calculator · Антенный калькулятор
 
-![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84)
-![Languages](https://img.shields.io/badge/Languages-RU%20%7C%20EN-blue)
-![License](https://img.shields.io/badge/License-MIT-blue)
-[![NEC2 Engine](https://img.shields.io/badge/NEC2-Engine-orange?style=flat-square)](https://www.nec2.org/)
+![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84?style=flat&labelColor=365563)
+![Languages](https://img.shields.io/badge/Languages-RU%20%7C%20EN-blue?style=flat&labelColor=365563)
+![License](https://img.shields.io/badge/License-MIT-blue?style=flat&labelColor=365563)
+[![NEC2 Engine](https://img.shields.io/badge/NEC2-Engine-orange?style=flat&labelColor=365563)](https://www.nec2.org/)
 [![OpenNEC 2.4.1](https://img.shields.io/badge/OpenNEC-2.4.1-a0e2d4?style=flat&labelColor=365563)](https://github.com/maurymarkowitz/OpenNEC)
 
 [Русский](#русский) · [English](#english)
