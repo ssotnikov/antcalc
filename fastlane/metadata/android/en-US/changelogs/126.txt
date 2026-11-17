@@ -1,0 +1,1 @@
+Clearer Yagi–Uda scaling modes with visible original inputs and a new vector illustration. Updated coaxial cable diagram with reference planes A and B. Feedline loss shows a labeled preview at the nearest published frequency when the datasheet has no exact match.

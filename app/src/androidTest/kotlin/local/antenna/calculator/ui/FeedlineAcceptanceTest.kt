@@ -14,7 +14,7 @@ import org.junit.runner.RunWith
 class FeedlineAcceptanceTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
-    @Test fun switchesProfileAndRejectsMissingFrequency() {
+    @Test fun switchesProfileAndShowsReferenceWhenFrequencyIsMissing() {
         prepare(AppLanguage.RUSSIAN)
         compose.onNodeWithTag("open-feedline").performScrollTo().performClick()
         compose.onNodeWithTag("feedline-result").performScrollTo()
@@ -24,9 +24,27 @@ class FeedlineAcceptanceTest {
         compose.onNodeWithTag("feedline-result").performScrollTo()
         compose.onNodeWithText("56,32 Вт").assertExists()
         compose.onNodeWithTag("feedline-frequency").performScrollTo().performTextReplacement("915")
-        compose.onNodeWithTag("feedline-result").assertDoesNotExist()
+        compose.onNodeWithTag("feedline-preview-reference").performScrollTo().assertExists()
+        compose.onNodeWithText("56,32 Вт").assertExists()
         compose.onNodeWithTag("feedline-copy").performScrollTo().assertIsNotEnabled()
-        compose.onNodeWithText("В паспорте нет точки", substring = true).assertExists()
+        compose.onNodeWithTag("feedline-use-preview-frequency").performScrollTo().performClick()
+        compose.onNodeWithTag("feedline-preview-reference").assertDoesNotExist()
+        compose.onNodeWithTag("feedline-copy").performScrollTo().assertIsEnabled()
+    }
+
+    @Test fun radiolabAt145MHzShowsLabeled150MHzPreview() {
+        prepare(AppLanguage.RUSSIAN)
+        compose.runOnUiThread {
+            val model = ViewModelProvider(compose.activity)[CalculatorViewModel::class.java]
+            model.onEvent(CalculatorEvent.Feedline(FeedlineDraft(frequency = "145", length = "11", power = "3")))
+        }
+        compose.onNodeWithTag("open-feedline").performScrollTo().performClick()
+        compose.onNodeWithTag("feedline-profile").performScrollTo().performClick()
+        compose.onNodeWithText("Radiolab RG-213 C/U", useUnmergedTree = true).performClick()
+        compose.onNodeWithTag("feedline-frequency").assertTextContains("145", substring = true)
+        compose.onNodeWithTag("feedline-preview-reference").performScrollTo().assertTextContains("150", substring = true)
+        compose.onNodeWithText("2,56 Вт").assertExists()
+        compose.onNodeWithTag("feedline-copy").performScrollTo().assertIsNotEnabled()
     }
 
     @Test fun changingManualFrequencyKeepsEstimateVisibleUntilConfirmation() {

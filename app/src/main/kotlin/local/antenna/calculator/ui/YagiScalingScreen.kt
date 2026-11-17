@@ -14,8 +14,11 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
@@ -24,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.CalculationSnapshot
@@ -70,6 +74,7 @@ internal fun YagiScalingScreen(
             HelpText(R.string.ys_invalid_saved)
             return@Column
         }
+        ScalingIllustration(draft)
         Text(stringResource(R.string.ys_mode), style = MaterialTheme.typography.titleMedium)
         Mode.entries.forEach { mode ->
             val choose = { draft = draft.copy(mode = mode) }
@@ -80,17 +85,33 @@ internal fun YagiScalingScreen(
                 Text(stringResource(mode.scalingLabel()), Modifier.fillMaxWidth())
             }
         }
-        Surface(shape = MaterialTheme.shapes.medium, color = MaterialTheme.colorScheme.surfaceContainerHigh) {
-            Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(7.dp)) {
-                Text(stringResource(when (draft.mode) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            contentColor = MaterialTheme.colorScheme.onSurface,
+        ) {
+            Text(
+                stringResource(when (draft.mode) {
                     Mode.FREQUENCY -> R.string.ys_effect_frequency
                     Mode.DIAMETER -> R.string.ys_effect_diameter
                     Mode.BOTH -> R.string.ys_effect_both
-                }), style = MaterialTheme.typography.bodyMedium)
-                if (draft.sourceHz != null) Text(stringResource(R.string.ys_source_summary, draft.source),
-                    style = MaterialTheme.typography.bodySmall)
-            }
+                }),
+                Modifier.fillMaxWidth().padding(12.dp),
+                style = MaterialTheme.typography.bodyMedium,
+            )
         }
+        Text(stringResource(R.string.ys_source_parameters), style = MaterialTheme.typography.titleMedium)
+        ScalingField(draft.source, if (draft.mode == Mode.DIAMETER) R.string.ys_working_hz else R.string.ys_source_hz,
+            "ys-source", Modifier.fillMaxWidth(), invalid = draft.source.isNotBlank() && draft.sourceHz == null) {
+            draft = draft.copy(source = it)
+        }
+        ChoicePicker(stringResource(R.string.ys_unit), LengthUnit.entries, draft.unit,
+            { stringResource(it.labelResource()) }, { draft = draft.inUnit(it) }, "ys-unit")
+        ScalingField(draft.diameter, R.string.ys_common_d, "ys-diameter", Modifier.fillMaxWidth(), unitLabel) {
+            draft = draft.copy(diameter = it)
+        }
+        HelpText(R.string.ys_default_d_help)
+        Text(stringResource(R.string.ys_target_parameters), style = MaterialTheme.typography.titleMedium)
         if (draft.mode != Mode.DIAMETER) ScalingField(draft.target, R.string.ys_target_hz, "ys-target",
             Modifier.fillMaxWidth(), invalid = draft.target.isNotBlank() && draft.targetHz == null) {
             draft = draft.copy(target = it)
@@ -106,17 +127,6 @@ internal fun YagiScalingScreen(
         if (expanded) {
             ChoicePicker(stringResource(R.string.ys_geometry), Geometry.entries, draft.geometry,
                 { stringResource(it.scalingLabel()) }, { draft = draft.copy(geometry = it) }, "ys-geometry")
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                ScalingField(draft.source, if (draft.mode == Mode.DIAMETER) R.string.ys_working_hz else R.string.ys_source_hz,
-                    "ys-source", Modifier.weight(1f), invalid = draft.source.isNotBlank() && draft.sourceHz == null) {
-                    draft = draft.copy(source = it)
-                }
-            }
-            ChoicePicker(stringResource(R.string.ys_unit), LengthUnit.entries, draft.unit,
-                { stringResource(it.labelResource()) }, { draft = draft.inUnit(it) }, "ys-unit")
-            ScalingField(draft.diameter, R.string.ys_common_d, "ys-diameter", Modifier.fillMaxWidth(), unitLabel) {
-                draft = draft.copy(diameter = it)
-            }
             ScalingField(draft.gap, R.string.ys_gap, "ys-gap", Modifier.fillMaxWidth(), unitLabel) { draft = draft.copy(gap = it) }
             HelpText(R.string.ys_gap_help)
             draft.rows.forEachIndexed { index, row ->
@@ -233,11 +243,24 @@ private fun ScalingField(
     value: String, label: Int, tag: String, modifier: Modifier, unit: String = "",
     invalid: Boolean = false, enabled: Boolean = true, onChange: (String) -> Unit,
 ) {
-    OutlinedTextField(value, { if (it.acceptsDecimalEdit()) onChange(it.boundedNumericText()) },
-        modifier.testTag(tag), label = { Text(stringResource(label) + if (unit.isEmpty()) "" else ", $unit") },
+    var focused by remember { mutableStateOf(false) }
+    val restingHint = enabled && value.isEmpty() && !focused && !invalid
+    OutlinedTextField(
+        value, { if (it.acceptsDecimalEdit()) onChange(it.boundedNumericText()) },
+        modifier.testTag(tag).onFocusChanged { focused = it.isFocused },
+        label = {
+            Text(
+                stringResource(label) + if (unit.isEmpty()) "" else ", $unit",
+                color = if (restingHint) inputExampleColor() else Color.Unspecified,
+                style = if (restingHint) MaterialTheme.typography.bodySmall else LocalTextStyle.current,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        },
         singleLine = true, enabled = enabled,
         isError = invalid || value.isNotBlank() && scalingDecimal(value) == null,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+    )
 }
 
 @Composable
@@ -257,6 +280,61 @@ private fun ScalingDetails(title: Int, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     TextButton({ expanded = !expanded }) { Text(stringResource(title) + if (expanded) " ▴" else " ▾") }
     if (expanded) content()
+}
+
+@Composable
+private fun ScalingIllustration(draft: YagiScalingDraft) {
+    val sourceHz = draft.sourceHz
+    val targetHz = draft.targetHz
+    val colors = MaterialTheme.colorScheme
+    val description = stringResource(R.string.ys_illustration)
+    val targetScale = when {
+        draft.mode == Mode.DIAMETER -> 1f
+        sourceHz == null || targetHz == null -> .78f
+        else -> (sourceHz.toDouble() / targetHz).toFloat().coerceIn(.55f, 1.38f)
+    }
+    val originalScale = 1f / maxOf(1f, targetScale)
+    val originalDiameter = scalingDecimal(draft.diameter)?.takeIf { it > 0 }
+    val requestedDiameter = scalingDecimal(draft.targetDiameter)?.takeIf { it > 0 }
+    val tubeScale = when {
+        draft.mode == Mode.FREQUENCY -> targetScale
+        originalDiameter != null && requestedDiameter != null -> (requestedDiameter / originalDiameter).toFloat()
+        else -> 1f
+    }.coerceIn(.6f, 1.65f)
+
+    Column(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Canvas(Modifier.fillMaxWidth().height(104.dp).semantics { contentDescription = description }) {
+            val radius = minOf(size.width * .15f, size.height * .42f)
+            val centerY = size.height / 2
+            fun antenna(centerX: Float, multiplier: Float, original: Boolean) {
+                val color = if (original) colors.onSurfaceVariant else colors.primary
+                val center = Offset(centerX, centerY)
+                val r = radius * multiplier
+                val boom = Offset(r * .91f, -r * .31f)
+                val element = Offset(r * .44f, r * .84f)
+                val tube = (2.5f * if (original) 1f else tubeScale).dp.toPx()
+                drawLine(colors.outline, center - boom, center + boom, 4.dp.toPx(), StrokeCap.Round)
+                listOf(1f, .88f, .77f, .69f).forEachIndexed { i, length ->
+                    val mount = center + boom * (-.82f + i * .55f)
+                    val conductor = element * length
+                    drawLine(color, mount - conductor, mount + conductor, tube, StrokeCap.Round)
+                    drawCircle(colors.surfaceContainer, 3.dp.toPx(), mount)
+                    drawCircle(color, 1.35.dp.toPx(), mount)
+                }
+            }
+            antenna(size.width * .23f, originalScale, original = true)
+            antenna(size.width * .77f, originalScale * targetScale, original = false)
+            val arrow = 11.dp.toPx()
+            val tip = Offset(size.width / 2 + arrow, centerY)
+            drawLine(colors.outline, Offset(tip.x - 2 * arrow, tip.y), tip, 2.dp.toPx(), StrokeCap.Round)
+            drawLine(colors.outline, Offset(tip.x - arrow / 2, tip.y - arrow / 2), tip, 2.dp.toPx(), StrokeCap.Round)
+            drawLine(colors.outline, Offset(tip.x - arrow / 2, tip.y + arrow / 2), tip, 2.dp.toPx(), StrokeCap.Round)
+        }
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            Text(stringResource(R.string.ys_before), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
+            Text(stringResource(R.string.ys_after), style = MaterialTheme.typography.labelMedium, color = colors.primary)
+        }
+    }
 }
 
 @Composable

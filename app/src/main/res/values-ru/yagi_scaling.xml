@@ -14,11 +14,11 @@
     <string name="ys_working_hz">Рабочая частота, МГц</string>
     <string name="ys_source_hz">Исходная частота, МГц</string>
     <string name="ys_target_hz">Новая частота, МГц</string>
-    <string name="ys_common_d">Исходный диаметр по умолчанию</string>
-    <string name="ys_common_target_d">Новый диаметр трубок</string>
+    <string name="ys_common_d">Общий исходный диаметр</string>
+    <string name="ys_common_target_d">Общий новый диаметр</string>
     <string name="ys_gap">Зазор питания</string>
     <string name="ys_gap_help">Необязательное поле. Введите длину вибратора от конца до конца с учётом зазора. Если задан зазор, при поправке на диаметр вибратор сохраняет пропорционально перенесённые размеры.</string>
-    <string name="ys_elements">Исходные размеры · %1$d эл.</string>
+    <string name="ys_elements">Геометрия элементов · %1$d эл.</string>
     <string name="ys_remove">Удалить</string>
     <string name="ys_position">От отражателя</string>
     <string name="ys_length">Полная длина</string>
@@ -51,10 +51,9 @@
     <string name="ys_reopen">Открыть расчёт масштабирования</string>
     <string name="ys_book_authors">Гюнтер Хох (DL6WU) и Иэн Уайт (G3SEK)</string>
     <string name="ys_book_rights">Права на публикацию сохраняются за правообладателями. Уведомление об авторских правах приведено в издании.</string>
-    <string name="ys_effect_frequency">Длина, диаметр и места крепления изменятся в одной пропорции. Положение отсчитывается от отражателя вдоль траверсы.</string>
-    <string name="ys_effect_diameter">Выбранный диаметр трубок влияет на длины. Частота и места крепления остаются прежними.</string>
-    <string name="ys_effect_both">Частота задаёт новые места крепления. Выбранный диаметр трубок влияет на итоговую длину элементов.</string>
-    <string name="ys_source_summary">Исходная антенна · %1$s МГц</string>
+    <string name="ys_effect_frequency">Укажите исходную и новую частоты. Длины, расстояния между креплениями и исходные диаметры умножаются на отношение исходной частоты к новой.</string>
+    <string name="ys_effect_diameter">Частота и места крепления остаются прежними. Длины элементов пересчитываются под указанные новые диаметры.</string>
+    <string name="ys_effect_both">Сначала исходная геометрия и диаметры масштабируются на новую частоту. Затем длины элементов уточняются под диаметры трубок, которые вы указали.</string>
     <string name="ys_scheme">Открыть схему антенны</string>
     <string name="ys_all">Все элементы</string>
     <string name="ys_reflector">Отражатель</string>
@@ -76,4 +75,8 @@
     <string name="hero_reflected_power">Отражённая мощность %1$s</string>
     <string name="ys_scale_name">Коэффициент масштаба</string>
     <string name="ys_unit">Единица длины</string>
+    <string name="ys_source_parameters">Исходная антенна</string>
+    <string name="ys_target_parameters">Целевые параметры</string>
+    <string name="ys_default_d_help">Укажите общий диаметр или задайте диаметры в геометрии элементов. Индивидуальные значения имеют приоритет.</string>
+    <string name="ys_illustration">Условное изображение Яги до и после масштабирования.</string>
 </resources>

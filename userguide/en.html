@@ -72,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
-  <span class="version">Version 1.35.0</span>
+  <span class="version">Version 1.35.1</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -135,7 +135,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <tr><th scope="row"><span class="web-label">Halo CB</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/halo">Halo CB</a></span></th><td>Choose a circular or square loop and enter frequency, <var>k</var> and the gap. Check the conductor length on the diagram and review the gamma match.</td></tr>
 <tr><th scope="row"><span class="web-label">Trap Dipole</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/trap-dipole">Trap Dipole</a></span></th><td>Select R2AUK, VK2EVB or AA4LR and the 20, 40 or 80 m band. Check sections A, B and C and traps T20 and T40. Use the separate LC and coil calculations as needed.</td></tr>
 </tbody></table>
-<h3>Yagi–Uda scaling</h3><div class="app-links"><a href="https://appassets.androidplatform.net/open/yagi-scaling">Yagi–Uda scaling</a></div><p>In Tools, choose what to change. Frequency scaling changes lengths, diameters and positions together. A diameter change at the same frequency adjusts the lengths of straight round elements. Enter positions from the reflector and compare the numbers before and after. Open the diagram and tap an element to inspect it. Save the calculation to a Yagi project.</p>
+<h3>Yagi–Uda scaling</h3><div class="app-links"><a href="https://appassets.androidplatform.net/open/yagi-scaling">Yagi–Uda scaling</a></div><p>In Tools, choose what to change. Frequency scaling changes lengths, diameters and positions together. A diameter change at the same frequency adjusts the lengths of straight round elements. Enter the original antenna frequency and default diameter above the target parameters. Open Element geometry to enter each length and its position measured from the reflector, and override any individual diameter. Compare the numbers before and after. Open the diagram and tap an element to inspect it. Save the calculation to a Yagi project.</p>
 <h3>Models and drawings</h3><p>Drag across a vector model to rotate it. Double-tap or tap the plus magnifier to open it full-screen. Spread two fingers to zoom and drag with two fingers to pan the model. The minus magnifier and Android Back close the viewer. The construction guide also opens photos and drawings with a double tap or the magnifier. You can zoom, pan and reset their scale.</p>
 <h3>Trap Dipole</h3><p>Expand <strong>Trap Dipole Designs and Band Behaviour</strong> near the bottom to read about W3DZZ and operation on different bands. Open <strong>Tuning and measurements</strong> to import S1P and analyse SWR within the selected band.</p>
         </div>
@@ -196,7 +196,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <div class="with-images">
         <div class="prose">
 <h3>Cable electrical length</h3><p>Open the tool of the same name. Enter frequency, cable velocity factor and the length you know. Choose the conversion direction between physical and electrical length. Phase and delay use the line parameters you entered.</p>
-<h3>Feedline loss</h3><p>Enter frequency and length and choose the cable from the catalog. When entering attenuation manually, use the value for the stated frequency and check the units, for example dB per 100 m. The result shows matched-line loss and power at the far end. Use SWR and reflection to estimate reflected power. After changing frequency, the previous attenuation stays in the preliminary result. Check and confirm it for the new frequency before copying.</p>
+<h3>Feedline loss</h3><p>Enter frequency and length and choose the cable from the catalog. When entering attenuation manually, use the value for the stated frequency and check the units, for example dB per 100 m. The result shows matched-line loss and power at the far end. Use SWR and reflection to estimate reflected power. After changing frequency, the previous attenuation stays in the preliminary result. Check and confirm it for the new frequency before copying. When the datasheet has no value at the operating frequency, P₂ and the scale show a preview at the closest published frequency, identified beside the result. Use the button to select that frequency or enter attenuation for the operating frequency manually.</p>
         </div>
 <div class="gallery">
 <figure><a href="images/en/12-cable-electrical-length.webp"><img src="images/en/12-cable-electrical-length.webp" width="1080" height="1920" alt="Cable electrical length" loading="lazy" decoding="async"></a><figcaption>Cable electrical length</figcaption></figure>

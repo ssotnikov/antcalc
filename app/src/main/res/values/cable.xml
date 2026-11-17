@@ -36,7 +36,7 @@
     <string name="cable_planes">Reference planes</string>
     <string name="cable_start">A · Start</string>
     <string name="cable_end">B · End</string>
-    <string name="cable_diagram_alt">A cable between reference planes A and B. Phase delay refers to one pass from A to B, without reflections or connectors.</string>
+    <string name="cable_diagram_alt">A coaxial cable between reference planes A and B. The distance from A to B is the physical length. Phase delay refers to one pass from A to B, without reflections or connectors.</string>
     <string name="cable_error_number">Enter a complete nonnegative decimal number, up to 32 characters. Signs and scientific notation are not supported.</string>
     <string name="cable_error_range">Allowed range: %1$s to %2$s.</string>
     <string name="cable_error_step">Smallest input step: %1$s.</string>

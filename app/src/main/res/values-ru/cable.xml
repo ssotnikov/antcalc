@@ -36,7 +36,7 @@
     <string name="cable_planes">Плоскости отсчёта</string>
     <string name="cable_start">A · Начало</string>
     <string name="cable_end">B · Конец</string>
-    <string name="cable_diagram_alt">Кабель между плоскостями отсчёта A и B. Фазовая задержка относится к одному проходу от A к B без учёта отражений и разъёмов.</string>
+    <string name="cable_diagram_alt">Коаксиальный кабель между плоскостями отсчёта A и B. Расстояние от A до B — физическая длина кабеля. Фазовая задержка относится к одному проходу от A к B без учёта отражений и разъёмов.</string>
     <string name="cable_error_number">Введите полное неотрицательное число с точкой или запятой, не более 32 символов. Знаки и экспоненциальная запись не поддерживаются.</string>
     <string name="cable_error_range">Допустимый диапазон: от %1$s до %2$s.</string>
     <string name="cable_error_step">Минимальный шаг ввода: %1$s.</string>

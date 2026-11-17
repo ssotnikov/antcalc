@@ -33,6 +33,7 @@ import local.antenna.calculator.state.FeedlineDraft
 import local.antenna.calculator.state.boundedNumericText
 import java.math.BigDecimal
 import java.text.NumberFormat
+import kotlin.math.abs
 import local.antenna.calculator.core.units.LengthUnit
 
 private fun AttenuationUnit.label() = when (this) {
@@ -57,7 +58,9 @@ private fun rows(context: Context, result: FeedlineLoss): List<Pair<Int, String>
     result.lostWatts?.let { addResult(R.string.feedline_lost, it, R.string.feedline_watts) }
 }
 
-private fun FeedlineDraft.calculate(profile: CableProfile?, allowProvisional: Boolean = false): FeedlineLoss? {
+private fun FeedlineDraft.calculate(
+    profile: CableProfile?, allowProvisional: Boolean = false, passportFrequency: Long? = hertz(),
+): FeedlineLoss? {
     val hertz = hertz() ?: return null
     val length = metres() ?: return null
     val inputWatts = watts()
@@ -66,7 +69,7 @@ private fun FeedlineDraft.calculate(profile: CableProfile?, allowProvisional: Bo
         val attenuation = manualAttenuation()?.takeIf { allowProvisional || attenuationHertz == hertz } ?: return null
         calculateFeedlineLoss(length, attenuation, enteredAttenuationUnit, inputWatts)
     } else {
-        val attenuation = profile?.attenuation?.get(hertz) ?: return null
+        val attenuation = profile?.attenuation?.get(passportFrequency) ?: return null
         calculateFeedlineLoss(length, attenuation, profile.unit, inputWatts)
     }
 }
@@ -87,8 +90,12 @@ internal fun FeedlineScreen(
     val profile = catalog.profile(draft.profileId)
     val hertz = draft.hertz()
     val point = profile?.attenuation?.get(hertz)
+    val previewHertz = if (hertz != null && point == null) {
+        profile?.attenuation?.keys?.minWithOrNull(compareBy<Long> { abs(it - hertz) }.thenBy { it })
+    } else null
+    val previewFrequency = previewHertz?.let { context.frequencyWithUnit(it, draft.frequencyUnit) }
     val provisional = draft.profileId == null && hertz != null && draft.manualAttenuation() != null && draft.attenuationHertz != hertz
-    val result = draft.calculate(profile, allowProvisional = true)
+    val result = draft.calculate(profile, allowProvisional = true, passportFrequency = previewHertz ?: hertz)
     val enabled = state.editingEnabled
     var details by rememberSaveable { mutableStateOf(false) }
     fun edit(change: (FeedlineDraft) -> FeedlineDraft) =
@@ -104,9 +111,11 @@ internal fun FeedlineScreen(
             val shown = if (it > 0 && it < .01) "< " + number(context, .01, 2) else number(context, it, 2)
             resources.getString(R.string.feedline_watts, shown)
         } ?: "—"
+        val outputLabel = if (previewFrequency != null) stringResource(R.string.feedline_preview_output, previewFrequency)
+            else stringResource(R.string.hero_power_out)
         TransmissionDiagram(TransmissionIllustration.POWER,
             stringResource(R.string.hero_power_in) + "\n" + watts(draft.watts()?.toDouble()),
-            stringResource(R.string.hero_power_out) + "\n" + watts(result?.outputWatts),
+            outputLabel + "\n" + watts(result?.outputWatts),
             result?.lostWatts?.let { stringResource(R.string.hero_dissipated, watts(it)) },
             result?.transmittedFraction, R.string.hero_feed_legend)
         HelpText(R.string.feedline_screen_intro)
@@ -147,7 +156,14 @@ internal fun FeedlineScreen(
                 Text(number(context, point, 12) + " " + stringResource(profile.unit.label()),
                     style = MaterialTheme.typography.titleMedium, modifier = Modifier.testTag("feedline-datasheet-value"))
             } else if (hertz != null) {
-                HelpText(R.string.feedline_missing_frequency)
+                if (previewHertz != null && previewFrequency != null) {
+                    SelectableText(stringResource(R.string.feedline_preview_explanation, previewFrequency),
+                        style = MaterialTheme.typography.bodyMedium)
+                    OutlinedButton({ edit { it.chooseFrequency(previewHertz) } }, enabled = enabled,
+                        modifier = Modifier.testTag("feedline-use-preview-frequency")) {
+                        Text(stringResource(R.string.feedline_use_preview_frequency, previewFrequency))
+                    }
+                } else HelpText(R.string.feedline_missing_frequency)
                 OutlinedButton({ edit { it.copy(profileId = null) } }, enabled = enabled) {
                     Text(stringResource(R.string.feedline_manual))
                 }
@@ -179,6 +195,10 @@ internal fun FeedlineScreen(
         }
         FeedlineHeading(R.string.feedline_result)
         if (provisional && result != null) HelpText(R.string.feed_provisional)
+        if (previewFrequency != null && result != null) {
+            Text(stringResource(R.string.feedline_preview_result, previewFrequency), style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.testTag("feedline-preview-reference"))
+        }
         if (result == null) {
             HelpText(R.string.feedline_pending)
         } else {
@@ -207,7 +227,7 @@ internal fun FeedlineScreen(
                 ClipData.newPlainText(appName, report),
             )
             onCopied()
-        }, enabled = result != null && !provisional, modifier = Modifier.fillMaxWidth().testTag("feedline-copy")) {
+        }, enabled = result != null && !provisional && previewHertz == null, modifier = Modifier.fillMaxWidth().testTag("feedline-copy")) {
             Text(stringResource(R.string.copy_result))
         }
         TextButton({ details = !details }) {

@@ -39,4 +39,8 @@
     <string name="feedline_limits">Matched line model. Connector losses and mismatch are excluded. The result does not determine the cable power rating.</string>
     <string name="feedline_vf">Datasheet velocity factor</string>
     <string name="feedline_vf_reciprocal">VF is calculated as the reciprocal of the published shortening ratio.</string>
+    <string name="feedline_preview_output">Output P₂ at %1$s</string>
+    <string name="feedline_preview_explanation">The datasheet has no point at the entered frequency. The preview uses the closest published point, %1$s. Choose that frequency or enter attenuation manually.</string>
+    <string name="feedline_use_preview_frequency">Use %1$s</string>
+    <string name="feedline_preview_result">Preview at %1$s</string>
 </resources>

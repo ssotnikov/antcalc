@@ -15,8 +15,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
@@ -235,7 +240,7 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
 
 @Composable
 private fun CableDiagram() {
-    val color = MaterialTheme.colorScheme.primary
+    val colors = MaterialTheme.colorScheme
     val description = stringResource(R.string.cable_diagram_alt)
     Text(stringResource(R.string.cable_planes), style = MaterialTheme.typography.titleMedium)
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -243,8 +248,43 @@ private fun CableDiagram() {
         Text(stringResource(R.string.cable_end), modifier = Modifier.weight(1f), textAlign = androidx.compose.ui.text.style.TextAlign.End)
     }
     Canvas(Modifier.fillMaxWidth().height(60.dp).testTag("cable-diagram").semantics { contentDescription = description }) {
-        val left = 16.dp.toPx(); val right = size.width - left
-        listOf(.4f, .6f).forEach { y -> drawLine(color, Offset(left, size.height * y), Offset(right, size.height * y), 2.dp.toPx()) }
-        listOf(left, right).forEach { x -> drawLine(color, Offset(x, 0f), Offset(x, size.height), 2.dp.toPx()) }
+        val left = 16.dp.toPx()
+        val right = size.width - left
+        val center = size.height / 2
+        val upper = center - 11.dp.toPx()
+        val lower = center + 11.dp.toPx()
+        // Layer widths descend towards the ends to expose the shield, dielectric and centre conductor.
+        val layer = (right - left).coerceAtLeast(0f) / 16f
+        val markerDash = PathEffect.dashPathEffect(floatArrayOf(3.dp.toPx(), 3.dp.toPx()))
+        if (layer <= 0f) return@Canvas
+        for (x in listOf(left, right)) {
+            drawLine(colors.primary, Offset(x, 0f), Offset(x, upper - 2.dp.toPx()), 1.5.dp.toPx(), pathEffect = markerDash)
+            drawLine(colors.primary, Offset(x, lower + 2.dp.toPx()), Offset(x, size.height), 1.5.dp.toPx(), pathEffect = markerDash)
+        }
+        val conductor = lerp(colors.tertiary, colors.onSurface, .22f)
+        drawLine(conductor, Offset(left, center), Offset(right, center), 3.dp.toPx())
+        val dielectricRadius = 4.dp.toPx()
+        drawRoundRect(
+            colors.onSurfaceVariant, Offset(left + layer, center - dielectricRadius),
+            Size(right - left - 2 * layer, 2 * dielectricRadius), CornerRadius(1.5.dp.toPx()),
+        )
+        val shieldRadius = 7.dp.toPx()
+        drawRoundRect(
+            colors.outline, Offset(left + 2 * layer, center - shieldRadius),
+            Size(right - left - 4 * layer, 2 * shieldRadius), CornerRadius(2.dp.toPx()),
+        )
+        for (step in 1..3) {
+            val stripe = layer * step / 4
+            for (x in listOf(left + 2 * layer + stripe, right - 3 * layer + stripe)) {
+                drawLine(colors.surface, Offset(x, center - shieldRadius), Offset(x - layer / 5, center + shieldRadius), 1.dp.toPx())
+            }
+        }
+        drawRoundRect(
+            Brush.verticalGradient(
+                listOf(colors.outline, lerp(colors.surfaceVariant, colors.onSurface, .35f), colors.surfaceVariant, colors.outline),
+                startY = upper, endY = lower,
+            ),
+            Offset(left + 3 * layer, upper), Size(right - left - 6 * layer, lower - upper), CornerRadius(4.dp.toPx()),
+        )
     }
 }
