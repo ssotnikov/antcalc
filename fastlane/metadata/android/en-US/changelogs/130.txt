@@ -1,0 +1,4 @@
+• Feedline loss now shows power falling along the cable and the fraction reaching its output.
+• The SWR diagram shows the incident and reflected waves, with values that update as you edit the input.
+• Search projects with up to 32 characters and clear the search in one tap.
+• Updated title feedback and the SWR note in journal entries.

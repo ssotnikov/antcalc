@@ -71,8 +71,13 @@
     <string name="hero_wave_legend">λ₀ — длина волны в свободном пространстве. λ в кабеле — длина волны в кабеле на той же частоте.</string>
     <string name="hero_feed_legend">Согласованная линия. Выделенная часть шкалы показывает долю входной мощности, дошедшую до выхода.</string>
     <string name="hero_reflect_legend">В плоскости нагрузки |Γ| — отношение амплитуд отражённой и падающей волн напряжения. Доля отражённой мощности равна |Γ|².</string>
-    <string name="hero_incident">Падающая V⁺</string>
-    <string name="hero_reflected">Отражённая V⁻</string>
+    <string name="hero_generator">Источник</string>
+    <string name="hero_load">Нагрузка Zₗ</string>
+    <string name="hero_incident">V⁺ · падающая</string>
+    <string name="hero_reflected">V⁻ · отражённая</string>
+    <string name="hero_no_reflection">Отражения нет</string>
+    <string name="hero_reflect_formula">Pотр / Pпад = |Γ|²</string>
+    <string name="hero_feed_loss">Потери в кабеле</string>
     <string name="hero_power_in">Вход P₁</string>
     <string name="hero_power_out">Выход P₂</string>
     <string name="hero_dissipated">Рассеивается %1$s</string>

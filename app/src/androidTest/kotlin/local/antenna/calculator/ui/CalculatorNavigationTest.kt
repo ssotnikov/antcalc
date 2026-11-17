@@ -97,15 +97,15 @@ class CalculatorNavigationTest : CalculatorUiFixture() {
         compose.onNodeWithTag("open-antenna-construction").performScrollTo().performClick()
         compose.onNodeWithTag("open-construction-yagi").performClick()
         val list = compose.onNodeWithTag("yagi-guide")
-        val geometry = compose.onNodeWithTag("yagi-section-GEOMETRY")
+        fun guidePosition() = list.fetchSemanticsNode().config[SemanticsProperties.VerticalScrollAxisRange].value()
         list.performScrollToNode(hasTestTag("yagi-section-MATERIALS"))
         compose.onNodeWithTag("yagi-section-MATERIALS").performClick()
         list.performScrollToNode(hasText("Сохранить STL в ZIP"))
         val export = compose.onNodeWithText("Сохранить STL в ZIP")
         export.assertIsDisplayed()
-        geometry.assertIsNotDisplayed()
+        assertTrue(guidePosition() > 0f)
         title.performClick()
-        geometry.assertIsDisplayed()
+        assertEquals(0f, guidePosition(), 0f)
     }
 
     @Test fun menuPagesReturnToTheOriginAndRestoreScroll() {

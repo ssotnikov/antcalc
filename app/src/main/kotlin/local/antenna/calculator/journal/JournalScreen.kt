@@ -25,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
@@ -696,7 +697,12 @@ internal fun JournalHeading(text: String, color: Color = Color.Unspecified) {
 
 @Composable
 internal fun JournalScope() {
-    Text(stringResource(R.string.journal_scope), style = MaterialTheme.typography.bodySmall)
+    val dark = MaterialTheme.colorScheme.surface.luminance() < .5f
+    Text(
+        stringResource(R.string.journal_scope),
+        color = if (dark) Color(0xFFF2CE76) else Color(0xFF785600),
+        style = MaterialTheme.typography.bodySmall,
+    )
 }
 
 @Composable

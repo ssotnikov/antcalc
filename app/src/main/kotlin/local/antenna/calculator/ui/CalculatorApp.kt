@@ -1,6 +1,9 @@
 package local.antenna.calculator.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -11,7 +14,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -338,11 +346,22 @@ private fun LocalizedCalculatorApp(
             topBar = {
                 TopAppBar(title = {
                     val action = scrollToTop.action
+                    val sweep = remember(page, title) { Animatable(1f) }
+                    val titleScope = rememberCoroutineScope()
+                    val accent = MaterialTheme.colorScheme.primary
                     val titleClick = if (action != null) {
                         Modifier.clickable(
+                            interactionSource = null,
+                            indication = null,
                             onClickLabel = stringResource(R.string.scroll_to_top),
                             role = Role.Button,
-                            onClick = action,
+                            onClick = {
+                                action()
+                                titleScope.launch {
+                                    sweep.snapTo(0f)
+                                    sweep.animateTo(1f, tween(410, easing = LinearEasing))
+                                }
+                            },
                         )
                     } else Modifier
                     Box(
@@ -350,7 +369,28 @@ private fun LocalizedCalculatorApp(
                             .testTag("screen-title").semantics { heading() },
                         contentAlignment = Alignment.CenterStart,
                     ) {
-                        Text(stringResource(title), style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            stringResource(title),
+                            modifier = Modifier.drawBehind {
+                                val progress = sweep.value
+                                if (progress >= 1f) return@drawBehind
+                                val inset = 8.dp.toPx()
+                                val band = (size.width * .36f).coerceAtLeast(24.dp.toPx())
+                                val center = -inset - band + (size.width + 2 * (inset + band)) * progress
+                                val opacity = minOf(1f, progress / .12f, (1f - progress) / .27f)
+                                drawRoundRect(
+                                    brush = Brush.horizontalGradient(
+                                        listOf(accent.copy(alpha = 0f), accent.copy(alpha = .27f * opacity), accent.copy(alpha = 0f)),
+                                        startX = center - band,
+                                        endX = center + band,
+                                    ),
+                                    topLeft = Offset(-inset, -4.dp.toPx()),
+                                    size = Size(size.width + 2 * inset, size.height + 8.dp.toPx()),
+                                    cornerRadius = CornerRadius(10.dp.toPx()),
+                                )
+                            },
+                            style = MaterialTheme.typography.titleLarge,
+                        )
                     }
                 },
                     expandedHeight = 64.dp * LocalDensity.current.fontScale,

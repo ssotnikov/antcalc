@@ -37,10 +37,12 @@ class ProjectListTest {
             compose.onNodeWithTag("open-journal").performClick()
             compose.waitUntil(10_000) { compose.onAllNodesWithTag("journal-project").fetchSemanticsNodes().isNotEmpty() }
             val search = compose.onNodeWithTag("journal-project-search")
+            val clearSearch = compose.onNodeWithTag("journal-clear-search")
             val allCards = compose.onAllNodesWithTag("journal-project")
             val firstCard = compose.onNode(hasTestTag("journal-project") and hasText(first.title))
             val lastCard = compose.onNode(hasTestTag("journal-project") and hasText(last.title))
 
+            clearSearch.assertDoesNotExist()
             search.performTextInput("FIELD")
             search.performImeAction()
             allCards.assertCountEquals(1)
@@ -52,6 +54,12 @@ class ProjectListTest {
             firstCard.assertIsDisplayed()
             search.performTextReplacement("beverage")
             allCards.assertCountEquals(0)
+            search.performTextReplacement("x".repeat(31) + "📡" + "a")
+            search.assertTextContains("x".repeat(31) + "📡")
+            search.performImeAction()
+            clearSearch.performClick()
+            clearSearch.assertDoesNotExist()
+            allCards.assertCountEquals(3)
 
             val yagi = application.getString(R.string.yagi_title)
             search.performTextReplacement(yagi)

@@ -67,14 +67,18 @@ class CalculatorToolsUiTest : CalculatorUiFixture() {
         start()
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-matching").performClick()
+        fun chooseMode(mode: String) {
+            compose.onNodeWithTag("matching-mode").performScrollTo().performClick()
+            compose.onNodeWithTag("matching-mode-$mode").performClick()
+        }
         compose.onNodeWithTag("matching-SWR").performTextReplacement("3,")
-        compose.onNodeWithTag("matching-mode-IMPEDANCE").performClick()
+        chooseMode("IMPEDANCE")
         compose.onNodeWithTag("matching-REACTANCE").performTextReplacement("-50")
         compose.onNodeWithTag("matching-copy").performScrollTo().assertIsEnabled()
-        compose.onNodeWithTag("matching-mode-SWR").performScrollTo().performClick()
+        chooseMode("SWR")
         compose.onNodeWithTag("matching-SWR").assertTextContains("3,")
         compose.onNodeWithTag("matching-copy").performScrollTo().assertIsNotEnabled()
-        compose.onNodeWithTag("matching-mode-GAMMA").performScrollTo().performClick()
+        chooseMode("GAMMA")
         compose.onNodeWithTag("matching-GAMMA").performTextReplacement("1")
         compose.onNodeWithText("∞ : 1").assertExists()
     }

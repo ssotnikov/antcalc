@@ -189,7 +189,7 @@ internal fun ProjectList(
             }
             item("project-search") {
                 ProjectSearchField(query, { query = it }, R.string.journal_project_search,
-                    Modifier.fillMaxWidth().testTag("journal-project-search"))
+                    Modifier.fillMaxWidth().testTag("journal-project-search"), maxLength = 32, clearable = true)
             }
             if (ids.size > 1) item("project-reorder-help") {
                 Text(stringResource(R.string.journal_project_reorder_hint), style = MaterialTheme.typography.bodySmall)

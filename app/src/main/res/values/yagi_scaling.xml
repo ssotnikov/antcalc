@@ -71,8 +71,13 @@
     <string name="hero_wave_legend">λ₀ is the wavelength in free space. λ in cable is the shorter wavelength in the cable at the same frequency.</string>
     <string name="hero_feed_legend">Matched line. The highlighted part of the scale shows the fraction of input power reaching the output.</string>
     <string name="hero_reflect_legend">At the load, |Γ| is the reflected-to-incident voltage amplitude ratio. Reflected power fraction is |Γ|².</string>
-    <string name="hero_incident">Incident V⁺</string>
-    <string name="hero_reflected">Reflected V⁻</string>
+    <string name="hero_generator">Source</string>
+    <string name="hero_load">Load Zₗ</string>
+    <string name="hero_incident">V⁺ · incident</string>
+    <string name="hero_reflected">V⁻ · reflected</string>
+    <string name="hero_no_reflection">No reflection</string>
+    <string name="hero_reflect_formula">P(reflected) / P(incident) = |Γ|²</string>
+    <string name="hero_feed_loss">Cable loss</string>
     <string name="hero_power_in">Input P₁</string>
     <string name="hero_power_out">Output P₂</string>
     <string name="hero_dissipated">Dissipated %1$s</string>

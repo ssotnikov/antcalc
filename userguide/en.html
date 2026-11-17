@@ -72,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
-  <span class="version">Version 1.37.0</span>
+  <span class="version">Version 1.37.1</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -216,6 +216,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
     <section class="chapter" id="swr" aria-labelledby="swr-title">
       <h2 id="swr-title">SWR and reflection</h2>
       <div class="app-links"><a href="https://appassets.androidplatform.net/open/swr">Open SWR and reflection</a></div>
+      <p>The diagram shows the incident wave toward the load and the reflected wave toward the source. The reflected wave's amplitude is proportional to |Γ|. The diagram updates the known quantities and reflected power as you edit the inputs.</p>
       <div class="with-images">
         <div class="prose">
 <ol><li>Open <strong>Tools → SWR and reflection</strong> and select the quantity you know. You can start with SWR, reflection magnitude |Γ|, return loss or complex impedance <var>R + jX</var>.</li><li>When calculating from impedance, enter the reference impedance. Use 50 Ω for a measurement referenced to 50 Ω.</li><li>Review the conversions. At 2:1 SWR, about 11.11% of incident power is reflected. Mismatch loss at the load is about 0.51 dB for unchanged incident power. A transmitter may also reduce its output.</li></ol>
@@ -243,7 +244,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <div class="with-images">
         <div class="prose">
 <h3>Cable electrical length</h3><p>Open the tool of the same name. Enter frequency, cable velocity factor and the length you know. Choose the conversion direction between physical and electrical length. Phase and delay use the line parameters you entered.</p>
-<h3>Feedline loss</h3><p>Enter frequency and length and choose the cable from the catalog. When entering attenuation manually, use the value for the stated frequency and check the units, for example dB per 100 m. The result shows matched-line loss and power at the far end. Use SWR and reflection to estimate reflected power. After changing frequency, the previous attenuation stays in the preliminary result. Check and confirm it for the new frequency before copying. When the datasheet has no value at the operating frequency, P₂ and the scale show a preview at the closest published frequency, identified beside the result. Use the button to select that frequency or enter attenuation for the operating frequency manually.</p>
+<h3>Feedline loss</h3><p>Enter frequency and length and choose the cable from the catalog. When entering attenuation manually, use the value for the stated frequency and check the units, for example dB per 100 m. The result shows matched-line loss and power at the far end. The highlighted strip narrows along the cable as power falls. The scale below shows the fraction reaching the output. Use SWR and reflection to estimate reflected power. After changing frequency, the previous attenuation stays in the preliminary result. Check and confirm it for the new frequency before copying. When the datasheet has no value at the operating frequency, P₂ and the scale show a preview at the closest published frequency, identified beside the result. Use the button to select that frequency or enter attenuation for the operating frequency manually.</p>
         </div>
 <div class="gallery">
 <figure><a href="images/en/12-cable-electrical-length.webp"><img src="images/en/12-cable-electrical-length.webp" width="1080" height="1920" alt="Cable electrical length" loading="lazy" decoding="async"></a><figcaption>Cable electrical length</figcaption></figure>
@@ -271,7 +272,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <div class="with-images">
         <div class="prose">
 <h3>Finding and reordering projects</h3>
-<p>On the <strong>Projects</strong> screen, use the field below the buttons to search by project name, frequency or antenna type. The list filters as you type and highlights matches in yellow. Use a decimal point or comma when entering a frequency.</p>
+<p>On the <strong>Projects</strong> screen, enter up to 32 characters of a project name, frequency or antenna type in the field below the buttons. The list filters as you type and highlights matches in yellow. Use a decimal point or comma when entering a frequency. Tap the cross at the right of the field to clear the search and show all projects.</p>
 <p>Press and hold a card and drag it up or down. The other cards slide aside to show where it will go. Release it to save the order. When the list is filtered, hidden cards keep their places.</p>
 <p>To copy a value, formula or part of a note, touch and hold the text, drag the selection handles and tap Copy. To copy the full report, use the copy button below the results.</p>
 <h3>Saving a calculation</h3><ol><li>Tap <strong>Copy to project</strong> in the calculator. In the Yagi guide, the button is labelled <strong>Add to project</strong>.</li><li>Choose a compatible project and tap <strong>Save to selected project</strong>, or choose <strong>Create a new project</strong> and enter a name.</li></ol>

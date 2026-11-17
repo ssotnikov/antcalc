@@ -101,11 +101,13 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
         val reflected = result?.let {
             resources.getString(R.string.hero_reflected_power, matchingRows(context, it).last().second)
         }
-        TransmissionDiagram(TransmissionIllustration.REFLECTION, stringResource(R.string.hero_incident),
-            stringResource(R.string.hero_reflected), listOfNotNull(known, reflected).joinToString("\n"),
+        TransmissionDiagram(TransmissionIllustration.REFLECTION, stringResource(R.string.hero_generator),
+            stringResource(R.string.hero_load), listOfNotNull(known, reflected).joinToString("\n").ifBlank { null },
             result?.magnitude, R.string.hero_reflect_legend)
-        ChoicePicker(stringResource(R.string.matching_source), MatchingMode.entries, draft.mode,
-            { stringResource(it.label()) }, { focus.clearFocus(); change(draft.copy(mode = it)) }, "matching-mode")
+        MatchingModePicker(draft.mode) { mode ->
+            focus.clearFocus()
+            change(currentState().draft.matching.copy(mode = mode))
+        }
         draft.active.forEach { key ->
             val parseError = draft.number(key).error
             val visible = parseError != null && (parseError !in listOf(MatchingError.EMPTY, MatchingError.INCOMPLETE) || key in draft.checked)
@@ -161,6 +163,29 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                 R.drawable.formula_reflected_power to R.string.matching_formula_power_alt).forEach { (image, alt) ->
                 Image(painterResource(image), contentDescription = stringResource(alt), contentScale = ContentScale.Fit,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), modifier = Modifier.fillMaxWidth().height(100.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun MatchingModePicker(mode: MatchingMode, onSelected: (MatchingMode) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(stringResource(R.string.matching_source), style = MaterialTheme.typography.labelLarge)
+        Box(Modifier.fillMaxWidth()) {
+            OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth().testTag("matching-mode")) {
+                Text(stringResource(mode.label()), Modifier.weight(1f))
+                Text("▾", Modifier.clearAndSetSemantics {})
+            }
+            DropdownMenu(expanded, onDismissRequest = { expanded = false }) {
+                MatchingMode.entries.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(option.label())) },
+                        onClick = { expanded = false; onSelected(option) },
+                        modifier = Modifier.testTag("matching-mode-$option").semantics { selected = mode == option },
+                    )
+                }
             }
         }
     }

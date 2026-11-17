@@ -153,16 +153,32 @@ internal fun ProjectPicker(
 @Composable
 internal fun ProjectSearchField(
     query: String, onQueryChange: (String) -> Unit, @StringRes label: Int, modifier: Modifier = Modifier,
+    maxLength: Int? = null,
+    clearable: Boolean = false,
 ) {
     val focus = LocalFocusManager.current
     OutlinedTextField(
         value = query,
-        onValueChange = { if (it.length <= JournalLimits.TITLE) onQueryChange(it) },
+        onValueChange = { value ->
+            if (maxLength == null) {
+                if (value.length <= JournalLimits.TITLE) onQueryChange(value)
+            } else {
+                val count = value.codePointCount(0, value.length).coerceAtMost(maxLength)
+                onQueryChange(value.substring(0, value.offsetByCodePoints(0, count)))
+            }
+        },
         label = { Text(stringResource(label)) },
         leadingIcon = {
             Icon(painterResource(R.drawable.ic_search), contentDescription = null,
                 modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.outline)
         },
+        trailingIcon = if (clearable && query.isNotEmpty()) {
+            {
+                IconButton(onClick = { onQueryChange("") }, modifier = Modifier.testTag("journal-clear-search")) {
+                    Icon(painterResource(R.drawable.ic_close), stringResource(R.string.journal_clear_search))
+                }
+            }
+        } else null,
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
