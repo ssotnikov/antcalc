@@ -5,7 +5,7 @@
 ![Android](https://img.shields.io/badge/Android-8.0%2B-3DDC84)
 ![Languages](https://img.shields.io/badge/Languages-RU%20%7C%20EN-blue)
 ![License](https://img.shields.io/badge/License-MIT-blue)
-![NEC-2](https://img.shields.io/badge/NEC2-Engine-orange?style=flat-square)
+[![NEC2 Engine](https://img.shields.io/badge/NEC2-Engine-orange?style=flat-square)](https://www.nec2.org/)
 
 [Русский](#русский) · [English](#english)
 
@@ -162,6 +162,11 @@
 - **Мэтт Робертс (KK5JY)** — [Halo на 6 и 10 м, параллельное индуктивное согласование](https://www.kk5jy.net/Es-halo/). © 2021–2023 Мэтт Робертс. Все права защищены.
 - **3G‑Aerial** — [всенаправленные антенны горизонтальной поляризации, раздел «Антенна „Гало“»](https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii) · [гамма-согласующее устройство](https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva). Сайт разрешает использовать свои материалы с указанием ссылки. [Условия 3G‑Aerial](https://3g-aerial.biz/otkaz-ot-otvetstvennosti).
 - **Алексей (RA3POY)** — [отчёт о сборке объёмной антенны W2EEY/1 на Си-Би](https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html), смежная конструкция.
+
+### Благодарности
+
+- **R3UDK** — за практическое руководство по изготовлению антенны «Волновой канал» и поддержку AntCalc.
+- **Связистам поисково-спасательного отряда «ЛизаАлерт» (LizaAlert)** — за поддержку проекта.
 
 ### Обратная связь
 
@@ -326,6 +331,11 @@ The app uses technical dimensions and formulas. See the original publications fo
 - **Matt Roberts (KK5JY)** — [6 m and 10 m Halo with shunt inductive matching](https://www.kk5jy.net/Es-halo/). © 2021–2023 Matt Roberts. All rights reserved.
 - **3G‑Aerial** — [horizontally polarized omnidirectional antennas, Halo section (Russian)](https://3g-aerial.biz/vsenapravlennye-antenny-gorizontalnoj-polyarizatsii) · [gamma matching network (Russian)](https://3g-aerial.biz/onlajn-raschety/dopolnitelnye-raschety/raschet-gamma-soglasuyushchego-ustrojstva). The site permits reuse of its material with a link back to the site. [3G‑Aerial terms](https://3g-aerial.biz/otkaz-ot-otvetstvennosti).
 - **Alexey (RA3POY)** — [CB build report for the three-dimensional W2EEY/1 (Russian)](https://forum.qrz.ru/40-antenny-kv/32796-chudnaya-antenna-w2eey-1-a.html), a related antenna design.
+
+### Acknowledgements
+
+- Thanks to **R3UDK** for writing a practical guide to building a Yagi–Uda antenna and for supporting AntCalc.
+- Thanks to the **communications team of the LizaAlert volunteer search and rescue group** for supporting the project.
 
 ### Contact
 
