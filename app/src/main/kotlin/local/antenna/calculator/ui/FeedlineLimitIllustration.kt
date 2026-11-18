@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -34,6 +35,7 @@ internal fun FeedlineLimitIllustration(
     calculation: FeedlineMaximumCalculation?, allowed: BigDecimal?, connections: BigDecimal?, status: String?,
 ) {
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
     val colors = MaterialTheme.colorScheme
     val warm = if (colors.surface.luminance() < .5f) Color(0xFFF3BA80) else Color(0xFF824410)
     val finite = calculation?.limit as? FeedlineLengthLimit.Finite
@@ -80,7 +82,7 @@ internal fun FeedlineLimitIllustration(
                     Text(stringResource(R.string.feed_limit_line_legend), Modifier.weight(1f),
                         style = MaterialTheme.typography.bodySmall, color = colors.primary)
                     Text(allowed?.let { stringResource(R.string.feed_limit_allowance_value,
-                        java.text.NumberFormat.getNumberInstance(context.resources.configuration.locales[0]).apply {
+                        java.text.NumberFormat.getNumberInstance(locale).apply {
                             maximumFractionDigits = 32; isGroupingUsed = false
                         }.format(it)) } ?: stringResource(R.string.feed_limit_allowance_legend), Modifier.weight(1f),
                         style = MaterialTheme.typography.bodySmall, color = warm)
