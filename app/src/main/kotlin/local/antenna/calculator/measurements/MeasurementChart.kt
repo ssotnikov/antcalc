@@ -26,12 +26,14 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import java.text.NumberFormat
 import kotlin.math.abs
 import local.antenna.calculator.R
@@ -79,6 +81,9 @@ internal fun MeasurementChart(
     val frequencyFormat = remember(locale) { MeasurementNumberFormat(locale) }
     val axisFrequency = frequencyFormat.megahertz(selectedHz)
     val selectedFrequency = stringResource(R.string.sweep_mhz, axisFrequency)
+    val axisFont = 11.sp
+    val labelScale = LocalDensity.current.fontScale
+    val plotLeft = PlotLeft + 25.dp * (labelScale - 1f).coerceAtLeast(0f)
     val selectFrequency by rememberUpdatedState(select)
     var dragY by remember(first, last, activeSlot) { mutableStateOf<Float?>(null) }
 
@@ -87,15 +92,15 @@ internal fun MeasurementChart(
             contentDescription = label
             stateDescription = selectedFrequency
         }
-        .pointerInput(first, last, activeSlot) {
+        .pointerInput(first, last, activeSlot, plotLeft) {
             detectTapGestures { tap ->
-                val left = PlotLeft.toPx()
+                val left = plotLeft.toPx()
                 val width = size.width - left - PlotRight.toPx()
                 if (width > 0) selectFrequency(plotFrequency(tap.x, left, width, first, last))
             }
         }
-        .pointerInput(first, last, activeSlot) {
-            val left = PlotLeft.toPx()
+        .pointerInput(first, last, activeSlot, plotLeft) {
+            val left = plotLeft.toPx()
             fun move(position: Offset) {
                 val width = size.width - left - PlotRight.toPx()
                 if (width <= 0) return
@@ -109,10 +114,11 @@ internal fun MeasurementChart(
                 onHorizontalDrag = { change, _ -> move(change.position) },
             )
         }) {
-        val left = PlotLeft.toPx()
+        val left = plotLeft.toPx()
         val right = size.width - PlotRight.toPx()
-        val top = 12.dp.toPx()
-        val bottom = size.height - 30.dp.toPx()
+        val axisTextSize = axisFont.toPx()
+        val top = maxOf(12.dp.toPx(), axisTextSize)
+        val bottom = size.height - maxOf(30.dp.toPx(), axisTextSize * 2.2f)
         if (right <= left || bottom <= top) return@Canvas
         val pad = if (bounds.minimum == bounds.maximum) 0.10 else (bounds.maximum - bounds.minimum) * 0.05
         val low = bounds.minimum - pad
@@ -138,15 +144,18 @@ internal fun MeasurementChart(
         }
         val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
             color = colors.onSurfaceVariant.toArgb()
-            textSize = 11.dp.toPx()
+            textSize = axisTextSize
         }
-        for (step in 0..3) {
-            val lineY = bottom - (bottom - top) * step / 3
-            val axisValue = (low + (high - low) * step / 3) * bounds.scale
+        val divisions = ((bottom - top) / (axisTextSize * 2)).toInt().coerceIn(1, 3)
+        for (step in 0..divisions) {
+            val lineY = bottom - (bottom - top) * step / divisions
+            val axisValue = (low + (high - low) * step / divisions) * bounds.scale
             drawLine(colors.outlineVariant, Offset(left, lineY), Offset(right, lineY))
             paint.textAlign = Paint.Align.RIGHT
             val text = if (abs(axisValue) < 1e5) formatter.format(axisValue) else "%.1e".format(locale, axisValue)
-            drawContext.canvas.nativeCanvas.drawText(text, left - 5.dp.toPx(), lineY + 4.dp.toPx(), paint)
+            if (paint.measureText(text) <= left - 5.dp.toPx()) {
+                drawContext.canvas.nativeCanvas.drawText(text, left - 5.dp.toPx(), lineY + axisTextSize * .32f, paint)
+            }
         }
         paint.textAlign = Paint.Align.LEFT
         if (metric.axis.isNotEmpty()) drawContext.canvas.nativeCanvas.drawText(metric.axis, left + 5.dp.toPx(), top + 12.dp.toPx(), paint)
@@ -154,7 +163,7 @@ internal fun MeasurementChart(
         val cursor = x(selectedHz)
         val halfLabel = paint.measureText(axisFrequency) / 2
         val labelX = cursor.coerceIn(halfLabel, maxOf(halfLabel, size.width - halfLabel))
-        val axisY = bottom + 18.dp.toPx()
+        val axisY = bottom + maxOf(18.dp.toPx(), axisTextSize * 1.35f)
         val gap = 5.dp.toPx()
         val firstLabel = frequencyFormat.megahertz(first)
         val lastLabel = frequencyFormat.megahertz(last)

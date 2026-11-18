@@ -48,54 +48,54 @@ private const val DK_HOME = "https://dk7zb.darc.de/"
 private const val DG_HOME = "https://www.dg7ybn.de/"
 
 internal enum class YagiProfile(
-    val design: YagiDesign, val label: String, val hz: List<Long>, val image: Int,
+    val design: YagiDesign, val label: String, val hz: List<Long>,
     val mount: Int, val feed: Int, val original: String, val terms: String?, val rights: Int,
     val measure: Int = R.string.yagi_measure,
 ) {
-    YBN(YagiDesign.YBN, "DG7YBN · YBN 2‑5m", listOf(144_300_000), R.drawable.yagi_dg_hero,
+    YBN(YagiDesign.YBN, "DG7YBN · YBN 2‑5m", listOf(144_300_000),
         R.string.yagi_dg_mount, R.string.yagi_dg_feed, DG_HOME + "144MHz/144_5elem.htm", DG_HOME, R.string.yagi_dg_rights, R.string.yagi_dg_measure),
-    R3(YagiDesign.R3, "R3UDK", listOf(R3udkYagi.FREQUENCY_HZ), R.drawable.yagi_r3_hero,
+    R3(YagiDesign.R3, "R3UDK", listOf(R3udkYagi.FREQUENCY_HZ),
         R.string.yagi_r3_mount, R.string.yagi_r3_feed, LIZAALERT_YAGI_URL, null, R.string.yagi_r3_rights),
-    DK2(YagiDesign.DK2, "DK7ZB · 2 m · 3 el. · 50 Ω", listOf(144_000_000, 146_000_000), R.drawable.yagi_dk2_hero,
+    DK2(YagiDesign.DK2, "DK7ZB · 2 m · 3 el. · 50 Ω", listOf(144_000_000, 146_000_000),
         R.string.yagi_dk2_mount, R.string.yagi_dk2_feed, DK_HOME + "PVC-Yagis/3-Ele-2m.htm", DK_HOME, R.string.yagi_dk_rights),
-    DK50(YagiDesign.DK50, "DK7ZB · 70 cm · 5 el. · 50 Ω", listOf(430_000_000, 440_000_000), R.drawable.yagi_dk50_hero,
+    DK50(YagiDesign.DK50, "DK7ZB · 70 cm · 5 el. · 50 Ω", listOf(430_000_000, 440_000_000),
         R.string.yagi_dk50_mount, R.string.yagi_dk50_feed, DK_HOME + "70cm/5.htm", DK_HOME, R.string.yagi_dk_rights),
-    DK28(YagiDesign.DK28, "DK7ZB · 70 cm · 5 el. · 28 Ω", listOf(432_000_000), R.drawable.yagi_dk28_hero,
+    DK28(YagiDesign.DK28, "DK7ZB · 70 cm · 5 el. · 28 Ω", listOf(432_000_000),
         R.string.yagi_dk28_mount, R.string.yagi_dk28_feed, DK_HOME + "70cm/5.htm", DK_HOME, R.string.yagi_dk_rights),
-    DUO(YagiDesign.DUO, "DK7ZB · Duoband 2+2", listOf(144_000_000, 146_000_000, 430_000_000, 440_000_000), R.drawable.yagi_duo_hero,
+    DUO(YagiDesign.DUO, "DK7ZB · Duoband 2+2", listOf(144_000_000, 146_000_000, 430_000_000, 440_000_000),
         R.string.yagi_duo_mount, R.string.yagi_duo_feed, DK_HOME + "Duoband/duoband_2-70_2-3.htm", DK_HOME, R.string.yagi_dk_rights, R.string.yagi_duo_measure),
-    GTV(YagiDesign.GTV, "DG7YBN · GTV 2‑6m", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV(YagiDesign.GTV, "DG7YBN · GTV 2‑6m", listOf(144_100_000),
         R.string.yagi_gtv_mount, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV15(YagiDesign.GTV15, "DG7YBN · GTV 2‑6m · 15 × 15", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV15(YagiDesign.GTV15, "DG7YBN · GTV 2‑6m · 15 × 15", listOf(144_100_000),
         R.string.yagi_mount_gtv_15, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_SP6(YagiDesign.GTV_SP6, "DG7YBN · GTV 2‑6m · SP6GWN · 20 × 20", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_SP6(YagiDesign.GTV_SP6, "DG7YBN · GTV 2‑6m · SP6GWN · 20 × 20", listOf(144_100_000),
         R.string.yagi_mount_gtv_sp6gwn, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_STAUFF(YagiDesign.GTV_STAUFF, "DG7YBN · GTV 2‑6m · Stauff · 1″ × 1″", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_STAUFF(YagiDesign.GTV_STAUFF, "DG7YBN · GTV 2‑6m · Stauff · 1″ × 1″", listOf(144_100_000),
         R.string.yagi_mount_gtv_stauff, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_THROUGH4(YagiDesign.GTV_THROUGH4, "DG7YBN · GTV 2‑6m · Ø4 · 20 × 20 × 2", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_THROUGH4(YagiDesign.GTV_THROUGH4, "DG7YBN · GTV 2‑6m · Ø4 · 20 × 20 × 2", listOf(144_100_000),
         R.string.yagi_mount_gtv_through_4, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_THROUGH476(YagiDesign.GTV_THROUGH476, "DG7YBN · GTV 2‑6m · Ø4.76 · 1″ × 1″", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_THROUGH476(YagiDesign.GTV_THROUGH476, "DG7YBN · GTV 2‑6m · Ø4.76 · 1″ × 1″", listOf(144_100_000),
         R.string.yagi_mount_gtv_through_476, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_DATV(YagiDesign.GTV_DATV, "DG7YBN · GTV 2‑6m · DATV · 20 × 20", listOf(146_500_000), R.drawable.yagi_gtv_hero,
+    GTV_DATV(YagiDesign.GTV_DATV, "DG7YBN · GTV 2‑6m · DATV · 20 × 20", listOf(146_500_000),
         R.string.yagi_mount_gtv_datv, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_DATV_THROUGH(YagiDesign.GTV_DATV_THROUGH, "DG7YBN · GTV 2‑6m · DATV · 25 × 25 × 1.5", listOf(146_500_000), R.drawable.yagi_gtv_hero,
+    GTV_DATV_THROUGH(YagiDesign.GTV_DATV_THROUGH, "DG7YBN · GTV 2‑6m · DATV · 25 × 25 × 1.5", listOf(146_500_000),
         R.string.yagi_mount_gtv_datv_through, R.string.yagi_gtv_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_XPOL_STAUFF(YagiDesign.GTV_XPOL_STAUFF, "DG7YBN · GTV 2‑6m · xpol · Stauff", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_XPOL_STAUFF(YagiDesign.GTV_XPOL_STAUFF, "DG7YBN · GTV 2‑6m · xpol · Stauff", listOf(144_100_000),
         R.string.yagi_mount_gtv_xpol_stauff, R.string.yagi_xpol_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_XPOL_8(YagiDesign.GTV_XPOL_8, "DG7YBN · GTV 2‑6m · xpol · 20 × 20", listOf(145_500_000), R.drawable.yagi_gtv_hero,
+    GTV_XPOL_8(YagiDesign.GTV_XPOL_8, "DG7YBN · GTV 2‑6m · xpol · 20 × 20", listOf(145_500_000),
         R.string.yagi_mount_gtv_xpol_8, R.string.yagi_xpol_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_SAT(YagiDesign.GTV_SAT, "DG7YBN · GTV 2‑6m · xpol SAT · Stauff", listOf(145_800_000), R.drawable.yagi_gtv_hero,
+    GTV_SAT(YagiDesign.GTV_SAT, "DG7YBN · GTV 2‑6m · xpol SAT · Stauff", listOf(145_800_000),
         R.string.yagi_mount_gtv_sat, R.string.yagi_sat_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_XPOL_THROUGH4(YagiDesign.GTV_XPOL_THROUGH4, "DG7YBN · GTV 2‑6m · xpol · Ø4", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_XPOL_THROUGH4(YagiDesign.GTV_XPOL_THROUGH4, "DG7YBN · GTV 2‑6m · xpol · Ø4", listOf(144_100_000),
         R.string.yagi_mount_gtv_xpol_through4, R.string.yagi_xpol_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
-    GTV_XPOL_THROUGH476(YagiDesign.GTV_XPOL_THROUGH476, "DG7YBN · GTV 2‑6m · xpol · Ø4.76", listOf(144_100_000), R.drawable.yagi_gtv_hero,
+    GTV_XPOL_THROUGH476(YagiDesign.GTV_XPOL_THROUGH476, "DG7YBN · GTV 2‑6m · xpol · Ø4.76", listOf(144_100_000),
         R.string.yagi_mount_gtv_xpol_through476, R.string.yagi_xpol_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
     ;
 
     val id get() = design.id
     val hasBentDipole get() = id.startsWith("gtv")
     val datv get() = id.startsWith("gtv_datv")
-    val dualPlane get() = design.verticalElements.isNotEmpty()
+    val dualPlane get() = design.dualPlane
     val usesNominalXpolFrequency get() = dualPlane && hz.single() == 144_100_000L
     val fixedOffsets get() = id.startsWith("gtv_through") || this == GTV_DATV_THROUGH
     val matchingCables get() = if (this == DK28) YagiMatchingCable.entries else emptyList()
@@ -142,7 +142,7 @@ internal fun YagiCalculatorScreen(
         context.yagiCalculatorPreferences()
     }
     var profile by remember {
-        mutableStateOf(YagiProfile.entries.firstOrNull { it.id == prefs.getString("profile", null) } ?: YagiProfile.R3)
+        mutableStateOf(YagiProfile.entries.firstOrNull { it.design.available && it.id == prefs.getString("profile", null) } ?: YagiProfile.R3)
     }
     var unit by remember {
         mutableStateOf(LengthUnit.entries.firstOrNull { it.name == prefs.getString("unit", null) } ?: LengthUnit.MILLIMETERS)
@@ -192,7 +192,13 @@ internal fun YagiCalculatorScreen(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
             .padding(20.dp).testTag("yagi-calculator"), verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        val geometry = remember(profile) { if (profile.design.ordinal > YagiDesign.GTV.ordinal) yagiGtvVector(profile) else null }
+        val geometry = remember(profile) {
+            if (profile.design.restricted) {
+                context.assets.open("antennas/dg7ybn.json").bufferedReader().use {
+                    readAntennaVector(org.json.JSONObject(it.readText()), "yagi-${profile.design.ordinal}")
+                }
+            } else null
+        }
         RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), geometry = geometry, baseHeight = 160.dp)
         YagiProfilePicker(profile, profileLabel) { selected ->
             val previousId = profile.id
@@ -268,7 +274,7 @@ internal fun YagiCalculatorScreen(
             YagiTable(elements, unit, isGtv, null, axialCoordinates = true)
             YagiHeading(R.string.yagi_vertical_plane)
             YagiTable(profile.design.verticalElements, unit, isGtv, null, axialCoordinates = true)
-        } else YagiTable(elements, unit, isGtv, values[1])
+        } else YagiTable(elements, unit, isGtv, values[1], selectable = !profile.design.restricted)
         if (published != null) {
             YagiHeading(R.string.yagi_published)
             HelpText(published)
@@ -298,21 +304,11 @@ internal fun YagiCalculatorScreen(
         if (driverLabels.isNotEmpty()) {
             YagiHeading(R.string.yagi_driver_setup)
             HelpText(if (profile.dualPlane) R.string.yagi_xpol_input_help else R.string.yagi_dk_gap_help)
-            val example = when (profile) {
-                YagiProfile.DK50, YagiProfile.DK28 -> listOf("10")
-                YagiProfile.GTV_SAT -> listOf("10", "103", "83", "10", "100", "82")
-                else -> emptyList()
-            }
-            if (profile == YagiProfile.GTV_SAT) HelpText(R.string.yagi_sat_estimate)
-            if (example.isNotEmpty()) {
+            if (profile == YagiProfile.DK50 || profile == YagiProfile.DK28) {
+                val gapField = fields[inputFields.size]
                 OutlinedButton(
-                    onClick = {
-                        example.forEachIndexed { index, value ->
-                            val field = fields[inputFields.size + index]
-                            if (field.text.isBlank()) field.edit { replace(0, length, value) }
-                        }
-                    },
-                    enabled = driverLabels.indices.any { draft[inputFields.size + it].isBlank() },
+                    onClick = { if (gapField.text.isBlank()) gapField.edit { replace(0, length, "10") } },
+                    enabled = draft[inputFields.size].isBlank(),
                     modifier = Modifier.testTag("yagi-driver-example"),
                 ) { Text(stringResource(R.string.yagi_driver_example)) }
             }
@@ -370,6 +366,7 @@ internal fun YagiCalculatorScreen(
             }
         }
         HelpText(if (profile == YagiProfile.R3) R.string.yagi_formed else R.string.yagi_limited)
+        if (profile.design.restricted) HelpText(R.string.yagi_dg_no_transfer)
         if (onSave != null) {
             Button(onClick = {
                 if (cut != null) onSave(yagiSnapshot(profile, values, cut, unit, driverGeometry, driven),
@@ -384,7 +381,7 @@ internal fun YagiCalculatorScreen(
                 clipboard.setPrimaryClip(ClipData.newPlainText(profile.label, yagiReport(context, profile, cut, values, unit, driverGeometry, driven)))
                 onCopied()
             }
-        }, enabled = cut != null, modifier = Modifier.fillMaxWidth().testTag("yagi-copy")) {
+        }, enabled = cut != null && !profile.design.restricted, modifier = Modifier.fillMaxWidth().testTag("yagi-copy")) {
             Text(stringResource(R.string.yagi_copy))
         }
         if (profile == YagiProfile.R3) {
@@ -401,6 +398,7 @@ internal fun YagiCalculatorScreen(
         }
         HorizontalDivider()
         YagiHeading(R.string.yagi_rights)
+        if (profile.design.restricted) Text(stringResource(R.string.yagi_dg_notice))
         HelpText(profile.rights)
         TextButton(onClick = { openSourceWithFeedback(context, profile.original) }) {
             Text(stringResource(R.string.yagi_original))
@@ -429,7 +427,7 @@ private fun YagiProfilePicker(
                 Text("▾")
             }
             DropdownMenu(expanded, { expanded = false }) {
-                YagiProfile.entries.forEach { item ->
+                YagiProfile.entries.filter { it.design.available }.forEach { item ->
                     DropdownMenuItem(
                         text = { Text(label(item)) },
                         onClick = { expanded = false; select(item) },
@@ -507,7 +505,8 @@ private fun YagiDiagram(
 }
 
 @Composable
-private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Boolean, rearMm: Double?, axialCoordinates: Boolean = false) {
+private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Boolean, rearMm: Double?,
+                      axialCoordinates: Boolean = false, selectable: Boolean = true) {
     val context = LocalContext.current
     val scale = LocalDensity.current.fontScale.coerceAtLeast(1f)
     val width = if (rearMm != null) 700.dp else 580.dp
@@ -529,14 +528,14 @@ private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Bool
                 if (rearMm != null) add(yagiLength(context, element.positionMm + rearMm, unit))
                 add(gap?.let { yagiLength(context, it, unit) } ?: "—")
                 add(yagiLength(context, element.overallMm, unit))
-            })
+            }, selectable = selectable)
         }
     }
 }
 
 @Composable
-private fun YagiRow(cells: List<String>, header: Boolean = false) {
-    SelectionContainer {
+private fun YagiRow(cells: List<String>, header: Boolean = false, selectable: Boolean = true) {
+    val content: @Composable () -> Unit = {
         Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             cells.forEachIndexed { index, cell ->
                 Text(cell, Modifier.weight(if (index == 0) 1.5f else 1f),
@@ -545,6 +544,7 @@ private fun YagiRow(cells: List<String>, header: Boolean = false) {
             }
         }
     }
+    if (selectable) SelectionContainer(content = content) else content()
 }
 
 internal fun yagiLength(context: Context, mm: Double, unit: LengthUnit): String {

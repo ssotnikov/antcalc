@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="bandwidth_additional_tools">Import VNA measurements and find the SWR bandwidth.</string>
+    <string name="bandwidth_additional_tools">Yagi–Uda segmentation, VNA measurement import and SWR bandwidth</string>
     <string name="bandwidth_title">SWR bandwidth</string>
     <string name="bandwidth_description">Find the band edges and bandwidth at a chosen SWR threshold from an S1P sweep.</string>
     <string name="bandwidth_source">S1P sweep</string>

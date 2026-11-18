@@ -44,7 +44,9 @@ internal object JournalJson {
     }
 
     fun encodeTransfer(project: AntennaProject): ByteArray =
-        encode(json("schemaVersion" to VERSION, "project" to encodeProject(project)), JournalLimits.TRANSFER_BYTES)
+        encode(json("schemaVersion" to VERSION, "project" to encodeProject(
+            project.copy(records = project.records.filterNot { it.restrictedYagiMaterials }),
+        )), JournalLimits.TRANSFER_BYTES)
 
     fun decodeStore(input: InputStream, onVersion: (Boolean) -> Unit = {}): List<AntennaProject> =
         decode(input, JournalLimits.STORAGE_BYTES, allowPhotoStore = true) { root ->

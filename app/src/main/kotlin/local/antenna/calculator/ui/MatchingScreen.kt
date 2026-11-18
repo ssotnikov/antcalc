@@ -15,7 +15,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +26,7 @@ import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Constraints
 import local.antenna.calculator.R
 import local.antenna.calculator.core.matching.*
 import local.antenna.calculator.state.*
@@ -146,10 +150,21 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
         if (result == null) HelpText(R.string.matching_pending) else {
             val rows = matchingRows(context, result)
             val stacked = LocalDensity.current.fontScale > 1.3f || LocalConfiguration.current.screenWidthDp < 360
-            if (stacked) rows.forEach { MatchingMetric(it.first, it.second) }
-            else rows.chunked(2).forEach { pair -> Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                pair.forEach { (label, value) -> Box(Modifier.weight(1f)) { MatchingMetric(label, value) } }
-            } }
+            Layout(
+                content = { rows.forEach { (label, value) -> MatchingMetric(label, value, highlightReflection = true) } },
+                modifier = Modifier.fillMaxWidth(),
+            ) { children, constraints ->
+                val columns = if (stacked) 1 else 2
+                val gap = 12.dp.roundToPx()
+                val width = (constraints.maxWidth - gap * (columns - 1)).coerceAtLeast(0) / columns
+                val height = children.maxOf { it.maxIntrinsicHeight(width) }
+                val cards = children.map { it.measure(Constraints.fixed(width, height)) }
+                layout(constraints.maxWidth, (cards.size / columns) * (height + gap) - gap) {
+                    cards.forEachIndexed { index, card ->
+                        card.placeRelative(index % columns * (width + gap), index / columns * (height + gap))
+                    }
+                }
+            }
         }
         Button(onClick = {
             focus.clearFocus()
@@ -207,12 +222,16 @@ private fun MatchingModePicker(mode: MatchingMode, onSelected: (MatchingMode) ->
 }
 
 @Composable
-private fun MatchingMetric(label: Int, value: String) {
+private fun MatchingMetric(label: Int, value: String, highlightReflection: Boolean = false) {
+    val colors = MaterialTheme.colorScheme
+    val valueColor = if (highlightReflection && label == R.string.matching_reflected) {
+        if (colors.surface.luminance() < .5f) Color(0xFFF3BA80) else Color(0xFF824410)
+    } else colors.primary
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow, modifier = Modifier.fillMaxWidth()) {
         SelectionContainer {
             Column(Modifier.padding(16.dp).testTag("matching-result-${label}").semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Text(value, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+                Text(value, style = MaterialTheme.typography.titleLarge, color = valueColor)
             }
         }
     }

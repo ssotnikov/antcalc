@@ -111,13 +111,21 @@ internal fun FeedlineScreen(
             val shown = if (it > 0 && it < .01) "< " + number(context, .01, 2) else number(context, it, 2)
             resources.getString(R.string.feedline_watts, shown)
         } ?: "—"
-        val outputLabel = if (previewFrequency != null) stringResource(R.string.feedline_preview_output, previewFrequency)
-            else stringResource(R.string.hero_power_out)
+        val status = when {
+            previewFrequency != null -> stringResource(R.string.feedline_preview_result, previewFrequency)
+            provisional -> stringResource(R.string.feedline_provisional_label)
+            else -> null
+        }
+        val caption = when {
+            draft.metres() == null -> R.string.feedline_enter_length
+            result != null && draft.power.isBlank() -> R.string.feedline_enter_power
+            else -> R.string.hero_feed_legend
+        }
         TransmissionDiagram(TransmissionIllustration.POWER,
             stringResource(R.string.hero_power_in) + "\n" + watts(draft.watts()?.toDouble()),
-            outputLabel + "\n" + watts(result?.outputWatts),
+            stringResource(R.string.hero_power_out) + "\n" + watts(result?.outputWatts),
             result?.lostWatts?.let { stringResource(R.string.hero_dissipated, watts(it)) },
-            result?.transmittedFraction, R.string.hero_feed_legend)
+            result?.transmittedFraction, caption, status)
         HelpText(R.string.feedline_screen_intro)
         FeedlineHeading(R.string.feedline_inputs)
         ChoicePicker(stringResource(R.string.feedline_method), listOf(true, false), draft.profileId != null,
@@ -195,10 +203,6 @@ internal fun FeedlineScreen(
         }
         FeedlineHeading(R.string.feedline_result)
         if (provisional && result != null) HelpText(R.string.feed_provisional)
-        if (previewFrequency != null && result != null) {
-            Text(stringResource(R.string.feedline_preview_result, previewFrequency), style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.testTag("feedline-preview-reference"))
-        }
         if (result == null) {
             HelpText(R.string.feedline_pending)
         } else {
@@ -206,6 +210,11 @@ internal fun FeedlineScreen(
                 modifier = Modifier.fillMaxWidth().testTag("feedline-result")) {
                 SelectionContainer {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        if (status != null) {
+                            Text(status, style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.testTag("feedline-preview-reference"))
+                        }
                         rows(context, result).forEach { (label, value) ->
                             Column(Modifier.semantics(mergeDescendants = true) {}) {
                                 Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)

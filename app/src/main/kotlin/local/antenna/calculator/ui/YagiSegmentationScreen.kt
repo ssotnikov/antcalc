@@ -153,6 +153,7 @@ private fun SegmentationReference(openSource: () -> Unit) {
     }
     if (!expanded) return
     HelpText(R.string.seg_rules)
+    GroundConditions()
     HelpText(R.string.seg_reference_conditions)
     HelpText(R.string.seg_reference_results)
     SegmentRow(listOf("N", "R", "X", "G", "F/B", "AGT"))
@@ -169,7 +170,6 @@ private fun SegmentationReference(openSource: () -> Unit) {
         SegmentRow(row.map(::number))
     }
     TextButton(openSource) { Text(stringResource(R.string.seg_source)) }
-    GroundConditions()
     var groundExpanded by rememberSaveable { mutableStateOf(false) }
     TextButton({ groundExpanded = !groundExpanded }, Modifier.testTag("seg-ground-example")) {
         Text(stringResource(R.string.seg_ground_example) + if (groundExpanded) " ▴" else " ▾")

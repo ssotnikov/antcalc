@@ -43,6 +43,11 @@ class SwrBandwidthScreenTest {
                 val readout = compose.onNodeWithTag("bandwidth-selected-point")
                 readout.assertTextContains("110.000 MHz", substring = true)
                 readout.assertTextContains("In interval 1", substring = true)
+                list.performScrollToNode(hasTestTag("bandwidth-previous"))
+                compose.onNodeWithTag("bandwidth-previous").performClick().assertIsNotEnabled()
+                readout.assertTextContains("100.000 MHz", substring = true)
+                compose.onNodeWithTag("bandwidth-next").performClick()
+                readout.assertTextContains("110.000 MHz", substring = true)
                 list.performScrollToNode(hasTestTag("sweep-chart"))
                 compose.onNodeWithTag("sweep-chart").performTouchInput { click(center) }
                 list.performScrollToNode(hasTestTag("bandwidth-selected-point"))

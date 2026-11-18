@@ -34,7 +34,7 @@
     <string name="seg_rules">N is the segment count, Δ is segment length, λ is wavelength and a is wire radius. The shortest wavelength sets the maximum step. Changing the mesh may change the calculated impedance even when gain changes little.</string>
     <string name="seg_reference_conditions">DK7ZB, 145 MHz. Driven element 1010 mm, director 920 mm, spacing 210 mm, diameter 10 mm. Ideal conductors, centred source and free space. SWR reference: 50 Ω.</string>
     <string name="seg_reference_results">R / X (Ω), gain (dBi), F/B (dB), and average gain (AGT). The 5- and 81-segment rows are reference cases outside AntCalc’s automatic mesh.</string>
-    <string name="seg_reference_ground">Same model with 21 segments per element. Both real-ground methods use εᵣ = 13 and σ = 0.005 S/m.</string>
+    <string name="seg_reference_ground">The table shows a reference calculation for the two-element DK7ZB Yagi at 145 MHz with 21 segments per element. The example uses fixed parameters. Both real-ground methods use εᵣ = 13 and σ = 0.005 S/m.</string>
     <string name="seg_ground_perfect">Perfect</string>
     <string name="seg_ground_finite">Reflection coefficients</string>
     <string name="seg_ground_sommerfeld">Sommerfeld–Norton</string>
@@ -69,4 +69,5 @@
     <string name="seg_ground_height_hint">h is the height from the surface to the antenna axis.</string>
     <string name="seg_ground_example">Compare the DK7ZB Yagi at 145 MHz</string>
     <string name="seg_ground_table_key">R is resistance, X is reactance and G is peak gain. Elevation is measured from the horizon to the direction of peak gain.</string>
+    <string name="seg_tool_hint">Choose a mesh for straight round elements</string>
 </resources>

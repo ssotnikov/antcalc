@@ -62,6 +62,8 @@
 - **Хартмут Клювер (DG7YBN)** — [DUBUS 4/2012, рис. 17](https://www.ok2kkw.com/next/dubus412w.pdf) · [Гибка вибратора GTV](https://dg7ybn.de/Bent_DE/Bent_DE.htm#Online_Calc) · [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm) · [Scaling Yagi Elements](https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm)
 
   Права на оригинальные конструкции сохраняются за автором. [Условия DG7YBN](https://www.dg7ybn.de/)
+
+  Для материалов профилей **YBN 2-5m** и **GTV 2-6m** действуют условия автора: конструкция DG7YBN, без перепубликации и распространения вне AntCalc, только для некоммерческого использования. Порядок лицензирования указан в [LICENSE.md](LICENSE.md#dg7ybn-design-materials).
 - **Гюнтер Хох (DL6WU) и Иэн Уайт (G3SEK)** — [The VHF/UHF DX Book, стр. 7-28](https://www.qsl.net/vu2msy/homebrew/Yagi_Design_Basics_by_DL6WU.pdf). Использована формула поправки на диаметр. Уведомление об авторских правах приведено в оригинале.
 
 - **Аттила Кочиш (NUXCOM)** — [Инструкция по сборке Яги DK7ZB на 144 и 432 МГц](https://web.archive.org/web/20241110203403id_/http://www.nuxcom.de/pdf/nuxcom_bauanweisungen_144_430_50hm.pdf). Условия коммерческого использования указаны в оригинале.
@@ -232,6 +234,8 @@ The project draws on materials from the following authors and publishers.
 - **Hartmut Klüver (DG7YBN)** — [DUBUS 4/2012, Fig. 17](https://www.ok2kkw.com/next/dubus412w.pdf) · [Bent dipoles for GTV Yagis](https://dg7ybn.de/Bent_DE/Bent_DE.htm#Online_Calc) · [YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) · [GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm) · [Scaling Yagi Elements](https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm)
 
   The author retains the rights to the original designs. [DG7YBN’s terms](https://www.dg7ybn.de/)
+
+  The **YBN 2-5m** and **GTV 2-6m** profile materials are subject to the author's terms: “Design by DG7YBN, no republishing or distribution outside this app, not for commercial use.” See [LICENSE.md](LICENSE.md#dg7ybn-design-materials).
 - **Günter Hoch (DL6WU) and Ian White (G3SEK)** — [The VHF/UHF DX Book, p. 7-28](https://www.qsl.net/vu2msy/homebrew/Yagi_Design_Basics_by_DL6WU.pdf). Used for the diameter correction formula. See the original copyright notice.
 
 - **Attila Kocis (NUXCOM)** — [Construction manual for 144 and 432 MHz DK7ZB Yagis](https://web.archive.org/web/20241110203403id_/http://www.nuxcom.de/pdf/nuxcom_bauanweisungen_144_430_50hm.pdf). See the original manual for terms of commercial use.

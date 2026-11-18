@@ -116,8 +116,9 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
         val freeWave = frequency?.let { 299_792_458.0 / it }
         fun wavelength(value: Double?) = value?.let { resources.getString(R.string.cable_value_unit,
             cableNumber(context, BigDecimal.valueOf(it), 5), resources.getString(LengthUnit.METERS.labelResource())) } ?: "—"
-        TransmissionDiagram(TransmissionIllustration.WAVELENGTH, "λ₀\n" + wavelength(freeWave),
-            stringResource(R.string.hero_cable_lambda) + "\n" + wavelength(velocity?.let { v -> freeWave?.times(v) }),
+        TransmissionDiagram(TransmissionIllustration.WAVELENGTH,
+            stringResource(R.string.hero_free_lambda) + " · " + wavelength(freeWave),
+            stringResource(R.string.hero_cable_lambda) + " · " + wavelength(velocity?.let { v -> freeWave?.times(v) }),
             null, velocity, R.string.hero_wave_legend)
         ChoicePicker(stringResource(R.string.cable_direction), CableMode.entries, draft.mode, { stringResource(it.label()) },
             { focus.clearFocus(); change(currentState().draft.cable.copy(mode = it)) }, "cable-mode")
@@ -168,7 +169,14 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             )
             OutlinedTextField(draft.fields.getValue(key), { if (it.acceptsDecimalEdit()) change(currentState().draft.cable.edit(key, it)) },
                 label = { Text(stringResource(key.label()) + suffix) }, enabled = state.editingEnabled,
-                visualTransformation = frequencyTransformation,
+                visualTransformation = if (key == CableField.VELOCITY) {
+                    androidx.compose.ui.text.input.VisualTransformation {
+                        androidx.compose.ui.text.input.TransformedText(
+                            androidx.compose.ui.text.AnnotatedString(localizedNumber(context, it.text)),
+                            androidx.compose.ui.text.input.OffsetMapping.Identity,
+                        )
+                    }
+                } else frequencyTransformation,
                 modifier = fieldModifier.fillMaxWidth().testTag("cable-${key.name}").semantics { if (visible) error(message) }.onFocusChanged {
                     if (hadFocus && !it.isFocused) { val live = currentState().draft.cable; change(live.copy(checked = live.checked + key)) }
                     hadFocus = it.isFocused

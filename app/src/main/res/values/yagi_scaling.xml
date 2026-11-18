@@ -10,6 +10,8 @@
     <string name="ys_free">Straight round elements from a model</string>
     <string name="ys_mounted">Mounted dimensions</string>
     <string name="ys_example">Load demonstration dimensions</string>
+    <string name="ys_example_r3udk">Load R3UDK dimensions</string>
+    <string name="ys_example_r3udk_scope">Example of scaling mounted dimensions from 145 to 146 MHz. The driven element uses its assembled overall length. An NEC check requires a separate feed model.</string>
     <string name="ys_inputs">Source dimensions</string>
     <string name="ys_working_hz">Operating frequency, MHz</string>
     <string name="ys_source_hz">Original frequency, MHz</string>
@@ -92,4 +94,5 @@
     <string name="ys_target_parameters">Target parameters</string>
     <string name="ys_default_d_help">Enter a default diameter or specify diameters in the element geometry. Individual values take priority.</string>
     <string name="ys_illustration">Schematic illustration of a Yagi antenna before and after scaling.</string>
+    <string name="hero_free_lambda">λ₀ in free space</string>
 </resources>

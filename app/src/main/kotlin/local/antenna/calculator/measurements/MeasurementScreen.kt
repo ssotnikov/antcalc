@@ -139,7 +139,6 @@ internal fun MeasurementScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Text(stringResource(R.string.sweep_files), style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.secondary)
-        HelpText(R.string.modeling_s1p_port)
         displayedTraces.forEachIndexed { slotIndex, trace ->
             if (trace != null) {
                 OutlinedCard(Modifier.fillMaxWidth()) {
@@ -158,12 +157,16 @@ internal fun MeasurementScreen(
                     }
                 }
             } else if (slotIndex == 0 || displayedTraces[0] != null) {
-                OutlinedButton(onClick = { open(slotIndex) }, enabled = !state.busy && state.error?.problem != MeasurementProblem.WORKSPACE,
-                    modifier = Modifier.testTag("open-sweep-$slotIndex")) {
-                    Text(stringResource(if (slotIndex == 0) R.string.sweep_import_a else R.string.sweep_import_b))
+                val enabled = !state.busy && state.error?.problem != MeasurementProblem.WORKSPACE
+                val modifier = Modifier.testTag("open-sweep-$slotIndex")
+                if (slotIndex == 0) Button(onClick = { open(0) }, enabled = enabled, modifier = modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.sweep_import_a))
+                } else OutlinedButton(onClick = { open(slotIndex) }, enabled = enabled, modifier = modifier) {
+                    Text(stringResource(R.string.sweep_import_b))
                 }
             }
         }
+        HelpText(R.string.sweep_plane_short)
         if (state.busy) {
             LinearProgressIndicator(Modifier.fillMaxWidth())
             if (state.importing) TextButton(onClick = model::cancelImport) { Text(stringResource(R.string.sweep_cancel)) }
@@ -287,7 +290,14 @@ internal fun MeasurementScreen(
                 ) { cursor = start + it }
             }
         }
-        Text(stringResource(R.string.sweep_help), style = MaterialTheme.typography.bodySmall)
+        var formatExpanded by rememberSaveable { mutableStateOf(false) }
+        TextButton({ formatExpanded = !formatExpanded }) {
+            Text(stringResource(R.string.sweep_format_title) + if (formatExpanded) " ▴" else " ▾")
+        }
+        if (formatExpanded) {
+            HelpText(R.string.sweep_help)
+            HelpText(R.string.modeling_s1p_port)
+        }
     }
 }
 

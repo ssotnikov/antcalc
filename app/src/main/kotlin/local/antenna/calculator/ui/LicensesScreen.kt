@@ -51,7 +51,7 @@ private val publicationCredits = listOf(
         CreditedPublication(R.string.licenses_ybn_dubus, YBN_DUBUS_URL),
         CreditedPublication(R.string.licenses_gtv_bending, DG7YBN_BENT_DIPOLE_URL),
         CreditedPublication(R.string.licenses_work_2_2, "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm"),
-    ), PublicationTerms(R.string.yagi_dg_rights, "https://www.dg7ybn.de/")),
+    ), PublicationTerms(R.string.yagi_dg_notice, "https://www.dg7ybn.de/")),
     PublicationCredit(R.string.ys_book_authors, listOf(CreditedPublication(R.string.ys_book, YAGI_SCALING_BOOK)),
         PublicationTerms(R.string.ys_book_rights, YAGI_SCALING_BOOK)),
     PublicationCredit(R.string.licenses_author_3, listOf(
@@ -167,6 +167,10 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
         }
         credit.terms?.let { terms ->
             HelpText(terms.description)
+            if (terms.description == R.string.yagi_dg_notice &&
+                context.resources.configuration.locales[0].language == "ru") {
+                HelpText(R.string.yagi_dg_rights)
+            }
             TextButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
                 Text(stringResource(R.string.licenses_author_terms))
             }

@@ -108,7 +108,7 @@ internal fun AdditionalToolsScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         if (onOpenSegmentation != null) {
-            ToolCard(R.string.seg_tool, R.string.seg_intro, "open-yagi-segmentation", onOpenSegmentation)
+            ToolCard(R.string.seg_tool, R.string.seg_tool_hint, "open-yagi-segmentation", onOpenSegmentation)
         }
         if (onOpenMeasurements != null) {
             ToolCard(R.string.sweep_tool_title, R.string.sweep_tool_description, "open-measurements",

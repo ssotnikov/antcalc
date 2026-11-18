@@ -1,0 +1,1 @@
+Clarified small adjustments in saved calculations and feedline result status. Added a R3UDK scaling example and point navigation on the SWR bandwidth chart. Updated tool labels and presentation. The DG7YBN designs follow the author's usage terms.

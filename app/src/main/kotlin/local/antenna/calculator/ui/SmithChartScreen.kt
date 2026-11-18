@@ -126,7 +126,7 @@ internal fun SmithChartScreen(notify: (String) -> Unit) {
                 modifier = Modifier.fillMaxWidth().testTag("smith-legend")) {
                 Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     SmithLegendRow("●", Color(palette.load), stringResource(R.string.smith_legend_load))
-                    SmithLegendRow("●", Color(palette.line), stringResource(R.string.smith_legend_line))
+                    SmithLegendRow("◆", Color(palette.line), stringResource(R.string.smith_legend_line))
                     SmithLegendRow("┄", Color(palette.load), stringResource(R.string.smith_legend_circle))
                 }
             }

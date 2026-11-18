@@ -36,32 +36,6 @@ internal fun yagiElementLabelOrNull(id: String): Int? = when (id) {
     else -> null
 }
 
-internal fun yagiGtvVector(profile: YagiProfile): AntennaVector {
-    fun p(x: Double, y: Double, z: Double = 0.0) = AntennaPoint(x.toFloat(), y.toFloat(), z.toFloat())
-    val elements = profile.design.elements
-    val boom = if (profile.dualPlane) {
-        AntennaRod(p(0.0, 0.0), p(checkNotNull(profile.design.publishedBoomMm), 0.0), 9f, 0)
-    } else AntennaRod(p(-40.0, 0.0), p(elements.last().positionMm + 40, 0.0), 9f, 0)
-    fun rods(plane: List<local.antenna.calculator.core.layout.YagiElement>, vertical: Boolean) =
-        plane.flatMap { element ->
-            fun point(axis: Double, arm: Double) = if (vertical) p(axis, 0.0, arm) else p(axis, arm)
-            val axis = element.positionMm
-            val half = element.overallMm / 2
-            if (element.id == "de") {
-                val tip = axis - if (profile.datv) 84.0 else 87.0
-                listOf(-1, 1).flatMap { side ->
-                    val bend = point(axis, side * 100.0)
-                    listOf(AntennaRod(point(axis, side * 8.0), bend, 3.8f, 2),
-                        AntennaRod(bend, point(tip, side * half), 3.8f, 2))
-                }
-            } else listOf(AntennaRod(point(axis, -half), point(axis, half), 3.4f, 0))
-        }
-    return AntennaVector(listOf(boom) + rods(elements, false) + rods(profile.design.verticalElements, true),
-        (elements + profile.design.verticalElements).map {
-        AntennaJoint(p(it.positionMm, 0.0), 10f, 1)
-    })
-}
-
 @StringRes
 internal fun yagiElementLabel(id: String): Int = checkNotNull(yagiElementLabelOrNull(id))
 

@@ -10,6 +10,8 @@
     <string name="ys_free">Прямые круглые элементы из модели</string>
     <string name="ys_mounted">Монтажные размеры</string>
     <string name="ys_example">Загрузить демонстрационные размеры</string>
+    <string name="ys_example_r3udk">Загрузить размеры R3UDK</string>
+    <string name="ys_example_r3udk_scope">Пример переноса монтажных размеров с 145 на 146 МГц. Вибратор задан готовым габаритом. Для проверки в NEC нужна отдельная модель узла питания.</string>
     <string name="ys_inputs">Исходные размеры</string>
     <string name="ys_working_hz">Рабочая частота, МГц</string>
     <string name="ys_source_hz">Исходная частота, МГц</string>
@@ -90,4 +92,5 @@
     <string name="ys_target_parameters">Целевые параметры</string>
     <string name="ys_default_d_help">Укажите общий диаметр или задайте диаметры в геометрии элементов. Индивидуальные значения имеют приоритет.</string>
     <string name="ys_illustration">Условное изображение Яги до и после масштабирования.</string>
+    <string name="hero_free_lambda">λ₀ в свободном пространстве</string>
 </resources>

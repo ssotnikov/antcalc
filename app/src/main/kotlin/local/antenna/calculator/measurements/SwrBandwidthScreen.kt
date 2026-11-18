@@ -159,7 +159,8 @@ internal fun SwrBandwidthScreen(
             item {
                 val points = plotTrace.sweep.points
                 val requested = cursor.takeIf { it.isFinite() } ?: result.minimum?.hertz ?: points.first().hertz
-                val selected = points[plotTrace.sweep.nearestIndex(requested.coerceIn(points.first().hertz, points.last().hertz)) ?: 0]
+                val index = plotTrace.sweep.nearestIndex(requested.coerceIn(points.first().hertz, points.last().hertz)) ?: 0
+                val selected = points[index]
                 val frequency = selected.hertz
                 BandwidthHeading(R.string.bandwidth_chart)
                 MeasurementChart(listOf(active.first to plotTrace), SweepMetric.SWR, frequency, active.first,
@@ -180,6 +181,16 @@ internal fun SwrBandwidthScreen(
                     else -> stringResource(R.string.bandwidth_cursor_above)
                 }
                 SelectableText(formatter.selectedPoint(selected.hertz, swr, status), Modifier.testTag("bandwidth-selected-point"))
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedButton(onClick = { cursor = points[index - 1].hertz }, enabled = index > 0,
+                        modifier = Modifier.testTag("bandwidth-previous")) {
+                        Text(stringResource(R.string.sweep_previous_frequency))
+                    }
+                    OutlinedButton(onClick = { cursor = points[index + 1].hertz }, enabled = index < points.lastIndex,
+                        modifier = Modifier.testTag("bandwidth-next")) {
+                        Text(stringResource(R.string.sweep_next_frequency))
+                    }
+                }
             }
             item {
                 BandwidthHeading(R.string.bandwidth_intervals)

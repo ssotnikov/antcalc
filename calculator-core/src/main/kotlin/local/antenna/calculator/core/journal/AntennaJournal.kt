@@ -59,7 +59,7 @@ fun calculationSnapshotValueLimit(model: String): Int =
     when {
         model == local.antenna.calculator.core.layout.YagiScaling.MODEL ->
             local.antenna.calculator.core.layout.YagiScaling.MAX_SNAPSHOT_VALUES
-        local.antenna.calculator.core.layout.YagiDesign.entries.any { it.model == model && it.verticalElements.isNotEmpty() } -> 28
+        local.antenna.calculator.core.layout.YagiDesign.entries.any { it.model == model && it.dualPlane } -> 28
         else -> 24
     }
 

@@ -222,6 +222,12 @@ internal fun YagiScalingScreen(
         TextButton({ draft = YagiScalingDraft.example().copy(mode = draft.mode) }, Modifier.testTag("ys-example")) {
             Text(stringResource(R.string.ys_example))
         }
+        if (draft.mode == Mode.FREQUENCY) {
+            TextButton({ draft = YagiScalingDraft.r3udkExample(draft.unit) }, Modifier.testTag("ys-example-r3udk")) {
+                Text(stringResource(R.string.ys_example_r3udk))
+            }
+            HelpText(R.string.ys_example_r3udk_scope)
+        }
         if (result != null) {
             HorizontalDivider()
             Text(stringResource(R.string.ys_result), style = MaterialTheme.typography.titleMedium)

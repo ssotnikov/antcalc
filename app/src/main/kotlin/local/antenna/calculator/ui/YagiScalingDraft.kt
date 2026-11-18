@@ -5,6 +5,7 @@ import java.math.BigDecimal
 import local.antenna.calculator.core.journal.CalculationSnapshot
 import local.antenna.calculator.core.journal.SnapshotUnit
 import local.antenna.calculator.core.journal.SnapshotValue
+import local.antenna.calculator.core.layout.R3udkYagi
 import local.antenna.calculator.core.layout.YagiScaling
 import local.antenna.calculator.core.layout.YagiScaling.Element
 import local.antenna.calculator.core.layout.YagiScaling.Geometry
@@ -125,6 +126,15 @@ internal data class YagiScalingDraft(
 
         fun example() = YagiScalingDraft(source = "145", target = "175", diameter = "8", targetDiameter = "6",
             rows = listOf(ScalingRow("0", "1040"), ScalingRow("215", "970"), ScalingRow("415", "945"), ScalingRow("810", "908")))
+
+        fun r3udkExample(unit: LengthUnit) = YagiScalingDraft(
+            geometry = Geometry.MOUNTED,
+            source = plain(R3udkYagi.FREQUENCY_HZ / 1e6),
+            target = "146",
+            rows = R3udkYagi.elements.map { element ->
+                ScalingRow(plain(element.positionMm), plain(element.overallMm), plain(element.diameterMm))
+            },
+        ).inUnit(unit)
 
         fun restore(snapshot: CalculationSnapshot): YagiScalingDraft? {
             if (snapshot.model != YagiScaling.MODEL || snapshot.revision !in 1..2) return null

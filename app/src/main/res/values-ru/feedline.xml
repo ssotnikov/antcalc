@@ -39,8 +39,10 @@
     <string name="feedline_limits">Модель согласованной линии. Потери в разъёмах и рассогласование не учитываются. Расчет не определяет допустимую мощность кабеля.</string>
     <string name="feedline_vf">Коэффициент скорости по паспорту</string>
     <string name="feedline_vf_reciprocal">VF вычислен как величина, обратная паспортному коэффициенту укорочения.</string>
-    <string name="feedline_preview_output">Выход P₂ при %1$s</string>
     <string name="feedline_preview_explanation">Для введённой частоты в паспорте нет точки. Справочный расчёт выполнен для ближайшей паспортной частоты %1$s. Выберите её или введите затухание вручную.</string>
     <string name="feedline_use_preview_frequency">Использовать %1$s</string>
-    <string name="feedline_preview_result">Справочный расчёт на %1$s</string>
+    <string name="feedline_preview_result">Справочно · %1$s</string>
+    <string name="feedline_provisional_label">Предварительно · подтвердите затухание</string>
+    <string name="feedline_enter_length">Введите длину кабеля для расчёта потерь.</string>
+    <string name="feedline_enter_power">Введите входную мощность, чтобы увидеть результат в ваттах.</string>
 </resources>

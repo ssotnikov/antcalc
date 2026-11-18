@@ -61,12 +61,12 @@
     <string name="yagi_reflector_2m">2 m reflector</string>
     <string name="yagi_reflector_70cm">70 cm reflector</string>
     <string name="yagi_open_sleeve">70 cm open-sleeve element</string>
-    <string name="yagi_ybn_published">On-boom build with Ø8 mm passive elements on a 20 × 20 mm boom. The published element lengths already include the 3.9 mm boom correction. The half lengths assume a 10 mm gap and a driven element mounted in the plane of the other elements. Published gain at 144.300 MHz is 10.2 dBi for the Ø8 mm model.</string>
+    <string name="yagi_ybn_published">On-boom mounting. The table includes the mounting correction.</string>
     <string name="yagi_dk2_published">The author specifies a 500 mm boom. The element positions span 470 mm from reflector to director. Published gain is 4.72 dBd and front-to-back ratio is 16.5 dB. The series guide gives a typical feed gap of 10–12 mm and states the element lengths tip to tip. The short build uses removable halves. Their blanks depend on the connectors.</string>
     <string name="yagi_dk50_published">Broadband 50 Ω version for 430–440 MHz. The author lists 8.7 dBd gain and specifies a choke with three turns of RG-178 on Ø20 mm PVC.</string>
     <string name="yagi_dk28_published">For a 50 Ω feed, the author uses two 75 Ω quarter-wave sections in parallel. Published length per section is 120 mm for RG-179 (VF 0.70), 115 mm for solid PE, and 141 mm for foam PE (VF 0.82). Published gain at 432.000 MHz is 9.1 dBd.</string>
     <string name="yagi_duo_published">Type 1 uses one feed point for both bands. The 70 cm open-sleeve element is 22 mm from the driven element. The author gives 4.1 dBd at 145.000 MHz and 5.4 dBd at 435.000 MHz for the 2+2 design. Those values describe the published design. Import your measurements separately for 144–146 and 430–440 MHz.</string>
-    <string name="yagi_gtv_published">The mounting table is for Ø8 mm passive elements on a 20 × 20 mm boom with standard insulators. The lengths already include the 6.83 mm correction. The reflector-to-D4 span is 2358 mm. With 40 mm at each end, the boom is 2438 mm long. The published 970.83 mm is the table value for the driven element. The cut list uses the DG7YBN calculator with a 10 mm gap and a bend of about 12.8°. Check final geometry by measuring SWR. The author’s model gives 11.9 dBi at 144.100 MHz.</string>
+    <string name="yagi_gtv_published">Mounting with standard insulators. The table includes the mounting correction. Check the feed by measuring SWR.</string>
     <string name="yagi_gtv_scheme">Schematic top view. Each bend is 100 mm from the feed centre. The tips point towards the reflector and are approximately 188 mm from it along the boom. The drawing shows the feed gap schematically.</string>
     <string name="yagi_gtv_position">From rear end</string>
     <string name="yagi_gtv_table_length">Published length</string>
@@ -88,11 +88,10 @@
     <string name="yagi_driven_two_halves">Driven element · 2 halves, length each</string>
     <string name="yagi_driven_source">Source for driven-element dimensions</string>
     <string name="yagi_datv_scheme">Top view. Each bend is 100 mm from the feed centre. The driven-element tips are 186 mm from the reflector along the boom. The feed gap is schematic.</string>
-    <string name="yagi_datv_published">The cut list gives starting tube lengths for a 10 mm feed gap and a bend of about 12.7°. The on-boom build uses the 6.83 mm correction in the mounting table. The through-boom build uses 8.84 mm. Check final geometry by measuring SWR.</string>
+    <string name="yagi_datv_published">See the author’s publication for mounting data.</string>
     <string name="yagi_driver_setup">Driven-element geometry</string>
     <string name="yagi_dk_gap_help">Measure the distance between the metal ends with the tubes seated against their stops. For a custom spacer, you can choose a 10 mm gap following the DK7ZB lightweight series. The length of each half is (span − gap) / 2.</string>
     <string name="yagi_xpol_input_help">Enter the gap between the metal ends, the distance from feed centre to the bend and the tip setback towards the reflector along the boom. Cut lengths are calculated separately for H and V. Check the assembled antenna by measuring SWR.</string>
-    <string name="yagi_sat_estimate">Bend positions and setbacks are estimated from the model view. This trial cut list uses a 10 mm gap. H: bend at 103 mm, setback 83 mm, blank about 482 mm. V: bend at 100 mm, setback 82 mm, blank about 483 mm.</string>
     <string name="yagi_driver_example">Fill empty fields from example</string>
     <string name="yagi_driver_input_basis">Driven-element cut lengths are based on the entered dimensions. Check them against your feed assembly before cutting.</string>
     <string name="yagi_driven_gap_mm">Gap between halves, mm</string>
@@ -111,4 +110,7 @@
     <string name="reference_dk7zb_pvc_url" translatable="false">https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm</string>
     <string name="reference_dk7zb_five_url" translatable="false">https://dk7zb.darc.de/70cm/5.htm</string>
     <string name="reference_nuxcom_dk7zb_url" translatable="false">https://web.archive.org/web/20241110203403id_/http://www.nuxcom.de/pdf/nuxcom_bauanweisungen_144_430_50hm.pdf</string>
+    <string name="yagi_dg_no_transfer">DG7YBN design materials can be viewed within AntCalc.</string>
+    <string name="yagi_dg_export_notice">Select the records to export. This list contains records available for transfer outside AntCalc.</string>
+    <string name="yagi_dg_notice" translatable="false">Design by DG7YBN, no republishing or distribution outside this app, not for commercial use.</string>
 </resources>

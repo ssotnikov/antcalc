@@ -54,7 +54,7 @@ internal fun JournalCalculationComparisonScreen(
         TextButton(onClick = { expanded = !expanded }) { Text(stringResource(R.string.journal_compare_both_details)) }
         if (expanded) {
             JournalHeading(calculation.title)
-            JournalDetails(calculationDetails)
+            JournalDetails(calculationDetails, selectable = !calculation.restrictedYagiMaterials)
             JournalHeading(manual.title)
             JournalDetails(manualDetails)
         }

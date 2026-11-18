@@ -76,7 +76,8 @@ class WebSourcesTest {
     @Test fun yagiProfilesUseApprovedSourcesAndUniqueStableIds() {
         val profiles = YagiProfile.entries
         assertEquals(profiles.size, profiles.map { it.id }.distinct().size)
-        assertEquals(7, profiles.take(7).map { it.image }.distinct().size)
+        val restrictedIds = profiles.filter { it.design.restricted && it.design.available }.map { it.id }.toSet()
+        assertTrue(restrictedIds.isEmpty() || restrictedIds == setOf("ybn_2_5m", "gtv_2_6m"))
         for (profile in profiles) {
             assertEquals(profile.original, validatedSourceAddress(profile.original))
             profile.drivenCutSource?.let { assertEquals(it, validatedSourceAddress(it)) }

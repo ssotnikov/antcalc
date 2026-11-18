@@ -339,8 +339,8 @@ private class SmithDrawing(private val canvas: AndroidCanvas, private val palett
             arrow(listOf(center, point), palette.load)
         }
         val greenRadius = if ((line - point).getDistance() < 8f) 8.8f else 6.1f
-        circle(line.x, line.y, greenRadius + 0.8f, palette.background)
-        circle(line.x, line.y, greenRadius, palette.line)
+        diamond(line.x, line.y, greenRadius + 0.8f, palette.background)
+        diamond(line.x, line.y, greenRadius, palette.line)
         circle(point.x, point.y, 6f, palette.background)
         circle(point.x, point.y, 5.1f, palette.load)
         val align = if (point.x > 223f) Paint.Align.RIGHT else Paint.Align.LEFT
@@ -481,6 +481,19 @@ private class SmithDrawing(private val canvas: AndroidCanvas, private val palett
                     CENTER_Y - (149 * p.imaginary).toFloat() + 4f, 10.5f, palette.muted)
             }
         }
+    }
+
+    private fun diamond(x: Float, y: Float, radius: Float, color: Int) {
+        val shape = android.graphics.Path().apply {
+            moveTo(x, y - radius)
+            lineTo(x + radius, y)
+            lineTo(x, y + radius)
+            lineTo(x - radius, y)
+            close()
+        }
+        paint.color = color
+        paint.style = Paint.Style.FILL
+        canvas.drawPath(shape, paint)
     }
 
     private fun circle(x: Float, y: Float, radius: Float, color: Int, stroke: Float = 0f) {

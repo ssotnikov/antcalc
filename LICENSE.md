@@ -23,3 +23,13 @@ SOFTWARE.
 OpenNEC 2.4.1 is Copyright © 2026 Maury Markowitz and is distributed under the
 MIT license. See the [OpenNEC notice](THIRD_PARTY_NOTICES.md#opennec) for the
 complete license and the original NEC-2 notice.
+
+## DG7YBN design materials
+
+Hartmut Klüver (DG7YBN) retains rights to the design materials for
+[YBN 2-5m](https://www.dg7ybn.de/144MHz/144_5elem.htm) and
+[GTV 2-6m](https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm).
+These materials are excluded from the MIT grant above and are subject to
+the author's terms:
+
+> Design by DG7YBN, no republishing or distribution outside this app, not for commercial use.

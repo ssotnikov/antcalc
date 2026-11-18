@@ -28,12 +28,19 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 134
-        versionName = "1.39.2"
+        versionCode = 135
+        versionName = "1.40.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets.getByName("main").assets.srcDir(rootProject.file("userguide"))
+    if (githubDirect) {
+        providers.environmentVariable("ANTCALC_DG7YBN_DIR").orNull?.let { directory ->
+            val assets = file("$directory/assets")
+            require(assets.resolve("antennas/dg7ybn.json").isFile) { "DG7YBN model resources are missing" }
+            sourceSets.getByName("main").assets.srcDir(assets)
+        }
+    }
 
     if (githubDirect) {
         flavorDimensions += "distribution"

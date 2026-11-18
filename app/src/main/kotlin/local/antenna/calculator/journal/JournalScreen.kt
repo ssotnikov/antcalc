@@ -157,6 +157,9 @@ internal fun JournalScreen(
     }
 
     state.projects.find { it.id.toString() == pendingProjectExport }?.let { target ->
+        val restricted = target.records.any { it.restrictedYagiMaterials }
+        val exportable = target.records.filterNot { it.restrictedYagiMaterials }
+        var selectedRecords by remember(target.id) { mutableStateOf(exportable.map { it.id }.toSet()) }
         AppAlertDialog(
             onDismissRequest = { pendingProjectExport = null },
             title = { Text(stringResource(R.string.journal_export)) },
@@ -167,10 +170,26 @@ internal fun JournalScreen(
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     notices.forEach { Text(stringResource(it)) }
+                    if (restricted) {
+                        Text(stringResource(R.string.yagi_dg_export_notice))
+                        Column(Modifier.heightIn(max = 240.dp).verticalScroll(rememberScrollState())) {
+                            exportable.forEach { record ->
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Checkbox(record.id in selectedRecords, { checked ->
+                                        selectedRecords = if (checked) selectedRecords + record.id else selectedRecords - record.id
+                                    }, modifier = Modifier.semantics { contentDescription = record.title })
+                                    Text(record.title)
+                                }
+                            }
+                        }
+                    }
                 }
             },
             confirmButton = {
-                TextButton(onClick = { pendingProjectExport = null; export(target) }) { Text(stringResource(R.string.journal_export)) }
+                TextButton(onClick = {
+                    pendingProjectExport = null
+                    export(if (restricted) target.copy(records = exportable.filter { it.id in selectedRecords }) else target)
+                }) { Text(stringResource(R.string.journal_export)) }
             },
             dismissButton = { TextButton(onClick = { pendingProjectExport = null }) { Text(stringResource(R.string.sweep_cancel)) } },
         )
@@ -187,7 +206,8 @@ internal fun JournalScreen(
                 val shortTitle = target.title.take(105).trimEnd().dropLastWhile(Char::isHighSurrogate)
                 model.duplicate(target.id, resources.getString(R.string.journal_copy_name, shortTitle), ::openProject)
             }
-            ProjectAction.EXPORT -> if (target.sweeps.isEmpty() && target.photos.isEmpty()) export(target)
+            ProjectAction.EXPORT -> if (target.sweeps.isEmpty() && target.photos.isEmpty() &&
+                target.records.none { it.restrictedYagiMaterials }) export(target)
                 else pendingProjectExport = target.id.toString()
             ProjectAction.DELETE -> projectToDelete = target.id.toString()
         }
@@ -294,21 +314,27 @@ internal fun JournalScreen(
                     JournalDetails(presentation.recordFacts(record))
                     if (calculation != null) {
                         JournalDetails(listOf(calculation.model))
+                        if (record.restrictedYagiMaterials) {
+                            Text(stringResource(R.string.yagi_dg_notice))
+                            Text(stringResource(R.string.yagi_dg_no_transfer))
+                        }
                         Column(verticalArrangement = Arrangement.spacedBy(18.dp)) {
                             JournalCalculationTable(
                                 stringResource(R.string.journal_calculation_input),
                                 calculation.inputs,
                                 titleDividerColor = MaterialTheme.colorScheme.outline,
+                                selectable = !record.restrictedYagiMaterials,
                             )
                             JournalCalculationTable(
                                 stringResource(R.string.journal_calculation_output),
                                 calculation.outputs,
                                 titleDividerColor = MaterialTheme.colorScheme.primary,
+                                selectable = !record.restrictedYagiMaterials,
                             )
                         }
                         JournalDetails(calculation.metadata)
                     }
-                    presentation.recordNote(record)?.let { JournalDetails(listOf(it)) }
+                    presentation.recordNote(record)?.let { JournalDetails(listOf(it), selectable = !record.restrictedYagiMaterials) }
                     JournalScope()
                     if (scaling != null && onOpenYagiScaling != null) {
                         TextButton(onClick = { onOpenYagiScaling(scaling) }, enabled = enabled, modifier = Modifier.testTag("journal-open-yagi-scaling")) {
@@ -328,12 +354,15 @@ internal fun JournalScreen(
                     OutlinedButton(onClick = {
                         val details = presentation.recordDetails(record)
                         copy(listOf(record.title, presentation.formatFields(details), scopeNote).joinToString("\n"))
-                    }, enabled = enabled) { Text(stringResource(R.string.journal_copy)) }
+                    }, enabled = enabled && !record.restrictedYagiMaterials) { Text(stringResource(R.string.journal_copy)) }
                     TextButton(onClick = { confirmRecordDeletion = true }, enabled = enabled) { Text(stringResource(R.string.journal_delete)) }
                 }
             } else MissingItem()
             JournalPage.COMPARE -> if (project != null && canCompare) {
-                val copyComparison: (String) -> Unit = { report -> copy("$report\n\n$scopeNote") }
+                val copyComparison: (String) -> Unit = { report ->
+                    if (selected.any { it.restrictedYagiMaterials }) onMessage(resources.getString(R.string.yagi_dg_no_transfer))
+                    else copy("$report\n\n$scopeNote")
+                }
                 when {
                     selectedSweep != null && selected.size == 1 -> JournalSweepComparisonScreen(
                         project.title, selected.single(), selectedSweep, presentation, model::readSweep, copyComparison,
@@ -636,6 +665,7 @@ private fun JournalCalculationTable(
     title: String,
     details: List<Pair<String, String>>,
     titleDividerColor: Color,
+    selectable: Boolean = true,
 ) {
     if (details.isEmpty()) return
     Column(Modifier.fillMaxWidth()) {
@@ -646,7 +676,7 @@ private fun JournalCalculationTable(
             style = MaterialTheme.typography.titleMedium,
         )
         HorizontalDivider(thickness = 2.dp, color = titleDividerColor)
-        SelectionContainer {
+        JournalSelection(selectable) {
             Column {
                 for ((label, value) in details) {
                     Row(
@@ -675,9 +705,9 @@ private fun JournalCalculationTable(
 }
 
 @Composable
-internal fun JournalDetails(details: List<Pair<String, String>>, spacing: Dp = 12.dp) {
+internal fun JournalDetails(details: List<Pair<String, String>>, spacing: Dp = 12.dp, selectable: Boolean = true) {
     if (details.isEmpty()) return
-    SelectionContainer {
+    JournalSelection(selectable) {
         Column(verticalArrangement = Arrangement.spacedBy(spacing)) {
             for ((label, value) in details) {
                 Column(Modifier.semantics(mergeDescendants = true) {}) {
@@ -687,6 +717,11 @@ internal fun JournalDetails(details: List<Pair<String, String>>, spacing: Dp = 1
             }
         }
     }
+}
+
+@Composable
+private fun JournalSelection(selectable: Boolean, content: @Composable () -> Unit) {
+    if (selectable) SelectionContainer(content = content) else content()
 }
 
 @Composable

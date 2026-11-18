@@ -46,6 +46,7 @@ internal fun TransmissionDiagram(
     detail: String?,
     fraction: Double?,
     caption: Int,
+    outputStatus: String? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val warm = if (colors.surface.luminance() < .5f) Color(0xFFF3BA80) else Color(0xFF824410)
@@ -60,24 +61,33 @@ internal fun TransmissionDiagram(
         border = if (isReflection) BorderStroke(1.dp, colors.outlineVariant) else null,
     ) {
         Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (style != TransmissionIllustration.WAVELENGTH) Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(upper, Modifier.weight(1f), style = endpointStyle,
                     color = if (isReflection) colors.secondary else colors.primary)
-                Text(lower, Modifier.weight(1f), style = endpointStyle, textAlign = TextAlign.End,
-                    color = if (isReflection) colors.secondary else colors.onSurface)
+                if (outputStatus == null) {
+                    Text(lower, Modifier.weight(1f), style = endpointStyle, textAlign = TextAlign.End,
+                        color = if (isReflection) colors.secondary else colors.onSurface)
+                } else Column(Modifier.weight(1f), horizontalAlignment = Alignment.End) {
+                    Text(lower, style = endpointStyle, textAlign = TextAlign.End,
+                        color = if (isReflection) colors.secondary else colors.onSurface)
+                    Text(outputStatus, style = typography.labelMedium, color = warm, textAlign = TextAlign.End)
+                }
             }
             when (style) {
                 TransmissionIllustration.WAVELENGTH -> {
-                    Canvas(Modifier.fillMaxWidth().height(92.dp)) {
+                    Text(upper, style = endpointStyle, color = colors.onSurfaceVariant)
+                    Canvas(Modifier.fillMaxWidth().height(34.dp)) {
                         val (left, right) = diagramEdges()
-                        drawPath(wave(left, right, 1.4f, size.height * .13f, size.height * .24f), colors.onSurfaceVariant,
+                        drawPath(wave(left, right, 1.4f, size.height * .32f, size.height / 2), colors.onSurfaceVariant,
                             style = Stroke(2.dp.toPx(), pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 3.dp.toPx()))))
+                    }
+                    Text(lower, style = endpointStyle, color = colors.primary)
+                    Canvas(Modifier.fillMaxWidth().height(34.dp)) {
+                        val (left, right) = diagramEdges()
                         ratio?.coerceAtLeast(.12f)?.let { velocity ->
-                            drawPath(wave(left, right, (1.4f / velocity).coerceAtMost(12f), size.height * .13f, size.height * .65f),
+                            drawPath(wave(left, right, (1.4f / velocity).coerceAtMost(12f), size.height * .32f, size.height / 2),
                                 colors.primary, style = Stroke(2.dp.toPx()))
                         }
-                        val baseline = size.height * .88f
-                        drawLine(colors.outlineVariant, Offset(left, baseline), Offset(right, baseline), 1.dp.toPx())
                     }
                 }
                 TransmissionIllustration.POWER -> {

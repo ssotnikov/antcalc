@@ -504,6 +504,20 @@ internal class JournalPresentation(private val context: Context) {
     }
 
     private fun metricValue(metric: SnapshotValue, aerialMhz: Double? = null): String {
+        if (metric.unit == SnapshotUnit.METERS && metric.key in setOf("adjustment", "arm_adjustment")) {
+            val magnitude = kotlin.math.abs(metric.value)
+            if (magnitude == 0.0) return text(R.string.unchanged)
+            val unit = if (magnitude < .01) LengthUnit.MILLIMETERS else LengthUnit.CENTIMETERS
+            val value = magnitude * 1e9 / unit.nanometersPerUnit
+            val label = when {
+                metric.value < 0 && value < .01 -> R.string.shorten_less
+                metric.value < 0 -> R.string.shorten
+                value < .01 -> R.string.lengthen_less
+                else -> R.string.lengthen
+            }
+            return context.getString(label, context.getString(R.string.value_unit,
+                number(maxOf(value, .01), 2), text(unit.labelResource())))
+        }
         if (aerialMhz != null && metric.unit == SnapshotUnit.METERS) {
             return hb9cvAerialLength(locale, metric.key, metric.value, aerialMhz,
                 text(R.string.hb9cv_aerial_mm), text(R.string.hb9cv_aerial_m))

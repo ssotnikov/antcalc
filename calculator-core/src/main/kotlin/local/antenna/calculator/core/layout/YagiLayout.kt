@@ -33,6 +33,7 @@ data class YagiCutList(
 )
 
 fun calculateYagiCutList(design: YagiDesign, allowanceMm: Double, rearMm: Double?, frontMm: Double?): YagiCutList {
+    require(design.available)
     require(allowanceMm in 0.0..1000.0)
     require(listOfNotNull(rearMm, frontMm).all { it in 0.0..1000.0 })
     val span = maxOf(design.elements.last().positionMm, design.verticalElements.lastOrNull()?.positionMm ?: 0.0) -

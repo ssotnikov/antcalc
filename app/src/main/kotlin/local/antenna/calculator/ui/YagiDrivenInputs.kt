@@ -37,15 +37,5 @@ internal data class YagiDriverPlane(
 
 internal fun YagiDesign.driverPlanes(): List<YagiDriverPlane> = when (this) {
     YagiDesign.DK50, YagiDesign.DK28 -> listOf(YagiDriverPlane(elements.single { it.id == "de" }.overallMm))
-    YagiDesign.GTV_XPOL_STAUFF -> driverPlanes(965.0, 965.0, 5.23)
-    YagiDesign.GTV_XPOL_8 -> driverPlanes(956.0, 956.0, 6.83)
-    YagiDesign.GTV_XPOL_THROUGH4 -> driverPlanes(962.0, 962.0, 8.23)
-    YagiDesign.GTV_XPOL_THROUGH476 -> driverPlanes(962.0, 962.0, 9.13)
-    YagiDesign.GTV_SAT -> driverPlanes(951.0, 954.0, 5.23)
     else -> emptyList()
 }
-
-private fun YagiDesign.driverPlanes(horizontal: Double, vertical: Double, correction: Double) =
-    listOf(horizontal, vertical).zip(listOf(elements, verticalElements)).map { (span, plane) ->
-        YagiDriverPlane(span, correction, plane.single { it.id == "de" }.positionMm - plane.first().positionMm)
-    }

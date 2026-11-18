@@ -9,6 +9,20 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class YagiScalingDraftTest {
+    @Test fun r3udkExampleScalesMountedDimensionsInTheSelectedUnit() {
+        val draft = YagiScalingDraft.r3udkExample(LengthUnit.CENTIMETERS)
+        val result = requireNotNull(draft.result())
+        assertEquals(YagiScaling.Geometry.MOUNTED, draft.geometry)
+        assertEquals(145_000_000L, draft.sourceHz)
+        assertEquals(146_000_000L, draft.targetHz)
+        assertEquals(LengthUnit.CENTIMETERS, draft.unit)
+        assertEquals(4, result.elements.size)
+        assertEquals(0.990 * result.factor, result.elements[1].length, 1e-12)
+        assertEquals(0.211 * result.factor, result.elements[1].position, 1e-12)
+        assertEquals(0.0024 * result.factor, result.elements[1].diameter, 1e-12)
+        assertNull(draft.copy(mode = YagiScaling.Mode.DIAMETER, targetDiameter = "0.3").result())
+    }
+
     @Test fun missingDataOnlyIncludesFieldsRequiredByTheSelectedMode() {
         val frequency = YagiScalingDraft.example().copy(targetDiameter = "")
         assertFalse(frequency.hasMissingRequiredData())

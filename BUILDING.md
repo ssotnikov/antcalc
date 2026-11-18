@@ -535,6 +535,18 @@ and RuStore use that APK and `v<versionName>` tags. Use the default store verifi
 CI checks both variants and uploads separate unsigned artifacts. The
 GitHub Direct artifact has the `github-direct-unsigned-` prefix.
 
+Для разрешённой некоммерческой сборки AntCalc с двумя профилями DG7YBN
+можно указать локальный каталог материалов в `ANTCALC_DG7YBN_DIR`.
+Прямой вариант берёт из него `kotlin/` и `assets/`. Обычные сборки
+из открытых исходников поставляются с остальными профилями. Соблюдайте
+[условия DG7YBN](LICENSE.md#dg7ybn-design-materials) при работе с этим каталогом.
+
+For a permitted non-commercial AntCalc build with the two DG7YBN profiles,
+set `ANTCALC_DG7YBN_DIR` to the local materials directory. The direct variant
+loads its `kotlin/` and `assets/` directories. Regular builds from public
+sources contain the other profiles. The [DG7YBN terms](LICENSE.md#dg7ybn-design-materials)
+apply to the local materials.
+
 ```powershell
 python scripts/build_release.py build --channel github-direct --output artifacts/unsigned-github-direct
 .\scripts\sign_release.ps1 -Channel github-direct -UnsignedApk artifacts\unsigned-github-direct\antcalc.apk -OutputDirectory artifacts\github-direct
