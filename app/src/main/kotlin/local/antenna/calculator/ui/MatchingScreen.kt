@@ -155,13 +155,14 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
                 modifier = Modifier.fillMaxWidth(),
             ) { children, constraints ->
                 val columns = if (stacked) 1 else 2
-                val gap = 12.dp.roundToPx()
-                val width = (constraints.maxWidth - gap * (columns - 1)).coerceAtLeast(0) / columns
+                val columnGap = 12.dp.roundToPx()
+                val rowGap = 16.dp.roundToPx()
+                val width = (constraints.maxWidth - columnGap * (columns - 1)).coerceAtLeast(0) / columns
                 val height = children.maxOf { it.maxIntrinsicHeight(width) }
                 val cards = children.map { it.measure(Constraints.fixed(width, height)) }
-                layout(constraints.maxWidth, (cards.size / columns) * (height + gap) - gap) {
+                layout(constraints.maxWidth, (cards.size / columns) * (height + rowGap) - rowGap) {
                     cards.forEachIndexed { index, card ->
-                        card.placeRelative(index % columns * (width + gap), index / columns * (height + gap))
+                        card.placeRelative(index % columns * (width + columnGap), index / columns * (height + rowGap))
                     }
                 }
             }
