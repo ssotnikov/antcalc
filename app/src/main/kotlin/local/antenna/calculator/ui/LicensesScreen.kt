@@ -55,6 +55,7 @@ private val publicationCredits = listOf(
     PublicationCredit(R.string.ys_book_authors, listOf(CreditedPublication(R.string.ys_book, YAGI_SCALING_BOOK)),
         PublicationTerms(R.string.ys_book_rights, YAGI_SCALING_BOOK)),
     PublicationCredit(R.string.licenses_author_3, listOf(
+        CreditedPublication(R.string.seg_source, DK7ZB_SEGMENTATION_SOURCE),
         CreditedPublication(R.string.licenses_work_3_1, "https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm"),
         CreditedPublication(R.string.licenses_work_3_2, "https://dk7zb.darc.de/70cm/5.htm"),
         CreditedPublication(R.string.licenses_work_3_3, "https://dk7zb.darc.de/Duoband/duoband_2-70_2-3.htm"),

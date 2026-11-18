@@ -38,19 +38,57 @@ internal object OpenNec {
         val frontToBackDb get() = forwardDbi - azimuthDbi[180 / AZIMUTH_STEP]
     }
 
-    fun segmentCounts(elements: List<Element>, highestHz: Long): List<Int>? {
-        if (highestHz !in 100_000L..6_000_000_000L || elements.size !in 1..24) return null
-        if (elements.first().position != 0.0 ||
-            elements.zipWithNext().any { (a, b) -> b.position - a.position <= (a.diameter + b.diameter) / 2 }) return null
+    enum class SegmentationIssue { INPUT, POSITIONS, ELEMENT, STEP, LIMIT }
+
+    data class SegmentPlan(
+        val wavelength: Double,
+        val counts: List<Int> = emptyList(),
+        val issue: SegmentationIssue? = null,
+        val elementIndex: Int? = null,
+    )
+
+    fun segmentation(elements: List<Element>, highestHz: Long): SegmentPlan {
         val wavelength = 299_792_458.0 / highestHz
-        val counts = elements.map { element ->
+        if (highestHz !in 100_000L..6_000_000_000L || elements.size !in 1..24) {
+            return SegmentPlan(wavelength, issue = SegmentationIssue.INPUT)
+        }
+        val counts = elements.mapIndexed { index, element ->
             if (element.position !in 0.0..1000.0 || element.length !in Double.MIN_VALUE..1000.0 ||
-                element.diameter !in Double.MIN_VALUE..element.length) return null
+                element.diameter !in Double.MIN_VALUE..element.length) {
+                return SegmentPlan(wavelength, issue = SegmentationIssue.ELEMENT, elementIndex = index)
+            }
             val count = ceil(element.length / (0.05 * wavelength)).toInt().coerceAtLeast(11) or 1
-            if (count > MAX_SEGMENTS || element.length / count < 2 * element.diameter) return null
+            if (count > MAX_SEGMENTS) return SegmentPlan(wavelength, issue = SegmentationIssue.LIMIT)
+            if (element.length / count < 2 * element.diameter) {
+                return SegmentPlan(wavelength, issue = SegmentationIssue.STEP, elementIndex = index)
+            }
             count
         }
-        return counts.takeIf { it.sum() <= MAX_SEGMENTS }
+        if (elements.first().position != 0.0 ||
+            elements.zipWithNext().any { (a, b) -> b.position - a.position <= (a.diameter + b.diameter) / 2 }) {
+            return SegmentPlan(wavelength, issue = SegmentationIssue.POSITIONS)
+        }
+        if (counts.sum() > MAX_SEGMENTS) return SegmentPlan(wavelength, issue = SegmentationIssue.LIMIT)
+        return SegmentPlan(wavelength, counts)
+    }
+
+    fun segmentCounts(elements: List<Element>, highestHz: Long): List<Int>? =
+        segmentation(elements, highestHz).takeIf { it.issue == null }?.counts
+
+    fun finerSegments(elements: List<Element>, counts: List<Int>): List<Int>? {
+        if (elements.size != counts.size) return null
+        val doubled = counts.map { it * 2 - 1 }
+        if (doubled.sum() <= MAX_SEGMENTS && elements.zip(doubled).all { (element, count) ->
+                element.length / count >= 2 * element.diameter
+            }) return doubled
+        var remaining = MAX_SEGMENTS - counts.sum()
+        val refined = counts.mapIndexed { index, count ->
+            if (remaining >= 2 && elements[index].length / (count + 2) >= 2 * elements[index].diameter) {
+                remaining -= 2
+                count + 2
+            } else count
+        }
+        return refined.takeIf { it != counts }
     }
 
     suspend fun sweep(

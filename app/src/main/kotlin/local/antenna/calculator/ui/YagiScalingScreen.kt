@@ -58,6 +58,7 @@ internal fun YagiScalingScreen(
     initial: CalculationSnapshot?,
     onSave: ((CalculationSnapshot) -> Unit)?,
     necAvailable: () -> Boolean = { OpenNec.available },
+    onSegmentation: ((ArrayList<String>) -> Unit)? = null,
     onCopied: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -297,7 +298,7 @@ internal fun YagiScalingScreen(
                 !necAvailable() -> R.string.opennec_unavailable
                 else -> null
             }
-            YagiNecPanel(necReference, result.elements, requireNotNull(draft.targetHz), blockedNec, appliedLengths) { found ->
+            YagiNecPanel(necReference, result.elements, requireNotNull(draft.targetHz), blockedNec, appliedLengths, onSegmentation = onSegmentation) { found ->
                 appliedLengths = ArrayList(found.map { it.length })
                 appliedVersion = OpenNec.VERSION_CODE
             }

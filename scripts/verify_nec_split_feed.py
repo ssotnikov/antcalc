@@ -49,7 +49,7 @@ def deck(model, gap, segments):
     return "\n".join(cards) + "\n"
 
 
-def run(executable, model_path, report_path, opennec):
+def run(executable, model_path, report_path, opennec, frequencies=FREQUENCIES):
     report_path.unlink(missing_ok=True)
     if opennec:
         args = [executable, "-i", model_path.name, "-o", report_path.name]
@@ -61,7 +61,7 @@ def run(executable, model_path, report_path, opennec):
                             capture_output=True, check=True, timeout=90)
     if not report_path.is_file():
         raise RuntimeError(f"{executable} did not produce {report_path}: {result.stdout}\n{result.stderr}")
-    return read_points(report_path, FREQUENCIES)
+    return read_points(report_path, frequencies)
 
 
 def resonance(points):

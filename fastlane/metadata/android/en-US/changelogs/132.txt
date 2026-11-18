@@ -1,0 +1,3 @@
+Added a Yagi–Uda segmentation calculator with a DK7ZB example.
+NEC checks show the mesh for each model and compare two meshes by SWR, impedance, gain and F/B.
+The Yagi catalog explains model limits and opens the reference example. Updated the user guide.

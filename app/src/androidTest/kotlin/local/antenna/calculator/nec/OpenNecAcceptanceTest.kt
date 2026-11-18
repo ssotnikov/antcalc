@@ -58,6 +58,18 @@ class OpenNecAcceptanceTest {
         }
     }
 
+    @Test fun dk7zbMeshRefinementMatchesTheDesktopReference() = runBlocking {
+        val geometry = listOf(Element(0.0, 1.010, .010), Element(.210, .920, .010))
+        val grid = (0..20).map { 144_000_000L + 100_000L * it }
+        val counts = checkNotNull(OpenNec.segmentCounts(geometry, grid.last()))
+        val finer = checkNotNull(OpenNec.finerSegments(geometry, counts))
+        val coarse = checkNotNull(OpenNec.sweep(geometry, counts, 0, grid))
+        val fine = checkNotNull(OpenNec.sweep(geometry, finer, 0, grid))
+        assertEquals(1.081, coarse[10].reactance, .01)
+        assertEquals(3.278, fine[10].reactance, .01)
+        assertEquals(2.47, coarse.zip(fine).maxOf { (a, b) -> kotlin.math.abs(a.reactance - b.reactance) }, .02)
+    }
+
     @Test fun invalidAndCancelledRunsAllowASecondSimulation() = runBlocking {
         val grid = (0..40).map { 144_000_000L + 50_000L * it }
         assertNull(OpenNec.sweep(yagi, List(yagi.size) { 61 }, 1, grid))

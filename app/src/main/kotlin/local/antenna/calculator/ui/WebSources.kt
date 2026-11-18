@@ -67,6 +67,7 @@ private val additionalSourceAddresses = setOf(
     "https://www.dg7ybn.de/",
     "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm",
     "https://dk7zb.darc.de/",
+    DK7ZB_SEGMENTATION_SOURCE,
     "https://dk7zb.darc.de/PVC-Yagis/3-Ele-2m.htm",
     "https://dk7zb.darc.de/PVC-Yagis/PVC-details.htm",
     "https://dk7zb.darc.de/70cm/70cm-kurz.htm",

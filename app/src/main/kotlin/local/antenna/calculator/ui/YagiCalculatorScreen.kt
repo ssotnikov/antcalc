@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.drop
 import local.antenna.calculator.R
+import local.antenna.calculator.nec.OpenNec
 import local.antenna.calculator.core.journal.CalculationSnapshot
 import local.antenna.calculator.core.journal.SnapshotUnit
 import local.antenna.calculator.core.journal.SnapshotValue
@@ -133,6 +135,7 @@ internal fun YagiCalculatorScreen(
     onMeasurements: (() -> Unit)?,
     onSave: ((CalculationSnapshot, String) -> Unit)?,
     onCopied: () -> Unit,
+    onSegmentation: ((ArrayList<String>) -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val prefs = remember(context.applicationContext) {
@@ -225,6 +228,36 @@ internal fun YagiCalculatorScreen(
             }
             YagiDiagram(elements, isGtv, tip, scheme)
             HelpText(scheme)
+        }
+        if (onSegmentation != null) {
+            YagiHeading(R.string.seg_catalog_title)
+            HelpText(when {
+                profile.dualPlane || profile == YagiProfile.DUO -> R.string.seg_catalog_dual
+                profile.hasBentDipole || profile == YagiProfile.R3 -> R.string.seg_catalog_bent
+                else -> R.string.seg_catalog_gap
+            })
+            driven.forEachIndexed { index, cut ->
+                if (cut != null) {
+                    val gap = stringResource(R.string.seg_catalog_known_gap, matchingNumber(context, cut.gapMm, 3))
+                    val plane = if (index == 0) R.string.yagi_horizontal_plane else R.string.yagi_vertical_plane
+                    Text(if (profile.dualPlane) "${stringResource(plane)} · $gap" else gap,
+                        style = MaterialTheme.typography.bodySmall)
+                }
+            }
+            var exampleExpanded by rememberSaveable(profile.id) { mutableStateOf(false) }
+            TextButton({ exampleExpanded = !exampleExpanded }, Modifier.testTag("catalog-segmentation-example")) {
+                Text(stringResource(R.string.seg_catalog_example) + if (exampleExpanded) " ▴" else " ▾")
+            }
+            if (exampleExpanded) {
+                HelpText(R.string.seg_catalog_ideal)
+                val example = dk7zbSegmentationElements
+                val plan = OpenNec.segmentation(example, 146_000_000)
+                SegmentDiagram(example, plan.counts, 0)
+                TextButton({ onSegmentation(dk7zbSegmentationSeed()) },
+                    Modifier.testTag("open-catalog-segmentation")) {
+                    Text(stringResource(R.string.seg_open))
+                }
+            }
         }
         YagiHeading(R.string.yagi_dimensions)
         ChoicePicker(stringResource(R.string.loop_output_unit), LengthUnit.entries, unit,

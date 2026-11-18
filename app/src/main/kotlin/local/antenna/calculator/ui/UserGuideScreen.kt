@@ -58,6 +58,7 @@ internal enum class GuideDestination(
     SLIM_JIM("slim-jim", Page.SLIM_JIM),
     YAGI("yagi", Page.YAGI_CALCULATOR),
     YAGI_SCALING("yagi-scaling", Page.YAGI_SCALING),
+    YAGI_SEGMENTATION("yagi-segmentation", Page.YAGI_SEGMENTATION),
     MOXON("moxon", Page.MOXON),
     HB9CV("hb9cv", Page.HB9CV),
     CANTENNA("cantenna", Page.CANTENNA),
@@ -84,6 +85,7 @@ internal enum class GuideDestination(
 internal fun guideDestination(address: String): GuideDestination? =
     GuideDestination.entries.firstOrNull { address == ROUTE_PREFIX + it.slug }
 
+private const val SEGMENTATION_GUIDE_IMAGE = "images/yagi-segmentation.svg"
 private val guideImage = Regex("""images/(en|ru)/(light/)?[a-z0-9-]+\.webp""")
 private val guideImageReference = Regex("""((?:href|src)="images/(?:en|ru)/)([a-z0-9-]+\.webp")""")
 
@@ -93,7 +95,7 @@ internal fun guideImageReferences(html: String, dark: Boolean): String =
 internal fun guideAssetPath(address: String): String? {
     if (!address.startsWith(GUIDE_DIRECTORY)) return null
     return address.removePrefix(GUIDE_DIRECTORY).takeIf {
-        it == "en.html" || it == "ru.html" || guideImage.matches(it)
+        it == "en.html" || it == "ru.html" || it == SEGMENTATION_GUIDE_IMAGE || guideImage.matches(it)
     }
 }
 
@@ -174,6 +176,9 @@ private fun createGuideView(
                 val asset = guideAssetPath(request.url.toString())
                 if (request.method == "GET" && asset != null) {
                     try {
+                                                if (asset == SEGMENTATION_GUIDE_IMAGE) {
+                            return WebResourceResponse("image/svg+xml", "UTF-8", assets.open(asset))
+                        }
                         return if (guideImage.matches(asset)) {
                             WebResourceResponse("image/webp", null, assets.open(asset))
                         } else guideHtml(assets, asset, dark, canCheckForUpdates)

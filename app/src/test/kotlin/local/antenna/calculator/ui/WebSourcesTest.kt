@@ -139,6 +139,10 @@ class WebSourcesTest {
     }
 
     @Test fun guideRoutesAndAssetsRequireExactBundledAddresses() {
+        assertEquals(GuideDestination.YAGI_SEGMENTATION, guideDestination("$GUIDE_ORIGIN/open/yagi-segmentation"))
+        assertEquals("images/yagi-segmentation.svg", guideAssetPath("$GUIDE_ORIGIN/userguide/images/yagi-segmentation.svg"))
+        assertNull(guideAssetPath("$GUIDE_ORIGIN/userguide/images/other.svg"))
+        assertEquals(DK7ZB_SEGMENTATION_SOURCE, validatedSourceAddress(DK7ZB_SEGMENTATION_SOURCE))
         assertEquals(GuideDestination.MOXON, guideDestination("$GUIDE_ORIGIN/open/moxon"))
         assertEquals("ru.html", guideAssetPath("$GUIDE_ORIGIN/userguide/ru.html"))
         assertEquals("images/en/08-yagi.webp", guideAssetPath("$GUIDE_ORIGIN/userguide/images/en/08-yagi.webp"))

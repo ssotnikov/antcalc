@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import local.antenna.calculator.R
@@ -59,6 +60,7 @@ internal fun YagiNecPanel(
     appliedLengths: List<Double>?,
     sweep: suspend (List<Element>, List<Int>, List<Long>) -> List<OpenNec.Point>? =
         { geometry, segments, frequencies -> OpenNec.sweep(geometry, segments, 1, frequencies) },
+    onSegmentation: ((ArrayList<String>) -> Unit)? = null,
     onApply: (List<Element>) -> Unit,
 ) {
     if (blocked != null) {
@@ -78,6 +80,10 @@ internal fun YagiNecPanel(
     var optimization by remember(reference, elements, targetHz, lower, upper, limit) {
         mutableStateOf<NecOptimization?>(null)
     }
+    var meshExpanded by rememberSaveable { mutableStateOf(false) }
+    var meshDifferences by remember(reference, elements, targetHz, lower, upper, limit) {
+        mutableStateOf<List<Double>?>(null)
+    }
     var job by remember { mutableStateOf<Job?>(null) }
     val lowHz = scalingFrequency(lower)
     val highHz = scalingFrequency(upper)
@@ -85,8 +91,11 @@ internal fun YagiNecPanel(
     val grid = if (lowHz != null && highHz != null && highHz - lowHz >= 20) {
         (0..20).map { lowHz + (highHz - lowHz) * it / 20 }
     } else null
-    val segments = grid?.last()?.let { OpenNec.segmentCounts(elements, it) }
-    val referenceSegments = grid?.last()?.let { highest -> reference?.let { OpenNec.segmentCounts(it, highest) } }
+    val plan = grid?.last()?.let { OpenNec.segmentation(elements, it) }
+    val segments = plan?.takeIf { it.issue == null }?.counts
+    val referencePlan = grid?.last()?.let { highest -> reference?.let { OpenNec.segmentation(it, highest) } }
+    val referenceSegments = referencePlan?.takeIf { it.issue == null }?.counts
+    val finer = segments?.let { OpenNec.finerSegments(elements, it) }
     val canRun = grid != null && segments != null && swrLimit != null &&
         (reference == null || referenceSegments != null)
 
@@ -96,6 +105,7 @@ internal fun YagiNecPanel(
         job = null
         comparison = null
         optimization = null
+        meshDifferences = null
     }
     val colors = MaterialTheme.colorScheme
     val actionColors = ButtonDefaults.buttonColors(
@@ -119,7 +129,10 @@ internal fun YagiNecPanel(
             }
             NecInput(limit, R.string.opennec_swr_limit, "opennec-limit", Modifier.fillMaxWidth()) { limit = it }
             if (grid == null || swrLimit == null) HelpText(R.string.opennec_invalid_band)
-            else if (segments == null || reference != null && referenceSegments == null) HelpText(R.string.opennec_invalid_model)
+            else if (segments == null || reference != null && referenceSegments == null) {
+                HelpText(R.string.opennec_invalid_model)
+                listOfNotNull(plan, referencePlan).filter { it.issue != null }.forEach { SegmentationIssue(it) }
+            }
             else {
                 val counts = segments.joinToString(" / ")
                 Text(stringResource(R.string.opennec_sampling, counts), style = MaterialTheme.typography.bodySmall)
@@ -128,15 +141,52 @@ internal fun YagiNecPanel(
                         style = MaterialTheme.typography.bodySmall)
                 }
             }
+            if (segments != null && lowHz != null && highHz != null) {
+                TextButton({ meshExpanded = !meshExpanded }, Modifier.testTag("opennec-mesh-expand")) {
+                    Text(stringResource(R.string.seg_panel) + if (meshExpanded) " ▴" else " ▾")
+                }
+                if (meshExpanded) {
+                    if (reference != null && referenceSegments != null) {
+                        Text(stringResource(R.string.opennec_reference), style = MaterialTheme.typography.titleSmall)
+                        SegmentTable(reference, referenceSegments, referencePlan.wavelength, 1)
+                        if (onSegmentation != null) TextButton({
+                            onSegmentation(segmentationSeed(reference, lowHz, highHz, 1))
+                        }) { Text(stringResource(R.string.seg_open)) }
+                    }
+                    Text(stringResource(R.string.opennec_adjusted), style = MaterialTheme.typography.titleSmall)
+                    SegmentTable(elements, segments, plan.wavelength, 1)
+                    if (onSegmentation != null) TextButton({
+                        onSegmentation(segmentationSeed(elements, lowHz, highHz, 1))
+                    }, Modifier.testTag("opennec-open-segmentation")) { Text(stringResource(R.string.seg_open)) }
+                    if (finer == null) HelpText(R.string.seg_no_finer)
+                }
+            }
             if (job == null) {
-                fun start(optimize: Boolean) {
+                fun start(optimize: Boolean, refine: Boolean = false) {
                     val frequencies = requireNotNull(grid)
                     val currentSegments = requireNotNull(segments)
-                    comparison = null
-                    optimization = null
+                    if (refine) meshDifferences = null else {
+                        comparison = null
+                        optimization = null
+                    }
                     status = null
-                    job = scope.launch {
-                        if (optimize) {
+                    job = scope.launch(start = CoroutineStart.LAZY) {
+                        if (refine) {
+                            val coarse = sweep(elements, currentSegments, frequencies)
+                            val fine = coarse?.let { sweep(elements, requireNotNull(finer), frequencies) }
+                            meshDifferences = if (coarse != null && fine != null &&
+                                coarse.map { it.frequencyHz } == frequencies && fine.map { it.frequencyHz } == frequencies) {
+                                val samples = coarse.zip(fine)
+                                listOf(
+                                    samples.maxOf { (a, b) -> abs(a.resistance - b.resistance) },
+                                    samples.maxOf { (a, b) -> abs(a.reactance - b.reactance) },
+                                    samples.maxOf { (a, b) -> abs(a.swr - b.swr) },
+                                    samples.maxOf { (a, b) -> abs(a.forwardDbi - b.forwardDbi) },
+                                    samples.maxOf { (a, b) -> abs(a.frontToBackDb - b.frontToBackDb) },
+                                )
+                            } else null
+                            if (meshDifferences == null) status = R.string.opennec_failed
+                        } else if (optimize) {
                             optimization = optimizeNecLengths(elements, requireNotNull(swrLimit)) { candidate ->
                                 sweep(candidate, currentSegments, frequencies)
                             }
@@ -151,10 +201,17 @@ internal fun YagiNecPanel(
                         }
                         job = null
                     }
+                    job?.start()
                 }
                 Button(onClick = { start(false) }, enabled = canRun, modifier = Modifier.testTag("opennec-run"),
                     colors = actionColors) {
                     Text(stringResource(R.string.opennec_run))
+                }
+                if (meshExpanded && finer != null) {
+                    Button(onClick = { start(false, refine = true) }, enabled = canRun,
+                        modifier = Modifier.testTag("opennec-mesh-compare"), colors = actionColors) {
+                        Text(stringResource(R.string.seg_compare))
+                    }
                 }
                 Button(onClick = { start(true) }, enabled = canRun, modifier = Modifier.testTag("opennec-optimize"),
                     colors = actionColors) {
@@ -171,6 +228,16 @@ internal fun YagiNecPanel(
                 }
             }
             status?.let { HelpText(it) }
+            if (meshExpanded && segments != null && finer != null) meshDifferences?.let { changes ->
+                Text(stringResource(R.string.seg_change_heading), modifier = Modifier.testTag("opennec-mesh-result"),
+                    style = MaterialTheme.typography.titleSmall)
+                Text(stringResource(R.string.seg_mesh_pair, segments.joinToString(" / "), finer.joinToString(" / ")))
+                val metrics = listOf("R (Ω)", "X (Ω)", stringResource(R.string.seg_swr),
+                    stringResource(R.string.seg_gain), stringResource(R.string.seg_fb))
+                changes.forEachIndexed { index, change ->
+                    Text(stringResource(R.string.seg_change, metrics[index], matchingNumber(context, change, 3)))
+                }
+            }
             comparison?.let { (base, adjusted) ->
                 val threshold = requireNotNull(swrLimit)
                 val closest = adjusted.indices.minBy { abs(adjusted[it].frequencyHz - targetHz) }
@@ -210,7 +277,7 @@ internal fun YagiNecPanel(
 }
 
 @Composable
-private fun NecInput(value: String, label: Int, tag: String, modifier: Modifier, change: (String) -> Unit) {
+internal fun NecInput(value: String, label: Int, tag: String, modifier: Modifier, change: (String) -> Unit) {
     OutlinedTextField(value, { if (it.acceptsDecimalEdit()) change(it.boundedNumericText()) },
         modifier.testTag(tag), label = { Text(stringResource(label)) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))

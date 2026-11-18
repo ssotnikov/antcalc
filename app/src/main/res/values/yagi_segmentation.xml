@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="seg_tool">Yagi–Uda Segmentation Calculator</string>
+    <string name="seg_title">Yagi–Uda Segmentation</string>
+    <string name="seg_intro">Estimate the mesh for straight round elements. Leave the upper frequency empty to use a single frequency.</string>
+    <string name="seg_frequency">Frequency, MHz</string>
+    <string name="seg_optional_end">Band end, MHz (optional)</string>
+    <string name="seg_example">Load DK7ZB example</string>
+    <string name="seg_element">Element %1$d</string>
+    <string name="seg_driven">Driven element</string>
+    <string name="seg_position">Position, mm</string>
+    <string name="seg_length">Length, mm</string>
+    <string name="seg_diameter">Diameter, mm</string>
+    <string name="seg_add">Add element</string>
+    <string name="seg_invalid_frequency">Enter a frequency or band from 0.1 to 6000 MHz.</string>
+    <string name="seg_enter_elements">Enter the element lengths, diameters and positions.</string>
+    <string name="seg_invalid_positions">Use increasing positions with enough clearance between elements.</string>
+    <string name="seg_invalid_element">Check the length, diameter and position of element %1$d.</string>
+    <string name="seg_invalid_step">Element %1$d needs shorter segments for the frequency than its diameter allows.</string>
+    <string name="seg_limit">The required mesh exceeds the 241-segment limit.</string>
+    <string name="seg_result_at">Mesh at %1$s MHz</string>
+    <string name="seg_feed_caption">Source on segment %1$d of element %2$d.</string>
+    <string name="seg_total">%1$d segments · λ = %2$s m</string>
+    <string name="seg_element_short">Element</string>
+    <string name="seg_mm">%1$s mm</string>
+    <string name="seg_diagram">Wire segments and direction of radiation. The highlighted centre segment is the voltage source.</string>
+    <string name="seg_panel">Model segmentation</string>
+    <string name="seg_open">Check segmentation</string>
+    <string name="seg_compare">Compare two meshes</string>
+    <string name="seg_no_finer">A finer mesh exceeds the segment length or total segment limit.</string>
+    <string name="seg_change_heading">Largest mesh differences across the band</string>
+    <string name="seg_change">%1$s · %2$s</string>
+    <string name="seg_mesh_pair">Segments per element: %1$s → %2$s</string>
+    <string name="seg_help">Segmentation and ground reference</string>
+    <string name="seg_rules">N is the segment count, Δ is segment length, λ is wavelength and a is wire radius. The shortest wavelength sets the maximum step. Changing the mesh may change the calculated impedance even when gain changes little.</string>
+    <string name="seg_reference_conditions">DK7ZB, 145 MHz. Driven element 1010 mm, director 920 mm, spacing 210 mm, diameter 10 mm. Ideal conductors, centred source and free space. SWR reference: 50 Ω.</string>
+    <string name="seg_reference_results">R / X (Ω), gain (dBi), F/B (dB), and average gain (AGT). The 5- and 81-segment rows are reference cases outside AntCalc’s automatic mesh.</string>
+    <string name="seg_reference_ground">Same model with 21 segments per element. Soil εᵣ = 13 and σ = 0.005 S/m. The app’s NEC check runs in free space.</string>
+    <string name="seg_ground_title">Ground model</string>
+    <string name="seg_ground_perfect">Perfect</string>
+    <string name="seg_ground_finite">Reflection coefficients</string>
+    <string name="seg_ground_sommerfeld">Sommerfeld–Norton</string>
+    <string name="seg_ground_diagram">Free space · perfect ground with image · real ground with height h</string>
+    <string name="seg_source">DK7ZB · Two-element 28 Ω Yagi</string>
+    <string name="seg_catalog_title">Geometry for NEC</string>
+    <string name="seg_catalog_example">DK7ZB · Published free-space geometry</string>
+    <string name="seg_catalog_bent">This profile needs a bent driven element model. Assembly geometry stays available above.</string>
+    <string name="seg_catalog_dual">This profile needs a model of multiple bands or polarisation planes and their feed system.</string>
+    <string name="seg_catalog_gap">The physical feed of this design needs a separate model. The assembly drawing and confirmed dimensions stay available above.</string>
+    <string name="seg_catalog_known_gap">Published or entered feed gap · %1$s mm</string>
+    <string name="seg_catalog_ideal">The DK7ZB example uses the published free-space dimensions and an ideal centre source.</string>
+    <string name="seg_swr">SWR</string>
+    <string name="seg_gain">Forward gain, dBi</string>
+    <string name="seg_fb">F/B, dB</string>
+    <string name="seg_ground_height">Height %1$s m</string>
+    <string name="seg_elevation">Elevation</string>
+</resources>

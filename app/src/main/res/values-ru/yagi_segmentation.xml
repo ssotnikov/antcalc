@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="seg_tool">Калькулятор сегментации Яги — Уда</string>
+    <string name="seg_title">Сегментация Яги — Уда</string>
+    <string name="seg_intro">Подберите сетку для прямых круглых элементов. Оставьте верхнюю границу пустой для расчёта на одной частоте.</string>
+    <string name="seg_frequency">Частота, МГц</string>
+    <string name="seg_optional_end">До, МГц (необязательно)</string>
+    <string name="seg_example">Загрузить пример DK7ZB</string>
+    <string name="seg_element">Элемент %1$d</string>
+    <string name="seg_driven">Вибратор</string>
+    <string name="seg_position">Положение, мм</string>
+    <string name="seg_length">Длина, мм</string>
+    <string name="seg_diameter">Диаметр, мм</string>
+    <string name="seg_add">Добавить элемент</string>
+    <string name="seg_invalid_frequency">Задайте частоту или полосу от 0,1 до 6000 МГц.</string>
+    <string name="seg_enter_elements">Укажите длины, диаметры и положения элементов.</string>
+    <string name="seg_invalid_positions">Положения должны возрастать, а элементы должны быть разделены зазором.</string>
+    <string name="seg_invalid_element">Проверьте длину, диаметр и положение элемента %1$d.</string>
+    <string name="seg_invalid_step">Частота требует укоротить сегменты элемента %1$d сильнее, чем допускает его диаметр.</string>
+    <string name="seg_limit">Для этой геометрии требуется больше 241 сегмента.</string>
+    <string name="seg_result_at">Сетка на %1$s МГц</string>
+    <string name="seg_feed_caption">Источник на сегменте %1$d элемента %2$d.</string>
+    <string name="seg_total">Сегментов: %1$d · λ = %2$s м</string>
+    <string name="seg_element_short">Эл.</string>
+    <string name="seg_mm">%1$s мм</string>
+    <string name="seg_diagram">Сегменты элементов и направление излучения. В центре вибратора выделен сегмент источника.</string>
+    <string name="seg_panel">Сегментация модели</string>
+    <string name="seg_open">Проверить сегментацию</string>
+    <string name="seg_compare">Сравнить две сетки</string>
+    <string name="seg_no_finer">Более плотная сетка выходит за ограничения длины и числа сегментов.</string>
+    <string name="seg_change_heading">Наибольшие различия между сетками по полосе</string>
+    <string name="seg_change">%1$s · %2$s</string>
+    <string name="seg_mesh_pair">Сегментов на элемент: %1$s → %2$s</string>
+    <string name="seg_help">Сегментация и модели грунта</string>
+    <string name="seg_rules">N — число сегментов, Δ — длина сегмента, λ — длина волны, a — радиус проводника. Максимальный шаг задаётся самой короткой волной. При сгущении сетки импеданс может заметно меняться даже при близких значениях усиления.</string>
+    <string name="seg_reference_conditions">Яги DK7ZB, 145 МГц. Вибратор 1010 мм, директор 920 мм, расстояние 210 мм, диаметр 10 мм. Идеальные проводники, центральный источник и свободное пространство. КСВ приведён к 50 Ом.</string>
+    <string name="seg_reference_results">R и X в омах, усиление в dBi, F/B в дБ и среднее линейное усиление (AGT). Строки с 5 и 81 сегментом приведены для справки и выходят за рамки автоматической сетки AntCalc.</string>
+    <string name="seg_reference_ground">Та же модель с 21 сегментом на элемент. Для грунта εᵣ = 13 и σ = 0,005 См/м. Проверка NEC в приложении выполняется в свободном пространстве.</string>
+    <string name="seg_ground_title">Модель грунта</string>
+    <string name="seg_ground_perfect">Идеальная земля</string>
+    <string name="seg_ground_finite">Коэффициенты отражения</string>
+    <string name="seg_ground_sommerfeld">Зоммерфельд — Нортон</string>
+    <string name="seg_ground_diagram">Свободное пространство · идеальная земля с зеркалом · реальный грунт и высота h</string>
+    <string name="seg_source">DK7ZB · Двухэлементная Яги 28 Ом</string>
+    <string name="seg_catalog_title">Геометрия для NEC</string>
+    <string name="seg_catalog_example">DK7ZB · Опубликованная геометрия в свободном пространстве</string>
+    <string name="seg_catalog_bent">Для этой конструкции требуется модель гнутого вибратора. Монтажная геометрия доступна выше.</string>
+    <string name="seg_catalog_dual">Для этой конструкции требуется модель нескольких диапазонов или плоскостей поляризации вместе с их питанием.</string>
+    <string name="seg_catalog_gap">Физический узел питания этой конструкции требует отдельной модели. Монтажная схема и подтверждённые размеры доступны выше.</string>
+    <string name="seg_catalog_known_gap">Зазор питания по публикации или по вводу · %1$s мм</string>
+    <string name="seg_catalog_ideal">В примере DK7ZB используются опубликованные размеры для свободного пространства и идеальный источник в центре.</string>
+    <string name="seg_swr">КСВ</string>
+    <string name="seg_gain">Усиление вперёд, dBi</string>
+    <string name="seg_fb">F/B, дБ</string>
+    <string name="seg_ground_height">Высота %1$s м</string>
+    <string name="seg_elevation">Угол места</string>
+</resources>

@@ -52,7 +52,7 @@ import local.antenna.calculator.measurements.SwrBandwidthScreen
 import local.antenna.calculator.core.TrapDipole.Band
 
 // Keep ABOUT as the persisted route identifier for Help.
-internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE, YAGI_SCALING, USER_GUIDE }
+internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE, YAGI_SCALING, YAGI_SEGMENTATION, USER_GUIDE }
 
 private data class GuideVisit(val page: Page, val menuDepth: Int, val previousSection: Section?) : Serializable
 
@@ -88,6 +88,8 @@ private fun LocalizedCalculatorApp(
     currentState: () -> CalculatorUiState,
 ) {
     var page by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
+    var segmentationParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
+    var segmentationInput by rememberSaveable { mutableStateOf<ArrayList<String>?>(null) }
     var menuParents by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var guideVisits by rememberSaveable { mutableStateOf<List<GuideVisit>>(emptyList()) }
     var menu by remember { mutableStateOf(false) }
@@ -148,6 +150,13 @@ private fun LocalizedCalculatorApp(
         yagiLinkOrigin = if (yagiLinkOrigin == destination) null else page
         page = destination
     }
+    fun openSegmentation(input: ArrayList<String>?, parent: Page = page) {
+        leaveInput()
+        segmentationParent = parent
+        segmentationInput = input
+        screenStates.removeState("yagi-segmentation")
+        page = Page.YAGI_SEGMENTATION
+    }
     fun goBack() {
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
@@ -168,6 +177,7 @@ private fun LocalizedCalculatorApp(
                 yagiLinkOrigin = null
             }
             Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.MOXON, Page.HB9CV, Page.CANTENNA -> page = Page.ANTENNA_PARAMETER_TOOLS
+            Page.YAGI_SEGMENTATION -> page = segmentationParent
             Page.YAGI_SCALING -> page = if (scalingRestore != null) Page.JOURNAL else Page.CALCULATOR
             Page.TRAP_DIPOLE -> page = if (trapRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.HALO_CB -> page = if (haloRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
@@ -257,6 +267,7 @@ private fun LocalizedCalculatorApp(
                 journalPage = JournalPage.PROJECTS
             }
             Page.HALO_CB -> haloRestore = null
+            Page.YAGI_SEGMENTATION -> openSegmentation(null, Page.ADDITIONAL_TOOLS)
             Page.YAGI_SCALING -> scalingRestore = null
             Page.TRAP_DIPOLE -> trapRestore = null
             Page.CABLE -> cableParent = Page.CALCULATOR
@@ -327,6 +338,7 @@ private fun LocalizedCalculatorApp(
             Page.HB9CV -> R.string.hb9cv_title
             Page.CANTENNA -> R.string.cantenna_title
             Page.HALO_CB -> R.string.halo_title
+            Page.YAGI_SEGMENTATION -> R.string.seg_title
             Page.YAGI_SCALING -> R.string.ys_title
             Page.TRAP_DIPOLE -> R.string.trap_title
             Page.J_POLE -> R.string.jpole_title
@@ -453,7 +465,7 @@ private fun LocalizedCalculatorApp(
                     })
             },
             bottomBar = {
-                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB || page == Page.TRAP_DIPOLE || page == Page.YAGI_SCALING) NavigationBar(Modifier.heightIn(min =
+                if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB || page == Page.TRAP_DIPOLE || page == Page.YAGI_SCALING || page == Page.YAGI_SEGMENTATION) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
                         NavigationBarDefaults.windowInsets.asPaddingValues().calculateBottomPadding()).testTag("bottom-navigation")) {
                     for (section in Section.entries) {
@@ -539,17 +551,22 @@ private fun LocalizedCalculatorApp(
                     }
                     Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
                         AdditionalToolsScreen(
-                            onOpenMeasurements = {
-                                measurementsParent = Page.ADDITIONAL_TOOLS
-                                measurements?.showWorkspace()
-                                page = Page.MEASUREMENTS
+                            onOpenSegmentation = { openSegmentation(null) },
+                            onOpenMeasurements = measurements?.let { model ->
+                                {
+                                    measurementsParent = Page.ADDITIONAL_TOOLS
+                                    model.showWorkspace()
+                                    page = Page.MEASUREMENTS
+                                }
                             },
-                            onOpenBandwidth = {
-                                bandwidthFromMeasurements = false
-                                bandwidthParent = Page.ADDITIONAL_TOOLS
-                                bandwidthEntrySlot = null
-                                measurements?.showWorkspace()
-                                page = Page.SWR_BANDWIDTH
+                            onOpenBandwidth = measurements?.let { model ->
+                                {
+                                    bandwidthFromMeasurements = false
+                                    bandwidthParent = Page.ADDITIONAL_TOOLS
+                                    bandwidthEntrySlot = null
+                                    model.showWorkspace()
+                                    page = Page.SWR_BANDWIDTH
+                                }
                             },
                         )
                     }
@@ -640,6 +657,7 @@ private fun LocalizedCalculatorApp(
                     }
                     Page.YAGI_CALCULATOR -> screenStates.SaveableStateProvider("yagi-calculator") {
                         YagiCalculatorScreen(
+                            onSegmentation = { openSegmentation(it) },
                             onGuide = { openRelatedYagiPage(Page.CONSTRUCTION_YAGI) },
                             onMeasurements = measurements?.let { model ->
                                 {
@@ -655,10 +673,13 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
+                    Page.YAGI_SEGMENTATION -> screenStates.SaveableStateProvider("yagi-segmentation") {
+                        YagiSegmentationScreen(segmentationInput)
+                    }
                     Page.YAGI_SCALING -> screenStates.SaveableStateProvider(if (scalingRestore == null) "yagi-scaling" else "yagi-scaling-record") {
                         YagiScalingScreen(scalingRestore?.snapshot, if (journal == null) null else { snapshot ->
                             startTransfer(PendingProjectCalculation(snapshot), AntennaType.YAGI)
-                        }) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
+                        }, onSegmentation = { openSegmentation(it) }) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     }
                     Page.TRAP_DIPOLE -> screenStates.SaveableStateProvider(if (trapRestore == null) "trap-dipole" else "trap-dipole-record") {
                         TrapDipoleScreen(
@@ -904,7 +925,7 @@ private fun LocalizedCalculatorApp(
                                     onOpenCable = { leaveInput(); cableParent = Page.CALCULATOR; page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
                                     onOpenYagiScaling = { leaveInput(); scalingRestore = null; page = Page.YAGI_SCALING },
-                                    onOpenAdditional = measurements?.let { { leaveInput(); page = Page.ADDITIONAL_TOOLS } },
+                                    onOpenAdditional = { leaveInput(); page = Page.ADDITIONAL_TOOLS },
                                     onOpenConstruction = { leaveInput(); page = Page.ANTENNA_CONSTRUCTION },
                                     onOpenAntennaCalculations = { leaveInput(); page = Page.ANTENNA_PARAMETER_TOOLS },
                                     onOpenJournal = journal?.let { { leaveInput(); linkedProjectId = null; journalPage = JournalPage.PROJECTS; page = Page.JOURNAL } },
