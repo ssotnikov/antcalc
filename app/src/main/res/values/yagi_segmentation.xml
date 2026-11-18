@@ -23,7 +23,6 @@
     <string name="seg_total">%1$d segments · λ = %2$s m</string>
     <string name="seg_element_short">Element</string>
     <string name="seg_mm">%1$s mm</string>
-    <string name="seg_diagram">Wire segments and direction of radiation. The highlighted centre segment is the voltage source.</string>
     <string name="seg_panel">Model segmentation</string>
     <string name="seg_open">Check segmentation</string>
     <string name="seg_compare">Compare two meshes</string>
@@ -35,12 +34,10 @@
     <string name="seg_rules">N is the segment count, Δ is segment length, λ is wavelength and a is wire radius. The shortest wavelength sets the maximum step. Changing the mesh may change the calculated impedance even when gain changes little.</string>
     <string name="seg_reference_conditions">DK7ZB, 145 MHz. Driven element 1010 mm, director 920 mm, spacing 210 mm, diameter 10 mm. Ideal conductors, centred source and free space. SWR reference: 50 Ω.</string>
     <string name="seg_reference_results">R / X (Ω), gain (dBi), F/B (dB), and average gain (AGT). The 5- and 81-segment rows are reference cases outside AntCalc’s automatic mesh.</string>
-    <string name="seg_reference_ground">Same model with 21 segments per element. Soil εᵣ = 13 and σ = 0.005 S/m. The app’s NEC check runs in free space.</string>
-    <string name="seg_ground_title">Ground model</string>
+    <string name="seg_reference_ground">Same model with 21 segments per element. Both real-ground methods use εᵣ = 13 and σ = 0.005 S/m.</string>
     <string name="seg_ground_perfect">Perfect</string>
     <string name="seg_ground_finite">Reflection coefficients</string>
     <string name="seg_ground_sommerfeld">Sommerfeld–Norton</string>
-    <string name="seg_ground_diagram">Free space · perfect ground with image · real ground with height h</string>
     <string name="seg_source">DK7ZB · Two-element 28 Ω Yagi</string>
     <string name="seg_catalog_title">Geometry for NEC</string>
     <string name="seg_catalog_example">DK7ZB · Published free-space geometry</string>
@@ -54,4 +51,22 @@
     <string name="seg_fb">F/B, dB</string>
     <string name="seg_ground_height">Height %1$s m</string>
     <string name="seg_elevation">Elevation</string>
+    <string name="seg_diagram">Wire segmentation along the model axes. The centre segment of the driven element marks the voltage source.</string>
+    <string name="seg_key_segment">Wire segment</string>
+    <string name="seg_key_feed">Voltage source</string>
+    <string name="seg_key_axes">+X along the boom, +Y along the elements</string>
+    <string name="seg_table_key">N is the segment count, Δ is segment length, λ is the wavelength at the calculation frequency and a is the element radius.</string>
+    <string name="seg_ground_conditions">Free space and ground</string>
+    <string name="seg_ground_free">Free space</string>
+    <string name="seg_ground_free_hint">The antenna is in a uniform medium without a ground surface. NEC checks in the app use this setting.</string>
+    <string name="seg_ground_perfect_title">Perfect ground</string>
+    <string name="seg_ground_perfect_hint">The middle line is the perfectly conducting plane. The dashed line below is the mirror image of the antenna.</string>
+    <string name="seg_ground_real">Real ground</string>
+    <string name="seg_ground_real_hint">Hatching marks the ground. εᵣ is relative permittivity and σ is conductivity in S/m.</string>
+    <string name="seg_ground_antenna">Antenna</string>
+    <string name="seg_ground_image">Image</string>
+    <string name="seg_ground_soil">Ground εᵣ, σ</string>
+    <string name="seg_ground_height_hint">h is the height from the surface to the antenna axis.</string>
+    <string name="seg_ground_example">Compare the DK7ZB Yagi at 145 MHz</string>
+    <string name="seg_ground_table_key">R is resistance, X is reactance and G is peak gain. Elevation is measured from the horizon to the direction of peak gain.</string>
 </resources>

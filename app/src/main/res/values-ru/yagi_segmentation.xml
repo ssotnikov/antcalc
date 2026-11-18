@@ -23,7 +23,6 @@
     <string name="seg_total">Сегментов: %1$d · λ = %2$s м</string>
     <string name="seg_element_short">Эл.</string>
     <string name="seg_mm">%1$s мм</string>
-    <string name="seg_diagram">Сегменты элементов и направление излучения. В центре вибратора выделен сегмент источника.</string>
     <string name="seg_panel">Сегментация модели</string>
     <string name="seg_open">Проверить сегментацию</string>
     <string name="seg_compare">Сравнить две сетки</string>
@@ -35,12 +34,10 @@
     <string name="seg_rules">N — число сегментов, Δ — длина сегмента, λ — длина волны, a — радиус проводника. Максимальный шаг задаётся самой короткой волной. При сгущении сетки импеданс может заметно меняться даже при близких значениях усиления.</string>
     <string name="seg_reference_conditions">Яги DK7ZB, 145 МГц. Вибратор 1010 мм, директор 920 мм, расстояние 210 мм, диаметр 10 мм. Идеальные проводники, центральный источник и свободное пространство. КСВ приведён к 50 Ом.</string>
     <string name="seg_reference_results">R и X в омах, усиление в dBi, F/B в дБ и среднее линейное усиление (AGT). Строки с 5 и 81 сегментом приведены для справки и выходят за рамки автоматической сетки AntCalc.</string>
-    <string name="seg_reference_ground">Та же модель с 21 сегментом на элемент. Для грунта εᵣ = 13 и σ = 0,005 См/м. Проверка NEC в приложении выполняется в свободном пространстве.</string>
-    <string name="seg_ground_title">Модель грунта</string>
+    <string name="seg_reference_ground">Та же модель с 21 сегментом на элемент. Оба метода расчёта реального грунта используют εᵣ = 13 и σ = 0,005 См/м.</string>
     <string name="seg_ground_perfect">Идеальная земля</string>
     <string name="seg_ground_finite">Коэффициенты отражения</string>
     <string name="seg_ground_sommerfeld">Зоммерфельд — Нортон</string>
-    <string name="seg_ground_diagram">Свободное пространство · идеальная земля с зеркалом · реальный грунт и высота h</string>
     <string name="seg_source">DK7ZB · Двухэлементная Яги 28 Ом</string>
     <string name="seg_catalog_title">Геометрия для NEC</string>
     <string name="seg_catalog_example">DK7ZB · Опубликованная геометрия в свободном пространстве</string>
@@ -54,4 +51,22 @@
     <string name="seg_fb">F/B, дБ</string>
     <string name="seg_ground_height">Высота %1$s м</string>
     <string name="seg_elevation">Угол места</string>
+    <string name="seg_diagram">Разбиение проводников по осям модели. В центре вибратора отмечен источник напряжения.</string>
+    <string name="seg_key_segment">Сегмент проводника</string>
+    <string name="seg_key_feed">Источник напряжения</string>
+    <string name="seg_key_axes">+X вдоль траверсы, +Y вдоль элементов</string>
+    <string name="seg_table_key">N — число сегментов, Δ — длина сегмента, λ — длина волны на расчётной частоте, a — радиус элемента.</string>
+    <string name="seg_ground_conditions">Свободное пространство и земля</string>
+    <string name="seg_ground_free">Свободное пространство</string>
+    <string name="seg_ground_free_hint">Антенна в однородной среде без поверхности земли. Этот режим использует проверка NEC в приложении.</string>
+    <string name="seg_ground_perfect_title">Идеальная земля</string>
+    <string name="seg_ground_perfect_hint">Средняя линия — идеально проводящая плоскость. Пунктир под ней — зеркальное изображение антенны.</string>
+    <string name="seg_ground_real">Реальный грунт</string>
+    <string name="seg_ground_real_hint">Штриховка — грунт. εᵣ — относительная диэлектрическая проницаемость, σ — проводимость в См/м.</string>
+    <string name="seg_ground_antenna">Антенна</string>
+    <string name="seg_ground_image">Изображение</string>
+    <string name="seg_ground_soil">Грунт εᵣ, σ</string>
+    <string name="seg_ground_height_hint">h — высота от поверхности до оси антенны.</string>
+    <string name="seg_ground_example">Сравнение для Яги DK7ZB на 145 МГц</string>
+    <string name="seg_ground_table_key">R — активное сопротивление, X — реактивное сопротивление, G — максимум усиления. Угол места отсчитывается от горизонта до направления максимума.</string>
 </resources>

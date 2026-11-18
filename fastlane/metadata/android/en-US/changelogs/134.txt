@@ -1,0 +1,1 @@
+Added labels to the Yagi mesh diagram and clarified the ground models. The comparison table can be expanded separately.

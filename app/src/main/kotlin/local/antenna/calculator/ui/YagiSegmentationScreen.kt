@@ -1,18 +1,14 @@
 package local.antenna.calculator.ui
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.layout.YagiScaling.Element
@@ -138,43 +134,14 @@ internal fun SegmentTable(elements: List<Element>, counts: List<Int>, wavelength
         SegmentRow(listOf((index + 1).toString(), counts[index].toString(),
             stringResource(R.string.seg_mm, number(step * 1000)), number(step / wavelength), number(step * 2 / element.diameter)))
     }
+    Text(stringResource(R.string.seg_table_key), style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable
 internal fun SegmentRow(values: List<String>) {
     Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         values.forEach { value -> Text(value, Modifier.weight(1f), style = MaterialTheme.typography.labelMedium) }
-    }
-}
-
-@Composable
-internal fun SegmentDiagram(elements: List<Element>, counts: List<Int>, feed: Int) {
-    val description = stringResource(R.string.seg_diagram)
-    val colors = MaterialTheme.colorScheme
-    Canvas(Modifier.fillMaxWidth().height(130.dp).semantics { contentDescription = description }) {
-        val center = size.height / 2
-        val margin = 18.dp.toPx()
-        val span = elements.last().position.takeIf { it > 0 } ?: 1.0
-        val maxLength = elements.maxOf { it.length }
-        val axisEnd = size.width - 5.dp.toPx()
-        val arrow = 7.dp.toPx()
-        drawLine(colors.outline, Offset(5.dp.toPx(), center), Offset(axisEnd, center))
-        drawLine(colors.outline, Offset(axisEnd - arrow, center - arrow / 2), Offset(axisEnd, center))
-        drawLine(colors.outline, Offset(axisEnd - arrow, center + arrow / 2), Offset(axisEnd, center))
-        elements.forEachIndexed { index, element ->
-            val x = if (elements.size == 1) size.width / 2 else margin +
-                (size.width - 2 * margin) * (element.position / span).toFloat()
-            val length = (size.height - margin) * (element.length / maxLength).toFloat()
-            val step = length / counts[index]
-            repeat(counts[index]) { segment ->
-                val y = center - length / 2 + segment * step
-                val active = index == feed && segment == counts[index] / 2
-                val gap = minOf(1.dp.toPx(), step / 4)
-                drawLine(if (active) colors.tertiary else colors.primary, Offset(x, y + gap),
-                    Offset(x, y + step - gap), if (active) 5.dp.toPx() else 2.dp.toPx())
-            }
-            if (index == feed) drawCircle(colors.tertiary, 3.dp.toPx(), Offset(x, center))
-        }
     }
 }
 
@@ -202,9 +169,13 @@ private fun SegmentationReference(openSource: () -> Unit) {
         SegmentRow(row.map(::number))
     }
     TextButton(openSource) { Text(stringResource(R.string.seg_source)) }
+    GroundConditions()
+    var groundExpanded by rememberSaveable { mutableStateOf(false) }
+    TextButton({ groundExpanded = !groundExpanded }, Modifier.testTag("seg-ground-example")) {
+        Text(stringResource(R.string.seg_ground_example) + if (groundExpanded) " ▴" else " ▾")
+    }
+    if (!groundExpanded) return
     HelpText(R.string.seg_reference_ground)
-    GroundDiagram()
-    Text(stringResource(R.string.seg_ground_diagram), style = MaterialTheme.typography.bodySmall)
     val models = listOf(R.string.seg_ground_perfect, R.string.seg_ground_finite, R.string.seg_ground_sommerfeld)
     val values = listOf(
         listOf(24.600, 5.326, 11.90, 28.0), listOf(25.980, 4.760, 10.94, 27.0),
@@ -221,27 +192,5 @@ private fun SegmentationReference(openSource: () -> Unit) {
             SegmentRow(row.dropLast(1).map(::number) + "${row.last().toInt()}°")
         }
     }
-}
-
-@Composable
-private fun GroundDiagram() {
-    val colors = MaterialTheme.colorScheme
-    val description = stringResource(R.string.seg_ground_diagram)
-    Canvas(Modifier.fillMaxWidth().height(74.dp).semantics { contentDescription = description }) {
-        val w = size.width / 3
-        val y = size.height * .24f
-        val ground = size.height * .56f
-        fun line(index: Int, level: Float, color: androidx.compose.ui.graphics.Color, width: Float = .55f) {
-            val center = w * (index + .5f)
-            drawLine(color, Offset(center - w * width / 2, level), Offset(center + w * width / 2, level),
-                2.dp.toPx())
-        }
-        repeat(3) { index -> line(index, y, colors.primary) }
-        line(1, ground, colors.outline, .85f)
-        line(1, ground * 2 - y, colors.primary.copy(alpha = .45f))
-        drawRect(colors.surfaceContainerHighest, topLeft = Offset(2 * w + w * .075f, ground),
-            size = androidx.compose.ui.geometry.Size(w * .85f, size.height - ground))
-        line(2, ground, colors.outline, .85f)
-        drawLine(colors.tertiary, Offset(w * 2.85f, y), Offset(w * 2.85f, ground))
-    }
+    HelpText(R.string.seg_ground_table_key)
 }

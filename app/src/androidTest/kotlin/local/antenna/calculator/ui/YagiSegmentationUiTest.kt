@@ -31,6 +31,27 @@ class YagiSegmentationUiTest {
             .performScrollTo().assertIsDisplayed()
     }
 
+    @Test fun legendAndGroundConditionsExplainTheDiagrams() {
+        compose.setContent { MaterialTheme { YagiSegmentationScreen(null) } }
+        click("seg-example")
+        fun text(id: Int) = compose.onNodeWithText(compose.activity.getString(id))
+        text(R.string.seg_key_feed).performScrollTo().assertIsDisplayed()
+        text(R.string.seg_key_axes).performScrollTo().assertIsDisplayed()
+        text(R.string.seg_table_key).performScrollTo().assertIsDisplayed()
+
+        compose.onNodeWithText(compose.activity.getString(R.string.seg_help), substring = true)
+            .performScrollTo().performClick()
+        text(R.string.seg_ground_free_hint).performScrollTo().assertIsDisplayed()
+        text(R.string.seg_ground_perfect_hint).performScrollTo().assertIsDisplayed()
+        text(R.string.seg_ground_real_hint).performScrollTo().assertIsDisplayed()
+        text(R.string.seg_ground_height_hint).performScrollTo().assertIsDisplayed()
+        text(R.string.seg_ground_table_key).assertDoesNotExist()
+        click("seg-ground-example")
+        text(R.string.seg_ground_table_key).performScrollTo().assertIsDisplayed()
+        click("seg-ground-example")
+        text(R.string.seg_ground_table_key).assertDoesNotExist()
+    }
+
     @Test fun meshComparisonUsesTheSameBandAndIsInvalidatedOnEdit() {
         val geometry = listOf(Element(0.0, 1.010, .010), Element(.210, .920, .010))
         val calls = mutableListOf<Pair<List<Int>, List<Long>>>()
