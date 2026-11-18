@@ -112,7 +112,7 @@ private fun NumericInput(key: FieldKey, label: Int, state: CalculatorUiState, on
             })
         }
     }
-    OutlinedTextField(value = field.text, onValueChange = { if (it.acceptsDecimalEdit()) onEvent(CalculatorEvent.Edit(key, it)) },
+    AppTextField(value = field.text, onValueChange = { if (it.acceptsDecimalEdit()) onEvent(CalculatorEvent.Edit(key, it)) },
         visualTransformation = lengthTransformation ?: frequencyTransformation,
         modifier = frequencyModifier.fillMaxWidth().testTag("field-${key.name}").semantics {
             if (errorMessage != null) error(errorMessage)
@@ -121,7 +121,7 @@ private fun NumericInput(key: FieldKey, label: Int, state: CalculatorUiState, on
             if (it.isFocused || hadFocus) onEvent(CalculatorEvent.Focus(key, it.isFocused))
             hadFocus = it.isFocused
         },
-        label = { Text(stringResource(label)) }, singleLine = true,
+        label = stringResource(label), singleLine = true,
         isError = error != null, supportingText = if (errorMessage != null) { { Text(errorMessage, Modifier.testTag("error-${key.name}").semantics { liveRegion = LiveRegionMode.Polite }) } } else null,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),

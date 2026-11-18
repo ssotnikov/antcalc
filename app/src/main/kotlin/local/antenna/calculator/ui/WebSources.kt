@@ -41,6 +41,9 @@ internal const val NUXCOM_DK7ZB_URL = "https://web.archive.org/web/2024111020340
 
 private val additionalSourceAddresses = setOf(
     NUXCOM_DK7ZB_URL,
+    "https://github.com/jopecl/wifi-antenna-design-nec/blob/main/data/lab1-measurements.xlsx",
+    "https://www.ieice.org/cs/isap/ISAP_Archives/2010/pdf/91.pdf",
+    "https://edu.tusur.ru/publications/2796",
     YBN_DUBUS_URL,
     DG7YBN_BENT_DIPOLE_URL,
     DK7ZB_DUOBAND_ARTICLE_URL,
@@ -115,7 +118,25 @@ internal fun openAuthorContact(context: Context) {
 }
 
 internal fun openSourceWithFeedback(context: Context, url: String) {
-    val message = when (openWebSource(context, url)) {
+    showSourceOpenResult(context, openWebSource(context, url))
+}
+
+/** User-authored journal links have arbitrary hosts; keep them separate from curated sources. */
+internal fun validatedRecordLinkAddress(address: String): String? {
+    if (address.length > 2048) return null
+    val uri = try { URI(address) } catch (_: URISyntaxException) { return null }
+    if (!uri.scheme.equals("https", ignoreCase = true) || uri.isOpaque || uri.host.isNullOrBlank() ||
+        uri.rawUserInfo != null || uri.port !in setOf(-1, 443)) return null
+    return uri.toASCIIString()
+}
+
+internal fun openRecordLinkWithFeedback(context: Context, address: String) {
+    val validated = validatedRecordLinkAddress(address)
+    showSourceOpenResult(context, if (validated == null) SourceOpenResult.BLOCKED else dispatchExternal(context, validated))
+}
+
+private fun showSourceOpenResult(context: Context, result: SourceOpenResult) {
+    val message = when (result) {
         SourceOpenResult.OPENED -> null
         SourceOpenResult.NO_BROWSER -> R.string.browser_unavailable
         SourceOpenResult.BLOCKED -> R.string.link_open_failed

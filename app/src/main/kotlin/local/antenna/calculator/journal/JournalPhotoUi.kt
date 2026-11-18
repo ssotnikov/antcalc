@@ -34,6 +34,7 @@ import java.io.File
 import java.util.UUID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import local.antenna.calculator.ui.AppTextField
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.journal.PhotoAttachment
@@ -249,8 +250,7 @@ internal fun JournalPhotoDetail(
         onDismissRequest = ::closeEditor,
         title = { Text(stringResource(R.string.photo_edit_comment)) },
         text = {
-            OutlinedTextField(state = draft, label = { Text(stringResource(R.string.photo_comment)) },
-                labelPosition = TextFieldLabelPosition.Attached(alwaysMinimize = true),
+            AppTextField(state = draft, label = stringResource(R.string.photo_comment),
                 inputTransformation = InputTransformation.maxLength(PhotoAttachment.MAX_COMMENT),
                 supportingText = { Text(stringResource(R.string.photo_count, draft.text.length, PhotoAttachment.MAX_COMMENT)) },
                 lineLimits = TextFieldLineLimits.MultiLine(minHeightInLines = 3, maxHeightInLines = 6),

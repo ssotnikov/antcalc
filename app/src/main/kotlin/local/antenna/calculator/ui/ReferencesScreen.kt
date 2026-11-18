@@ -60,7 +60,9 @@ internal fun ReferencesScreen(language: AppLanguage) {
         }
         referenceGroups.forEach { group ->
             val eligible = group.materials.filter { !it.interfaceLanguageOnly || it.language == language }
-            val materials = if (group.interfaceLanguageOnly || language == AppLanguage.ENGLISH) {
+            val materials = if (group.interfaceLanguageOnly ||
+                (language == AppLanguage.ENGLISH && !group.showAllSourceLanguages)
+            ) {
                 eligible.filter { it.language == language }
             } else if (group.preferRussianSources) {
                 eligible.sortedBy { it.language != AppLanguage.RUSSIAN }

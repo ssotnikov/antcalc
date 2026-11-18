@@ -47,17 +47,18 @@ internal fun CantennaScreen(
     val context = LocalContext.current
     val resources = LocalResources.current
     val prefs = remember(context) { context.getSharedPreferences("cantenna_calculator", Context.MODE_PRIVATE) }
-    var draft by remember(prefs) { mutableStateOf(CantennaDraft.restore(prefs.getString("draft", null))) }
+    val record = LocalCalculatorRecord.current
+    var draft by remember(prefs) { mutableStateOf(record?.cantennaDraft() ?: CantennaDraft.restore(prefs.getString("draft", null))) }
     SideEffect {
         val data = draft.json()
-        if (prefs.getString("draft", null) != data) prefs.edit().putString("draft", data).apply()
+        if (record == null && prefs.getString("draft", null) != data) prefs.edit().putString("draft", data).apply()
     }
-    var mode by rememberSaveable { mutableStateOf(CantennaMode.CHECK) }
-    var design by rememberSaveable { mutableStateOf(CantennaDesign.MIT) }
+    var mode by rememberSaveable { mutableStateOf(record?.value("cantenna_input_mode", local.antenna.calculator.core.journal.SnapshotUnit.FACTOR)?.toInt()?.let { CantennaMode.entries.getOrNull(it) } ?: if (record?.snapshot?.model?.let { model -> CantennaDesign.entries.any { it.model == model } } == true) CantennaMode.DESIGNS else CantennaMode.CHECK) }
+    var design by rememberSaveable { mutableStateOf(CantennaDesign.entries.firstOrNull { it.model == record?.snapshot?.model } ?: CantennaDesign.MIT) }
     var selected by rememberSaveable { mutableIntStateOf(0) }
-    var chosenDiameter by rememberSaveable { mutableStateOf("") }
-    var focal by rememberSaveable { mutableIntStateOf(2) }
-    var gain by rememberSaveable { mutableStateOf(false) }
+    var chosenDiameter by rememberSaveable { mutableStateOf(record?.text("cantenna_diameter", scale = 1000.0).orEmpty()) }
+    var focal by rememberSaveable { mutableIntStateOf(record?.value("cantenna_focal", local.antenna.calculator.core.journal.SnapshotUnit.FACTOR)?.let { ratio -> local.antenna.calculator.core.Cantenna.focalRatios.indexOfFirst { it == ratio }.takeIf { it >= 0 } } ?: 2) }
+    var gain by rememberSaveable { mutableStateOf(record?.value("cantenna_objective", local.antenna.calculator.core.journal.SnapshotUnit.FACTOR) == 1.0) }
     val index = selected.coerceIn(draft.cans.indices)
     val candidate = draft.cans[index]
     val profile = design.takeIf { mode == CantennaMode.DESIGNS }
@@ -149,8 +150,8 @@ internal fun CantennaScreen(
                         { data.name(draft.cans[it], it) }) { selected = it }
                 }
                 if (mode == CantennaMode.COMPARE) {
-                    OutlinedTextField(candidate.name, { editCandidate(candidate.copy(name = it.take(64))) },
-                        Modifier.fillMaxWidth(), label = { Text(stringResource(R.string.cantenna_name)) }, singleLine = true)
+                    AppTextField(candidate.name, { editCandidate(candidate.copy(name = it.take(64))) },
+                        Modifier.fillMaxWidth(), label = stringResource(R.string.cantenna_name), singleLine = true)
                     OutlinedButton(onClick = {
                         selected = draft.cans.size
                         draft = draft.copy(cans = draft.cans + CantennaCandidate(diameter = "90"))
@@ -212,7 +213,8 @@ internal fun CantennaScreen(
                 val canSave = profile != CantennaDesign.HORN || sector != null && seamValid
                 onSave?.let {
                     Button(onClick = {
-                        val snapshot = cantennaSnapshot(hz, band, geometry, result, profile, ring, focal, gain, throat, mouth, flareLength, sector, seam)
+                        val captured = cantennaSnapshot(hz, band, geometry, result, profile, ring, focal, gain, throat, mouth, flareLength, sector, seam)
+                        val snapshot = captured.copy(inputs = captured.inputs + local.antenna.calculator.core.journal.SnapshotValue("cantenna_input_mode", mode.ordinal.toDouble(), local.antenna.calculator.core.journal.SnapshotUnit.FACTOR))
                         it(snapshot, "$header\n${source.author} · ${source.url}")
                     }, enabled = canSave, modifier = Modifier.fillMaxWidth().testTag("cantenna-save")) {
                         Text(stringResource(R.string.cantenna_save))
@@ -317,12 +319,14 @@ private fun CantennaCanFields(can: CantennaCandidate, edit: (CantennaCandidate) 
 @Composable
 internal fun CantennaField(raw: String, label: Int, invalid: Boolean, frequency: Boolean = false,
                            showUnit: Boolean = true, placeholder: String? = null, edit: (String) -> Unit) {
-    OutlinedTextField(raw, { if (it.acceptsDecimalEdit()) edit(it) }, Modifier.fillMaxWidth().testTag("cantenna-input-$label"),
-        label = { Text(stringResource(label)) }, singleLine = true, isError = invalid,
-        placeholder = placeholder?.let { example -> { Text(example) } },
-        suffix = if (showUnit) {
-            { Text(stringResource(if (frequency) R.string.mhz else R.string.hb9cv_aerial_mm)) }
-        } else null,
+    val name = stringResource(label)
+    val inputLabel = if (showUnit) {
+        val unit = stringResource(if (frequency) R.string.mhz else R.string.hb9cv_aerial_mm)
+        stringResource(R.string.inverted_v_input_unit, name, unit)
+    } else name
+    AppTextField(raw, { if (it.acceptsDecimalEdit()) edit(it) }, Modifier.fillMaxWidth().testTag("cantenna-input-$label"),
+        label = inputLabel, singleLine = true, isError = invalid,
+        example = placeholder,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
 }
 

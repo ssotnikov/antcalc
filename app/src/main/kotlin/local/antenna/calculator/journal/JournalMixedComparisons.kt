@@ -35,7 +35,7 @@ internal fun JournalCalculationComparisonScreen(
         fun cm(meters: Double) = resources.getString(R.string.value_unit, presentation.number(meters * 100, 2),
             resources.getString(R.string.cm))
         ComparisonRow(name, cm(it.estimatedMeters), cm(it.measuredMeters),
-            signed(it.measuredMeters - it.estimatedMeters, cm(it.measuredMeters - it.estimatedMeters)))
+            presentation.change(it.measuredMeters - it.estimatedMeters, cm(it.measuredMeters - it.estimatedMeters)))
     }
     val left = stringResource(R.string.journal_compare_calculated)
     val right = stringResource(R.string.journal_compare_measured)
@@ -164,7 +164,7 @@ internal fun JournalSweepComparisonScreen(
                 }
                 fun row(label: Int, first: Double?, second: Double?, change: Double?) =
                     ComparisonRow(resources.getString(label), number(first), number(second),
-                        change?.let { signed(it, number(it)) } ?: "—")
+                        change?.let { presentation.change(it, presentation.number(it)) } ?: "—")
                 val rows = listOf(
                     row(R.string.matching_swr, manual.swr, comparison.point?.swr, comparison.swrDelta),
                     row(R.string.sweep_r_column, manual.resistanceOhms, comparison.resistanceOhms, comparison.resistanceDelta),
@@ -224,7 +224,6 @@ private fun ComparisonGridRow(row: ComparisonRow, header: Boolean) {
     }
 }
 
-private fun signed(value: Double, formatted: String) = if (value > 0 && formatted.substringBefore(" ") != "0") "+$formatted" else formatted
 
 private fun SweepComparisonIssue.label() = when (this) {
     SweepComparisonIssue.FREQUENCY_UNKNOWN -> R.string.journal_sweep_frequency_unknown

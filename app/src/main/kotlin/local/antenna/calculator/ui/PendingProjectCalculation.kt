@@ -19,7 +19,7 @@ import local.antenna.calculator.journal.sizingSnapshot
 import local.antenna.calculator.state.CalculatorUiState
 import local.antenna.calculator.state.Section
 
-private enum class TransferSource(
+internal enum class TransferSource(
     val model: String,
     val page: Page,
     val title: Int,

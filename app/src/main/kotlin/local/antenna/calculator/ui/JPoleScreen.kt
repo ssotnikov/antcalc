@@ -54,12 +54,13 @@ internal fun JPoleScreen(
     onOpenCable: () -> Unit,
     onCopied: () -> Unit,
 ) {
-    val initialFrequency = stringResource(R.string.jpole_default_frequency)
-    val initialFactor = stringResource(R.string.jpole_default_factor)
+    val record = LocalCalculatorRecord.current
+    val initialFrequency = record?.text("frequency", local.antenna.calculator.core.journal.SnapshotUnit.HERTZ, 1e-6) ?: stringResource(R.string.jpole_default_frequency)
+    val initialFactor = record?.text("factor", local.antenna.calculator.core.journal.SnapshotUnit.FACTOR) ?: stringResource(R.string.jpole_default_factor)
     var frequencyText by rememberSaveable { mutableStateOf(initialFrequency) }
     var factorText by rememberSaveable { mutableStateOf(initialFactor) }
     var unit by rememberSaveable { mutableStateOf(LengthUnit.MILLIMETERS) }
-    var ribbon by rememberSaveable { mutableStateOf(false) }
+    var ribbon by rememberSaveable { mutableStateOf(record?.snapshot?.model == Ok1ikeJPoleModel) }
     val frequency = QuantityInput.frequency(frequencyText, FrequencyUnit.MEGAHERTZ).validValue()
     val factor = QuantityInput.shorteningFactor(factorText).validValue()
     val result = if (frequency != null && factor != null) calculateJPole(frequency, factor) else null
@@ -231,8 +232,8 @@ private fun jPoleSnapshot(frequency: Frequency, factor: ShorteningFactor, result
 
 @Composable
 private fun JPoleInput(value: String, label: String, hint: Int, error: Int?, tag: String, update: (String) -> Unit) {
-    OutlinedTextField(value, { if (it.acceptsDecimalEdit()) update(it) },
-        modifier = Modifier.fillMaxWidth().testTag(tag), label = { Text(label) },
+    AppTextField(value, { if (it.acceptsDecimalEdit()) update(it) },
+        modifier = Modifier.fillMaxWidth().testTag(tag), label = label,
         singleLine = true, isError = error != null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         supportingText = { Text(stringResource(error ?: hint)) })
 }

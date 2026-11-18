@@ -1,6 +1,9 @@
 package local.antenna.calculator.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.annotation.StringRes
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -15,6 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.testTag
@@ -156,12 +163,15 @@ internal fun ProjectPicker(
 internal fun ProjectSearchField(
     query: String, onQueryChange: (String) -> Unit, @StringRes label: Int, modifier: Modifier = Modifier,
     maxLength: Int? = null,
-    clearable: Boolean = false,
+    clearable: Boolean = true,
 ) {
     val focus = LocalFocusManager.current
     val colors = MaterialTheme.colorScheme
-    val iconSize = 18.dp
-    OutlinedTextField(
+    val dark = colors.surface.luminance() < .5f
+    val background = if (dark) Color(0xFF243342) else Color(0xFFE8EDF2)
+    val muted = if (dark) Color(0xFFA5B1BD) else Color(0xFF626F7B)
+    val hint = stringResource(label)
+    BasicTextField(
         value = query,
         onValueChange = { value ->
             if (maxLength == null) {
@@ -171,26 +181,35 @@ internal fun ProjectSearchField(
                 onQueryChange(value.substring(0, value.offsetByCodePoints(0, count)))
             }
         },
-        label = { Text(stringResource(label)) },
-        leadingIcon = {
-            Icon(painterResource(R.drawable.ic_search), contentDescription = null,
-                modifier = Modifier.size(iconSize), tint = colors.outline)
-        },
-        trailingIcon = if (clearable && query.isNotEmpty()) {
-            {
-                IconButton(onClick = { onQueryChange("") }, modifier = Modifier.testTag("journal-clear-search")) {
-                    Icon(
-                        painterResource(R.drawable.ic_close),
-                        stringResource(R.string.journal_clear_search),
-                        modifier = Modifier.size(iconSize),
-                        tint = if (colors.surface.luminance() < .5f) Color(0xFFE58197) else Color(0xFF952C46),
-                    )
-                }
-            }
-        } else null,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.onSurface),
+        cursorBrush = SolidColor(colors.primary),
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { focus.clearFocus() }),
-        modifier = modifier,
+        modifier = modifier.heightIn(min = 48.dp).semantics { contentDescription = hint },
+        decorationBox = { input ->
+            Row(
+                Modifier.fillMaxWidth().background(background, RoundedCornerShape(28.dp))
+                    .heightIn(min = 48.dp).padding(start = 16.dp, end = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(painterResource(R.drawable.ic_search), contentDescription = null,
+                    modifier = Modifier.size(20.dp), tint = muted)
+                Box(Modifier.weight(1f).padding(horizontal = 14.dp, vertical = 10.dp)) {
+                    if (query.isEmpty()) Text(hint, color = muted,
+                        style = MaterialTheme.typography.bodyLarge, maxLines = 1,
+                        overflow = TextOverflow.Ellipsis)
+                    input()
+                }
+                if (clearable && query.isNotEmpty()) {
+                    IconButton(onClick = { onQueryChange("") },
+                        modifier = Modifier.size(48.dp).testTag("journal-clear-search")) {
+                        Icon(painterResource(R.drawable.ic_close),
+                            stringResource(R.string.journal_clear_search),
+                            modifier = Modifier.size(20.dp), tint = muted)
+                    }
+                } else Spacer(Modifier.width(12.dp))
+            }
+        },
     )
 }

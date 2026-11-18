@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ys_title">Масштабирование Яги — Уда</string>
+    <string name="ys_title">Масштабирование Яги\u00A0—\u00A0Уда</string>
     <string name="ys_intro">Перенос конструкции на другую частоту и замена диаметра элементов.</string>
     <string name="ys_mode">Что хотите изменить?</string>
     <string name="ys_frequency">Перенести на другую частоту</string>

@@ -82,6 +82,7 @@ internal fun JournalScreen(
     currentCalculator: () -> CalculatorUiState,
     initialProjectId: String? = null,
     onOpenSweeps: ((SweepComparison, AntennaProject) -> Unit)? = null,
+    onOpenCalculator: ((JournalRecord) -> Unit)? = null,
     onOpenHalo: ((CalculationSnapshot) -> Unit)? = null,
     onOpenYagiScaling: ((CalculationSnapshot) -> Unit)? = null,
     onOpenTrapDipole: ((CalculationSnapshot) -> Unit)? = null,
@@ -306,8 +307,9 @@ internal fun JournalScreen(
             } else MissingItem()
             JournalPage.RECORD -> if (record != null) {
                 val calculation = record.calculation?.let { presentation.snapshotFields(it, record.antennaType) }
-                val scaling = record.calculation?.takeIf { it.model == local.antenna.calculator.core.layout.YagiScaling.MODEL }
-                val trap = record.calculation?.takeIf { it.model == local.antenna.calculator.ui.TRAP_DIPOLE_MODEL }
+                val reopen = local.antenna.calculator.ui.RecordCalculatorRequest.from(record)
+                val scaling = record.calculation?.takeIf { it.model == local.antenna.calculator.core.layout.YagiScaling.MODEL && reopen != null }
+                val trap = record.calculation?.takeIf { it.model == local.antenna.calculator.ui.TRAP_DIPOLE_MODEL && reopen != null }
                 val halo = record.calculation?.takeIf { HaloDraft.fromSnapshot(it) != null }
                 JournalColumn(Modifier.testTag("journal-record-details")) {
                     SelectionContainer { JournalHeading(record.title) }
@@ -336,6 +338,12 @@ internal fun JournalScreen(
                     }
                     presentation.recordNote(record)?.let { JournalDetails(listOf(it), selectable = !record.restrictedYagiMaterials) }
                     JournalScope()
+                    if (reopen != null && onOpenCalculator != null && scaling == null && trap == null && halo == null) {
+                        TextButton(onClick = { onOpenCalculator(record) }, enabled = enabled,
+                            modifier = Modifier.testTag("journal-open-calculator")) {
+                            Text(stringResource(R.string.journal_open_calculator, stringResource(reopen.title)))
+                        }
+                    }
                     if (scaling != null && onOpenYagiScaling != null) {
                         TextButton(onClick = { onOpenYagiScaling(scaling) }, enabled = enabled, modifier = Modifier.testTag("journal-open-yagi-scaling")) {
                             Text(stringResource(R.string.ys_reopen))
@@ -690,7 +698,7 @@ private fun JournalCalculationTable(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodyMedium,
                         )
-                        Text(
+                        JournalLinkedText(
                             value,
                             Modifier.weight(2f).alignByBaseline(),
                             textAlign = TextAlign.End,
@@ -712,7 +720,7 @@ internal fun JournalDetails(details: List<Pair<String, String>>, spacing: Dp = 1
             for ((label, value) in details) {
                 Column(Modifier.semantics(mergeDescendants = true) {}) {
                     Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
-                    Text(value, style = MaterialTheme.typography.bodyMedium)
+                    JournalLinkedText(value, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

@@ -1,9 +1,13 @@
 package local.antenna.calculator.journal
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalDensity
@@ -51,11 +55,20 @@ internal fun JournalComparisonScreen(
         JournalHeading(projectTitle, MaterialTheme.colorScheme.secondary)
         warning?.let { ComparisonNotice(it) }
         ComparisonFields(before.title, after.title, beforeDetails, afterDetails, beforeLabel, afterLabel)
-        Text(stringResource(R.string.journal_diff_legend), style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        ComparisonLegend()
         if (changes.isNotEmpty()) {
             JournalHeading(changeLabel, MaterialTheme.colorScheme.secondary)
-            JournalDetails(changes)
+            SelectionContainer {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    for ((name, value) in changes) {
+                        Row(Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(name, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                            Text(value, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            }
         }
         JournalScope()
         Button(onClick = {
@@ -68,6 +81,27 @@ internal fun JournalComparisonScreen(
             }
             copy(sections.joinToString("\n\n", transform = presentation::formatFields))
         }, modifier = Modifier.testTag("journal-copy-comparison")) { Text(stringResource(R.string.journal_copy)) }
+    }
+}
+
+private fun comparisonHighlightColor(dark: Boolean, followUp: Boolean): Color = when {
+    followUp -> if (dark) Color(0xFF344640) else Color(0xFFEAF3EB)
+    else -> if (dark) Color(0xFF493D47) else Color(0xFFF9EBEE)
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ComparisonLegend() {
+    val colors = MaterialTheme.colorScheme
+    val dark = colors.surface.luminance() < 0.5f
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        for ((followUp, label) in listOf(false to R.string.journal_diff_before, true to R.string.journal_diff_after)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp),
+                modifier = Modifier.semantics(mergeDescendants = true) {}) {
+                Box(Modifier.size(14.dp).background(comparisonHighlightColor(dark, followUp), RoundedCornerShape(3.dp)))
+                Text(stringResource(label), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+            }
+        }
     }
 }
 
@@ -101,12 +135,18 @@ private fun ComparisonFields(
         val stacked = maxWidth < 340.dp || LocalDensity.current.fontScale > 1.3f
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             if (stacked) {
-                ComparisonHeading(beforeLabel, beforeTitle, colors.secondary, Modifier.fillMaxWidth())
-                ComparisonHeading(afterLabel, afterTitle, colors.primary, Modifier.fillMaxWidth())
+                Column(Modifier.height(IntrinsicSize.Min), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ComparisonHeading(beforeLabel, beforeTitle, colors.secondary,
+                        Modifier.weight(1f).fillMaxWidth().testTag("journal-before-heading"))
+                    ComparisonHeading(afterLabel, afterTitle, colors.primary,
+                        Modifier.weight(1f).fillMaxWidth().testTag("journal-after-heading"))
+                }
             } else {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ComparisonHeading(beforeLabel, beforeTitle, colors.secondary, Modifier.weight(1f))
-                    ComparisonHeading(afterLabel, afterTitle, colors.primary, Modifier.weight(1f))
+                Row(Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    ComparisonHeading(beforeLabel, beforeTitle, colors.secondary,
+                        Modifier.weight(1f).fillMaxHeight().testTag("journal-before-heading"))
+                    ComparisonHeading(afterLabel, afterTitle, colors.primary,
+                        Modifier.weight(1f).fillMaxHeight().testTag("journal-after-heading"))
                 }
             }
             for (label in beforeFields.keys + afterFields.keys) {
@@ -155,20 +195,14 @@ private fun ComparisonValue(
     val highlighted = changed && value != null
     val background = when {
         !highlighted -> Color.Transparent
-        followUp -> if (dark) Color(0xFF344640) else Color(0xFFEAF3EB)
-        else -> if (dark) Color(0xFF493D47) else Color(0xFFF9EBEE)
+        else -> comparisonHighlightColor(dark, followUp)
     }
     val foreground = when {
         !highlighted -> colors.onSurface
         followUp -> if (dark) Color(0xFFDFEFE4) else Color(0xFF2C4B3B)
         else -> if (dark) Color(0xFFF1DEE5) else Color(0xFF653846)
     }
-    val displayed = when {
-        value == null -> stringResource(R.string.journal_comparison_missing)
-        !highlighted -> value
-        followUp -> "+ $value"
-        else -> "− $value"
-    }
+    val displayed = value ?: stringResource(R.string.journal_comparison_missing)
     Surface(
         modifier = modifier.testTag(if (highlighted) "journal-diff-value" else "journal-comparison-value"),
         shape = MaterialTheme.shapes.extraSmall,
@@ -180,7 +214,7 @@ private fun ComparisonValue(
                 if (!showRole) contentDescription = role
             }) {
             if (showRole) Text(role, style = MaterialTheme.typography.labelSmall)
-            Text(displayed, style = MaterialTheme.typography.bodyMedium)
+            JournalLinkedText(displayed, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

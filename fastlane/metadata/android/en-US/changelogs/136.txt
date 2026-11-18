@@ -1,0 +1,1 @@
+Unified input and search styling. Saved records reopen in their calculators with the original parameters; links in records are clickable. Record comparison shows signed changes and equal heading cards. More compact Yagi and Moxon design lists, clearer labels and color accents. Updated user guide.

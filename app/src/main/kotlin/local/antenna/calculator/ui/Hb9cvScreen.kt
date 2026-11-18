@@ -65,7 +65,8 @@ internal fun Hb9cvScreen(
             List(data.length()) { index -> Hb9cvProfile(index, data.getJSONObject(index), locale.language == "ru") }
         }
     }
-    var selected by rememberSaveable { mutableIntStateOf(0) }
+    val record = LocalCalculatorRecord.current
+    var selected by rememberSaveable { mutableIntStateOf(if (record != null && (record.snapshot == null || record.snapshot.model == local.antenna.calculator.core.Hb9cvAerial.MODEL)) -1 else record?.snapshot?.model?.removePrefix("hb9cv_")?.toIntOrNull() ?: 0) }
     var expanded by remember { mutableStateOf(false) }
     val profile = profiles.getOrNull(selected)
     val name = profile?.text("name") ?: stringResource(R.string.hb9cv_aerial_name)
@@ -113,10 +114,11 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
     val inputs = mutableListOf<SnapshotValue>()
     val outputs = mutableListOf<SnapshotValue>()
     val missing = mutableListOf<String>()
-    var sectional by rememberSaveable { mutableStateOf(false) }
-    var formula by rememberSaveable { mutableStateOf(false) }
+    val record = LocalCalculatorRecord.current
+    var sectional by rememberSaveable { mutableStateOf(record?.value("hb9cv_wall", SnapshotUnit.METERS) != null) }
+    var formula by rememberSaveable { mutableStateOf(record?.value("hb9cv_vf", SnapshotUnit.FACTOR) != null) }
     var formulasOpen by rememberSaveable { mutableStateOf(false) }
-    var customLine by rememberSaveable { mutableStateOf(false) }
+    var customLine by rememberSaveable { mutableStateOf(record?.value("hb9cv_rear_cable", SnapshotUnit.METERS) != null || record?.value("hb9cv_branch_r", SnapshotUnit.METERS) != null) }
     val r = profile.size("r")
     val s = profile.size("s")
     val spacing = profile.size("spacing")
@@ -427,10 +429,11 @@ private fun hb9cvExtensionVector(profile: Hb9cvProfile): AntennaVector {
 
 @Composable
 private fun hb9cvInput(key: String, label: String, min: Double, max: Double): Pair<Double?, Boolean> {
-    var raw by rememberSaveable(key) { mutableStateOf("") }
+    val record = LocalCalculatorRecord.current
+    var raw by rememberSaveable(key) { mutableStateOf(record?.snapshot?.inputs?.firstOrNull { it.key == key }?.let { recordNumber(it.value * if (it.unit == SnapshotUnit.METERS) 1000.0 else 1.0) }.orEmpty()) }
     val decimal = (PositiveDecimalParser.parse(raw, allowZero = true) as? FieldState.Valid)?.value?.toDouble()
     val value = decimal?.takeIf { it in min..max }
-    OutlinedTextField(raw, { if (it.acceptsDecimalEdit(limit = 16)) raw = it }, label = { Text(label) },
+    AppTextField(raw, { if (it.acceptsDecimalEdit(limit = 16)) raw = it }, label = label,
         modifier = Modifier.fillMaxWidth().testTag(key), singleLine = true, isError = raw.isNotBlank() && value == null,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         supportingText = { Text("$min – $max") })

@@ -139,7 +139,6 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
                         modifier = Modifier.testTag("cable-profile-vf"))
                     if (profile.reciprocalVelocity) HelpText(R.string.feedline_vf_reciprocal)
                     CableProfileSource(profile)
-                    Text(stringResource(R.string.feedline_verified, profile.verified), style = MaterialTheme.typography.bodySmall)
                 }
                 return@forEach
             }
@@ -167,8 +166,8 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
                 Modifier, key == CableField.FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
             )
-            OutlinedTextField(draft.fields.getValue(key), { if (it.acceptsDecimalEdit()) change(currentState().draft.cable.edit(key, it)) },
-                label = { Text(stringResource(key.label()) + suffix) }, enabled = state.editingEnabled,
+            AppTextField(draft.fields.getValue(key), { if (it.acceptsDecimalEdit()) change(currentState().draft.cable.edit(key, it)) },
+                label = stringResource(key.label()) + suffix, enabled = state.editingEnabled,
                 visualTransformation = if (key == CableField.VELOCITY) {
                     androidx.compose.ui.text.input.VisualTransformation {
                         androidx.compose.ui.text.input.TransformedText(

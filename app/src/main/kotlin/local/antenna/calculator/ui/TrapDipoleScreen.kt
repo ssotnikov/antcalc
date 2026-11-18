@@ -346,8 +346,8 @@ private fun TrapLcCalculator(format: (Double, Int) -> String) {
 
 @Composable
 private fun TrapField(raw: String, label: Int, invalid: Boolean, tag: String, hint: String? = null, update: (String) -> Unit) {
-    OutlinedTextField(raw, { if (it.acceptsDecimalEdit()) update(it.boundedNumericText()) },
-        Modifier.fillMaxWidth().testTag(tag), label = { Text(stringResource(label)) }, isError = invalid,
+    AppTextField(raw, { if (it.acceptsDecimalEdit()) update(it.boundedNumericText()) },
+        Modifier.fillMaxWidth().testTag(tag), label = stringResource(label), isError = invalid,
         supportingText = hint?.let { { Text(it) } }, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
 }
 

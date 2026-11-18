@@ -72,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="en.html" lang="en" hreflang="en">English</a></div>
   <h1>Руководство пользователя</h1>
   <p>Рассчитайте размеры, соберите и настройте антенну, затем сохраните результаты измерений в проекте.</p>
-  <span class="version">Версия 1.40.0</span>
+  <span class="version">Версия 2.0.0</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -89,6 +89,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <li><a href="#projects">Проекты и журнал подстройки</a></li>
       <li><a href="#help">Справка и обновления</a></li>
     </ul></nav>
+<p>В пустых полях подпись приглушена. При вводе или выборе поля она перемещается в рамку; единицы измерения указаны в подписи. Примеры не являются введёнными данными и не сохраняются.</p>
   </aside>
   <main id="guide">
     <section class="chapter" id="start" aria-labelledby="start-title">
@@ -128,7 +129,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <tr><th scope="row"><span class="web-label">Инвертированная V и Ground Plane</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/inverted-v">Инвертированная V</a><a href="https://appassets.androidplatform.net/open/ground-plane">Ground Plane</a></span></th><td>Введите частоту и параметры конструкции. Сверьте длины плеч либо штыря и противовесов с выбранной конфигурацией.</td></tr>
 <tr><th scope="row"><span class="web-label">Полноволновая рамка</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/full-wave-loop">Полноволновая рамка</a><a href="https://appassets.androidplatform.net/open/quad-loop">Quad Loop</a><a href="https://appassets.androidplatform.net/open/delta-loop">Delta Loop</a></span></th><td>Выберите Quad или Delta Loop. Рассчитайте периметр и стороны по частоте либо частоту по известному периметру. Выберите расположение точки питания на схеме.</td></tr>
 <tr><th scope="row"><span class="web-label">J-антенна и Slim Jim</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/j-pole">J-антенна</a><a href="https://appassets.androidplatform.net/open/slim-jim">Slim Jim</a></span></th><td>Выберите вариант или диапазон. Сверьте размеры секций, зазор и точку питания с обозначениями на схеме. Подгонку начинайте с опубликованных размеров своего варианта.</td></tr>
-<tr><th scope="row"><span class="web-label">Яги — Уда</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Яги — Уда</a></span></th><td>Выберите профиль автора и монтажный вариант. Сверьте позиции от рефлектора, диаметры, заготовки и длину траверсы. Если для вибратора указан раскрой двух половин, длина в ведомости относится к каждой детали. У DK7ZB 70 см введите зазор между половинами. У GTV xpol и SAT задайте зазор, расстояние до сгиба и отвод концов отдельно для H и V. После ввода схема и ведомость обновятся для каждой плоскости. В профилях DK7ZB 70 см кнопка «Заполнить пустые поля по примеру» подставляет пробный зазор. У готовой вставки измерьте зазор после посадки до упора. Проверьте стартовый раскрой настройкой по КСВ. Для таблиц с фиксированным монтажом соблюдайте заданные отступы и способ крепления. Материалы YBN 2-5m и GTV 2-6m доступны для просмотра в AntCalc по условиям DG7YBN. При экспорте проекта можно выбрать остальные записи.</td></tr>
+<tr><th scope="row"><span class="web-label">Яги — Уда</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Яги — Уда</a></span></th><td>Выберите профиль автора и монтажный вариант. Сверьте позиции от рефлектора, диаметры, заготовки и длину траверсы. Если для вибратора указан раскрой двух половин, длина в ведомости относится к каждой детали. У DK7ZB 70 см введите зазор между половинами. В профилях DK7ZB 70 см кнопка «Заполнить пустые поля по примеру» подставляет пробный зазор. У готовой вставки измерьте зазор после посадки до упора. Проверьте стартовый раскрой настройкой по КСВ. Для таблиц с фиксированным монтажом соблюдайте заданные отступы и способ крепления. В сборках с профилями DG7YBN YBN 2-5m и GTV 2-6m материалы этих конструкций доступны для просмотра внутри AntCalc. При экспорте проекта можно выбрать остальные записи.</td></tr>
 <tr><th scope="row"><span class="web-label">Антенна Моксон</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/moxon">Антенна Моксон</a></span></th><td>Выберите опубликованный профиль или расчёт по частоте и диаметру проводника. Для разметки возьмите размеры и зазоры выбранной конфигурации.</td></tr>
 <tr><th scope="row"><span class="web-label">Антенна HB9CV</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/hb9cv">Антенна HB9CV</a></span></th><td>Выберите опубликованную конструкцию или расчёт по частоте в диапазоне 100–1500 МГц. Проверьте фазовую линию и поля размеров, зависящих от монтажа.</td></tr>
 <tr><th scope="row"><span class="web-label">Баночная антенна (Cantenna)</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/cantenna">Баночная антенна (Cantenna)</a></span></th><td>Задайте частоту или полосу, подберите диаметр и сравните заготовки. Сверьте положение зонда и допустимую полосу. Для раструба воспользуйтесь развёрткой.</td></tr>
@@ -197,6 +198,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <figure><a href="images/ru/06-quad-loop.webp"><img src="images/ru/06-quad-loop.webp" width="1080" height="1920" alt="Полноволновая рамка Quad" loading="lazy" decoding="async"></a><figcaption>Полноволновая рамка Quad</figcaption></figure>
 <figure><a href="images/ru/07-j-pole.webp"><img src="images/ru/07-j-pole.webp" width="1080" height="1920" alt="Калькулятор J-антенны" loading="lazy" decoding="async"></a><figcaption>Калькулятор J-антенны</figcaption></figure>
 <figure><a href="images/ru/08-yagi.webp"><img src="images/ru/08-yagi.webp" width="1080" height="1920" alt="Калькулятор Яги — Уда" loading="lazy" decoding="async"></a><figcaption>Калькулятор Яги — Уда</figcaption></figure>
+<figure><a href="images/ru/yagi-segmentation.webp"><img src="images/ru/yagi-segmentation.webp" width="1080" height="2400" alt="Пример DK7ZB с сеткой, источником напряжения, легендой и таблицей сегментов" loading="lazy" decoding="async"></a><figcaption>Сетка DK7ZB на верхней границе диапазона</figcaption></figure>
 <figure><a href="images/ru/09-moxon.webp"><img src="images/ru/09-moxon.webp" width="1080" height="1920" alt="Калькулятор Моксона" loading="lazy" decoding="async"></a><figcaption>Калькулятор Моксона</figcaption></figure>
 <figure><a href="images/ru/trap-dipole.webp"><img src="images/ru/trap-dipole.webp" width="680" height="1209" alt="Конструкция трапового диполя" loading="lazy" decoding="async"></a><figcaption>Конструкция трапового диполя</figcaption></figure>
 <figure><a href="images/ru/cantenna.webp"><img src="images/ru/cantenna.webp" width="680" height="1209" alt="Калькулятор баночной антенны" loading="lazy" decoding="async"></a><figcaption>Калькулятор баночной антенны</figcaption></figure>
@@ -268,6 +270,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <p><a href="../examples/demo-dipole-145mhz-before.s1p" download>Пример S1P до подстройки</a> · <a href="../examples/demo-dipole-145mhz-after.s1p" download>Пример S1P после подстройки</a></p>
         </div>
 <div class="gallery">
+<figure><a href="images/ru/vna-import.webp"><img src="images/ru/vna-import.webp" width="1080" height="2400" alt="Экран измерений S1P с кнопкой «Открыть файл S1P»" loading="lazy" decoding="async"></a><figcaption>Открытие первого файла S1P</figcaption></figure>
 <figure><a href="images/ru/11-vna.webp"><img src="images/ru/11-vna.webp" width="1080" height="1920" alt="Две трассы в экране измерений VNA" loading="lazy" decoding="async"></a><figcaption>Две трассы в экране измерений VNA</figcaption></figure>
 </div>
       </div>
@@ -283,12 +286,16 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <p>Чтобы скопировать отдельное значение, формулу или фрагмент заметки, удерживайте текст, передвиньте маркеры выделения и нажмите «Копировать». Для полного отчёта используйте кнопку копирования под результатами.</p>
 <h3>Сохранение расчёта</h3><ol><li>Нажмите <strong>Копировать в проект</strong> в калькуляторе. В руководстве по Яги кнопка называется <strong>Добавить в проект</strong>.</li><li>Выберите подходящий проект и нажмите <strong>Сохранить в выбранный проект</strong> или выберите <strong>Создать новый проект</strong> и введите название.</li></ol>
 <p>Откройте сохранённый расчёт в журнале проекта. <strong>Исходные данные расчета</strong> и <strong>Результаты расчета</strong> показаны в двух таблицах. Подписи находятся слева, значения — справа.</p>
+<p>Внизу записи нажмите <strong>Открыть в калькуляторе</strong>, чтобы загрузить сохранённый расчёт в соответствующий инструмент. Восстанавливаются модель или опубликованная конструкция и записанные параметры. Изменение значений в калькуляторе не меняет исходную запись. Кнопка «Назад» возвращает к ней; повторный переход снова загружает сохранённые значения. Для записи замера переносятся только известные величины, а недостающие параметры нужно заполнить самостоятельно.</p>
+<p>HTTPS-ссылки в данных и заметках записи, в том числе ссылки на исходные конструкции, подчёркнуты и открываются во внешнем браузере по нажатию. Они также доступны при сравнении записей. Текст записи и полный адрес ссылки можно выделить и скопировать.</p>
+<p>В разделе «Изменения» разница указана в скобках: «+» означает увеличение относительно исходной записи, «−» — уменьшение. Если значения совпадают, показано «без изменений». Малые поправки длины отображаются в миллиметрах. Эти обозначения сохраняются при копировании данных. Недоступная разница не считается отсутствием изменений.</p>
 <h3>Замеры и перенос данных</h3><ol><li>Откройте <strong>Инструменты → Проекты и журналы подстройки</strong>, выберите проект и добавьте запись. Укажите условия установки, внесите результаты замера и добавьте фото с комментарием, если это нужно для повторения опыта.</li><li>В <strong>Сравнить записи</strong> выберите две записи. Сопоставляйте КСВ и импеданс при одинаковых условиях и точке подключения.</li><li>Для переноса проекта используйте <strong>Экспорт JSON</strong> и <strong>Импорт JSON</strong>. При импорте создаётся отдельный проект. Для передачи фото используйте экспорт фото в ZIP.</li></ol>
 <p><a href="../examples/demo-dipole-journal-145mhz-ru.json" download>Демо-проект диполя на 145 МГц</a></p>
         </div>
 <div class="gallery">
-<figure><a href="images/ru/project-search.webp"><img src="images/ru/project-search.webp" width="680" height="1209" alt="Совпадения по частоте выделены жёлтым на двух карточках" loading="lazy" decoding="async"></a><figcaption>Поиск проектов по частоте</figcaption></figure>
+<figure><a href="images/ru/project-search.webp"><img src="images/ru/project-search.webp" width="680" height="1209" alt="Поиск проектов по частоте и кнопка очистки" loading="lazy" decoding="async"></a><figcaption>Поиск проектов по частоте</figcaption></figure>
 <figure><a href="images/ru/05-dipole-journal.webp"><img src="images/ru/05-dipole-journal.webp" width="1080" height="1920" alt="Журнал проекта с записями" loading="lazy" decoding="async"></a><figcaption>Журнал проекта с записями</figcaption></figure>
+<figure><a href="images/ru/saved-calculation.webp"><img src="images/ru/saved-calculation.webp" width="1080" height="1920" alt="Запись Яги R3UDK со ссылкой на публикацию и переходом в калькулятор" loading="lazy" decoding="async"></a><figcaption>Сохранённая конструкция и переход в её калькулятор</figcaption></figure>
 </div>
       </div>
     </section>

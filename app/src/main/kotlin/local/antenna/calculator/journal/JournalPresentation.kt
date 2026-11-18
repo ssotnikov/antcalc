@@ -290,12 +290,20 @@ internal class JournalPresentation(private val context: Context) {
     }
 
     fun changes(c: JournalComparison): List<Pair<String, String>> = buildList {
-        c.resonanceDeltaHz?.let { add(text(R.string.measured_frequency) to signed(it.toDouble(), frequency(it))) }
-        c.lengthDeltaNm?.let { add(text(R.string.journal_length) to signed(it.toDouble(), length(it))) }
-        c.swrDelta?.let { add(text(R.string.matching_swr) to signed(it, number(it))) }
+        c.resonanceDeltaHz?.let { add(text(R.string.measured_frequency) to change(it.toDouble(), frequency(it))) }
+        c.lengthDeltaNm?.let {
+            val formatted = if (it != 0L && kotlin.math.abs(it) < 10_000_000L)
+                withUnit(it / 1e6, R.string.mm) else length(it)
+            add(text(R.string.journal_length) to change(it.toDouble(), formatted))
+        }
+        c.swrDelta?.let { add(text(R.string.matching_swr) to change(it, number(it))) }
     }
 
-    private fun signed(value: Double, formatted: String): String = if (value > 0) "+$formatted" else formatted
+    fun change(value: Double, formatted: String): String = if (value == 0.0) {
+        "(${text(R.string.journal_compare_unchanged)})"
+    } else {
+        "(${if (value > 0) "+" else "−"}${formatted.removePrefix("-").removePrefix("−")})"
+    }
 
     private fun trapNumberFormat(value: Double, digits: Int): String =
         java.text.NumberFormat.getNumberInstance(context.resources.configuration.locales[0]).apply {

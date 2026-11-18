@@ -14,7 +14,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -141,32 +140,40 @@ internal fun YagiCalculatorScreen(
     val prefs = remember(context.applicationContext) {
         context.yagiCalculatorPreferences()
     }
-    var profile by remember {
-        mutableStateOf(YagiProfile.entries.firstOrNull { it.design.available && it.id == prefs.getString("profile", null) } ?: YagiProfile.R3)
+    val record = LocalCalculatorRecord.current
+    var profile by rememberSaveable {
+        mutableStateOf(YagiProfile.entries.firstOrNull { it.design.available && it.id == (record?.snapshot?.let { snapshot -> YagiProfile.entries.firstOrNull { it.design.model == snapshot.model }?.id } ?: prefs.getString("profile", null)) } ?: YagiProfile.R3)
     }
-    var unit by remember {
-        mutableStateOf(LengthUnit.entries.firstOrNull { it.name == prefs.getString("unit", null) } ?: LengthUnit.MILLIMETERS)
+    var unit by rememberSaveable {
+        mutableStateOf(record?.value("yagi_unit", SnapshotUnit.FACTOR)?.toInt()?.let { LengthUnit.entries.getOrNull(it) } ?: LengthUnit.entries.firstOrNull { it.name == prefs.getString("unit", null) } ?: LengthUnit.MILLIMETERS)
     }
     val driverPlanes = remember(profile) { profile.design.driverPlanes() }
     val driverLabels = driverPlanes.flatMap { it.labels }
+    fun initialField(index: Int, fallback: String = ""): String {
+        if (record == null) return prefs.getString("${profile.id}_$index", fallback).orEmpty().take(24)
+        val keys = listOf("yagi_allowance", "yagi_rear", "yagi_front") + driverPlanes.flatMapIndexed { plane, item ->
+            listOf("gap", "bend", "setback").take(item.labels.size).map { "${profile.driverMetricPrefix(plane)}_$it" }
+        }
+        return keys.getOrNull(index)?.let { record.text(it, SnapshotUnit.METERS, 1000.0) }.orEmpty()
+    }
     val fields = key(profile) {
         val defaultOffset = if (profile.hasBentDipole) GTV_REAR_OFFSET_MM.toInt().toString() else ""
         listOf(
-            rememberTextFieldState(prefs.getString("${profile.id}_0", "").orEmpty().take(24)),
-            rememberTextFieldState(if (profile.fixedOffsets) defaultOffset else prefs.getString("${profile.id}_1", defaultOffset).orEmpty().take(24)),
-            rememberTextFieldState(if (profile.fixedOffsets) defaultOffset else prefs.getString("${profile.id}_2", defaultOffset).orEmpty().take(24)),
+            rememberTextFieldState(initialField(0)),
+            rememberTextFieldState(if (profile.fixedOffsets) defaultOffset else initialField(1, defaultOffset)),
+            rememberTextFieldState(if (profile.fixedOffsets) defaultOffset else initialField(2, defaultOffset)),
         ) + driverLabels.indices.map { index ->
-            rememberTextFieldState(prefs.getString("${profile.id}_${inputFields.size + index}", "").orEmpty().take(24))
+            rememberTextFieldState(initialField(inputFields.size + index))
         }
     }
     val draft = fields.map { it.text.toString() }
     LaunchedEffect(prefs, profile, fields) {
+        if (record != null) return@LaunchedEffect
         val prefix = profile.id
         snapshotFlow { fields.map { it.text.toString() } }.drop(1).collect { entries ->
             prefs.edit { entries.forEachIndexed { index, value -> putString("${prefix}_$index", value) } }
         }
     }
-    val exampleColor = inputExampleColor()
     val values = draft.map { raw ->
         raw.trim().takeIf(decimal::matches)?.replace(',', '.')?.toDoubleOrNull()?.takeIf { it in 0.0..1000.0 }
     }
@@ -202,7 +209,7 @@ internal fun YagiCalculatorScreen(
         RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), geometry = geometry, baseHeight = 160.dp)
         YagiProfilePicker(profile, profileLabel) { selected ->
             val previousId = profile.id
-            prefs.edit {
+            if (record == null) prefs.edit {
                 fields.forEachIndexed { index, field -> putString("${previousId}_$index", field.text.toString()) }
                 putString("profile", selected.id)
             }
@@ -268,7 +275,7 @@ internal fun YagiCalculatorScreen(
         YagiHeading(R.string.yagi_dimensions)
         ChoicePicker(stringResource(R.string.loop_output_unit), LengthUnit.entries, unit,
             { stringResource(it.labelResource()) },
-            { selected -> unit = selected; prefs.edit { putString("unit", selected.name) } }, "yagi-units")
+            { selected -> unit = selected; if (record == null) prefs.edit { putString("unit", selected.name) } }, "yagi-units")
         if (profile.dualPlane) {
             YagiHeading(R.string.yagi_horizontal_plane)
             YagiTable(elements, unit, isGtv, null, axialCoordinates = true)
@@ -283,22 +290,17 @@ internal fun YagiCalculatorScreen(
         HelpText(R.string.yagi_model_conditions)
         inputFields.forEachIndexed { index, label ->
             if (profile.dualPlane && index > 0) return@forEachIndexed
-            var focused by remember { mutableStateOf(false) }
-            OutlinedTextField(
+            AppTextField(
                 state = fields[index],
-                label = { Text(stringResource(label)) },
-                labelPosition = TextFieldLabelPosition.Attached(alwaysMinimize = true),
-                placeholder = if (focused) null else {
-                    { Text(if (index == 0) "0" else "20", color = exampleColor) }
-                },
+                label = stringResource(label),
+                example = if (index == 0) "0" else "20",
                 inputTransformation = decimalInputTransformation(limit = 24),
                 lineLimits = TextFieldLineLimits.SingleLine,
                 readOnly = profile.fixedOffsets && index > 0,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 isError = errors[index],
                 supportingText = if (errors[index]) {{ Text(stringResource(R.string.yagi_invalid)) }} else null,
-                modifier = Modifier.fillMaxWidth().testTag("yagi-input-$index")
-                    .onFocusChanged { focused = it.isFocused },
+                modifier = Modifier.fillMaxWidth().testTag("yagi-input-$index"),
             )
         }
         if (driverLabels.isNotEmpty()) {
@@ -316,10 +318,9 @@ internal fun YagiCalculatorScreen(
                 if (profile.dualPlane && index % 3 == 0) {
                     YagiHeading(if (index == 0) R.string.yagi_horizontal_plane else R.string.yagi_vertical_plane)
                 }
-                OutlinedTextField(
+                AppTextField(
                     state = fields[inputFields.size + index],
-                    label = { Text(stringResource(label)) },
-                    labelPosition = TextFieldLabelPosition.Attached(alwaysMinimize = true),
+                    label = stringResource(label),
                     inputTransformation = decimalInputTransformation(limit = 24),
                     lineLimits = TextFieldLineLimits.SingleLine,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -398,7 +399,7 @@ internal fun YagiCalculatorScreen(
         }
         HorizontalDivider()
         YagiHeading(R.string.yagi_rights)
-        if (profile.design.restricted) Text(stringResource(R.string.yagi_dg_notice))
+        if (profile.design.restricted) HelpText(R.string.yagi_dg_notice)
         HelpText(profile.rights)
         TextButton(onClick = { openSourceWithFeedback(context, profile.original) }) {
             Text(stringResource(R.string.yagi_original))
@@ -421,17 +422,19 @@ private fun YagiProfilePicker(
     var expanded by remember { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         YagiHeading(R.string.yagi_profile)
-        Box(Modifier.fillMaxWidth()) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
             OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth().testTag("yagi-profile")) {
                 Text(label(profile), Modifier.weight(1f))
                 Text("▾")
             }
-            DropdownMenu(expanded, { expanded = false }) {
-                YagiProfile.entries.filter { it.design.available }.forEach { item ->
+            DropdownMenu(expanded, { expanded = false }, modifier = Modifier.width(maxWidth)) {
+                (listOf(YagiProfile.R3, YagiProfile.YBN, YagiProfile.GTV) + YagiProfile.entries)
+                    .distinct().filter { it.design.available }.forEach { item ->
                     DropdownMenuItem(
-                        text = { Text(label(item)) },
+                        text = { Text(label(item), style = MaterialTheme.typography.bodyMedium) },
                         onClick = { expanded = false; select(item) },
                         modifier = Modifier.testTag("yagi-profile-${item.id}"),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                     )
                 }
             }

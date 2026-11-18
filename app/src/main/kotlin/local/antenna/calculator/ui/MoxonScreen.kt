@@ -5,12 +5,14 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.core.content.edit
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -19,7 +21,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -63,27 +64,29 @@ internal fun MoxonScreen(
     val prefs = remember(context.applicationContext) {
         context.applicationContext.getSharedPreferences("moxon_calculator", Context.MODE_PRIVATE)
     }
+    val record = LocalCalculatorRecord.current
     val saved = remember(prefs) { prefs.all }
     var calculating by rememberSaveable {
-        mutableStateOf(saved["calculate"] == true)
+        mutableStateOf(record?.let { it.snapshot?.model == MoxonEstimate.MODEL || it.snapshot == null } ?: (saved["calculate"] == true))
     }
     var profileId by rememberSaveable {
-        mutableStateOf(moxonCalculatorProfiles.firstOrNull { it.id == saved["profile"] }?.id ?: moxonCalculatorProfiles.first().id)
+        mutableStateOf(moxonCalculatorProfiles.firstOrNull { it.id == (record?.snapshot?.model ?: saved["profile"]) }?.id ?: moxonCalculatorProfiles.first().id)
     }
-    var presetIndex by rememberSaveable { mutableStateOf(moxonPresets.indexOfFirst { it.hz == saved["preset_hz"] }) }
+    var presetIndex by rememberSaveable { mutableStateOf(if (record != null) -1 else moxonPresets.indexOfFirst { it.hz == saved["preset_hz"] }) }
     var rawFrequency by rememberSaveable {
-        mutableStateOf((saved["frequency"] as? String)?.boundedNumericText() ?: "146.000")
+        mutableStateOf(record?.text("frequency", SnapshotUnit.HERTZ, 1e-6) ?: (saved["frequency"] as? String)?.boundedNumericText() ?: "146.000")
     }
     var rawDiameter by rememberSaveable {
-        mutableStateOf((saved["diameter"] as? String)?.boundedNumericText() ?: "2")
+        mutableStateOf(record?.text("moxon_diameter", SnapshotUnit.METERS, 1000.0) ?: (saved["diameter"] as? String)?.boundedNumericText() ?: "2")
     }
     var rawAllowance by rememberSaveable(profileId) {
-        mutableStateOf((prefs.all["allowance_$profileId"] as? String)?.boundedNumericText().orEmpty())
+        mutableStateOf(record?.text("moxon_allowance", SnapshotUnit.METERS, 1000.0) ?: (prefs.all["allowance_$profileId"] as? String)?.boundedNumericText().orEmpty())
     }
     var unit by rememberSaveable {
-        mutableStateOf(LengthUnit.entries.firstOrNull { it.name == saved["unit"] } ?: LengthUnit.MILLIMETERS)
+        mutableStateOf(record?.value("moxon_unit", SnapshotUnit.FACTOR)?.toInt()?.let { LengthUnit.entries.getOrNull(it) } ?: LengthUnit.entries.firstOrNull { it.name == saved["unit"] } ?: LengthUnit.MILLIMETERS)
     }
     LaunchedEffect(calculating, profileId, presetIndex, rawFrequency, rawDiameter, rawAllowance, unit) {
+        if (record != null) return@LaunchedEffect
         prefs.edit {
             putBoolean("calculate", calculating)
             putString("profile", profileId)
@@ -345,8 +348,8 @@ private fun MoxonDisclosure(label: Int, content: @Composable () -> Unit) {
 private fun MoxonInput(
     text: String, label: Int, tag: String, error: Boolean, errorLabel: Int = R.string.moxon_invalid, onChange: (String) -> Unit,
 ) {
-    OutlinedTextField(text, { if (it.acceptsDecimalEdit()) onChange(it) },
-        label = { Text(stringResource(label)) }, singleLine = true,
+    AppTextField(text, { if (it.acceptsDecimalEdit()) onChange(it) },
+        label = stringResource(label), singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal), isError = error,
         supportingText = if (error) {{ Text(stringResource(errorLabel)) }} else null,
         modifier = Modifier.fillMaxWidth().testTag(tag))
@@ -355,17 +358,18 @@ private fun MoxonInput(
 @Composable
 private fun MoxonMenu(label: String, tag: String, options: List<Pair<String, String>>, onSelect: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    Box(Modifier.fillMaxWidth()) {
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
         OutlinedButton(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth().testTag(tag)) {
             Text(label, Modifier.weight(1f))
             Text("▾")
         }
-        DropdownMenu(expanded, { expanded = false }) {
+        DropdownMenu(expanded, { expanded = false }, modifier = Modifier.width(maxWidth)) {
             options.forEach { (id, label) ->
                 DropdownMenuItem(
-                    text = { Text(label) },
+                    text = { Text(label, style = MaterialTheme.typography.bodyMedium) },
                     onClick = { expanded = false; onSelect(id) },
                     modifier = Modifier.testTag("$tag-$id"),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
                 )
             }
         }

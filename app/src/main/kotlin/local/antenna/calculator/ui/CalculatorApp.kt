@@ -106,6 +106,9 @@ private fun LocalizedCalculatorApp(
     var scalingRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var trapRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var trapBand by rememberSaveable { mutableStateOf(Band.M20) }
+    var previousCalculatorRecordId by rememberSaveable { mutableStateOf<String?>(null) }
+    var recordReturnSection by rememberSaveable { mutableStateOf(Section.TOOLS) }
+    var recordRestore by rememberSaveable(stateSaver = RecordCalculatorRequest.saver) { mutableStateOf<RecordCalculatorRequest?>(null) }
     var haloRestore by rememberSaveable(stateSaver = PendingProjectCalculation.saver) { mutableStateOf<PendingProjectCalculation?>(null) }
     var sweepTransferId by rememberSaveable { mutableStateOf<UUID?>(null) }
     var transferType by rememberSaveable { mutableStateOf(AntennaType.SYMMETRIC_DIPOLE) }
@@ -115,7 +118,7 @@ private fun LocalizedCalculatorApp(
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
     val returnToGuide = guideVisits.lastOrNull()?.takeIf { visit ->
-        visit.page == page && visit.menuDepth == menuParents.size && when (page) {
+        visit.page == page && visit.menuDepth == menuParents.size && recordRestore?.page != page && when (page) {
             Page.JOURNAL -> journalPage == JournalPage.PROJECTS
             Page.HALO_CB -> haloRestore == null
             Page.TRAP_DIPOLE -> trapRestore == null
@@ -157,6 +160,7 @@ private fun LocalizedCalculatorApp(
         screenStates.removeState("yagi-segmentation")
         page = Page.YAGI_SEGMENTATION
     }
+    fun recordKey(key: String) = if (recordRestore?.page == page) "$key-record-${recordRestore?.id}" else key
     fun goBack() {
         if ((page == Page.TRANSFER_PICKER || page == Page.TRANSFER_NEW) && journalStatus?.busy == true) return
         leaveInput()
@@ -165,6 +169,10 @@ private fun LocalizedCalculatorApp(
             guideVisits = guideVisits.dropLast(1)
             page = Page.USER_GUIDE
             return
+        }
+        if (recordRestore?.page == page) {
+            if (page == Page.CALCULATOR) onEvent(CalculatorEvent.Settings(currentState().draft.settings.copy(section = recordReturnSection)))
+            page = Page.JOURNAL; recordRestore = null; return
         }
         when (page) {
             Page.SETTINGS, Page.ABOUT, Page.REFERENCES, Page.LICENSES, Page.USER_GUIDE -> {
@@ -308,7 +316,7 @@ private fun LocalizedCalculatorApp(
     LaunchedEffect(page, menuParents) {
         if (page != Page.MEASUREMENTS && Page.MEASUREMENTS.name !in menuParents) measurements?.cancelImport()
     }
-    BackHandler(page != Page.CALCULATOR || returnToGuide != null, onBack = ::goBack)
+    BackHandler(page != Page.CALCULATOR || returnToGuide != null || recordRestore?.page == page, onBack = ::goBack)
     CalculatorTheme(settings.theme) {
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
         val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
@@ -407,7 +415,7 @@ private fun LocalizedCalculatorApp(
                 },
                     expandedHeight = 64.dp * LocalDensity.current.fontScale,
                     navigationIcon = {
-                        if (page != Page.CALCULATOR || returnToGuide != null) IconButton(onClick = ::goBack,
+                        if (page != Page.CALCULATOR || returnToGuide != null || recordRestore?.page == page) IconButton(onClick = ::goBack,
                             modifier = Modifier.testTag("back")) { Icon(painterResource(R.drawable.ic_back), stringResource(R.string.back)) }
                     },
                     actions = {
@@ -475,7 +483,7 @@ private fun LocalizedCalculatorApp(
                                 guideVisits = emptyList()
                                 menuParents = arrayListOf()
                             }
-                            leaveInput(); page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
+                            leaveInput(); recordRestore = null; page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
                         }, icon = {
                             val icon = when (section) {
                                 Section.SIZING -> R.drawable.ic_wavelength
@@ -500,6 +508,7 @@ private fun LocalizedCalculatorApp(
             } else Modifier
             Box(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding).then(gestures)
                 .testTag("page-content"), contentAlignment = Alignment.TopCenter) {
+                RecordCalculatorContent(recordRestore?.takeIf { it.page == page }) {
                 when (page) {
                     Page.ANTENNA_PARAMETER_TOOLS -> screenStates.SaveableStateProvider("antenna-parameter-tools") {
                         AntennaParameterToolsScreen(
@@ -643,19 +652,19 @@ private fun LocalizedCalculatorApp(
                     Page.FEEDLINE -> screenStates.SaveableStateProvider("feedline") {
                         FeedlineScreen(state, currentState, onEvent) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     }
-                    Page.INVERTED_V -> screenStates.SaveableStateProvider("inverted-v") {
+                    Page.INVERTED_V -> screenStates.SaveableStateProvider(recordKey("inverted-v")) {
                         val chooseProject = if (journal != null) ::openInvertedVTransfer else null
                         InvertedVScreen(state, onEvent, currentState, chooseProject) { message ->
                             scope.launch { snackbar.showSnackbar(message) }
                         }
                     }
-                    Page.GROUND_PLANE -> screenStates.SaveableStateProvider("ground-plane") {
+                    Page.GROUND_PLANE -> screenStates.SaveableStateProvider(recordKey("ground-plane")) {
                         val chooseProject = if (journal != null) ::openGroundPlaneTransfer else null
                         GroundPlaneScreen(state, onEvent, currentState, chooseProject) {
                             scope.launch { snackbar.showSnackbar(copiedMessage) }
                         }
                     }
-                    Page.YAGI_CALCULATOR -> screenStates.SaveableStateProvider("yagi-calculator") {
+                    Page.YAGI_CALCULATOR -> screenStates.SaveableStateProvider(recordKey("yagi-calculator")) {
                         YagiCalculatorScreen(
                             onSegmentation = { openSegmentation(it) },
                             onGuide = { openRelatedYagiPage(Page.CONSTRUCTION_YAGI) },
@@ -676,12 +685,12 @@ private fun LocalizedCalculatorApp(
                     Page.YAGI_SEGMENTATION -> screenStates.SaveableStateProvider("yagi-segmentation") {
                         YagiSegmentationScreen(segmentationInput)
                     }
-                    Page.YAGI_SCALING -> screenStates.SaveableStateProvider(if (scalingRestore == null) "yagi-scaling" else "yagi-scaling-record") {
+                    Page.YAGI_SCALING -> screenStates.SaveableStateProvider(recordKey(if (scalingRestore == null) "yagi-scaling" else "yagi-scaling-record")) {
                         YagiScalingScreen(scalingRestore?.snapshot, if (journal == null) null else { snapshot ->
                             startTransfer(PendingProjectCalculation(snapshot), AntennaType.YAGI)
                         }, onSegmentation = { openSegmentation(it) }) { scope.launch { snackbar.showSnackbar(copiedMessage) } }
                     }
-                    Page.TRAP_DIPOLE -> screenStates.SaveableStateProvider(if (trapRestore == null) "trap-dipole" else "trap-dipole-record") {
+                    Page.TRAP_DIPOLE -> screenStates.SaveableStateProvider(recordKey(if (trapRestore == null) "trap-dipole" else "trap-dipole-record")) {
                         TrapDipoleScreen(
                             initial = trapRestore?.snapshot,
                             onMeasurements = measurements?.let { model ->
@@ -710,7 +719,7 @@ private fun LocalizedCalculatorApp(
                             onMessage = { message -> scope.launch { snackbar.showSnackbar(message) } },
                         )
                     }
-                    Page.HALO_CB -> screenStates.SaveableStateProvider(if (haloRestore == null) "halo-cb" else "halo-cb-record") {
+                    Page.HALO_CB -> screenStates.SaveableStateProvider(recordKey(if (haloRestore == null) "halo-cb" else "halo-cb-record")) {
                         HaloCbScreen(
                             initial = haloRestore?.snapshot,
                             onMeasurements = measurements?.let { model ->
@@ -737,7 +746,7 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
-                    Page.CANTENNA -> screenStates.SaveableStateProvider("cantenna") {
+                    Page.CANTENNA -> screenStates.SaveableStateProvider(recordKey("cantenna")) {
                         CantennaScreen(
                             onMeasurements = measurements?.let { model ->
                                 {
@@ -753,7 +762,7 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
-                    Page.HB9CV -> screenStates.SaveableStateProvider("hb9cv") {
+                    Page.HB9CV -> screenStates.SaveableStateProvider(recordKey("hb9cv")) {
                         Hb9cvScreen(
                             onMeasurements = measurements?.let { model ->
                                 {
@@ -769,7 +778,7 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
-                    Page.MOXON -> screenStates.SaveableStateProvider("moxon") {
+                    Page.MOXON -> screenStates.SaveableStateProvider(recordKey("moxon")) {
                         MoxonScreen(
                             onSave = if (journal == null) null else { snapshot, note ->
                                 startTransfer(PendingProjectCalculation(snapshot, note = note), AntennaType.MOXON)
@@ -785,7 +794,7 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
-                    Page.SLIM_JIM -> screenStates.SaveableStateProvider("slim-jim") {
+                    Page.SLIM_JIM -> screenStates.SaveableStateProvider(recordKey("slim-jim")) {
                         SlimJimScreen(
                             onSave = if (journal == null) null else { snapshot ->
                                 startTransfer(PendingProjectCalculation(snapshot), AntennaType.SLIM_JIM)
@@ -801,7 +810,7 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
-                    Page.J_POLE -> screenStates.SaveableStateProvider("j-pole") {
+                    Page.J_POLE -> screenStates.SaveableStateProvider(recordKey("j-pole")) {
                         JPoleScreen(
                             onSave = if (journal == null) null else { snapshot ->
                                 startTransfer(PendingProjectCalculation(snapshot), AntennaType.J_POLE)
@@ -810,7 +819,7 @@ private fun LocalizedCalculatorApp(
                             onCopied = { scope.launch { snackbar.showSnackbar(copiedMessage) } },
                         )
                     }
-                    Page.FULL_WAVE_LOOP -> screenStates.SaveableStateProvider("full-wave-loop") {
+                    Page.FULL_WAVE_LOOP -> screenStates.SaveableStateProvider(recordKey("full-wave-loop")) {
                         val chooseProject = if (journal != null) ::openFullWaveLoopTransfer else null
                         FullWaveLoopScreen(state, currentState, onEvent, chooseProject) {
                             scope.launch { snackbar.showSnackbar(copiedMessage) }
@@ -885,6 +894,21 @@ private fun LocalizedCalculatorApp(
                         screenStates.SaveableStateProvider(if (linkedProjectId == null) "journal" else "linked-journal") {
                             JournalScreen(journal, journalPage, { next -> leaveInput(); journalPage = next },
                                 state, currentState, initialProjectId = linkedProjectId,
+                                onOpenCalculator = { record ->
+                                    RecordCalculatorRequest.from(record)?.let { request ->
+                                        leaveInput()
+                                        for (key in listOf("inverted-v", "ground-plane", "full-wave-loop", "j-pole", "slim-jim", "moxon", "hb9cv", "cantenna", "yagi-calculator", "halo-cb", "trap-dipole", "calculator-results-SIZING", "calculator-results-TRIMMING")) {
+                                            listOfNotNull(previousCalculatorRecordId, request.id).distinct().forEach { id ->
+                                                screenStates.removeState("$key-record-$id")
+                                            }
+                                        }
+                                        previousCalculatorRecordId = request.id
+                                        recordReturnSection = currentState().draft.settings.section
+                                        recordRestore = request
+                                        onEvent(CalculatorEvent.RestoreCalculation(request.restoreDraft(currentState().draft)))
+                                        page = request.page
+                                    }
+                                },
                                 onOpenHalo = { snapshot ->
                                     leaveInput()
                                     screenStates.removeState("halo-cb-record")
@@ -932,7 +956,7 @@ private fun LocalizedCalculatorApp(
                                 )
                             }
                         } else {
-                            screenStates.SaveableStateProvider("calculator-results-${settings.section.name}") {
+                            screenStates.SaveableStateProvider(recordKey("calculator-results-${settings.section.name}")) {
                                 CalculationScreen(state, onEvent, currentState, ::leaveInput,
                                     if (journal != null) ::openTransfer else null) {
                                     scope.launch { snackbar.showSnackbar(copiedMessage) }
@@ -940,6 +964,7 @@ private fun LocalizedCalculatorApp(
                             }
                         }
                     }
+                }
                 }
             }
         }

@@ -133,8 +133,8 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             val message = if (parseError == MatchingError.RANGE) stringResource(R.string.matching_error_range,
                 matchingNumber(context, key.minimum), matchingNumber(context, key.maximum)) else stringResource(R.string.matching_error_number)
             var hadFocus by remember(key, draft.mode) { mutableStateOf(false) }
-            OutlinedTextField(draft.fields.getValue(key), { if (it.acceptsDecimalEdit(signed = key.signed)) change(draft.edit(key, it)) },
-                label = { Text(stringResource(key.label())) }, singleLine = true, isError = visible,
+            AppTextField(draft.fields.getValue(key), { if (it.acceptsDecimalEdit(signed = key.signed)) change(draft.edit(key, it)) },
+                label = stringResource(key.label()), singleLine = true, isError = visible,
                 enabled = state.editingEnabled,
                 supportingText = if (visible) { { Text(message, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) } } else null,
                 modifier = Modifier.fillMaxWidth().testTag("matching-${key.name}").semantics { if (visible) error(message) }.onFocusChanged {

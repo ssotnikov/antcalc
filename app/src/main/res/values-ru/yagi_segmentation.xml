@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="seg_tool">Калькулятор сегментации\nЯги — Уда</string>
-    <string name="seg_title">Сегментация Яги — Уда</string>
+    <string name="seg_title">Сегментация Яги\u00A0—\u00A0Уда</string>
     <string name="seg_intro">Подберите сетку для прямых круглых элементов. Оставьте верхнюю границу пустой для расчёта на одной частоте.</string>
     <string name="seg_frequency">Частота, МГц</string>
     <string name="seg_optional_end">До, МГц</string>
@@ -64,7 +64,7 @@
     <string name="seg_ground_real">Реальный грунт</string>
     <string name="seg_ground_real_hint">Штриховка — грунт. εᵣ — относительная диэлектрическая проницаемость, σ — проводимость в См/м.</string>
     <string name="seg_ground_antenna">Антенна</string>
-    <string name="seg_ground_image">Изображение</string>
+    <string name="seg_ground_image">Зеркальное</string>
     <string name="seg_ground_soil">Грунт εᵣ, σ</string>
     <string name="seg_ground_height_hint">h — высота от поверхности до оси антенны.</string>
     <string name="seg_ground_example">Сравнение для Яги DK7ZB на 145 МГц</string>

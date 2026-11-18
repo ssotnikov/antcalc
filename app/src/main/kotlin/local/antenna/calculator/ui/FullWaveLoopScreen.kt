@@ -241,10 +241,10 @@ private fun LoopInput(
     val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
         Modifier, field == LoopField.FREQUENCY || field == LoopField.MATCH_FREQUENCY,
     )
-    OutlinedTextField(
+    AppTextField(
         visualTransformation = frequencyTransformation,
         value = raw, onValueChange = { if (it.acceptsDecimalEdit()) onEdit(field, it) }, enabled = enabled, singleLine = true,
-        label = { Text(stringResource(field.loopLabel())) },
+        label = stringResource(field.loopLabel()),
         supportingText = issue?.let { { Text(it) } },
         isError = issue != null, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         modifier = fieldModifier.fillMaxWidth().testTag("loop-${field.name}").semantics { if (issue != null) error(issue) },

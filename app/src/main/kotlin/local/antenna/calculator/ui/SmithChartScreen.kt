@@ -170,9 +170,9 @@ internal fun SmithChartScreen(notify: (String) -> Unit) {
 @Composable
 private fun SmithInput(field: SmithField, text: String, value: Double?, edit: (String) -> Unit) {
     val context = LocalContext.current
-    OutlinedTextField(
+    AppTextField(
         value = text, onValueChange = { if (it.acceptsDecimalEdit(signed = field.kind.signed)) edit(it) },
-        label = { Text(stringResource(field.label)) }, singleLine = true,
+        label = stringResource(field.label), singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = if (field.kind.signed) KeyboardType.Text else KeyboardType.Decimal),
         isError = value == null,
         supportingText = if (value == null) { {

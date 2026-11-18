@@ -73,6 +73,18 @@ class WebSourcesTest {
         )) assertEquals(url, validatedSourceAddress(url))
     }
 
+    @Test fun antennaMeasurementReferencesPermitOnlyTheirExactHttpsAddresses() {
+        for (url in listOf(
+            "https://github.com/jopecl/wifi-antenna-design-nec/blob/main/data/lab1-measurements.xlsx",
+            "https://www.ieice.org/cs/isap/ISAP_Archives/2010/pdf/91.pdf",
+            "https://edu.tusur.ru/publications/2796",
+        )) {
+            assertEquals(url, validatedSourceAddress(url))
+            assertNull(validatedSourceAddress(url.replaceFirst("https:", "http:")))
+            assertNull(validatedSourceAddress("$url?redirect=unexpected"))
+        }
+    }
+
     @Test fun yagiProfilesUseApprovedSourcesAndUniqueStableIds() {
         val profiles = YagiProfile.entries
         assertEquals(profiles.size, profiles.map { it.id }.distinct().size)

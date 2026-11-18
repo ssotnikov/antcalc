@@ -20,10 +20,44 @@ import local.antenna.calculator.core.units.LengthUnit
 import local.antenna.calculator.journal.JournalJson
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.junit.Assert.assertTrue
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class YagiCalculatorTest : CalculatorUiFixture() {
+
+    @Test fun profileMenuGroupsDgDesignsAfterR3udkAndRightsUseTheSameTypography() {
+        org.junit.Assume.assumeTrue("DG7YBN materials are included only in the licensed build",
+            YagiProfile.YBN.design.available && YagiProfile.GTV.design.available)
+        start()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
+        compose.onNodeWithTag("open-yagi-calculator").performScrollTo().performClick()
+        val picker = compose.onNodeWithTag("yagi-profile").performScrollTo()
+        val width = picker.fetchSemanticsNode().boundsInRoot.width
+        picker.performClick()
+        val ordered = (listOf(YagiProfile.R3, YagiProfile.YBN, YagiProfile.GTV) + YagiProfile.entries)
+            .distinct().filter { it.design.available }
+        val positions = ordered.map { profile ->
+            compose.onNodeWithTag("yagi-profile-${profile.id}").fetchSemanticsNode().boundsInRoot.top
+        }
+        assertTrue(positions.zipWithNext().all { (a, b) -> a < b })
+        assertTrue(compose.onNodeWithTag("yagi-profile-${YagiProfile.R3.id}")
+            .fetchSemanticsNode().boundsInRoot.width >= width - 1)
+        compose.onNodeWithTag("yagi-profile-${YagiProfile.YBN.id}").performSemanticsAction(SemanticsActions.OnClick)
+        fun style(node: SemanticsNodeInteraction): androidx.compose.ui.text.TextStyle {
+            node.performScrollTo()
+            val results = mutableListOf<androidx.compose.ui.text.TextLayoutResult>()
+            node.performSemanticsAction(SemanticsActions.GetTextLayoutResult) { it(results) }
+            return results.single().layoutInput.style
+        }
+        val english = style(compose.onNodeWithText("Design by DG7YBN, no republishing", substring = true))
+        val russian = style(compose.onNodeWithText("Конструкция DG7YBN.", substring = true))
+        assertEquals(russian.fontSize, english.fontSize)
+        assertEquals(russian.fontFamily, english.fontFamily)
+        assertEquals(russian.fontWeight, english.fontWeight)
+        assertEquals(russian.lineHeight, english.lineHeight)
+    }
 
     @Test fun opensFromAntennaToolsAndReturnsFromGuide() {
         val prefs = compose.activity.getSharedPreferences("yagi_calculator", Context.MODE_PRIVATE)

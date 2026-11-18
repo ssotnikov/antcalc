@@ -187,10 +187,10 @@ private fun GroundPlaneInput(draft: GroundPlaneDraft, field: GroundPlaneField, o
     val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
         Modifier, field == FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
     )
-    OutlinedTextField(
+    AppTextField(
         visualTransformation = frequencyTransformation,
         value = draft.fields.getValue(field), onValueChange = { if (it.acceptsDecimalEdit()) onEdit(it) },
-        label = { Text(if (suffix == null) label else stringResource(R.string.inverted_v_input_unit, label, suffix)) },
+        label = if (suffix == null) label else stringResource(R.string.inverted_v_input_unit, label, suffix),
         singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         isError = message != null,
         supportingText = message?.let { { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) } },

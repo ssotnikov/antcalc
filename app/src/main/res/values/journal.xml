@@ -100,7 +100,8 @@
     <string name="journal_project_summary">%1$s, %2$s</string>
     <string name="journal_property">%1$s: %2$s</string>
     <string name="journal_compare_notice">Comparison notice</string>
-    <string name="journal_diff_legend">− Baseline value · + Follow-up value</string>
+    <string name="journal_diff_before">Baseline value</string>
+    <string name="journal_diff_after">Follow-up value</string>
     <string name="journal_comparison_missing">No value</string>
     <string name="journal_report_project">Project</string>
     <string name="journal_project_actions">Project actions</string>
@@ -161,6 +162,7 @@
     <string name="journal_compare_calculated">Calculated</string>
     <string name="journal_compare_measured">Measured</string>
     <string name="journal_compare_difference">Difference</string>
+    <string name="journal_compare_unchanged">unchanged</string>
     <string name="journal_compare_sizing_title">Calculation and manual measurement</string>
     <string name="journal_compare_length_rule">Difference = measured length minus calculated length.</string>
     <string name="journal_compare_no_shared_geometry">No comparable dimensions are available. See the record details for the original values.</string>
@@ -170,4 +172,6 @@
     <string name="journal_reject_geometry">The records have no comparable measurements</string>
     <string name="journal_reject_calculation_models">These calculations use different models. Select two calculations of the same kind.</string>
     <string name="journal_reject_calculation_revisions">The calculations use different revisions of the model.</string>
+    <string name="journal_open_calculator">Open in calculator: %1$s</string>
+    <string name="journal_reopen_partial">This record has no complete design parameters. Only known values were transferred. Select the design and fill in the missing fields.</string>
 </resources>

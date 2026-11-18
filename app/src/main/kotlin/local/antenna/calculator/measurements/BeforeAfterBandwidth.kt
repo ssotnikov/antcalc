@@ -6,7 +6,6 @@ import android.content.Context
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import local.antenna.calculator.ui.AppTextField
 import local.antenna.calculator.R
 import local.antenna.calculator.core.measurements.swrBandwidth
 import local.antenna.calculator.ui.CantennaField
@@ -57,10 +57,10 @@ internal fun BeforeAfterBandwidth(before: MeasurementTrace?, after: MeasurementT
         Text(stringResource(R.string.bandwidth_threshold_range))
         return
     }
-    OutlinedTextField(project, { project = it.take(100) }, Modifier.fillMaxWidth(), singleLine = true,
-        label = { Text(stringResource(R.string.cantenna_project)) })
-    OutlinedTextField(tuning, { tuning = it.take(500) }, Modifier.fillMaxWidth(),
-        label = { Text(stringResource(R.string.cantenna_tuning)) })
+    AppTextField(project, { project = it.take(100) }, Modifier.fillMaxWidth(), singleLine = true,
+        label = stringResource(R.string.cantenna_project))
+    AppTextField(tuning, { tuning = it.take(500) }, Modifier.fillMaxWidth(),
+        label = stringResource(R.string.cantenna_tuning))
     val traces = listOf(before, after)
     val reports = remember(before.sweep, after.sweep, threshold) {
         traces.map { checkNotNull(it.sweep.swrBandwidth(threshold.toDouble())) }

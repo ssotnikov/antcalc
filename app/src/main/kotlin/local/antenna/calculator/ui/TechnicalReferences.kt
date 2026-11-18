@@ -21,6 +21,7 @@ internal data class ReferenceGroup(
     val materials: List<TechnicalReference>,
     val interfaceLanguageOnly: Boolean = false,
     val preferRussianSources: Boolean = true,
+    val showAllSourceLanguages: Boolean = false,
 )
 
 internal val referenceGroups = listOf(
@@ -39,6 +40,17 @@ internal val referenceGroups = listOf(
             R.string.reference_nuxcom_dk7zb_url, "NUXCOM", AppLanguage.ENGLISH,
             sourceLanguageLabel = R.string.references_language_de),
     )),
+    ReferenceGroup(R.string.references_antenna_measurements, listOf(
+        TechnicalReference("yagi-open-measurements", R.string.references_yagi_open_measurements,
+            R.string.references_yagi_open_measurements_description, R.string.references_yagi_open_measurements_url,
+            "José Pérez · Ricardo Pereira", AppLanguage.ENGLISH),
+        TechnicalReference("balanced-antenna-measurements", R.string.references_balanced_measurements,
+            R.string.references_balanced_measurements_description, R.string.references_balanced_measurements_url,
+            "Konya et al. · ISAP", AppLanguage.ENGLISH),
+        TechnicalReference("tusur-antenna-measurements", R.string.references_tusur_measurements,
+            R.string.references_tusur_measurements_description, R.string.references_tusur_measurements_url,
+            "TUSUR", AppLanguage.RUSSIAN),
+    ), preferRussianSources = false, showAllSourceLanguages = true),
     ReferenceGroup(R.string.slim_jim_title, listOf(
         TechnicalReference("sj-wire-ru", R.string.slim_jim_wire_ru_title, R.string.slim_jim_wire_ru_summary,
             R.string.slim_jim_wire_ru_url, "R3RT", AppLanguage.RUSSIAN),

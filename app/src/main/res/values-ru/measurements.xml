@@ -68,7 +68,7 @@
     <string name="sweep_previous_frequency">Предыдущая частота</string>
     <string name="sweep_next_frequency">Следующая частота</string>
     <string name="antenna_parameter_tools">Расчет параметров антенн</string>
-    <string name="antenna_parameter_tools_hint">Расчёт размеров и выбор опубликованных конструкций антенн.</string>
+    <string name="antenna_parameter_tools_hint">Расчёт размеров и использование опубликованных конструкций антенн.</string>
     <string name="sweep_plane_short">Для сравнения трасс используйте одну плоскость отсчёта.</string>
     <string name="sweep_format_title">Формат и условия измерений</string>
 </resources>

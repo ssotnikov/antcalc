@@ -88,10 +88,11 @@ internal fun Hb9cvAerialDetails(
     val meters = stringResource(R.string.hb9cv_aerial_m)
     val pf = stringResource(R.string.hb9cv_aerial_pf)
     val name = stringResource(R.string.hb9cv_aerial_name)
-    val defaultFrequency = stringResource(R.string.hb9cv_aerial_default_frequency)
+    val record = LocalCalculatorRecord.current
+    val defaultFrequency = record?.text("frequency", SnapshotUnit.HERTZ, 1e-6) ?: stringResource(R.string.hb9cv_aerial_default_frequency)
     var frequency by rememberSaveable { mutableStateOf(defaultFrequency) }
-    var rearRaw by rememberSaveable { mutableStateOf("") }
-    var frontRaw by rememberSaveable { mutableStateOf("") }
+    var rearRaw by rememberSaveable { mutableStateOf(record?.text("hb9cv_rear", SnapshotUnit.METERS, 1000.0).orEmpty()) }
+    var frontRaw by rememberSaveable { mutableStateOf(record?.text("hb9cv_front", SnapshotUnit.METERS, 1000.0).orEmpty()) }
     var formulasOpen by rememberSaveable { mutableStateOf(false) }
     var tuningOpen by rememberSaveable { mutableStateOf(false) }
     val mhz = valueIn(frequency, Hb9cvAerial.MIN_MHZ, Hb9cvAerial.MAX_MHZ)
@@ -226,9 +227,9 @@ private fun valueIn(raw: String, min: Double, max: Double): Double? =
 
 @Composable
 private fun AerialInput(raw: String, onEdit: (String) -> Unit, label: Int, hint: Int, invalid: Boolean, tag: String) {
-    OutlinedTextField(
+    AppTextField(
         value = raw, onValueChange = { if (it.acceptsDecimalEdit(limit = 16)) onEdit(it) },
-        label = { Text(stringResource(label)) }, modifier = Modifier.fillMaxWidth().testTag(tag),
+        label = stringResource(label), modifier = Modifier.fillMaxWidth().testTag(tag),
         singleLine = true, isError = invalid, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         supportingText = { Text(stringResource(hint)) },
     )

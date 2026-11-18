@@ -72,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
-  <span class="version">Version 1.40.0</span>
+  <span class="version">Version 2.0.0</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -89,6 +89,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <li><a href="#projects">Projects and tuning journals</a></li>
       <li><a href="#help">Help and updates</a></li>
     </ul></nav>
+<p>Empty fields use a muted label. When focused or filled, the label moves into the outline; units are included in the label. Examples are not input values and are not saved.</p>
   </aside>
   <main id="guide">
     <section class="chapter" id="start" aria-labelledby="start-title">
@@ -128,7 +129,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <tr><th scope="row"><span class="web-label">Inverted-V dipole and Ground Plane</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/inverted-v">Inverted-V dipole</a><a href="https://appassets.androidplatform.net/open/ground-plane">Ground Plane</a></span></th><td>Enter frequency and design parameters. Check the arm lengths, or the radiator and radials, for the selected setup.</td></tr>
 <tr><th scope="row"><span class="web-label">Full-wave loop</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/full-wave-loop">Full-wave loop</a><a href="https://appassets.androidplatform.net/open/quad-loop">Quad Loop</a><a href="https://appassets.androidplatform.net/open/delta-loop">Delta Loop</a></span></th><td>Choose Quad or Delta Loop. Calculate perimeter and sides from frequency, or frequency from a known perimeter. Choose the feedpoint shown on the diagram.</td></tr>
 <tr><th scope="row"><span class="web-label">J-pole and Slim Jim</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/j-pole">J-pole</a><a href="https://appassets.androidplatform.net/open/slim-jim">Slim Jim</a></span></th><td>Choose a variant or band. Check the lengths, gap and feedpoint against the labelled diagram. Start with the dimensions published for your variant.</td></tr>
-<tr><th scope="row"><span class="web-label">Yagi–Uda</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Yagi–Uda</a></span></th><td>Choose an author’s design and mounting variant. Check positions from the reflector, diameters, blanks and boom length. For a driven element with a two-piece cut list, the stated length is for each half. For DK7ZB 70 cm, enter the gap between the halves. For GTV xpol and SAT, enter the gap, bend position and tip setback separately for H and V. The diagram and cut list update for each plane as you enter its dimensions. For DK7ZB 70 cm, Fill empty fields from example fills the gap with a trial value. For a ready-made spacer, measure the gap with the tubes seated against their stops. Check the starting dimensions by measuring SWR. Follow the specified offsets and mounting method for tables based on a fixed setup. DG7YBN’s terms allow viewing the YBN 2-5m and GTV 2-6m design materials within AntCalc. When exporting a project, you can select the other records.</td></tr>
+<tr><th scope="row"><span class="web-label">Yagi–Uda</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Yagi–Uda</a></span></th><td>Choose an author’s design and mounting variant. Check positions from the reflector, diameters, blanks and boom length. For a driven element with a two-piece cut list, the stated length is for each half. For DK7ZB 70 cm, enter the gap between the halves. For DK7ZB 70 cm, Fill empty fields from example fills the gap with a trial value. For a ready-made spacer, measure the gap with the tubes seated against their stops. Check the starting dimensions by measuring SWR. Follow the specified offsets and mounting method for tables based on a fixed setup. In builds that include DG7YBN’s YBN 2-5m and GTV 2-6m profiles, their published materials are available for viewing within AntCalc. When exporting a project, you can select the other records.</td></tr>
 <tr><th scope="row"><span class="web-label">Moxon antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/moxon">Moxon antenna</a></span></th><td>Choose a published design or calculate one from frequency and conductor diameter. Use the dimensions and gaps for your selected configuration.</td></tr>
 <tr><th scope="row"><span class="web-label">HB9CV antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/hb9cv">HB9CV antenna</a></span></th><td>Choose a published design or calculate by frequency within 100–1500 MHz. Check the phasing line and any fields for dimensions that depend on assembly.</td></tr>
 <tr><th scope="row"><span class="web-label">Cantenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/cantenna">Cantenna</a></span></th><td>Enter a frequency or band, find a diameter and compare candidate cans. Check the probe position and usable band. Use the flat pattern when making a flare.</td></tr>
@@ -197,6 +198,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <figure><a href="images/en/06-quad-loop.webp"><img src="images/en/06-quad-loop.webp" width="1080" height="1920" alt="Full-wave Quad Loop" loading="lazy" decoding="async"></a><figcaption>Full-wave Quad Loop</figcaption></figure>
 <figure><a href="images/en/07-j-pole.webp"><img src="images/en/07-j-pole.webp" width="1080" height="1920" alt="J-pole calculator" loading="lazy" decoding="async"></a><figcaption>J-pole calculator</figcaption></figure>
 <figure><a href="images/en/08-yagi.webp"><img src="images/en/08-yagi.webp" width="1080" height="1920" alt="Yagi–Uda calculator" loading="lazy" decoding="async"></a><figcaption>Yagi–Uda calculator</figcaption></figure>
+<figure><a href="images/en/yagi-segmentation.webp"><img src="images/en/yagi-segmentation.webp" width="1080" height="2400" alt="DK7ZB example showing the mesh, voltage source, legend and segment table" loading="lazy" decoding="async"></a><figcaption>DK7ZB mesh at the upper band edge</figcaption></figure>
 <figure><a href="images/en/09-moxon.webp"><img src="images/en/09-moxon.webp" width="1080" height="1920" alt="Moxon calculator" loading="lazy" decoding="async"></a><figcaption>Moxon calculator</figcaption></figure>
 <figure><a href="images/en/trap-dipole.webp"><img src="images/en/trap-dipole.webp" width="680" height="1209" alt="Trap Dipole design" loading="lazy" decoding="async"></a><figcaption>Trap Dipole design</figcaption></figure>
 <figure><a href="images/en/cantenna.webp"><img src="images/en/cantenna.webp" width="680" height="1209" alt="Cantenna calculator" loading="lazy" decoding="async"></a><figcaption>Cantenna calculator</figcaption></figure>
@@ -268,6 +270,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <p><a href="../examples/demo-dipole-145mhz-before.s1p" download>Example S1P before tuning</a> · <a href="../examples/demo-dipole-145mhz-after.s1p" download>Example S1P after tuning</a></p>
         </div>
 <div class="gallery">
+<figure><a href="images/en/vna-import.webp"><img src="images/en/vna-import.webp" width="1080" height="2400" alt="S1P measurements screen with the Open S1P file button" loading="lazy" decoding="async"></a><figcaption>Opening the first S1P file</figcaption></figure>
 <figure><a href="images/en/11-vna.webp"><img src="images/en/11-vna.webp" width="1080" height="1920" alt="Two sweeps in the VNA workspace" loading="lazy" decoding="async"></a><figcaption>Two sweeps in the VNA workspace</figcaption></figure>
 </div>
       </div>
@@ -283,12 +286,16 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <p>To copy a value, formula or part of a note, touch and hold the text, drag the selection handles and tap Copy. To copy the full report, use the copy button below the results.</p>
 <h3>Saving a calculation</h3><ol><li>Tap <strong>Copy to project</strong> in the calculator. In the Yagi guide, the button is labelled <strong>Add to project</strong>.</li><li>Choose a compatible project and tap <strong>Save to selected project</strong>, or choose <strong>Create a new project</strong> and enter a name.</li></ol>
 <p>Open a saved calculation from the project journal to see <strong>Calculation inputs</strong> and <strong>Calculation results</strong> in separate tables, with labels on the left and values on the right.</p>
+<p>Tap <strong>Open in calculator</strong> at the bottom of a record to load its saved calculation in the corresponding tool. The model or published design and its recorded parameters are restored. Editing calculator values does not change the original record. Back returns to the record; opening it again reloads its saved values. Measurement-only records transfer known values; you must provide the missing parameters.</p>
+<p>HTTPS links in record details and notes, including original antenna publications, are underlined and open in the external browser when tapped. They also work when comparing records. You can still select and copy the record text and the complete link address.</p>
+<p>In Changes, differences appear in parentheses: “+” means an increase from the initial record and “−” a decrease. Matching values show “unchanged”. Small length corrections are displayed in millimeters. Copied data uses the same notation. An unavailable difference does not mean that values are unchanged.</p>
 <h3>Measurements and data transfer</h3><ol><li>Open <strong>Tools → Projects and tuning journals</strong>, choose a project and add a record. Include mounting conditions and measurement results, plus an annotated photo if it helps you reproduce the setup.</li><li>Use <strong>Compare records</strong> to select two entries. Compare SWR and impedance under the same conditions and at the same connection point.</li><li>Use <strong>Export JSON</strong> and <strong>Import JSON</strong> to transfer a project. Import creates a separate project. Use the ZIP export to transfer photos.</li></ol>
 <p><a href="../examples/demo-dipole-journal-145mhz-en.json" download>145 MHz dipole demo project</a></p>
         </div>
 <div class="gallery">
-<figure><a href="images/en/project-search.webp"><img src="images/en/project-search.webp" width="680" height="1209" alt="Frequency matches highlighted in yellow on two project cards" loading="lazy" decoding="async"></a><figcaption>Finding projects by frequency</figcaption></figure>
+<figure><a href="images/en/project-search.webp"><img src="images/en/project-search.webp" width="680" height="1209" alt="Project frequency search and clear button" loading="lazy" decoding="async"></a><figcaption>Finding projects by frequency</figcaption></figure>
 <figure><a href="images/en/05-dipole-journal.webp"><img src="images/en/05-dipole-journal.webp" width="1080" height="1920" alt="Project journal with saved records" loading="lazy" decoding="async"></a><figcaption>Project journal with saved records</figcaption></figure>
+<figure><a href="images/en/saved-calculation.webp"><img src="images/en/saved-calculation.webp" width="1080" height="1920" alt="R3UDK Yagi record with a publication link and an action to reopen the calculator" loading="lazy" decoding="async"></a><figcaption>Saved design and the action to reopen its calculator</figcaption></figure>
 </div>
       </div>
     </section>

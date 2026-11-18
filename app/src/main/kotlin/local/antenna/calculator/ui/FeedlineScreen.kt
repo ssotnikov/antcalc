@@ -262,7 +262,7 @@ private fun FeedlineField(
     megahertz: Boolean = false, onEdit: (String) -> Unit,
 ) {
     val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(Modifier, megahertz)
-    OutlinedTextField(value, { if (it.acceptsDecimalEdit()) onEdit(it) }, visualTransformation = frequencyTransformation, label = { Text(label) }, enabled = enabled, singleLine = true,
+    AppTextField(value, { if (it.acceptsDecimalEdit()) onEdit(it) }, visualTransformation = frequencyTransformation, label = label, enabled = enabled, singleLine = true,
         isError = error != null, supportingText = error?.let { { Text(stringResource(it)) } },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         modifier = fieldModifier.fillMaxWidth().testTag(tag))

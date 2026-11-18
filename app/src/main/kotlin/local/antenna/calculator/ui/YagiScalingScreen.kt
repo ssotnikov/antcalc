@@ -14,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -28,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.CalculationSnapshot
@@ -351,20 +349,10 @@ internal fun ScalingField(
     value: String, label: Int, tag: String, modifier: Modifier, unit: String = "",
     invalid: Boolean = false, onChange: (String) -> Unit,
 ) {
-    var focused by remember { mutableStateOf(false) }
-    val restingHint = value.isEmpty() && !focused && !invalid
-    OutlinedTextField(
+    AppTextField(
         value, { if (it.acceptsDecimalEdit()) onChange(it.boundedNumericText()) },
-        modifier.testTag(tag).onFocusChanged { focused = it.isFocused },
-        label = {
-            Text(
-                stringResource(label) + if (unit.isEmpty()) "" else ", $unit",
-                color = if (restingHint) inputExampleColor() else Color.Unspecified,
-                style = if (restingHint) MaterialTheme.typography.bodySmall else LocalTextStyle.current,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        },
+        modifier.testTag(tag),
+        label = stringResource(label) + if (unit.isEmpty()) "" else ", $unit",
         singleLine = true,
         isError = invalid || value.isNotBlank() && scalingDecimal(value) == null,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),

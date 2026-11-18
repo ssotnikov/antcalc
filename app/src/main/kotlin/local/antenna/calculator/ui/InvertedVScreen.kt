@@ -14,6 +14,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
@@ -113,8 +115,12 @@ internal fun InvertedVScreen(
                                 Text(stringResource(label), style = MaterialTheme.typography.bodyMedium)
                                 Text(
                                     value, style = MaterialTheme.typography.titleLarge,
-                                    color = if (label == R.string.inverted_v_end_height && result.endHeightMeters < 0)
-                                        MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+                                    color = when {
+                                        label == R.string.inverted_v_end_height && result.endHeightMeters < 0 -> MaterialTheme.colorScheme.error
+                                        label == R.string.antenna_fundamental_estimate ->
+                                            if (MaterialTheme.colorScheme.surface.luminance() < .5f) Color(0xFFF3BA80) else Color(0xFF824410)
+                                        else -> MaterialTheme.colorScheme.primary
+                                    },
                                 )
                             }
                         }
@@ -217,10 +223,10 @@ private fun InvertedVInput(draft: InvertedVDraft, field: InvertedVField, onEdit:
     val (fieldModifier, frequencyTransformation) = megahertzFieldPresentation(
         Modifier, field == FREQUENCY && draft.frequencyUnit == FrequencyUnit.MEGAHERTZ,
     )
-    OutlinedTextField(
+    AppTextField(
         visualTransformation = frequencyTransformation,
         value = draft.fields.getValue(field), onValueChange = { if (it.acceptsDecimalEdit()) onEdit(it) },
-        label = { Text(inputLabel) }, singleLine = true,
+        label = inputLabel, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         isError = message != null,
         supportingText = message?.let { { Text(it, Modifier.semantics { liveRegion = LiveRegionMode.Polite }) } },

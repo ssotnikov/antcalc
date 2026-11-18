@@ -20,7 +20,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -61,8 +60,9 @@ internal fun HaloCbScreen(
         decimal.maximumFractionDigits = digits
         return decimal.format(value)
     }
+    val record = LocalCalculatorRecord.current
     var draft by rememberSaveable(stateSaver = HaloDraft.saver) {
-        mutableStateOf(initial?.let(HaloDraft::fromSnapshot) ?: HaloDraft(frequency = format(27.185, 3, true), factor = format(1.02, 2)))
+        mutableStateOf(initial?.let(HaloDraft::fromSnapshot) ?: record?.let { HaloDraft(frequency = it.text("frequency", local.antenna.calculator.core.journal.SnapshotUnit.HERTZ, 1e-6), factor = "", gap = "") } ?: HaloDraft(frequency = format(27.185, 3, true), factor = format(1.02, 2)))
     }
     val geometry = draft.geometry
     val gammaErrors = draft.gammaErrors()
@@ -250,10 +250,13 @@ private fun HaloComparison() {
 @Composable
 private fun HaloField(raw: String, label: Int, invalid: Boolean, tag: String, suffix: Int? = null,
                       error: Int? = null, edit: (String) -> Unit) {
-    OutlinedTextField(
+    val name = stringResource(label)
+    val inputLabel = if (suffix == null) name else {
+        stringResource(R.string.inverted_v_input_unit, name, stringResource(suffix))
+    }
+    AppTextField(
         raw, { if (it.acceptsDecimalEdit()) edit(it) }, Modifier.fillMaxWidth().testTag(tag),
-        label = { Text(stringResource(label)) }, singleLine = true, isError = invalid,
-        suffix = suffix?.let { { Text(stringResource(it)) } },
+        label = inputLabel, singleLine = true, isError = invalid,
         supportingText = error?.takeIf { invalid }?.let { { Text(stringResource(it)) } },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
     )

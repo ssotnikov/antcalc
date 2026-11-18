@@ -58,6 +58,7 @@ class CalculatorViewModel(
         if (!state.value.editingEnabled) return
         val draft = state.value.draft
         val updated = when (event) {
+            is CalculatorEvent.RestoreCalculation -> event.draft
             is CalculatorEvent.Edit -> draft.edit(event.key, event.text)
             is CalculatorEvent.ChangeUnit -> draft.update(event.key, draft[event.key].changeUnit(event.key, event.unit))
             is CalculatorEvent.Focus -> draft.update(event.key, draft[event.key].copy(

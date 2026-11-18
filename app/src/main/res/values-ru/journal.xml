@@ -100,7 +100,8 @@
     <string name="journal_project_summary">%1$s, %2$s</string>
     <string name="journal_property">%1$s: %2$s</string>
     <string name="journal_compare_notice">Условия сравнения</string>
-    <string name="journal_diff_legend">− Исходное значение · + Контрольное значение</string>
+    <string name="journal_diff_before">Исходное значение</string>
+    <string name="journal_diff_after">Контрольное значение</string>
     <string name="journal_comparison_missing">Нет значения</string>
     <string name="journal_report_project">Проект</string>
     <string name="journal_project_actions">Действия с проектом</string>
@@ -161,6 +162,7 @@
     <string name="journal_compare_calculated">По расчету</string>
     <string name="journal_compare_measured">По замеру</string>
     <string name="journal_compare_difference">Разница</string>
+    <string name="journal_compare_unchanged">без изменений</string>
     <string name="journal_compare_sizing_title">Расчет и ручной замер</string>
     <string name="journal_compare_length_rule">Разница = измеренная длина минус расчетная.</string>
     <string name="journal_compare_no_shared_geometry">Сопоставимых размеров нет. Исходные данные доступны в деталях записей.</string>
@@ -170,4 +172,6 @@
     <string name="journal_reject_geometry">У записей нет сопоставимых измерений</string>
     <string name="journal_reject_calculation_models">Расчеты используют разные модели. Для сравнения выберите два расчета одного вида.</string>
     <string name="journal_reject_calculation_revisions">Расчеты выполнены разными версиями модели.</string>
+    <string name="journal_open_calculator">Открыть в калькуляторе: %1$s</string>
+    <string name="journal_reopen_partial">В записи нет полного набора параметров конструкции. Перенесены только известные величины. Выберите конструкцию и заполните недостающие поля.</string>
 </resources>

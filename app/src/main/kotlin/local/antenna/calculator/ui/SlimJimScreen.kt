@@ -159,8 +159,9 @@ internal fun SlimJimScreen(
 ) {
     val context = LocalContext.current
     val resources = LocalResources.current
+    val record = LocalCalculatorRecord.current
     var unit by rememberSaveable { mutableStateOf(LengthUnit.MILLIMETERS) }
-    var selected by rememberSaveable { mutableStateOf(SlimJimProfile.DU1ANV) }
+    var selected by rememberSaveable { mutableStateOf(SlimJimProfile.entries.firstOrNull { it.model == record?.snapshot?.model } ?: SlimJimProfile.DU1ANV) }
     val dimensions = remember(selected) { selected.dimensions() }
     val frequency = JournalPresentation(context).frequency(selected.frequency.hertz)
     val profile = stringResource(selected.title)

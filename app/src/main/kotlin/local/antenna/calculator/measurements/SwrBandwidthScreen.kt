@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import java.math.BigDecimal
 import java.text.DecimalFormatSymbols
+import local.antenna.calculator.ui.AppTextField
 import local.antenna.calculator.ui.SelectableText
 import local.antenna.calculator.R
 import local.antenna.calculator.ui.rememberPageLazyListState
@@ -126,7 +127,7 @@ internal fun SwrBandwidthScreen(
             if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         }
         item {
-            OutlinedTextField(
+            AppTextField(
                 value = rawThreshold,
                 onValueChange = { value ->
                     if (value.acceptsDecimalEdit()) {
@@ -134,7 +135,7 @@ internal fun SwrBandwidthScreen(
                         parseBandwidthThreshold(value)?.let { storeBandwidthThreshold(preferences, it) }
                     }
                 },
-                label = { Text(stringResource(R.string.bandwidth_threshold)) },
+                label = stringResource(R.string.bandwidth_threshold),
                 supportingText = { Text(stringResource(R.string.bandwidth_threshold_range)) },
                 isError = threshold == null,
                 singleLine = true,
@@ -144,11 +145,11 @@ internal fun SwrBandwidthScreen(
         }
         if (initialBand != null) item {
             BandwidthHeading(R.string.trap_window)
-            OutlinedTextField(lower, { if (it.acceptsDecimalEdit()) lower = it.boundedNumericText() },
-                label = { Text(stringResource(R.string.trap_lower)) }, modifier = Modifier.fillMaxWidth().testTag("trap-window-lower"),
+            AppTextField(lower, { if (it.acceptsDecimalEdit()) lower = it.boundedNumericText() },
+                label = stringResource(R.string.trap_lower), modifier = Modifier.fillMaxWidth().testTag("trap-window-lower"),
                 isError = invalidWindow, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
-            OutlinedTextField(upper, { if (it.acceptsDecimalEdit()) upper = it.boundedNumericText() },
-                label = { Text(stringResource(R.string.trap_upper)) }, modifier = Modifier.fillMaxWidth().testTag("trap-window-upper"),
+            AppTextField(upper, { if (it.acceptsDecimalEdit()) upper = it.boundedNumericText() },
+                label = stringResource(R.string.trap_upper), modifier = Modifier.fillMaxWidth().testTag("trap-window-upper"),
                 isError = invalidWindow, singleLine = true, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
             if (invalidWindow) Text(stringResource(R.string.trap_window_invalid), color = MaterialTheme.colorScheme.error)
             else if (trace != null && threshold != null && result == null) {

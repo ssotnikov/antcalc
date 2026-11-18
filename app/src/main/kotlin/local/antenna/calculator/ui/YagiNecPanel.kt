@@ -12,7 +12,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -278,8 +277,8 @@ internal fun YagiNecPanel(
 
 @Composable
 private fun NecInput(value: String, label: Int, tag: String, modifier: Modifier, change: (String) -> Unit) {
-    OutlinedTextField(value, { if (it.acceptsDecimalEdit()) change(it.boundedNumericText()) },
-        modifier.testTag(tag), label = { Text(stringResource(label)) }, singleLine = true,
+    AppTextField(value, { if (it.acceptsDecimalEdit()) change(it.boundedNumericText()) },
+        modifier.testTag(tag), label = stringResource(label), singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
 }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import local.antenna.calculator.ui.AppTextField
 import local.antenna.calculator.ui.megahertzOutputTransformation
 import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
@@ -14,7 +15,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import local.antenna.calculator.ui.inputExampleColor
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -91,15 +91,11 @@ internal fun JournalTextField(
 ) {
     val supporting = error ?: hint
     var focused by remember { mutableStateOf(false) }
-    val placeholderColor = inputExampleColor()
-    OutlinedTextField(
+    AppTextField(
         state = state,
         enabled = enabled,
-        label = { Text(stringResource(label)) },
-        labelPosition = TextFieldLabelPosition.Attached(alwaysMinimize = true),
-        placeholder = if (focused) null else {
-            { Text(stringResource(example), color = placeholderColor) }
-        },
+        label = stringResource(label),
+        example = stringResource(example),
         supportingText = supporting?.let { { Text(stringResource(it)) } },
         isError = error != null,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),

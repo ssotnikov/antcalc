@@ -182,6 +182,7 @@ data class CalculatorUiState(
 }
 
 sealed interface CalculatorEvent {
+    data class RestoreCalculation(val draft: CalculatorDraft) : CalculatorEvent
     data class Cable(val value: CableDraft) : CalculatorEvent
     data class Feedline(val value: FeedlineDraft) : CalculatorEvent
     data class GroundPlane(val value: GroundPlaneDraft) : CalculatorEvent
