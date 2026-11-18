@@ -22,7 +22,7 @@
     <string name="seg_feed_caption">Источник на сегменте %1$d элемента %2$d.</string>
     <string name="seg_total">Сегментов: %1$d · λ = %2$s м</string>
     <string name="seg_element_short">Эл.</string>
-    <string name="seg_mm">%1$s мм</string>
+    <string name="seg_step_mm">Δ, мм</string>
     <string name="seg_panel">Сегментация модели</string>
     <string name="seg_open">Проверить сегментацию</string>
     <string name="seg_compare">Сравнить две сетки</string>

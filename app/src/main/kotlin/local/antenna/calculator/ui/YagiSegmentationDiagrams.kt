@@ -49,11 +49,12 @@ internal fun SegmentDiagram(elements: List<Element>, counts: List<Int>, feed: In
             val end = size.width - 4.dp.toPx()
             val axisYRight = center - xLabel.size.height - gap / 2
             val margin = 14.dp.toPx()
+            val rightMargin = maxOf(margin, xLabel.size.width + gap * 2)
             val span = elements.last().position.takeIf { it > 0 } ?: 1.0
             val maxLength = elements.maxOf { it.length }
             val positions = elements.map { element ->
                 if (elements.size == 1) size.width / 2
-                else origin + margin + (end - origin - 2 * margin).coerceAtLeast(0f) *
+                else origin + margin + (end - origin - margin - rightMargin).coerceAtLeast(0f) *
                     (element.position / span).toFloat()
             }
 

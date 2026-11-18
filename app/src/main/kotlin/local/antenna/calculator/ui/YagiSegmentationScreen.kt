@@ -126,13 +126,13 @@ internal fun SegmentTable(elements: List<Element>, counts: List<Int>, wavelength
     SegmentDiagram(elements, counts, feed)
     Text(stringResource(R.string.seg_feed_caption, counts[feed] / 2 + 1, feed + 1))
     Text(stringResource(R.string.seg_total, counts.sum(), number(wavelength)), style = MaterialTheme.typography.bodySmall)
-    val heads = listOf(stringResource(R.string.seg_element_short), "N", "Δ", "Δ/λ", "Δ/a")
+    val heads = listOf(stringResource(R.string.seg_element_short), "N", stringResource(R.string.seg_step_mm), "Δ/λ", "Δ/a")
     SegmentRow(heads)
     elements.forEachIndexed { index, element ->
         val step = element.length / counts[index]
         HorizontalDivider()
         SegmentRow(listOf((index + 1).toString(), counts[index].toString(),
-            stringResource(R.string.seg_mm, number(step * 1000)), number(step / wavelength), number(step * 2 / element.diameter)))
+            number(step * 1000), number(step / wavelength), number(step * 2 / element.diameter)))
     }
     Text(stringResource(R.string.seg_table_key), style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant)
