@@ -4,7 +4,7 @@
     <string name="seg_title">Сегментация Яги — Уда</string>
     <string name="seg_intro">Подберите сетку для прямых круглых элементов. Оставьте верхнюю границу пустой для расчёта на одной частоте.</string>
     <string name="seg_frequency">Частота, МГц</string>
-    <string name="seg_optional_end">До, МГц (необязательно)</string>
+    <string name="seg_optional_end">До, МГц</string>
     <string name="seg_example">Загрузить пример DK7ZB</string>
     <string name="seg_element">Элемент %1$d</string>
     <string name="seg_driven">Вибратор</string>

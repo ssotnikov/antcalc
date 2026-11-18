@@ -341,7 +341,7 @@ internal fun YagiScalingScreen(
 }
 
 @Composable
-private fun ScalingField(
+internal fun ScalingField(
     value: String, label: Int, tag: String, modifier: Modifier, unit: String = "",
     invalid: Boolean = false, onChange: (String) -> Unit,
 ) {

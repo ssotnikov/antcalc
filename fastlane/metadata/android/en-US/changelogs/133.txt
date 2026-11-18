@@ -1,0 +1,1 @@
+Yagi–Uda segmentation fields now match the scaling screen. Empty-field hints are muted, and the upper frequency label is shorter.

@@ -4,7 +4,7 @@
     <string name="seg_title">Yagi–Uda Segmentation</string>
     <string name="seg_intro">Estimate the mesh for straight round elements. Leave the upper frequency empty to use a single frequency.</string>
     <string name="seg_frequency">Frequency, MHz</string>
-    <string name="seg_optional_end">Band end, MHz (optional)</string>
+    <string name="seg_optional_end">Band end, MHz</string>
     <string name="seg_example">Load DK7ZB example</string>
     <string name="seg_element">Element %1$d</string>
     <string name="seg_driven">Driven element</string>

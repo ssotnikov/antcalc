@@ -277,7 +277,7 @@ internal fun YagiNecPanel(
 }
 
 @Composable
-internal fun NecInput(value: String, label: Int, tag: String, modifier: Modifier, change: (String) -> Unit) {
+private fun NecInput(value: String, label: Int, tag: String, modifier: Modifier, change: (String) -> Unit) {
     OutlinedTextField(value, { if (it.acceptsDecimalEdit()) change(it.boundedNumericText()) },
         modifier.testTag(tag), label = { Text(stringResource(label)) }, singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))

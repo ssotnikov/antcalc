@@ -61,8 +61,8 @@ internal fun YagiSegmentationScreen(seed: ArrayList<String>?) {
         .testTag("yagi-segmentation"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         HelpText(R.string.seg_intro)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            NecInput(fields[0], R.string.seg_frequency, "seg-low", Modifier.weight(1f)) { update(0, it) }
-            NecInput(fields[1], R.string.seg_optional_end, "seg-high", Modifier.weight(1f)) { update(1, it) }
+            ScalingField(fields[0], R.string.seg_frequency, "seg-low", Modifier.weight(1f)) { update(0, it) }
+            ScalingField(fields[1], R.string.seg_optional_end, "seg-high", Modifier.weight(1f)) { update(1, it) }
         }
         TextButton({ fields = dk7zbSegmentationSeed() }, Modifier.testTag("seg-example")) {
             Text(stringResource(R.string.seg_example))
@@ -79,14 +79,14 @@ internal fun YagiSegmentationScreen(seed: ArrayList<String>?) {
                             fields = ArrayList(fields.dropLast(3))
                         }) { Text(stringResource(R.string.ys_remove)) }
                     }
-                    if (index > 0) NecInput(row[0], R.string.seg_position, "seg-position-$index", Modifier.fillMaxWidth()) {
+                    if (index > 0) ScalingField(row[0], R.string.seg_position, "seg-position-$index", Modifier.fillMaxWidth()) {
                         update(3 + 3 * index, it)
                     }
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        NecInput(row[1], R.string.seg_length, "seg-length-$index", Modifier.weight(1f)) {
+                        ScalingField(row[1], R.string.seg_length, "seg-length-$index", Modifier.weight(1f)) {
                             update(4 + 3 * index, it)
                         }
-                        NecInput(row[2], R.string.seg_diameter, "seg-diameter-$index", Modifier.weight(1f)) {
+                        ScalingField(row[2], R.string.seg_diameter, "seg-diameter-$index", Modifier.weight(1f)) {
                             update(5 + 3 * index, it)
                         }
                     }
