@@ -186,7 +186,7 @@ private fun LocalizedCalculatorApp(
             }
             Page.INVERTED_V, Page.GROUND_PLANE, Page.FULL_WAVE_LOOP, Page.J_POLE, Page.SLIM_JIM, Page.MOXON, Page.HB9CV, Page.CANTENNA -> page = Page.ANTENNA_PARAMETER_TOOLS
             Page.YAGI_SEGMENTATION -> page = segmentationParent
-            Page.YAGI_SCALING -> page = if (scalingRestore != null) Page.JOURNAL else Page.CALCULATOR
+            Page.YAGI_SCALING -> page = if (scalingRestore != null) Page.JOURNAL else Page.ADDITIONAL_TOOLS
             Page.TRAP_DIPOLE -> page = if (trapRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.HALO_CB -> page = if (haloRestore != null) Page.JOURNAL else Page.ANTENNA_PARAMETER_TOOLS
             Page.CABLE -> page = cableParent
@@ -560,6 +560,7 @@ private fun LocalizedCalculatorApp(
                     }
                     Page.ADDITIONAL_TOOLS -> screenStates.SaveableStateProvider("additional-tools") {
                         AdditionalToolsScreen(
+                            onOpenYagiScaling = { leaveInput(); scalingRestore = null; page = Page.YAGI_SCALING },
                             onOpenSegmentation = { openSegmentation(null) },
                             onOpenMeasurements = measurements?.let { model ->
                                 {
@@ -948,7 +949,6 @@ private fun LocalizedCalculatorApp(
                                     onOpenMatching = { leaveInput(); page = Page.MATCHING },
                                     onOpenCable = { leaveInput(); cableParent = Page.CALCULATOR; page = Page.CABLE },
                                     onOpenFeedline = { leaveInput(); page = Page.FEEDLINE },
-                                    onOpenYagiScaling = { leaveInput(); scalingRestore = null; page = Page.YAGI_SCALING },
                                     onOpenAdditional = { leaveInput(); page = Page.ADDITIONAL_TOOLS },
                                     onOpenConstruction = { leaveInput(); page = Page.ANTENNA_CONSTRUCTION },
                                     onOpenAntennaCalculations = { leaveInput(); page = Page.ANTENNA_PARAMETER_TOOLS },

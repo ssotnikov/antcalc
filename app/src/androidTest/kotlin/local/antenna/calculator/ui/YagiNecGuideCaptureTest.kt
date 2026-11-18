@@ -24,6 +24,7 @@ class YagiNecGuideCaptureTest : CalculatorUiFixture() {
         val draft = CalculatorDraft.defaults()
         start(draft.copy(settings = draft.settings.copy(language = language, theme = theme)))
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-additional-tools")
         click("open-yagi-scaling")
         click("ys-example")
         click("ys-mode-BOTH")

@@ -156,6 +156,7 @@ class YagiCalculatorTest : CalculatorUiFixture() {
     @Test fun scalingShowsAndCopiesFrequencyAndDiameterSteps() {
         start()
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-additional-tools").performScrollTo().performClick()
         compose.onNodeWithTag("open-yagi-scaling").performScrollTo().performClick()
         compose.onNodeWithTag("ys-example").performScrollTo().performClick()
         compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().performClick()
@@ -187,6 +188,7 @@ class YagiCalculatorTest : CalculatorUiFixture() {
     @Test fun scalingCanCheckBothModelsAndRejectsAGapWithoutLosingTheResult() {
         start()
         compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-additional-tools").performScrollTo().performClick()
         compose.onNodeWithTag("open-yagi-scaling").performScrollTo().performClick()
         compose.onNodeWithTag("ys-example").performScrollTo().performClick()
         compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().performClick()

@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -112,6 +114,10 @@ internal fun CalculationScreen(
 
 @Composable
 private fun ResultPanel(group: ResultGroup) {
+    val colors = MaterialTheme.colorScheme
+    val valueColor = if (group.title == R.string.ideal_sizes) {
+        if (colors.surface.luminance() < .5f) Color(0xFFF3BA80) else Color(0xFF824410)
+    } else colors.primary
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = Modifier.fillMaxWidth()) {
         SelectionContainer {
@@ -130,7 +136,7 @@ private fun ResultPanel(group: ResultGroup) {
                     Column(Modifier.fillMaxWidth().testTag(row.tag).semantics(mergeDescendants = true) {}, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(stringResource(row.label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(row.value, style = if (index == 0) MaterialTheme.typography.headlineSmall else MaterialTheme.typography.titleLarge,
-                            color = MaterialTheme.colorScheme.primary)
+                            color = valueColor)
                     }
                     if (index != group.rows.lastIndex) HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 }

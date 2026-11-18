@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.collectLatest
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.ui.ProjectSearchField
+import local.antenna.calculator.ui.inputExampleColor
 import local.antenna.calculator.ui.cardListBounce
 import local.antenna.calculator.ui.rememberPageLazyListState
 
@@ -192,7 +193,8 @@ internal fun ProjectList(
                     Modifier.fillMaxWidth().testTag("journal-project-search"), maxLength = 32, clearable = true)
             }
             if (ids.size > 1) item("project-reorder-help") {
-                Text(stringResource(R.string.journal_project_reorder_hint), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.journal_project_reorder_hint), style = MaterialTheme.typography.bodySmall,
+                    color = inputExampleColor())
             }
             if (filtered.isEmpty()) item("project-empty") {
                 Text(stringResource(if (projects.isEmpty()) R.string.journal_no_projects else R.string.journal_project_no_match))

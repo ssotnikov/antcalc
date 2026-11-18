@@ -26,7 +26,6 @@ internal fun ToolsScreen(
     onOpenFeedline: (() -> Unit)? = null,
     onOpenAdditional: (() -> Unit)? = null,
     onOpenConstruction: (() -> Unit)? = null,
-    onOpenYagiScaling: (() -> Unit)? = null,
 ) {
     val scroll = rememberPageScrollState()
     Box(Modifier.widthIn(max = 680.dp).fillMaxSize().testTag("tools-viewport")) {
@@ -34,15 +33,14 @@ internal fun ToolsScreen(
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp).testTag("tools-cards"),
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (onOpenJournal != null) ProjectsToolCard(onOpenJournal)
-            ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
-            ToolCard(R.string.smith_title, R.string.smith_description, "open-smith-chart", onOpenSmithChart)
-            ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
-            if (onOpenYagiScaling != null) ToolCard(R.string.ys_title, R.string.ys_intro, "open-yagi-scaling", onOpenYagiScaling)
-            if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             ToolCard(R.string.antenna_parameter_tools, R.string.antenna_parameter_tools_hint,
                 "open-antenna-parameter-tools", onOpenAntennaCalculations, showChevron = true)
             if (onOpenConstruction != null) ToolCard(R.string.construction_title, R.string.construction_hint,
                 "open-antenna-construction", onOpenConstruction, showChevron = true)
+            ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
+            ToolCard(R.string.smith_title, R.string.smith_description, "open-smith-chart", onOpenSmithChart)
+            ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
+            if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             if (onOpenAdditional != null) ToolCard(R.string.additional_tools, R.string.bandwidth_additional_tools,
                 "open-additional-tools", onOpenAdditional, showChevron = true, highlighted = true)
         }
@@ -100,6 +98,7 @@ internal fun AdditionalToolsScreen(
     onOpenMeasurements: (() -> Unit)?,
     onOpenBandwidth: (() -> Unit)?,
     onOpenSegmentation: (() -> Unit)? = null,
+    onOpenYagiScaling: (() -> Unit)? = null,
 ) {
     val scroll = rememberPageScrollState()
     Column(
@@ -107,6 +106,7 @@ internal fun AdditionalToolsScreen(
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        if (onOpenYagiScaling != null) ToolCard(R.string.ys_title, R.string.ys_intro, "open-yagi-scaling", onOpenYagiScaling)
         if (onOpenSegmentation != null) {
             ToolCard(R.string.seg_tool, R.string.seg_tool_hint, "open-yagi-segmentation", onOpenSegmentation)
         }

@@ -1,0 +1,1 @@
+Reordered tool cards: antenna calculations and construction now follow projects. Yagi–Uda scaling is the first item under Additional tools. Dimmed the project reorder hint. Ideal geometric dimensions now use a warm accent in both themes.
