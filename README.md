@@ -168,9 +168,8 @@
 
 ### Благодарности
 
-- **Хартмуту Клюверу (DG7YBN)** — за возможность представить в AntCalc конструкции YBN 2-5m и GTV 2-6m.
-- **R3UDK** — за практическое руководство по изготовлению антенны «Волновой канал» и поддержку.
-- **R2GFQ** — за помощь в работе над проектом.
+- **Хартмуту Клюверу (DG7YBN)** — за возможность представить в приложении конструкции YBN 2-5m и GTV 2-6m.
+- **R3UDK** и R2GFQ — за практическое руководство по изготовлению антенны «Волновой канал» и поддержку.
 - **Связистам поисково-спасательного отряда «ЛизаАлерт»** — за поддержку проекта.
 
 ### Обратная связь
@@ -341,9 +340,8 @@ The app uses technical dimensions and formulas. See the original publications fo
 
 ### Acknowledgements
 
-- Thanks to **Hartmut Klüver (DG7YBN)** for making it possible to feature the YBN 2-5m and GTV 2-6m designs in AntCalc.
-- Thanks to **R3UDK** for sharing his practical guide to building a Yagi–Uda antenna and for permission to use its materials in the application.
-- Thanks to **R2GFQ** for helping with the project.
+- Thanks to **Hartmut Klüver (DG7YBN)** for making it possible to feature the YBN 2-5m and GTV 2-6m designs in the application.
+- Thanks to **R3UDK** and **R2GFQ** for sharing their practical guide to building a Yagi–Uda antenna and for permission to use its materials in the application.
 - Thanks to **LizaAlert’s Radio Communications Group** for supporting the project.
 
 ### Contact
