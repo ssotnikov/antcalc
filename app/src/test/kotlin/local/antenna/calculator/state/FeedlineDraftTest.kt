@@ -28,7 +28,22 @@ class FeedlineDraftTest {
         FeedlinePreferences.write(preferences, draft)
         assertEquals(draft, FeedlinePreferences.read(preferences))
         assertEquals(draft, FeedlineDraftCodec.decode(FeedlineDraftCodec.encode(draft)))
-        preferences[intPreferencesKey("feedline.schema")] = 2
+        preferences[intPreferencesKey("feedline.schema")] = 3
         assertThrows(UnsupportedSchemaException::class.java) { FeedlinePreferences.read(preferences) }
+    }
+    @Test fun readsLegacyPreferencesWithoutInventingNewInputs() {
+        val draft = FeedlineDraft(profileId = null, frequency = "145", length = "11", power = "3",
+            attenuation = "10", attenuationHertz = 145_000_000, task = FeedlineTask.MAXIMUM_LENGTH,
+            allowedLoss = "7.5", connectionLoss = "0.8")
+        val preferences = mutablePreferencesOf()
+        FeedlinePreferences.write(preferences, draft)
+        preferences[intPreferencesKey("feedline.schema")] = 1
+        for (key in listOf("task", "allowedLoss", "connectionLoss")) {
+            preferences.remove(androidx.datastore.preferences.core.stringPreferencesKey("feedline.$key"))
+        }
+        assertEquals(draft.copy(task = FeedlineTask.LOSS, allowedLoss = "3", connectionLoss = "0"),
+            FeedlinePreferences.read(preferences))
+        val future = FeedlineDraftCodec.encode(draft).apply { this[9] = "FUTURE" }
+        assertNull(FeedlineDraftCodec.decode(future))
     }
 }

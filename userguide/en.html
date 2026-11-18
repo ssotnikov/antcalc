@@ -72,7 +72,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
   <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
-  <span class="version">Version 2.0.1</span>
+  <span class="version">Version 2.1.0</span>
 </header>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
@@ -99,6 +99,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
         <div class="prose">
 <p>AntCalc helps you estimate dimensions, tune a built antenna and save measurement results. It runs on Android 8.0 or later. Calculations, models and built-in guides work offline.</p>
 <ol><li>Download <code>antcalc.apk</code> from the GitHub Direct release you want and open the file on your phone. Use a build with a compatible signature when updating.</li><li>Open the ⋮ menu and select <strong>Settings</strong>. Choose an interface language and the system, light or dark theme.</li><li>Use <strong>Antenna dimensions</strong>, <strong>Antenna tuning</strong> or <strong>Tools</strong> in the bottom bar. Tap the title of a long screen to scroll back to its start.</li></ol>
+<p>A right-hand chevron marks a card that opens a list of child cards. Cards for individual calculators, guides and workspaces open when tapped and have no chevron.</p>
 <p><a href="https://github.com/ssotnikov/antcalc/releases">AntCalc releases on GitHub</a></p>
         </div>
       </div>
@@ -253,10 +254,19 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
         <div class="prose">
 <h3>Cable electrical length</h3><p>Open the tool of the same name. Enter frequency, cable velocity factor and the length you know. Choose the conversion direction between physical and electrical length. Phase and delay use the line parameters you entered.</p>
 <h3>Feedline loss</h3><p>Enter frequency and length and choose the cable from the catalog. When entering attenuation manually, use the value for the stated frequency and check the units, for example dB per 100 m. The result shows matched-line loss and power at the far end. The highlighted strip narrows along the cable as power falls. The scale below shows the fraction reaching the output. Use SWR and reflection to estimate reflected power. After changing frequency, the previous attenuation stays in the preliminary result. Check and confirm it for the new frequency before copying. When the datasheet has no value at the operating frequency, P₂ and the scale show a preview at the closest published frequency, labelled as reference only beside P₂ and in the results. Enter the input power to see the result in watts. Use the button to select that frequency or enter attenuation for the operating frequency manually.</p>
+<h3>Maximum feedline length</h3>
+<p>On Feedline loss, select Maximum length. Enter the operating frequency and choose the cable model, or enter attenuation manually in dB/100 m or dB/100 ft. Set the allowed total line loss and connection losses at that frequency. Input power is optional and is used only for results in watts.</p>
+<p>The Illustration section has three buttons: Cable, Radio — antenna and Loss chart. The chart compares line loss with your limit. These are views of the same calculation, not different models.</p>
+<p>Expand Formula and model limits: Lmax = L₀ × (Aallowed − Aconnections) / α. Aallowed is the allowed total loss in dB; Aconnections is connector and other connection loss in dB; α is cable attenuation at the operating frequency over reference length L₀. L₀ is 100 m for dB/100 m or exactly 30.48 m for dB/100 ft. The result is physical length; velocity factor is not used.</p>
+<p>For example, 6.3 dB/100 m with an allowed loss of 3 dB and connection losses of 0.4 dB gives a maximum cut length of 41.26 m after rounding down. The 3 dB limit is an example, not a universal recommendation. Length is rounded down to a centimetre; shorter values are shown in millimetres. Loss and power use the displayed length. Do not count connectors twice when they are already included in measured assembly attenuation.</p>
+<p>If connection losses exceed the allowance, no cable length satisfies it. If they equal it and attenuation is positive, only zero length satisfies it. Zero attenuation gives no finite loss-based length limit. Empty required fields do not produce a result. The closest datasheet frequency and unconfirmed manual attenuation produce reference results only: choose a published frequency or confirm attenuation at the operating frequency before copying. The calculation does not estimate mismatch, cable power rating or radio range. Switching tasks retains the previously entered cable length.</p>
         </div>
 <div class="gallery">
 <figure><a href="images/en/12-cable-electrical-length.webp"><img src="images/en/12-cable-electrical-length.webp" width="1080" height="1920" alt="Cable electrical length" loading="lazy" decoding="async"></a><figcaption>Cable electrical length</figcaption></figure>
 <figure><a href="images/en/13-feedline-loss.webp"><img src="images/en/13-feedline-loss.webp" width="1080" height="1920" alt="Feedline loss calculator" loading="lazy" decoding="async"></a><figcaption>Feedline loss calculator</figcaption></figure>
+<figure><a href="images/en/feedline-max-length.webp"><img src="images/en/feedline-max-length.webp" width="1080" height="1920" alt="Maximum length: loss chart" loading="lazy" decoding="async"></a><figcaption>Maximum length: loss chart</figcaption></figure>
+<figure><a href="images/en/feedline-max-result.webp"><img src="images/en/feedline-max-result.webp" width="1080" height="1920" alt="Inputs and length limit" loading="lazy" decoding="async"></a><figcaption>Inputs and length limit</figcaption></figure>
+<figure><a href="images/en/feedline-max-definitions.webp"><img src="images/en/feedline-max-definitions.webp" width="1080" height="1920" alt="Formula definitions" loading="lazy" decoding="async"></a><figcaption>Formula definitions</figcaption></figure>
 </div>
       </div>
     </section>

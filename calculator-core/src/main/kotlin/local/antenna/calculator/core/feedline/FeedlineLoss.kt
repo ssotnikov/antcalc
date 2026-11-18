@@ -29,6 +29,14 @@ fun calculateFeedlineLoss(
     require(attenuation in BigDecimal.ZERO..BigDecimal("1000"))
     require(inputWatts == null || inputWatts in BigDecimal.ZERO..BigDecimal("100000"))
     val decibels = (attenuation * lengthMetres).divide(unit.referenceMetres, MathContext.DECIMAL128).toDouble()
+    return transmissionAtFeedlineLoss(BigDecimal.valueOf(decibels), inputWatts)
+}
+
+/** Power transfer at an already calculated matched-line insertion loss, including specified connections. */
+fun transmissionAtFeedlineLoss(lossDecibels: BigDecimal, inputWatts: BigDecimal? = null): FeedlineLoss {
+    val decibels = lossDecibels.toDouble()
+    require(lossDecibels.signum() >= 0 && decibels.isFinite())
+    require(inputWatts == null || inputWatts in BigDecimal.ZERO..BigDecimal("100000"))
     val exponent = -decibels * ln(10.0) / 10
     val transmitted = exp(exponent)
     val lost = if (decibels == 0.0) 0.0 else -expm1(exponent)

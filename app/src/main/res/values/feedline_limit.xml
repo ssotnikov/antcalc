@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feed_task">Calculation task</string>
+    <string name="feed_task_loss">Loss from length</string>
+    <string name="feed_task_max">Maximum length</string>
+    <string name="feed_limit_view">Illustration</string>
+    <string name="feed_limit_cable">Cable</string>
+    <string name="feed_limit_link">Radio — antenna</string>
+    <string name="feed_limit_chart">Loss chart</string>
+    <string name="feed_limit_allowed">Allowed line loss, dB</string>
+    <string name="feed_limit_connections">Connection losses, dB</string>
+    <string name="feed_limit_connections_help">Sum of connector, adapter and other connection losses at the operating frequency. Enter 0 to exclude them. Do not count losses already included in a measured assembly twice.</string>
+    <string name="feed_limit_input_error">Enter a value from 0 to 1000 dB.</string>
+    <string name="feed_limit_title">Maximum cable length</string>
+    <string name="feed_limit_no_more">No more than %1$s</string>
+    <string name="feed_limit_unbounded">No finite loss-based length limit</string>
+    <string name="feed_limit_unbounded_help">With zero attenuation, this model does not limit length. This is an idealization, not a valid length for a real cable.</string>
+    <string name="feed_limit_exceeded">Connection losses exceed the specified limit. No cable length satisfies it.</string>
+    <string name="feed_limit_zero">Connection losses use up the allowed loss. Only a zero cable length satisfies it.</string>
+    <string name="feed_limit_rounding">Length is rounded down to a centimetre; lengths below a centimetre are shown in millimetres. Loss and power use the displayed length.</string>
+    <string name="feed_limit_cable_loss">Cable loss</string>
+    <string name="feed_limit_total_loss">Total line loss</string>
+    <string name="feed_limit_line_lost">Power lost in the line</string>
+    <string name="feed_limit_legend">The scale shows the fraction of input power at the line output, including the specified connection losses.</string>
+    <string name="feed_limit_limits">Estimate for a matched line using attenuation at the selected frequency. The user specifies the allowed loss. Only the entered connection losses are included. Mismatch, temperature changes, cable power rating and communication range are not calculated.</string>
+    <string name="feed_limit_formula">Lmax = L₀ × (Aallowed − Aconnections) / α</string>
+    <string name="feed_limit_definitions">Aallowed — the total allowed line loss specified by the user, in dB.\n\nAconnections — the total connector, adapter and other connection losses at the same operating frequency, in dB.\n\nα — attenuation of the specific cable model over reference length L₀ at the operating frequency, in dB/100 m or dB/100 ft.\n\nL₀ — reference length: 100 m or 30.48 m (100 ft). Lmax — physical cable length in metres. Velocity factor does not enter this formula.\n\nWhen Aconnections exceeds Aallowed, no length satisfies the limit. When they are equal and α is positive, only zero length satisfies it. At α = 0, this model gives no finite length limit.</string>
+    <string name="feed_limit_y_axis">Total loss, dB</string>
+    <string name="feed_limit_x_axis">Physical cable length, m →</string>
+    <string name="feed_limit_line_legend">Line loss</string>
+    <string name="feed_limit_allowance_legend">Allowed loss</string>
+    <string name="feed_limit_allowance_value">Limit %1$s dB</string>
+    <string name="feed_limit_graph_description">Line loss versus physical cable length. %1$s.</string>
+    <string name="feed_limit_station">Radio</string>
+    <string name="feed_limit_antenna">Antenna</string>
+    <string name="feed_limit_graph_caption">The length limit depends on the allowed loss and cable attenuation.</string>
+    <string name="feed_limit_method">Calculation from allowed loss</string>
+    <string name="feed_limit_details">Formula and model limits</string>
+    <string name="feed_limit_connection_result">Connection losses</string>
+    <string name="feed_limit_screen_intro">Calculate the maximum physical cable length from the allowed loss.</string>
+    <string name="feed_limit_source">Cable assembly losses · Times Microwave</string>
+    <string name="feed_limit_power_formula">Acable = α × L / L₀\nAline = Acable + Aconnections\nT = 10⁽⁻ᴬline/¹⁰⁾\nP₂ = P₁ × T\nΔP = P₁ × (1 − T)</string>
+    <string name="feed_limit_power_help">Acable is the cable loss; Aline is the total cable and specified connection loss, in dB. T is the output power fraction; P₁ and P₂ are input and output power; ΔP is the power lost in the line.</string>
+    <string name="feed_limit_example">Example: Aallowed = 3 dB, Aconnections = 0.4 dB, α = 6.3 dB/100 m. This leaves 2.6 dB for the cable; the maximum length rounded down is 41.26 m. The 3 dB limit is an example, not a recommendation. Do not count connectors already included in a measured assembly again in Aconnections.</string>
+</resources>

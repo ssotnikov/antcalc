@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="feed_task">Что рассчитать?</string>
+    <string name="feed_task_loss">Потери по длине</string>
+    <string name="feed_task_max">Максимальная длина</string>
+    <string name="feed_limit_view">Иллюстрация</string>
+    <string name="feed_limit_cable">Кабель</string>
+    <string name="feed_limit_link">Радиостанция — антенна</string>
+    <string name="feed_limit_chart">График потерь</string>
+    <string name="feed_limit_allowed">Допустимые потери линии, дБ</string>
+    <string name="feed_limit_connections">Потери соединений, дБ</string>
+    <string name="feed_limit_connections_help">Сумма потерь разъёмов, переходников и других соединений на рабочей частоте. 0 — не учитывать. Не прибавляйте повторно потери, уже включённые в затухание измеренной сборки.</string>
+    <string name="feed_limit_input_error">Введите значение от 0 до 1000 дБ.</string>
+    <string name="feed_limit_title">Максимальная длина кабеля</string>
+    <string name="feed_limit_no_more">Не более %1$s</string>
+    <string name="feed_limit_unbounded">Конечного предела по потерям нет</string>
+    <string name="feed_limit_unbounded_help">При заданном нулевом затухании модель не ограничивает длину. Это идеализация, а не допустимая длина реального кабеля.</string>
+    <string name="feed_limit_exceeded">Потери соединений превышают заданный предел. Допустимой длины нет.</string>
+    <string name="feed_limit_zero">Потери соединений уже исчерпали допустимые потери. Допустима только нулевая длина кабеля.</string>
+    <string name="feed_limit_rounding">Длина округлена вниз до сантиметра; значения меньше сантиметра показаны в миллиметрах. Потери и мощность рассчитаны для показанной длины.</string>
+    <string name="feed_limit_cable_loss">Потери в кабеле</string>
+    <string name="feed_limit_total_loss">Суммарные потери линии</string>
+    <string name="feed_limit_line_lost">Потери мощности в линии</string>
+    <string name="feed_limit_legend">Шкала показывает долю входной мощности на выходе линии с учётом заданных потерь соединений.</string>
+    <string name="feed_limit_limits">Оценка по затуханию на выбранной частоте для согласованной линии. Допустимые потери задаёт пользователь. Учтены только введённые потери соединений. Рассогласование, температурные изменения, допустимая мощность кабеля и дальность радиосвязи не рассчитываются.</string>
+    <string name="feed_limit_formula">Lмакс = L₀ × (Aдоп − Aсоед) / α</string>
+    <string name="feed_limit_definitions">Aдоп — заданные пользователем допустимые суммарные потери линии, дБ.\n\nAсоед — суммарные потери разъёмов, переходников и других соединений на той же рабочей частоте, дБ.\n\nα — затухание конкретной модели кабеля на опорной длине L₀ при рабочей частоте: дБ/100 м или дБ/100 футов.\n\nL₀ — опорная длина: 100 м или 30,48 м (100 футов). Lмакс — физическая длина кабеля, м. Коэффициент скорости в эту формулу не входит.\n\nЕсли Aсоед больше Aдоп, допустимой длины нет. Если они равны и α положительно, допустима только нулевая длина. При α = 0 конечный предел моделью не определяется.</string>
+    <string name="feed_limit_y_axis">Суммарные потери, дБ</string>
+    <string name="feed_limit_x_axis">Физическая длина кабеля, м →</string>
+    <string name="feed_limit_line_legend">Потери линии</string>
+    <string name="feed_limit_allowance_legend">Допустимые потери</string>
+    <string name="feed_limit_allowance_value">Предел %1$s дБ</string>
+    <string name="feed_limit_graph_description">Зависимость потерь линии от физической длины. %1$s.</string>
+    <string name="feed_limit_station">Радиостанция</string>
+    <string name="feed_limit_antenna">Антенна</string>
+    <string name="feed_limit_graph_caption">Предел определяется выбранными допустимыми потерями и затуханием кабеля.</string>
+    <string name="feed_limit_method">Расчёт по допустимым потерям</string>
+    <string name="feed_limit_details">Формула и границы модели</string>
+    <string name="feed_limit_connection_result">Потери соединений</string>
+    <string name="feed_limit_screen_intro">Расчёт максимальной физической длины кабеля по допустимым потерям.</string>
+    <string name="feed_limit_source">Потери в кабельной сборке · Times Microwave</string>
+    <string name="feed_limit_power_formula">Aкаб = α × L / L₀\nAлинии = Aкаб + Aсоед\nT = 10⁽⁻ᴬлинии/¹⁰⁾\nP₂ = P₁ × T\nΔP = P₁ × (1 − T)</string>
+    <string name="feed_limit_power_help">Aкаб — потери в кабеле; Aлинии — суммарные потери кабеля и заданных соединений, дБ. T — доля мощности на выходе; P₁ и P₂ — входная и выходная мощности; ΔP — мощность, потерянная в линии.</string>
+    <string name="feed_limit_example">Пример: Aдоп = 3 дБ, Aсоед = 0,4 дБ, α = 6,3 дБ/100 м. Для кабеля остаётся 2,6 дБ; максимальная длина после округления вниз — 41,26 м. Предел 3 дБ — только пример, а не рекомендация. Не учитывайте в Aсоед разъёмы, уже включённые в затухание измеренной сборки.</string>
+</resources>

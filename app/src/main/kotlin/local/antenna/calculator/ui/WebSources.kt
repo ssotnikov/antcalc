@@ -15,6 +15,7 @@ enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
 internal const val INVERTED_V_SOURCE_RU = "https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/"
 internal const val RFI_DIELECTRICS_URL = "https://products.rfi.com.au/hubfs/Wireless%20download%20library/Coaxial%20Cable%20Dielectrics%20%20Velocity%20of%20Propagation%20and%20Attenuation.pdf?hsLang=en"
+internal const val FEEDLINE_LOSS_METHOD_URL = "https://timesmicrowave.com/interpretation-of-electrical-test-data-with-regards-to-microwave-cable-assemblies/"
 internal const val RADIOLAB_CABLES_URL = "https://radiolab.ru/ru/5/1188382333/"
 private val directReleaseAddress = Regex(
     """https://github\.com/ssotnikov/antcalc/releases/tag/github-direct-v[0-9]{1,9}\.[0-9]{1,9}\.[0-9]{1,9}""",
@@ -40,6 +41,7 @@ internal const val DK7ZB_DUOBAND_ARTICLE_URL = "https://www.worldradiohistory.co
 internal const val NUXCOM_DK7ZB_URL = "https://web.archive.org/web/20241110203403id_/http://www.nuxcom.de/pdf/nuxcom_bauanweisungen_144_430_50hm.pdf"
 
 private val additionalSourceAddresses = setOf(
+    FEEDLINE_LOSS_METHOD_URL,
     NUXCOM_DK7ZB_URL,
     "https://github.com/jopecl/wifi-antenna-design-nec/blob/main/data/lab1-measurements.xlsx",
     "https://www.ieice.org/cs/isap/ISAP_Archives/2010/pdf/91.pdf",

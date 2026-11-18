@@ -5,6 +5,12 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class WebSourcesTest {
+    @Test fun feedlineMethodUsesOnlyTheApprovedArticle() {
+        assertEquals(FEEDLINE_LOSS_METHOD_URL, validatedSourceAddress(FEEDLINE_LOSS_METHOD_URL))
+        assertNull(validatedSourceAddress(FEEDLINE_LOSS_METHOD_URL.replace("https:", "http:")))
+        assertNull(validatedSourceAddress(FEEDLINE_LOSS_METHOD_URL + "other/"))
+    }
+
     @Test fun necLinksPermitOnlyTheApprovedAddresses() {
         assertEquals("https://www.nec2.org/", validatedSourceAddress(NEC2_URL))
         assertEquals(OpenNec.SOURCE, validatedSourceAddress(OpenNec.SOURCE))

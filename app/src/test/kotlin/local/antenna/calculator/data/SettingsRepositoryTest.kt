@@ -58,7 +58,7 @@ class SettingsRepositoryTest {
         assertEquals(8, domainKeys["cable"])
         assertEquals(2, domainKeys["invertedV"])
         assertEquals(2, domainKeys["groundPlane"])
-        assertEquals(10, domainKeys["feedline"])
+        assertEquals(13, domainKeys["feedline"])
         assertEquals(2, domainKeys["fullWaveLoop"])
         assertEquals(26, domainKeys.filterKeys { it !in setOf("matching", "cable", "invertedV", "groundPlane", "feedline", "fullWaveLoop") }.values.sum())
     }

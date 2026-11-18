@@ -352,3 +352,26 @@ dimensions of the driven element. Mounted dimensions support proportional
 scaling. Boom corrections and electrical performance require separate methods.
 
 [DG7YBN — Scaling Yagi Elements](https://www.dg7ybn.de/Scaling/Scaling_Yagis.htm)
+
+
+### Maximum matched-feedline length
+
+`maximumFeedlineLength(allowedDecibels, attenuation, unit, connectionDecibels)`
+returns `Finite(metres)`, `Exceeded` or `Unbounded`. Loss inputs are decimal values
+from 0 through 1000 dB. With Lref = 100 m or exactly 30.48 m, the formula is
+Lmax = Lref × (allowed − connections) / attenuation. Exceeded takes priority
+when connections exceed the allowance, including zero attenuation. Otherwise,
+zero attenuation yields Unbounded. A zero remaining allowance with positive
+attenuation yields Finite(0). Finite division uses 34 significant digits rounded
+towards shorter lengths. The inverse function has no arbitrary 10 km cap.
+
+For Radiolab RG-213 C/U, 3 dB with no connection loss gives approximately
+47.619047619 m at 150 MHz (6.3 dB/100 m), 24.793388430 m at 450 MHz
+(12.1 dB/100 m), and 16.483516483 m at 900 MHz (18.2 dB/100 m).
+With 0.4 dB connection loss at 150 MHz the limit is 41.269841269 m.
+The UI rounds practical lengths down to centimetres and recomputes loss and
+power for that displayed length. It uses millimetres for sub-centimetre values.
+`transmissionAtFeedlineLoss` computes the transmitted fraction and optional
+power for the total cable and connection loss. Velocity factor is not used.
+These estimates assume a matched line and attenuation at the stated frequency;
+they do not specify a cable power rating or a recommended loss allowance.

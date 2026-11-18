@@ -34,15 +34,15 @@ internal fun ToolsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp)) {
             if (onOpenJournal != null) ProjectsToolCard(onOpenJournal)
             ToolCard(R.string.antenna_parameter_tools, R.string.antenna_parameter_tools_hint,
-                "open-antenna-parameter-tools", onOpenAntennaCalculations, showChevron = true)
+                "open-antenna-parameter-tools", onOpenAntennaCalculations, opensChildCards = true)
             if (onOpenConstruction != null) ToolCard(R.string.construction_title, R.string.construction_hint,
-                "open-antenna-construction", onOpenConstruction, showChevron = true)
+                "open-antenna-construction", onOpenConstruction, opensChildCards = true)
             ToolCard(R.string.matching_title, R.string.matching_description, "open-matching", onOpenMatching)
             ToolCard(R.string.smith_title, R.string.smith_description, "open-smith-chart", onOpenSmithChart)
             ToolCard(R.string.cable_title, R.string.cable_description, "open-cable", onOpenCable)
             if (onOpenFeedline != null) ToolCard(R.string.feedline_title, R.string.feedline_intro, "open-feedline", onOpenFeedline)
             if (onOpenAdditional != null) ToolCard(R.string.additional_tools, R.string.bandwidth_additional_tools,
-                "open-additional-tools", onOpenAdditional, showChevron = true, highlighted = true)
+                "open-additional-tools", onOpenAdditional, opensChildCards = true, highlighted = true)
         }
     }
 }
@@ -55,7 +55,7 @@ internal fun AntennaConstructionScreen(onOpenYagi: () -> Unit) {
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
     ) {
         ToolCard(R.string.construction_yagi_card_title, R.string.construction_yagi_intro,
-            "open-construction-yagi", onOpenYagi, showChevron = true)
+            "open-construction-yagi", onOpenYagi)
     }
 }
 
@@ -79,17 +79,17 @@ internal fun AntennaParameterToolsScreen(
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp).testTag("antenna-parameter-tools"),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV, showChevron = true)
-        ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane, showChevron = true)
-        ToolCard(R.string.loop_title, R.string.loop_intro, "open-full-wave-loop", onOpenFullWaveLoop, showChevron = true)
-        ToolCard(R.string.yagi_title, R.string.yagi_tool, "open-yagi-calculator", onOpenYagi, showChevron = true)
-        ToolCard(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole, showChevron = true)
-        ToolCard(R.string.slim_jim_title, R.string.slim_jim_card, "open-slim-jim", onOpenSlimJim, showChevron = true)
-        ToolCard(R.string.moxon_title, R.string.moxon_card, "open-moxon", onOpenMoxon, showChevron = true)
-        ToolCard(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv, showChevron = true)
-        ToolCard(R.string.cantenna_title, R.string.cantenna_intro, "open-cantenna", onOpenCantenna, showChevron = true)
-        ToolCard(R.string.halo_title, R.string.halo_intro, "open-halo", onOpenHalo, showChevron = true)
-        ToolCard(R.string.trap_title, R.string.trap_intro, "open-trap-dipole", onOpenTrapDipole, showChevron = true)
+        ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV)
+        ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane)
+        ToolCard(R.string.loop_title, R.string.loop_intro, "open-full-wave-loop", onOpenFullWaveLoop)
+        ToolCard(R.string.yagi_title, R.string.yagi_tool, "open-yagi-calculator", onOpenYagi)
+        ToolCard(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole)
+        ToolCard(R.string.slim_jim_title, R.string.slim_jim_card, "open-slim-jim", onOpenSlimJim)
+        ToolCard(R.string.moxon_title, R.string.moxon_card, "open-moxon", onOpenMoxon)
+        ToolCard(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv)
+        ToolCard(R.string.cantenna_title, R.string.cantenna_intro, "open-cantenna", onOpenCantenna)
+        ToolCard(R.string.halo_title, R.string.halo_intro, "open-halo", onOpenHalo)
+        ToolCard(R.string.trap_title, R.string.trap_intro, "open-trap-dipole", onOpenTrapDipole)
     }
 }
 
@@ -112,11 +112,11 @@ internal fun AdditionalToolsScreen(
         }
         if (onOpenMeasurements != null) {
             ToolCard(R.string.sweep_tool_title, R.string.sweep_tool_description, "open-measurements",
-                onOpenMeasurements, showChevron = true)
+                onOpenMeasurements)
         }
         if (onOpenBandwidth != null) {
             ToolCard(R.string.bandwidth_title, R.string.bandwidth_description, "open-bandwidth",
-                onOpenBandwidth, showChevron = true)
+                onOpenBandwidth)
         }
     }
 }
@@ -148,7 +148,7 @@ private fun ProjectsToolCard(onClick: () -> Unit) {
 @Composable
 private fun ToolCard(
     title: Int, description: Int, tag: String, onClick: () -> Unit,
-    showChevron: Boolean = false, highlighted: Boolean = false,
+    opensChildCards: Boolean = false, highlighted: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     val dark = colors.surface.luminance() < 0.5f
@@ -170,7 +170,7 @@ private fun ToolCard(
                 Text(stringResource(title), style = MaterialTheme.typography.titleLarge, color = colors.secondary)
                 Text(stringResource(description), style = MaterialTheme.typography.bodyMedium)
             }
-            if (showChevron) Icon(painterResource(R.drawable.ic_chevron_end), contentDescription = null,
+            if (opensChildCards) Icon(painterResource(R.drawable.ic_chevron_end), contentDescription = null,
                 tint = colors.onSurfaceVariant)
         }
     }
