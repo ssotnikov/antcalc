@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -168,7 +169,7 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
         credit.terms?.let { terms ->
             HelpText(terms.description)
             if (terms.description == R.string.yagi_dg_notice &&
-                context.resources.configuration.locales[0].language == "ru") {
+                LocalConfiguration.current.locales[0].language == "ru") {
                 HelpText(R.string.yagi_dg_rights)
             }
             TextButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
