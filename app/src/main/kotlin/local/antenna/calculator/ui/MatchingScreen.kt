@@ -174,8 +174,8 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             onCopied()
         }, enabled = result != null, modifier = Modifier.fillMaxWidth().testTag("matching-copy")) { Text(stringResource(R.string.copy_result)) }
         HelpText(R.string.matching_note)
-        TextButton(onClick = { details = !details }, modifier = Modifier.testTag("matching-details")) {
-            Text(stringResource(if (details) R.string.matching_less else R.string.matching_more))
+        PanelButton(details, onClick = { details = !details }, modifier = Modifier.testTag("matching-details")) {
+            Text(stringResource(R.string.matching_details))
         }
         if (details) {
             Text(stringResource(R.string.matching_details), style = MaterialTheme.typography.titleMedium)

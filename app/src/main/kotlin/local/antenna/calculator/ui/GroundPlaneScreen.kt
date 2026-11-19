@@ -130,8 +130,8 @@ internal fun GroundPlaneScreen(
             modifier = Modifier.fillMaxWidth().testTag("ground-plane-copy"),
         ) { Text(stringResource(R.string.copy_result)) }
         HelpText(R.string.ground_plane_limits)
-        TextButton(onClick = { details = !details }) {
-            Text(stringResource(if (details) R.string.matching_less else R.string.inverted_v_details))
+        PanelButton(details, onClick = { details = !details }) {
+            Text(stringResource(R.string.calculation_formulas_label))
         }
         if (details) {
             HelpText(R.string.ground_plane_fundamental_help)
@@ -144,7 +144,7 @@ internal fun GroundPlaneScreen(
                 R.string.ground_plane_clearance_alt, "ground-plane-height-formula")
         }
         GroundPlaneHeading(R.string.references_title)
-        TextButton(onClick = { openSourceWithFeedback(context, source) }, modifier = Modifier.testTag("ground-plane-source")) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, source) }, modifier = Modifier.testTag("ground-plane-source")) {
             Text(stringResource(R.string.source_ground_plane_m0ukd))
         }
     }

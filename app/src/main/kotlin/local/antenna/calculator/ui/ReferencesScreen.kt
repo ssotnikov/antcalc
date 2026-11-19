@@ -5,7 +5,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,7 +18,6 @@ import local.antenna.calculator.state.AppLanguage
 
 @Composable
 internal fun ReferencesScreen(language: AppLanguage) {
-    val context = LocalContext.current
     val scroll = rememberPageScrollState()
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
@@ -28,34 +26,35 @@ internal fun ReferencesScreen(language: AppLanguage) {
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
         HelpText(R.string.materials_note)
-        CantennaSourceLinks()
-        listOf(
-            R.string.slim_jim_ok1ike_source to SLIM_JIM_OK1IKE_URL,
-            R.string.jpole_ok1ike_hb9acc to OK1IKE_HB9ACC_URL,
-            R.string.slim_jim_sv1jrf_source to SLIM_JIM_SV1JRF_URL,
-        ).forEach { (title, url) ->
-            TextButton(onClick = { openSourceWithFeedback(context, url) }, Modifier.fillMaxWidth()) {
-                Text(stringResource(title), Modifier.fillMaxWidth())
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ReferenceSectionHeading(R.string.cantenna_sources)
+            CantennaSource.entries.forEach { source ->
+                ReferenceCard(
+                    id = "cantenna-${source.name.lowercase()}",
+                    title = stringResource(source.title), publisher = source.author, url = source.url,
+                    summary = additionalReferenceSummaries.getValue(source.url),
+                    terms = source.terms, termsUrl = source.termsUrl,
+                )
             }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(stringResource(R.string.hb9cv_sources_heading), color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
-            listOf(Hb9cvSource.LVT, Hb9cvSource.LVT_PCB, Hb9cvSource.ASQ, Hb9cvSource.SNES, Hb9cvSource.BUTORIN, Hb9cvSource.TAX)
-                .forEach { source ->
-                    TextButton(onClick = { openSourceWithFeedback(context, source.url) }, Modifier.fillMaxWidth()) {
-                        Text("${stringResource(source.author)} · ${stringResource(source.title)}", Modifier.fillMaxWidth())
-                    }
-                }
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ReferenceSectionHeading(R.string.hb9cv_sources_heading)
+            hb9cvReferenceSources.forEach { source ->
+                ReferenceCard(
+                    id = "hb9cv-${source.name.lowercase()}",
+                    title = stringResource(source.title), publisher = stringResource(source.author), url = source.url,
+                    summary = additionalReferenceSummaries.getValue(source.url), terms = source.terms,
+                )
+            }
         }
-        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(stringResource(R.string.moxon_title), color = MaterialTheme.colorScheme.secondary,
-                style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            ReferenceSectionHeading(R.string.moxon_title)
             MoxonSource.entries.forEach { source ->
-                TextButton(
-                    onClick = { openSourceWithFeedback(context, source.url) },
-                    modifier = Modifier.fillMaxWidth(),
-                ) { Text("${source.author} · ${source.title}", modifier = Modifier.fillMaxWidth()) }
+                ReferenceCard(
+                    id = "moxon-${source.name.lowercase()}",
+                    title = source.title, publisher = source.author, url = source.url,
+                    summary = additionalReferenceSummaries.getValue(source.url), terms = source.terms,
+                )
             }
         }
         referenceGroups.forEach { group ->
@@ -71,16 +70,22 @@ internal fun ReferencesScreen(language: AppLanguage) {
             }
             if (materials.isEmpty()) return@forEach
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    stringResource(group.title),
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.semantics { heading() },
-                )
+                ReferenceSectionHeading(group.title)
+                if (group.title == R.string.slim_jim_title) {
+                    listOf(
+                        Triple(R.string.slim_jim_ok1ike_source, "OK1IKE", SLIM_JIM_OK1IKE_URL),
+                        Triple(R.string.jpole_ok1ike_hb9acc, "Max Rüegger (HB9ACC)", OK1IKE_HB9ACC_URL),
+                        Triple(R.string.slim_jim_sv1jrf_source, "SV1JRF / 5B4AMD", SLIM_JIM_SV1JRF_URL),
+                    ).forEachIndexed { index, (title, author, url) ->
+                        ReferenceCard(
+                            id = "slim-jim-additional-$index", title = stringResource(title),
+                            publisher = author, url = url, summary = additionalReferenceSummaries.getValue(url),
+                        )
+                    }
+                }
                 materials.forEachIndexed { index, material ->
                     material.subsection?.takeIf { it != materials.getOrNull(index - 1)?.subsection }?.let { subsection ->
-                        Text(stringResource(subsection), color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+                        ReferenceSectionHeading(subsection)
                     }
                     ReferenceCard(material)
                 }
@@ -90,29 +95,57 @@ internal fun ReferencesScreen(language: AppLanguage) {
 }
 
 @Composable
+private fun ReferenceSectionHeading(title: Int) {
+    Text(stringResource(title), color = MaterialTheme.colorScheme.secondary,
+        style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+}
+
+@Composable
 private fun ReferenceCard(material: TechnicalReference) {
-    val context = LocalContext.current
-    val url = stringResource(material.address)
-    val language = stringResource(
-        material.sourceLanguageLabel ?: if (material.language == AppLanguage.RUSSIAN)
-            R.string.references_language_ru else R.string.references_language_en,
+    ReferenceCard(
+        id = material.id, title = stringResource(material.title), publisher = material.publisher,
+        url = stringResource(material.address), section = material.section,
+        summary = ReferenceSummary(
+            material.description,
+            material.sourceLanguageLabel ?: if (material.language == AppLanguage.RUSSIAN)
+                R.string.references_language_ru else R.string.references_language_en,
+        ),
     )
+}
+
+@Composable
+private fun ReferenceCard(
+    id: String,
+    title: String,
+    publisher: String,
+    url: String,
+    summary: ReferenceSummary,
+    section: String? = null,
+    terms: Int? = null,
+    termsUrl: String? = null,
+) {
+    val context = LocalContext.current
+    val language = summary.language?.let { stringResource(it) }
     OutlinedCard(
         onClick = { openSourceWithFeedback(context, url) },
-        modifier = Modifier.fillMaxWidth().testTag("source-${material.id}"),
+        modifier = Modifier.fillMaxWidth().testTag("source-$id"),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            WebLinkLabel(tint = MaterialTheme.colorScheme.primary) {
+                SelectableText(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+            }
             SelectableText(
-                stringResource(material.title),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary,
-            )
-            SelectableText(
-                listOfNotNull(material.publisher, language, material.section).joinToString(" · "),
+                listOfNotNull(publisher, language, section).joinToString(" · "),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            HelpText(material.description)
+            HelpText(summary.description)
+            terms?.let { HelpText(it) }
+            termsUrl?.let { address ->
+                WebLinkButton(onClick = { openSourceWithFeedback(context, address) }) {
+                    Text(stringResource(R.string.cantenna_source_terms, publisher))
+                }
+            }
         }
     }
 }

@@ -12,7 +12,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -64,7 +63,7 @@ internal fun TransmitterPowerExample() {
             }
         }
     }
-    TextButton(onClick = { openSourceWithFeedback(context, sourceUrl) }) {
+    WebLinkButton(onClick = { openSourceWithFeedback(context, sourceUrl) }) {
         Text(stringResource(R.string.source_pa_current_mode))
     }
     HelpText(R.string.matching_pa_result)

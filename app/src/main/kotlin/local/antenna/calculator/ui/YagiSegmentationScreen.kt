@@ -148,8 +148,8 @@ internal fun SegmentRow(values: List<String>) {
 @Composable
 private fun SegmentationReference(openSource: () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    TextButton({ expanded = !expanded }) {
-        Text(stringResource(R.string.seg_help) + if (expanded) " ▴" else " ▾")
+    PanelButton(expanded, { expanded = !expanded }) {
+        Text(stringResource(R.string.seg_help))
     }
     if (!expanded) return
     HelpText(R.string.seg_rules)
@@ -169,10 +169,10 @@ private fun SegmentationReference(openSource: () -> Unit) {
         HorizontalDivider()
         SegmentRow(row.map(::number))
     }
-    TextButton(openSource) { Text(stringResource(R.string.seg_source)) }
+    WebLinkButton(openSource) { Text(stringResource(R.string.seg_source)) }
     var groundExpanded by rememberSaveable { mutableStateOf(false) }
-    TextButton({ groundExpanded = !groundExpanded }, Modifier.testTag("seg-ground-example")) {
-        Text(stringResource(R.string.seg_ground_example) + if (groundExpanded) " ▴" else " ▾")
+    PanelButton(groundExpanded, { groundExpanded = !groundExpanded }, Modifier.testTag("seg-ground-example")) {
+        Text(stringResource(R.string.seg_ground_example))
     }
     if (!groundExpanded) return
     HelpText(R.string.seg_reference_ground)

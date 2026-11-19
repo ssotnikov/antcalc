@@ -270,7 +270,7 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
                     a?.let { add("hb9cv_cut_r", "2 × $cutR", (r - it) / 2 + tail) }
                     b?.let { add("hb9cv_cut_s", "2 × $cutS", (s - it) / 2 + tail) }
                 }
-                TextButton(onClick = { openSourceWithFeedback(context, Hb9cvSource.LVT_PCB.url) }) {
+                WebLinkButton(onClick = { openSourceWithFeedback(context, Hb9cvSource.LVT_PCB.url) }) {
                     Text(stringResource(R.string.hb9cv_work_lvt_pcb))
                 }
             }
@@ -348,7 +348,11 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
         }
     }
     if (inputs.isEmpty()) (outputs.firstOrNull()?.let { inputs += it.copy(key = "hb9cv_reference") })
-    val cuts = stringResource(R.string.yagi_cuts)
+    val cuts = stringResource(when {
+        uw -> R.string.assembly_dimensions_table
+        profile.id in listOf("f1lvt", "u5mh") || sectional -> R.string.blank_parts_list
+        else -> R.string.blank_dimensions
+    })
     val link = profile.data.getString("url")
     val report = buildString {
         appendLine(name)
@@ -370,9 +374,9 @@ private fun Hb9cvDetails(profile: Hb9cvProfile, mm: (Double) -> String,
         context.getSystemService(ClipboardManager::class.java)?.setPrimaryClip(ClipData.newPlainText(name, report))
         onCopied()
     }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.yagi_copy)) }
-    TextButton(onClick = { openSourceWithFeedback(context, link) }) { Text(stringResource(R.string.hb9cv_source)) }
-    TextButton(onClick = { formulasOpen = !formulasOpen }) {
-        Text(stringResource(R.string.hb9cv_formulas) + if (formulasOpen) "  ▴" else "  ▾")
+    WebLinkButton(onClick = { openSourceWithFeedback(context, link) }) { Text(stringResource(R.string.hb9cv_source)) }
+    PanelButton(formulasOpen, onClick = { formulasOpen = !formulasOpen }) {
+        Text(stringResource(R.string.hb9cv_formulas))
     }
     if (formulasOpen) {
         SelectableText(stringResource(R.string.hb9cv_wavelength))

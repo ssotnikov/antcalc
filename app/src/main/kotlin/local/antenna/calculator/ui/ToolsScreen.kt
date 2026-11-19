@@ -49,14 +49,10 @@ internal fun ToolsScreen(
 
 @Composable
 internal fun AntennaConstructionScreen(onOpenYagi: () -> Unit) {
-    val scroll = rememberPageScrollState()
-    Column(
-        Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
-            .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
-    ) {
-        ToolCard(R.string.construction_yagi_card_title, R.string.construction_yagi_intro,
-            "open-construction-yagi", onOpenYagi)
-    }
+    AntennaToolsList("antenna-construction-tools", listOf(
+        AntennaTool(R.string.construction_yagi_card_title, R.string.construction_yagi_intro,
+            "open-construction-yagi", onOpenYagi),
+    ))
 }
 
 @Composable
@@ -73,23 +69,29 @@ internal fun AntennaParameterToolsScreen(
     onOpenHalo: () -> Unit = {},
     onOpenTrapDipole: () -> Unit = {},
 ) {
-    val scroll = rememberPageScrollState()
-    Column(
-        Modifier.widthIn(max = 680.dp).fillMaxSize().cardListBounce(scroll.isScrollInProgress)
-            .verticalScroll(scroll, overscrollEffect = null).padding(20.dp).testTag("antenna-parameter-tools"),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        ToolCard(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV)
-        ToolCard(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane)
-        ToolCard(R.string.loop_title, R.string.loop_intro, "open-full-wave-loop", onOpenFullWaveLoop)
-        ToolCard(R.string.yagi_title, R.string.yagi_tool, "open-yagi-calculator", onOpenYagi)
-        ToolCard(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole)
-        ToolCard(R.string.slim_jim_title, R.string.slim_jim_card, "open-slim-jim", onOpenSlimJim)
-        ToolCard(R.string.moxon_title, R.string.moxon_card, "open-moxon", onOpenMoxon)
-        ToolCard(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv)
-        ToolCard(R.string.cantenna_title, R.string.cantenna_intro, "open-cantenna", onOpenCantenna)
-        ToolCard(R.string.halo_title, R.string.halo_intro, "open-halo", onOpenHalo)
-        ToolCard(R.string.trap_title, R.string.trap_intro, "open-trap-dipole", onOpenTrapDipole)
+    AntennaToolsList("antenna-parameter-tools", listOf(
+        AntennaTool(R.string.inverted_v_title, R.string.inverted_v_intro, "open-inverted-v", onOpenInvertedV),
+        AntennaTool(R.string.ground_plane_title, R.string.ground_plane_intro, "open-ground-plane", onOpenGroundPlane),
+        AntennaTool(R.string.loop_title, R.string.loop_intro, "open-full-wave-loop", onOpenFullWaveLoop),
+        AntennaTool(R.string.yagi_title, R.string.yagi_tool, "open-yagi-calculator", onOpenYagi),
+        AntennaTool(R.string.jpole_title, R.string.jpole_intro, "open-jpole", onOpenJPole),
+        AntennaTool(R.string.slim_jim_title, R.string.slim_jim_card, "open-slim-jim", onOpenSlimJim),
+        AntennaTool(R.string.moxon_title, R.string.moxon_card, "open-moxon", onOpenMoxon),
+        AntennaTool(R.string.hb9cv_title, R.string.hb9cv_intro, "open-hb9cv", onOpenHb9cv),
+        AntennaTool(R.string.cantenna_title, R.string.cantenna_intro, "open-cantenna", onOpenCantenna),
+        AntennaTool(R.string.halo_title, R.string.halo_intro, "open-halo", onOpenHalo),
+        AntennaTool(R.string.trap_title, R.string.trap_intro, "open-trap-dipole", onOpenTrapDipole),
+    ))
+}
+
+private data class AntennaTool(val title: Int, val description: Int, val id: String, val open: () -> Unit)
+
+@Composable
+private fun AntennaToolsList(listId: String, cards: List<AntennaTool>) {
+    val byId = cards.associateBy { it.id }
+    ReorderableToolCards(listId, cards.map { it.id }) { id, modifier ->
+        val card = byId.getValue(id)
+        ToolCard(card.title, card.description, card.id, card.open, modifier = modifier)
     }
 }
 
@@ -149,12 +151,13 @@ private fun ProjectsToolCard(onClick: () -> Unit) {
 private fun ToolCard(
     title: Int, description: Int, tag: String, onClick: () -> Unit,
     opensChildCards: Boolean = false, highlighted: Boolean = false,
+    modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
     val dark = colors.surface.luminance() < 0.5f
     OutlinedCard(
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth().testTag(tag),
+        modifier = modifier.fillMaxWidth().testTag(tag),
         colors = if (highlighted) CardDefaults.outlinedCardColors(
             containerColor = if (dark) Color(0xFF203D4E) else Color(0xFFDCECF4),
         ) else CardDefaults.outlinedCardColors(),

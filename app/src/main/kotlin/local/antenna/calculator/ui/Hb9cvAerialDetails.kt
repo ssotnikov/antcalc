@@ -129,7 +129,7 @@ internal fun Hb9cvAerialDetails(
     val scalingNote = stringResource(R.string.hb9cv_aerial_scaling_note)
     SelectableText(scalingNote, style = MaterialTheme.typography.bodySmall)
 
-    Text(stringResource(R.string.yagi_cuts), style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.assembly_dimensions), style = MaterialTheme.typography.titleMedium)
     AerialInput(rearRaw, { rearRaw = it }, R.string.hb9cv_rear, R.string.hb9cv_aerial_overhang_range,
         rearInvalid, "hb9cv-aerial-rear")
     AerialInput(frontRaw, { frontRaw = it }, R.string.hb9cv_front, R.string.hb9cv_aerial_overhang_range,
@@ -189,8 +189,8 @@ internal fun Hb9cvAerialDetails(
         Text(stringResource(R.string.yagi_copy))
     }
 
-    TextButton(onClick = { formulasOpen = !formulasOpen }) {
-        Text(stringResource(R.string.hb9cv_formulas) + if (formulasOpen) "  ▴" else "  ▾")
+    PanelButton(formulasOpen, onClick = { formulasOpen = !formulasOpen }) {
+        Text(stringResource(R.string.hb9cv_formulas))
     }
     if (formulasOpen) {
         SelectableText(stringResource(R.string.hb9cv_aerial_formulas))
@@ -201,8 +201,8 @@ internal fun Hb9cvAerialDetails(
             AerialRow(capacitanceLabel, "16 $pf")
         }
     }
-    TextButton(onClick = { tuningOpen = !tuningOpen }, modifier = Modifier.testTag("hb9cv-aerial-tuning")) {
-        Text(stringResource(R.string.hb9cv_aerial_tuning) + if (tuningOpen) "  ▴" else "  ▾")
+    PanelButton(tuningOpen, onClick = { tuningOpen = !tuningOpen }, modifier = Modifier.testTag("hb9cv-aerial-tuning")) {
+        Text(stringResource(R.string.hb9cv_aerial_tuning))
     }
     if (tuningOpen) {
         Text(stringResource(R.string.hb9cv_aerial_tuning_pattern))
@@ -216,7 +216,7 @@ internal fun Hb9cvAerialDetails(
     HorizontalDivider()
     Text(stringResource(R.string.hb9cv_aerial_sources), style = MaterialTheme.typography.titleMedium)
     Text(stringResource(R.string.hb9cv_aerial_graphs_note), style = MaterialTheme.typography.bodyMedium)
-    TextButton(onClick = { openSourceWithFeedback(context, source) }) {
+    WebLinkButton(onClick = { openSourceWithFeedback(context, source) }) {
         Text(stringResource(R.string.hb9cv_work_aerial))
     }
 }

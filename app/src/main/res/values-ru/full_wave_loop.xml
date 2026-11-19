@@ -18,7 +18,7 @@
     <string name="loop_empirical_hint">Ориентир для тонкопроволочной КВ-рамки примерно до 30 МГц. 1005/f в футах соответствует 306,324/f в метрах.</string>
     <string name="loop_custom_hint">Периметр равен q·λ. Выберите q для вашей конструкции.</string>
     <string name="loop_factor">Коэффициент периметра q</string>
-    <string name="loop_factor_error">Введите q от 0,5 до 1,5, до четырёх знаков после запятой.</string>
+    <string name="loop_factor_error">Введите q от 0,5 до 1,5, до четырех знаков после запятой.</string>
     <string name="loop_perimeter">Периметр P</string>
     <string name="loop_input_unit">Единица периметра</string>
     <string name="loop_output_unit">Единица результата</string>
@@ -58,7 +58,7 @@
     <string name="loop_band_square">Сторона квадрата, м</string>
     <string name="loop_band_triangle">Сторона треугольника, м</string>
     <string name="loop_formulas">Формулы и ограничения</string>
-    <string name="loop_formula_alt">Периметр равен C, делённой на частоту. Частота равна C, делённой на периметр. Сторона равна периметру, делённому на число сторон. Высота квадрата равна стороне, высота треугольника равна стороне, умноженной на корень из трёх и делённой на два.</string>
+    <string name="loop_formula_alt">Периметр равен C, деленной на частоту. Частота равна C, деленной на периметр. Сторона равна периметру, деленному на число сторон. Высота квадрата равна стороне, высота треугольника равна стороне, умноженной на корень из трех и деленной на два.</string>
     <string name="loop_frequency_value">%1$s %2$s</string>
     <string name="loop_source_ru_quad">КВ антенны «Квадрат»: настройка и конструктивные варианты</string>
     <string name="loop_source_ru_quad_description">Крепление, фидеры и согласование преимущественно многоэлементных квадратных рамок.</string>

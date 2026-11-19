@@ -15,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.edit
 import kotlinx.coroutines.flow.drop
@@ -258,8 +260,8 @@ internal fun YagiCalculatorScreen(
                 }
             }
             var exampleExpanded by rememberSaveable(profile.id) { mutableStateOf(false) }
-            TextButton({ exampleExpanded = !exampleExpanded }, Modifier.testTag("catalog-segmentation-example")) {
-                Text(stringResource(R.string.seg_catalog_example) + if (exampleExpanded) " ▴" else " ▾")
+            PanelButton(exampleExpanded, { exampleExpanded = !exampleExpanded }, Modifier.testTag("catalog-segmentation-example")) {
+                Text(stringResource(R.string.seg_catalog_example))
             }
             if (exampleExpanded) {
                 HelpText(R.string.seg_catalog_ideal)
@@ -388,7 +390,7 @@ internal fun YagiCalculatorScreen(
         if (profile == YagiProfile.R3) {
             TextButton(onClick = onGuide, modifier = Modifier.testTag("yagi-open-guide")) { Text(stringResource(R.string.yagi_guide)) }
         } else {
-            TextButton(onClick = { openSourceWithFeedback(context, profile.buildSource) }) {
+            WebLinkButton(onClick = { openSourceWithFeedback(context, profile.buildSource) }) {
                 Text(stringResource(R.string.yagi_external_guide))
             }
         }
@@ -401,16 +403,16 @@ internal fun YagiCalculatorScreen(
         YagiHeading(R.string.yagi_rights)
         if (profile.design.restricted) HelpText(R.string.yagi_dg_notice)
         HelpText(profile.rights)
-        TextButton(onClick = { openSourceWithFeedback(context, profile.original) }) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, profile.original) }) {
             Text(stringResource(R.string.yagi_original))
         }
         profile.drivenCutSource?.let { source ->
-            TextButton(onClick = { openSourceWithFeedback(context, source) }) {
+            WebLinkButton(onClick = { openSourceWithFeedback(context, source) }) {
                 Text(stringResource(R.string.yagi_driven_source))
             }
         }
         profile.terms?.let { terms ->
-            TextButton(onClick = { openSourceWithFeedback(context, terms) }) { Text(stringResource(R.string.yagi_policy)) }
+            WebLinkButton(onClick = { openSourceWithFeedback(context, terms) }) { Text(stringResource(R.string.yagi_policy)) }
         }
     }
 }
@@ -483,9 +485,8 @@ private fun YagiDiagram(
             val span = if (element.id == "de" && measuredDriver != null) checkNotNull(modelSpanMm) else element.overallMm
             val half = transverseScale * (span / 2).toFloat()
             val stroke = 2.5.dp.toPx()
-            val labelColor = if (element.id == "de") colors.tertiary else colors.secondary
-            val label = if (element.id == "de") "DE" else element.id.uppercase()
-            val layout = textMeasurer.measure(label, style = labelStyle)
+            val labelColor = yagiDesignationColor(element.id, colors)
+            val layout = textMeasurer.measure(yagiDesignation(element.id), style = labelStyle)
             val labelY = if (index % 2 == 0) 0f else size.height - layout.size.height
             drawText(layout, color = labelColor, topLeft = Offset(x - layout.size.width / 2f, labelY))
             if (element.id == "de") {
@@ -506,6 +507,11 @@ private fun YagiDiagram(
         }
     }
 }
+
+private fun yagiDesignation(id: String): String = id.uppercase()
+
+private fun yagiDesignationColor(id: String, colors: ColorScheme): Color =
+    if (id == "de") colors.tertiary else colors.secondary
 
 @Composable
 private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Boolean, rearMm: Double?,
@@ -531,19 +537,30 @@ private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Bool
                 if (rearMm != null) add(yagiLength(context, element.positionMm + rearMm, unit))
                 add(gap?.let { yagiLength(context, it, unit) } ?: "—")
                 add(yagiLength(context, element.overallMm, unit))
-            }, selectable = selectable)
+            }, selectable = selectable, elementId = element.id)
         }
     }
 }
 
 @Composable
-private fun YagiRow(cells: List<String>, header: Boolean = false, selectable: Boolean = true) {
+private fun YagiRow(cells: List<String>, header: Boolean = false, selectable: Boolean = true, elementId: String? = null) {
+    val colors = MaterialTheme.colorScheme
+    val style = MaterialTheme.typography.bodyMedium
+    val designationWidth = 34.dp * LocalDensity.current.fontScale.coerceAtLeast(1f)
     val content: @Composable () -> Unit = {
         Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             cells.forEachIndexed { index, cell ->
-                Text(cell, Modifier.weight(if (index == 0) 1.5f else 1f),
-                    color = if (header) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.bodyMedium)
+                val column = Modifier.weight(if (index == 0) 1.5f else 1f)
+                if (index == 0 && elementId != null) {
+                    Row(column, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(yagiDesignation(elementId), Modifier.width(designationWidth),
+                            color = yagiDesignationColor(elementId, colors), fontWeight = FontWeight.SemiBold,
+                            style = style)
+                        Text(cell, Modifier.weight(1f), color = colors.onSurface, style = style)
+                    }
+                } else {
+                    Text(cell, column, color = if (header) colors.secondary else colors.onSurface, style = style)
+                }
             }
         }
     }
@@ -685,6 +702,8 @@ private fun yagiReport(
         val value = values[index] ?: if (index == 0) 0.0 else null
         line(label, value?.let { yagiLength(context, it, LengthUnit.MILLIMETERS) } ?: "—")
     }
+    appendLine()
+    appendLine(context.getString(R.string.assembly_dimensions_table))
     line(R.string.yagi_span, yagiLength(context, cut.spanMm, unit))
     line(R.string.yagi_boom, cut.boomMm?.let { yagiLength(context, it, unit) } ?: "—")
     if (profile.dualPlane) appendLine(context.getString(R.string.yagi_horizontal_plane))

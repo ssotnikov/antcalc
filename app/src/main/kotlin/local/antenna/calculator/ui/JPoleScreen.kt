@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -139,7 +138,7 @@ internal fun JPoleScreen(
             val russian = resources.configuration.locales[0].language == "ru"
             val sourceTitle = if (russian) R.string.jpole_10m_ru_title else R.string.jpole_10m_en_title
             val sourceUrl = stringResource(if (russian) R.string.jpole_10m_ru_url else R.string.jpole_10m_en_url)
-            TextButton(onClick = { openSourceWithFeedback(context, sourceUrl) }) { Text(stringResource(sourceTitle)) }
+            WebLinkButton(onClick = { openSourceWithFeedback(context, sourceUrl) }) { Text(stringResource(sourceTitle)) }
             TextButton(onClick = onOpenCable) { Text(stringResource(R.string.cable_screen_title)) }
         }
         if (onSave != null) {
@@ -216,10 +215,10 @@ private fun Ok1ikeJPoleProfile(
         clipboard.setPrimaryClip(ClipData.newPlainText(title, report))
         onCopied()
     }, modifier = Modifier.fillMaxWidth().testTag("jpole-copy")) { Text(stringResource(R.string.jpole_copy)) }
-    TextButton(onClick = { openSourceWithFeedback(context, SLIM_JIM_OK1IKE_URL) }) {
+    WebLinkButton(onClick = { openSourceWithFeedback(context, SLIM_JIM_OK1IKE_URL) }) {
         Text(stringResource(R.string.slim_jim_ok1ike_source))
     }
-    TextButton(onClick = { openSourceWithFeedback(context, OK1IKE_HB9ACC_URL) }) {
+    WebLinkButton(onClick = { openSourceWithFeedback(context, OK1IKE_HB9ACC_URL) }) {
         Text(stringResource(R.string.jpole_ok1ike_hb9acc))
     }
 }
@@ -246,9 +245,8 @@ private fun JPoleHeading(label: Int) {
 @Composable
 private fun JPolePanel(label: Int, content: @Composable ColumnScope.() -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val state = stringResource(if (expanded) R.string.jpole_expanded else R.string.jpole_collapsed)
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        TextButton(onClick = { expanded = !expanded }, modifier = Modifier.semantics { stateDescription = state },
+        PanelButton(expanded, onClick = { expanded = !expanded },
             contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)) {
             Text(stringResource(label), color = MaterialTheme.colorScheme.primary)
         }
@@ -272,7 +270,7 @@ private fun JPoleVariant(title: Int, description: Int, source: Int? = null) {
 private fun JPoleLink(source: Int) {
     val context = LocalContext.current
     val url = stringResource(source)
-    TextButton(onClick = { openSourceWithFeedback(context, url) }) {
+    WebLinkButton(onClick = { openSourceWithFeedback(context, url) }) {
         Text(stringResource(when (source) {
             R.string.jpole_source_wireman -> R.string.jpole_link_wireman
             R.string.jpole_source_slim -> R.string.jpole_link_slim

@@ -12,7 +12,7 @@
     <string name="references_matching">КСВ и отражение</string>
     <string name="source_pa_current_mode">Исследование токовых режимов ВЧ-усилителей, разделы 2 и 4</string>
     <string name="source_pa_current_mode_description">Модель полевого транзистора как управляемого источника тока и пример расчета ВЧ-усилителя с настроенной нагрузкой.</string>
-    <string name="source_friis">Уравнение радиолинии Friis, отчёт CCSDS</string>
+    <string name="source_friis">Уравнение радиолинии Friis, отчет CCSDS</string>
     <string name="source_friis_description">Раздел отчета о связи мощности передачи и приема, усиления антенн и расстояния в свободном пространстве.</string>
     <string name="references_cable">Электрическая длина кабеля</string>
     <string name="source_itu_description">Начальные размеры в метрах и схемы полуволнового диполя и четвертьволнового штыря.</string>
@@ -20,8 +20,8 @@
     <string name="source_verticals_description">Введение в устройство вертикальных антенн и роль противовесов при наземной установке.</string>
     <string name="source_five_eighths_description">Сравнение расчетных диаграмм направленности при разных свойствах земли и высоте установки.</string>
     <string name="source_rig_tuning_description">Практическая подстройка антенны с анализатором по измеренной частоте.</string>
-    <string name="source_kadamm_description">Пересчёт КСВ, возвратных потерь и доли отражённой мощности с числовыми примерами.</string>
-    <string name="source_rohde_description">Раздел руководства R&amp;S dB Calculator с прямыми и обратными формулами пересчёта КСВ и связанных величин.</string>
+    <string name="source_kadamm_description">Пересчет КСВ, возвратных потерь и доли отраженной мощности с числовыми примерами.</string>
+    <string name="source_rohde_description">Раздел руководства R&amp;S dB Calculator с прямыми и обратными формулами пересчета КСВ и связанных величин.</string>
     <string name="source_rig_cable_description">Пример расчета и подгонки четвертьволнового отрезка коаксиального кабеля.</string>
     <string name="source_steer_description">Связь физической длины, фазовой скорости и длины волны с электрической длиной в градусах.</string>
     <string name="source_radiolab_description">Паспорта коаксиальных кабелей с характеристиками конкретных моделей. Ищите в паспорте коэффициент укорочения.</string>
@@ -31,7 +31,7 @@
     <string name="references_yagi_open_measurements">Открытые измерения Яги</string>
     <string name="references_yagi_open_measurements_description">Трассы VNA для Яги на 2,4 ГГц с модулем и фазой отражения и комплексным импедансом.</string>
     <string name="references_balanced_measurements">Метод балансного измерения</string>
-    <string name="references_balanced_measurements_description">Измерение симметричной антенны двухпортовым VNA с учётом влияния измерительной оснастки.</string>
+    <string name="references_balanced_measurements_description">Измерение симметричной антенны двухпортовым VNA с учетом влияния измерительной оснастки.</string>
     <string name="references_tusur_measurements">Русскоязычная методика ТУСУРа</string>
     <string name="references_tusur_measurements_description">Лабораторное руководство по измерению входного сопротивления и диаграмм направленности антенн.</string>
 </resources>

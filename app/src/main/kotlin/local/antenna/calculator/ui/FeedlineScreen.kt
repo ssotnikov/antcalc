@@ -290,8 +290,8 @@ internal fun FeedlineScreen(
         }, enabled = result != null && !provisional && previewHertz == null, modifier = Modifier.fillMaxWidth().testTag("feedline-copy")) {
             Text(stringResource(R.string.copy_result))
         }
-        TextButton({ details = !details }, modifier = Modifier.testTag("feedline-details")) {
-            Text(stringResource(if (details) R.string.matching_less else if (maximumMode) R.string.feed_limit_details else R.string.cable_details))
+        PanelButton(details, { details = !details }, modifier = Modifier.testTag("feedline-details")) {
+            Text(stringResource(if (maximumMode) R.string.feed_limit_details else R.string.cable_details))
         }
         if (details) {
             if (maximumMode) {
@@ -305,7 +305,7 @@ internal fun FeedlineScreen(
             if (maximumMode) SelectableText(stringResource(R.string.feed_limit_power_formula))
             else SelectableText("A = α × L / L₀\nT = 10⁽⁻ᴬ/¹⁰⁾\nP₂ = P₁ × T\nΔP = P₁ × (1 − T)")
             HelpText(if (maximumMode) R.string.feed_limit_power_help else R.string.feedline_formula_help)
-            if (maximumMode) TextButton({ openSourceWithFeedback(context, FEEDLINE_LOSS_METHOD_URL) }) {
+            if (maximumMode) WebLinkButton({ openSourceWithFeedback(context, FEEDLINE_LOSS_METHOD_URL) }) {
                 Text(stringResource(R.string.feed_limit_source))
             }
         }
@@ -365,7 +365,7 @@ internal fun CableCatalogPicker(
 @Composable
 internal fun CableProfileSource(profile: CableProfile) {
     val context = LocalContext.current
-    TextButton(onClick = { openSourceWithFeedback(context, profile.source) }) {
+    WebLinkButton(onClick = { openSourceWithFeedback(context, profile.source) }) {
         Text(stringResource(R.string.feedline_source, profile.name))
     }
 }

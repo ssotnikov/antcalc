@@ -93,6 +93,7 @@ internal fun guideImageReferences(html: String, dark: Boolean): String =
     if (dark) html else guideImageReference.replace(html) { it.groupValues[1] + "light/" + it.groupValues[2] }
 
 internal fun guideAssetPath(address: String): String? {
+    guideSearchRequest(address)?.let { return it.document }
     if (!address.startsWith(GUIDE_DIRECTORY)) return null
     return address.removePrefix(GUIDE_DIRECTORY).takeIf {
         it == "en.html" || it == "ru.html" || it == SEGMENTATION_GUIDE_IMAGE || guideImage.matches(it)
@@ -106,6 +107,8 @@ internal fun UserGuideScreen(
     val context = LocalContext.current
     val document = if (language == AppLanguage.RUSSIAN) "ru.html" else "en.html"
     var scrollY by key(language.tag) { rememberSaveable { mutableIntStateOf(0) } }
+    var searchQuery by key(language.tag) { rememberSaveable { mutableStateOf("") } }
+    var searchMatch by key(language.tag) { rememberSaveable { mutableIntStateOf(0) } }
     var imagePath by key(language.tag, dark) { rememberSaveable { mutableStateOf<String?>(null) } }
     var webView by remember { mutableStateOf<WebView?>(null) }
     val open by rememberUpdatedState(onOpen)
@@ -120,6 +123,8 @@ internal fun UserGuideScreen(
             modifier = Modifier.fillMaxSize().testTag("user-guide-content"),
             factory = { viewContext ->
                 createGuideView(viewContext, document, scrollY, dark, canCheckForUpdates, background,
+                    search = GuideSearchRequest(document, searchQuery, searchMatch),
+                    onSearch = { searchQuery = it.query; searchMatch = it.match },
                     onScroll = { scrollY = it },
                     onImage = { imagePath = it },
                     onOpen = { open(it) },
@@ -151,10 +156,10 @@ internal fun UserGuideScreen(
 @SuppressLint("SetJavaScriptEnabled")
 private fun createGuideView(
     context: Context, document: String, initialY: Int, dark: Boolean, canCheckForUpdates: Boolean,
-    background: Int, onScroll: (Int) -> Unit, onImage: (String) -> Unit,
+    background: Int, search: GuideSearchRequest, onSearch: (GuideSearchRequest) -> Unit,
+    onScroll: (Int) -> Unit, onImage: (String) -> Unit,
     onOpen: (GuideDestination) -> Unit,
 ): WebView {
-    val url = GUIDE_DIRECTORY + document
     var restored = false
     return object : WebView(context) {
         override fun onScrollChanged(x: Int, y: Int, oldX: Int, oldY: Int) {
@@ -163,6 +168,8 @@ private fun createGuideView(
         }
     }.apply {
         setBackgroundColor(background)
+        // Android 8.0 WebView can leave black compositor tiles around HTML form controls.
+        if (android.os.Build.VERSION.SDK_INT == 26) setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
         settings.apply {
             javaScriptEnabled = false
             allowFileAccess = false
@@ -181,7 +188,8 @@ private fun createGuideView(
                         }
                         return if (guideImage.matches(asset)) {
                             WebResourceResponse("image/webp", null, assets.open(asset))
-                        } else guideHtml(assets, asset, dark, canCheckForUpdates)
+                        } else guideHtml(assets, asset, dark, canCheckForUpdates,
+                            requireNotNull(guideSearchRequest(request.url.toString())))
                     } catch (_: IOException) {
                         // A missing bundled asset has no network fallback.
                     }
@@ -190,9 +198,18 @@ private fun createGuideView(
             }
 
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                if (!request.isForMainFrame || !request.hasGesture()) return true
+                if (!request.isForMainFrame || !request.hasGesture() || request.method != "GET") return true
                 val address = request.url.toString()
-                if (request.url.encodedFragment != null && address.substringBefore('#') == url) return false
+                val searchRequest = guideSearchRequest(address)
+                if (searchRequest?.document == document) {
+                    onSearch(searchRequest)
+                    if (searchRequest.query != search.query) {
+                        view.clearFocus()
+                        (context.getSystemService(Context.INPUT_METHOD_SERVICE) as? android.view.inputmethod.InputMethodManager)
+                            ?.hideSoftInputFromWindow(view.windowToken, 0)
+                    }
+                    return false
+                }
                 val route = guideDestination(address)
                 val asset = guideAssetPath(address)
                 when {
@@ -204,27 +221,37 @@ private fun createGuideView(
             }
 
             override fun onPageFinished(view: WebView, loadedUrl: String?) {
-                if (restored || loadedUrl?.substringBefore('#') != url) return
+                val loadedSearch = loadedUrl?.let(::guideSearchRequest) ?: return
+                if (loadedSearch.document != document) return
                 view.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
                     override fun onComplete(requestId: Long) {
-                        view.scrollTo(0, initialY)
+                        if (!restored && loadedSearch == search) {
+                            view.scrollTo(0, initialY)
+                        } else if (loadedSearch.query.isNotEmpty() && loadedUrl.contains("#guide-match-")) {
+                            // Leave the matched text below the persistent search controls.
+                            @Suppress("DEPRECATION")
+                            val offset = (160 * view.scale).toInt()
+                            view.scrollBy(0, -offset)
+                        }
                         restored = true
                     }
                 })
             }
         }
-        loadUrl(url)
+        loadUrl(guideSearchAddress(search))
     }
 }
 
-private fun guideHtml(assets: AssetManager, asset: String, dark: Boolean, canCheckForUpdates: Boolean): WebResourceResponse {
+private fun guideHtml(assets: AssetManager, asset: String, dark: Boolean, canCheckForUpdates: Boolean,
+    search: GuideSearchRequest,
+): WebResourceResponse {
     val classes = "in-app" + (if (dark) " dark" else "") + (if (canCheckForUpdates) " direct" else "")
     val html = assets.open(asset).bufferedReader(Charsets.UTF_8).use { it.readText() }
         .replaceFirst("<body>", "<body class=\"$classes\">")
         .replace(" download>", ">")
     return WebResourceResponse("text/html", "UTF-8", 200, "OK", mapOf(
-        "Content-Security-Policy" to "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'",
-    ), guideImageReferences(html, dark).byteInputStream())
+        "Content-Security-Policy" to "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'self'",
+    ), searchableGuideHtml(guideImageReferences(html, dark), search).byteInputStream())
 }
 
 internal fun guideExternalLink(address: String): String? = when (address) {

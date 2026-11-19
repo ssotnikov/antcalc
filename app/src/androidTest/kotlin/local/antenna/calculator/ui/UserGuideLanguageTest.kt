@@ -15,13 +15,13 @@ class UserGuideLanguageTest : CalculatorUiFixture() {
         start()
         compose.onNodeWithTag("menu").performClick()
         compose.onNodeWithTag("open-user-guide").performClick()
-        assertDocument("AntCalc · Руководство пользователя")
+        assertDocument("Приложение · Руководство пользователя")
 
         switchLanguage(AppLanguage.ENGLISH)
-        assertDocument("AntCalc · User Guide")
+        assertDocument("The app · User Guide")
 
         switchLanguage(AppLanguage.RUSSIAN)
-        assertDocument("AntCalc · Руководство пользователя")
+        assertDocument("Приложение · Руководство пользователя")
     }
 
     private fun switchLanguage(language: AppLanguage) {
@@ -34,7 +34,7 @@ class UserGuideLanguageTest : CalculatorUiFixture() {
         var title: String? = null
         compose.waitUntil(10_000) {
             compose.runOnUiThread { title = compose.activity.window.decorView.findWebView()?.title }
-            title?.startsWith("AntCalc · ") == true
+            title == expected
         }
         assertEquals(expected, title)
     }

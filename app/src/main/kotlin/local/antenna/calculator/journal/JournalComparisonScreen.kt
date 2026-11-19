@@ -157,7 +157,7 @@ private fun ComparisonFields(
                     val new = newValues.getOrNull(index)
                     val changed = label != dateLabel && old != new
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(label, style = MaterialTheme.typography.labelMedium, color = colors.secondary)
+                        JournalDetailLabel(label)
                         if (stacked) {
                             ComparisonValue(old, changed, false, beforeLabel, Modifier.fillMaxWidth(), showRole = true)
                             ComparisonValue(new, changed, true, afterLabel, Modifier.fillMaxWidth(), showRole = true)

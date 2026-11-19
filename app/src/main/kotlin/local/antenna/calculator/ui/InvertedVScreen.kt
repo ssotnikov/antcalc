@@ -157,8 +157,8 @@ internal fun InvertedVScreen(
             modifier = Modifier.fillMaxWidth().testTag("inverted-v-copy"),
         ) { Text(stringResource(R.string.copy_result)) }
         HelpText(R.string.inverted_v_limits)
-        TextButton(onClick = { showDetails = !showDetails }, modifier = Modifier.testTag("inverted-v-details")) {
-            Text(stringResource(if (showDetails) R.string.matching_less else R.string.inverted_v_details))
+        PanelButton(showDetails, onClick = { showDetails = !showDetails }, modifier = Modifier.testTag("inverted-v-details")) {
+            Text(stringResource(R.string.calculation_formulas_label))
         }
         if (showDetails) {
             FormulaPlate(R.string.inverted_v_span, R.drawable.formula_inverted_v_span,
@@ -171,7 +171,7 @@ internal fun InvertedVScreen(
         }
         val source = if (russian) R.string.source_inverted_v_ru_title else R.string.source_inverted_v_en_title
         val address = stringResource(if (russian) R.string.source_inverted_v_ru_url else R.string.source_inverted_v_en_url)
-        TextButton(
+        WebLinkButton(
             onClick = { openSourceWithFeedback(context, address) },
             modifier = Modifier.testTag("inverted-v-source"),
         ) { Text(stringResource(source)) }

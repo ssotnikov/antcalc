@@ -1,0 +1,4 @@
+<resources>
+    <string name="calculation_formulas_label">Formulas</string>
+    <string name="sweep_table_label">Data table</string>
+</resources>

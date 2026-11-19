@@ -131,6 +131,6 @@ class AntennaRotationTest : CalculatorUiFixture() {
     private fun openAntennaTool(tag: String) {
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag(tag).performScrollTo().performClick()
+        compose.scrollToAntennaTool(tag).performClick()
     }
 }

@@ -28,7 +28,7 @@ class YagiSegmentationNavigationTest : CalculatorUiFixture() {
         start(draft.copy(settings = draft.settings.copy(language = AppLanguage.RUSSIAN, theme = AppTheme.DARK)))
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-yagi-calculator")
+        compose.scrollToAntennaTool("open-yagi-calculator").performClick()
         compose.onNodeWithTag("open-catalog-segmentation").assertDoesNotExist()
         click("catalog-segmentation-example")
         click("open-catalog-segmentation")

@@ -77,13 +77,14 @@
     <string name="moxon_desc_fdim">W4RNL wire frame using AWG 14 copper. The author gives dimensions for this specific frequency. A fixed installation can use four corner suspension points.</string>
     <string name="moxon_material_fdim">AWG 14 copper wire</string>
     <string name="moxon_desc_satellite">The 145.825 MHz frame is fed directly by coax and couples to the driven element of a five-element 436.500 MHz Yagi. The article describes a wooden boom and a coiled-coax choke. The build uses 3.2 mm diameter wire. The downloadable MMANA-GAL model specifies a 3.2 mm radius (6.4 mm diameter). SWR, gain and F/B come from the published simulation.</string>
-    <string name="moxon_material_satellite">3.2 mm aluminum wire</string>
+    <string name="moxon_material_satellite">For construction: 3.2 mm diameter aluminum rod</string>
     <string name="moxon_fact_satellite_1">70 cm · coupled element · position / length — 127 / 334 mm</string>
     <string name="moxon_fact_satellite_2">70 cm · director 1 · position / length — 293 / 324 mm</string>
     <string name="moxon_fact_satellite_3">70 cm · director 2 · position / length — 477 / 280 mm</string>
     <string name="moxon_fact_satellite_4">70 cm · director 3 · position / length — 719 / 296 mm</string>
     <string name="moxon_fact_satellite_5">70 cm · director 4 · position / length — 925 / 274 mm</string>
     <string name="moxon_fact_satellite_6">Boom — 15 × 15 mm / Ø 1″</string>
+    <string name="moxon_fact_satellite_model_diameter">The published MMANA file uses a 3.2 mm radius (6.4 mm diameter). The SWR, gain and F/B below are simulation results from the author’s article. Measure SWR on both bands after assembly.</string>
     <string name="moxon_fact_satellite_7">145.825 / 436.500 MHz · free-space model · SWR / gain / F/B — 1.07:1 / 1.09:1 · 3.95 / 8.06 dBd · 14.53 / 38.58 dB</string>
     <string name="moxon_fact_satellite_8">Same frequencies · model 1.5 m above ground (εᵣ = 13, σ = 5 mS/m) — 1.13:1 / 1.09:1 · 9.03 / 13.50 dBd · 15.34 / 16.99 dB</string>
     <string name="moxon_desc_lora">The compact 868 MHz frame uses 2 mm copper wire. Its printed support is integrated with a Heltec housing.</string>

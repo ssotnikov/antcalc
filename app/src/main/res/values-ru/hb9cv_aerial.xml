@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hb9cv_aerial_name">Расчёт по частоте · 3G‑Aerial</string>
+    <string name="hb9cv_aerial_name">Расчет по частоте · 3G‑Aerial</string>
     <string name="hb9cv_aerial_default_frequency">145,000</string>
     <string name="hb9cv_aerial_intro">Начальные размеры двух активных вибраторов с гамма-согласованием по опубликованной модели ANSYS HFSS.</string>
     <string name="hb9cv_aerial_frequency">Рабочая частота, МГц</string>
     <string name="hb9cv_aerial_frequency_range">Введите частоту от 100 до 1500 МГц.</string>
     <string name="hb9cv_aerial_overhang_range">Необязательно. Допустимо от 0 до 10 000 мм.</string>
-    <string name="hb9cv_aerial_dimensions">Расчётные размеры</string>
+    <string name="hb9cv_aerial_dimensions">Расчетные размеры</string>
     <string name="hb9cv_aerial_scaling_note">При смене частоты масштабируются все размеры модели, включая диаметры D и d и зазор h. Например, с 145 до 435 МГц диаметр D уменьшается с 12,6 до 4,2 мм. При замене диаметра, зазора или материала проверьте согласование новой конструкции.</string>
     <string name="hb9cv_aerial_wavelength">λ · Длина волны</string>
     <string name="hb9cv_aerial_lr">LR · Задний вибратор</string>
@@ -17,7 +17,7 @@
     <string name="hb9cv_aerial_diameter">D · Диаметр вибраторов и траверсы</string>
     <string name="hb9cv_aerial_gamma_diameter">d · Диаметр гамма-проводника</string>
     <string name="hb9cv_aerial_gap">h · Зазор между поверхностями</string>
-    <string name="hb9cv_aerial_capacitance">C · Оценка ёмкости</string>
+    <string name="hb9cv_aerial_capacitance">C · Оценка емкости</string>
     <string name="hb9cv_aerial_mm">мм</string>
     <string name="hb9cv_aerial_m">м</string>
     <string name="hb9cv_aerial_pf">пФ</string>
@@ -27,10 +27,10 @@
     <string name="hb9cv_aerial_boom_hint">Введите оба торцевых отступа, чтобы получить длину траверсы и позиции вибраторов.</string>
     <string name="hb9cv_aerial_position_rear">Позиция LR от заднего торца</string>
     <string name="hb9cv_aerial_position_front">Позиция LF от заднего торца</string>
-    <string name="hb9cv_aerial_formulas">При f в МГц длина волны λ = 299,792458 / f в метрах. Каждый размер для 144 МГц из списка ниже умножьте на 144 / f. Оценка ёмкости C = 2304 / f в пФ. Длина траверсы равна A плюс оба отступа.</string>
+    <string name="hb9cv_aerial_formulas">При f в МГц длина волны λ = 299,792458 / f в метрах. Каждый размер для 144 МГц из списка ниже умножьте на 144 / f. Оценка емкости C = 2304 / f в пФ. Длина траверсы равна A плюс оба отступа.</string>
     <string name="hb9cv_aerial_tuning">Настройка антенны</string>
     <string name="hb9cv_aerial_tuning_pattern">Чтобы улучшить подавление назад, удлините LR и укоротите LF на одинаковую величину. Уточните A и проверьте диаграмму направленности.</string>
-    <string name="hb9cv_aerial_tuning_swr">Для минимума КСВ перемещайте оба гамма-контакта на одинаковую величину и подбирайте ёмкость последовательного конденсатора по измерениям собранной антенны.</string>
+    <string name="hb9cv_aerial_tuning_swr">Для минимума КСВ перемещайте оба гамма-контакта на одинаковую величину и подбирайте емкость последовательного конденсатора по измерениям собранной антенны.</string>
     <string name="hb9cv_aerial_s1p">Импорт измерений VNA анализатора</string>
     <string name="hb9cv_aerial_sources">Источник и графики модели</string>
     <string name="hb9cv_aerial_graphs_note">В оригинале опубликованы графики моделирования импеданса, КСВ, усиления, подавления назад, диаграммы направленности и S11.</string>

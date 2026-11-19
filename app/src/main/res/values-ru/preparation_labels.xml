@@ -1,0 +1,7 @@
+<resources>
+    <string name="blank_dimensions">Размеры заготовок</string>
+    <string name="blank_parts_list">Список заготовок</string>
+    <string name="assembly_dimensions_table">Таблица размеров для сборки</string>
+    <string name="assembly_dimensions">Размеры для сборки</string>
+    <string name="trap_total_blank_length">Общая длина заготовок</string>
+</resources>

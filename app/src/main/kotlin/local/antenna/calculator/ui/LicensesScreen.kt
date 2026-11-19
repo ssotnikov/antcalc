@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -159,7 +158,7 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
             color = MaterialTheme.colorScheme.secondary,
         )
         credit.publications.forEach { publication ->
-            TextButton(
+            WebLinkButton(
                 onClick = { openSourceWithFeedback(context, publication.url) },
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -167,12 +166,12 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
             }
         }
         credit.terms?.let { terms ->
-            HelpText(terms.description)
+            LicenseHelpText(terms.description)
             if (terms.description == R.string.yagi_dg_notice &&
                 LocalConfiguration.current.locales[0].language == "ru") {
-                HelpText(R.string.yagi_dg_rights)
+                LicenseHelpText(R.string.yagi_dg_rights)
             }
-            TextButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
+            WebLinkButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
                 Text(stringResource(R.string.licenses_author_terms))
             }
         }
@@ -189,12 +188,12 @@ internal fun TrapPublicationLinks(profile: Profile? = null) {
             listOf(CreditedPublication(titles[it.ordinal], trapPublications[it.ordinal]))))
     }
     if (profile == null || profile == Profile.VK2EVB) {
-        TextButton(onClick = { openSourceWithFeedback(context, TRAP_ZL1BJQ_URL) }, modifier = Modifier.fillMaxWidth()) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, TRAP_ZL1BJQ_URL) }, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.trap_zl1bjq_source), modifier = Modifier.fillMaxWidth())
         }
     }
     listOf(R.string.trap_arrl_source to TRAP_ARRL_URL, R.string.trap_wheeler_source to TRAP_WHEELER_URL).forEach { (title, url) ->
-        TextButton(onClick = { openSourceWithFeedback(context, url) }, modifier = Modifier.fillMaxWidth()) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, url) }, modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(title), modifier = Modifier.fillMaxWidth())
         }
     }
@@ -213,20 +212,20 @@ internal fun LicensesScreen() {
             .verticalScroll(rememberPageScrollState()).padding(20.dp).testTag("licenses-screen"),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        HelpText(R.string.licenses_mit)
+        LicenseHelpText(R.string.licenses_mit)
         OpenNecLicense()
-        HelpText(R.string.licenses_intro)
+        LicenseHelpText(R.string.licenses_intro)
         publicationCredits.forEach { PublicationCreditCard(it) }
         MoxonSource.entries.groupBy { it.author }.forEach { (author, sources) ->
             Column {
                 SelectableText(author, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary)
                 sources.forEach { source ->
-                    TextButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
                         Text(source.title, modifier = Modifier.fillMaxWidth())
                     }
                 }
-                sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
+                sources.mapNotNull { it.terms }.distinct().forEach { LicenseHelpText(it) }
             }
         }
         Text(
@@ -241,11 +240,11 @@ internal fun LicensesScreen() {
                     style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary,
                 )
                 sources.forEach { source ->
-                    TextButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
                         Text(stringResource(source.title), modifier = Modifier.fillMaxWidth())
                     }
                 }
-                sources.mapNotNull { it.terms }.distinct().forEach { HelpText(it) }
+                sources.mapNotNull { it.terms }.distinct().forEach { LicenseHelpText(it) }
             }
         }
         CantennaSourceLinks()
@@ -256,9 +255,9 @@ internal fun LicensesScreen() {
         )
         HaloPublicationLinks()
         Text(stringResource(R.string.trap_sources), Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
-        HelpText(R.string.trap_rights)
+        LicenseHelpText(R.string.trap_rights)
         TrapPublicationLinks()
-        HelpText(R.string.licenses_rights)
+        LicenseHelpText(R.string.licenses_rights)
     }
 }
 
@@ -274,9 +273,15 @@ private fun OpenNecLicense() {
             Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        TextButton(onClick = { openSourceWithFeedback(context, OpenNec.SOURCE) }) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, OpenNec.SOURCE) }) {
             Text(stringResource(R.string.opennec_source))
         }
-        SelectableText(license, style = MaterialTheme.typography.bodySmall)
+        LicenseLinkedText(license, style = MaterialTheme.typography.bodySmall)
     }
+}
+
+@Composable
+private fun LicenseHelpText(resource: Int) {
+    LicenseLinkedText(stringResource(resource), style = MaterialTheme.typography.bodyMedium,
+        textColor = MaterialTheme.colorScheme.onSurfaceVariant)
 }

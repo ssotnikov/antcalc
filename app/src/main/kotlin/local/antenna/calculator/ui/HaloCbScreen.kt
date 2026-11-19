@@ -282,12 +282,13 @@ private fun HaloHeading(label: Int) {
 private fun HaloDisclosure(label: Int, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        TextButton(
+        PanelButton(
+            expanded,
             { expanded = !expanded },
             Modifier.testTag("halo-section-$label"),
             colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary),
         ) {
-            Text(stringResource(label) + if (expanded) " ▴" else " ▾")
+            Text(stringResource(label))
         }
         if (expanded) content()
     }

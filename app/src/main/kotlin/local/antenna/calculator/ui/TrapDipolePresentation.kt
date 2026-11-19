@@ -13,7 +13,7 @@ internal fun trapMetricLabel(resources: Resources, key: String): String {
         key == "trap_profile" -> text(R.string.trap_construction)
         key == "trap_band" -> text(R.string.trap_window)
         key == "trap_allowance" -> text(R.string.trap_allowance)
-        key == "trap_wire" -> text(R.string.trap_cut)
+        key == "trap_wire" -> text(R.string.trap_total_blank_length)
         key == "trap_material_0" -> "T20 · " + text(R.string.trap_pair_material)
         key == "trap_material_1" -> "T40 · " + text(R.string.trap_pair_material)
         key.startsWith("trap_nominal_") -> text(R.string.trap_original_length) + " " + key.last().uppercase()

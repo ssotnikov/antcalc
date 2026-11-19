@@ -3,10 +3,10 @@
     <string name="app_name">Антенный калькулятор</string>
     <string name="settings_write_failed">Не удалось сохранить настройки</string>
     <string name="settings_read_failed">Не удалось восстановить настройки. Расчеты доступны в памяти.</string>
-    <string name="settings_corrupt">Сохранённые данные повреждены. Автоматическая запись приостановлена.</string>
-    <string name="settings_unsupported">Версия сохранённых данных не поддерживается. Автоматическая запись приостановлена.</string>
+    <string name="settings_corrupt">Сохраненные данные повреждены. Автоматическая запись приостановлена.</string>
+    <string name="settings_unsupported">Версия сохраненных данных не поддерживается. Автоматическая запись приостановлена.</string>
     <string name="retry">Повторить</string>
-    <string name="reset_settings">Удалить сохранённые настройки и вернуть начальные значения</string>
+    <string name="reset_settings">Удалить сохраненные настройки и вернуть начальные значения</string>
     <string name="sizes">Расчет размеров</string>
     <string name="trimming">Подстройка антенны</string>
     <string name="settings">Настройки</string>
@@ -53,7 +53,7 @@
     <string name="ideal_five_eighths">Теоретическая длина излучателя 5/8 λ</string>
     <string name="five_eighths_note">Это пять восьмых длины волны в свободном пространстве. Для реальной вертикальной антенны 5/8 λ обычно подбирают согласующую цепь и подходящее проводящее основание или противовесы.</string>
     <string name="conductor_note">У диполя два одинаковых плеча. Полная длина — сумма их длин; зазор в точке питания не учитывается. Для штыря указана длина излучателя без противовесов. Противовесы или проводящее основание образуют вторую часть антенны и обеспечивают обратный путь высокочастотного тока. Их размеры и расположение влияют на настройку и подбираются отдельно.</string>
-    <string name="approximate">Приближённый расчет</string>
+    <string name="approximate">Приближенный расчет</string>
     <string name="sizing_note">Это начальные размеры для изготовления антенны. Окончательная длина зависит от диаметра проводника, изоляции, крепления и окружающих предметов. Проверьте резонансную частоту измерительным прибором и при необходимости подстройте длину.</string>
     <string name="trimming_note">Используйте результат как прогноз. Меняйте длину небольшими шагами в рабочих условиях установки и повторяйте измерение после каждого шага. При укорочении сначала снимите только часть рассчитанной длины.</string>
     <string name="dipole_note">Подстраивайте оба плеча одинаково. В расчете отдельно указаны общее изменение длины диполя и изменение одного плеча.</string>
@@ -81,7 +81,7 @@
     <string name="theme">Тема</string>
     <string name="theme_system">Системная</string>
     <string name="theme_light">Светлая</string>
-    <string name="theme_dark">Тёмная</string>
+    <string name="theme_dark">Темная</string>
     <string name="error_empty">Введите значение</string>
     <string name="error_incomplete">Завершите ввод числа</string>
     <string name="error_number">Введите положительное число с точкой или запятой, без знаков и внутренних пробелов</string>
@@ -92,20 +92,20 @@
     <string name="error_factor_range">Коэффициент должен быть больше 0 и не больше 1</string>
     <string name="error_frequency_step">Минимальный шаг частоты — 1 Гц</string>
     <string name="error_length_step">Минимальный шаг длины — 1 нм</string>
-    <string name="error_factor_step">Не более четырёх значащих десятичных знаков</string>
+    <string name="error_factor_step">Не более четырех значащих десятичных знаков</string>
     <string name="diagram_monopole">Lₛ — длина вертикального излучателя от точки питания до конца. Противовесы подбирают отдельно.</string>
     <string name="diagram_dipole">Lₐ — длина каждого из двух равных плеч. Полная длина Lᵈ равна 2Lₐ и исключает зазор питания.</string>
     <string name="about_summary">Частоту f подставляют в герцах, а длину волны λ получают в метрах. Скорость света в вакууме c = 299 792 458 м/с.</string>
     <string name="about_trimming">L₀ — фактическая длина антенны, L₁ — прогноз длины после подстройки. fₘ — измеренная резонансная частота, fₜ — целевая. Оценка предполагает тот же резонансный режим и практически неизменную конструкцию. Для антенн с катушками, трапами и сложной геометрией точность ниже.</string>
     <string name="app_version">Версия %1$s</string>
-    <string name="formula_wavelength_alt">Длина волны равна скорости света, делённой на частоту.</string>
+    <string name="formula_wavelength_alt">Длина волны равна скорости света, деленной на частоту.</string>
     <string name="formula_monopole_alt">Длина штыря равна одной четверти длины волны, умноженной на коэффициент k.</string>
     <string name="formula_dipole_alt">Полная длина диполя равна половине длины волны, умноженной на k. Длина каждого плеча равна половине полной длины диполя.</string>
     <string name="formula_five_eighths_alt">Длина равна пяти восьмым длины волны.</string>
     <string name="formula_trimming_alt">Новая длина равна исходной длине, умноженной на отношение измеренной резонансной частоты к желаемой.</string>
     <string name="formula_delta_alt">Изменение длины — разность новой и исходной длины.</string>
     <string name="formula_arm_alt">Новая длина каждого плеча равна половине новой полной длины диполя. Изменение одного плеча равно половине общего изменения длины.</string>
-    <string name="formula_lengths_key">Lₛ — длина штыря, Ld — полная длина диполя, La — длина одного плеча. Коэффициент укорочения k применяется к длине проводника, а не к длине волны. Его выбирают с учётом конструкции антенны.</string>
+    <string name="formula_lengths_key">Lₛ — длина штыря, Ld — полная длина диполя, La — длина одного плеча. Коэффициент укорочения k применяется к длине проводника, а не к длине волны. Его выбирают с учетом конструкции антенны.</string>
     <string name="formula_delta_note">Отрицательное ΔL означает прогноз уменьшения длины, положительное — увеличения. При равных частотах ΔL равно нулю.</string>
     <string name="materials_note">Нажмите на карточку, чтобы открыть материал в браузере. Для чтения нужен интернет.</string>
     <string name="browser_unavailable">Не найдено приложение для открытия ссылки. Установите браузер.</string>
@@ -114,23 +114,23 @@
     <string name="source_rsgb_description">Как рассчитать длину полуволнового диполя, собрать и настроить антенну.</string>
     <string name="source_analyzer_description">Статья ARRL о том, как использовать график КСВ и антенный анализатор при подстройке.</string>
     <string name="source_antenna_geometry_description">В учебнике ARRL показаны плечи полуволнового диполя и противовесы четвертьволнового штыря.</string>
-    <string name="source_nashua_description">Метод II даёт оценку новой длины диполя по измеренной и целевой резонансным частотам.</string>
+    <string name="source_nashua_description">Метод II дает оценку новой длины диполя по измеренной и целевой резонансным частотам.</string>
     <string name="source_reflection_description">Analog Devices объясняет, как комплексное сопротивление нагрузки связано с отражением, возвратными потерями и КСВ.</string>
     <string name="source_cable_delay_description">Keysight показывает, как выразить измеренную задержку через эквивалентную длину в свободном пространстве.</string>
     <string name="factor_ideal_preset">%1$s без поправки</string>
     <string name="factor_correction_preset">%1$s (−%2$d %%)</string>
     <string name="resonance_note">Укажите частоту, где входная реактивность X близка к нулю. Если измеряете только КСВ, частоту его минимума можно использовать как приближение.</string>
-    <string name="trimming_model_warning" formatted="false">Введённая длина отличается более чем на 25 % от начальной оценки для выбранного типа при измеренной частоте и k = 0,95. Проверьте тип антенны, единицы длины и резонансный режим перед изменением длины. Это ориентир для проверки модели.</string>
+    <string name="trimming_model_warning" formatted="false">Введенная длина отличается более чем на 25 % от начальной оценки для выбранного типа при измеренной частоте и k = 0,95. Проверьте тип антенны, единицы длины и резонансный режим перед изменением длины. Это ориентир для проверки модели.</string>
     <string name="about_dimensions_heading">Длина волны и размеры антенны</string>
     <string name="about_measurement_heading">Измерение и настройка</string>
-    <string name="about_measurement_note">Измеряйте импеданс в окончательных условиях установки. При измерении с VNA задайте плоскость отсчёта у точки питания или компенсируйте влияние измерительного кабеля.</string>
+    <string name="about_measurement_note">Измеряйте импеданс в окончательных условиях установки. При измерении с VNA задайте плоскость отсчета у точки питания или компенсируйте влияние измерительного кабеля.</string>
     <string name="tuning_diagram_title">Направление подстройки</string>
     <string name="tuning_diagram_shorten">Если измеренная резонансная частота fₘ ниже целевой fₜ, уменьшение длины обычно сдвигает резонанс вверх.</string>
     <string name="tuning_diagram_lengthen">Если измеренная резонансная частота fₘ выше целевой fₜ, увеличение длины обычно сдвигает резонанс вниз.</string>
     <string name="tuning_diagram_note">Условный график КСВ без шкалы. Минимум показан рядом с fₘ для иллюстрации. На реальной антенне частота минимума КСВ может отличаться от частоты, где X близка к нулю.</string>
 
-    <string name="inverted_v_title">Диполь «Перевёрнутая V»</string>
-    <string name="inverted_v_intro">Расчет начальной длины каждого плеча диполя, размаха и высоты концов над землёй.</string>
+    <string name="inverted_v_title">Диполь «Перевернутая V»</string>
+    <string name="inverted_v_intro">Расчет начальной длины каждого плеча диполя, размаха и высоты концов над землей.</string>
     <string name="inverted_v_inputs">Исходные данные</string>
     <string name="inverted_v_mode">Источник длины плеча</string>
     <string name="inverted_v_measured">Фактическая длина</string>
@@ -154,17 +154,17 @@
     <string name="inverted_v_save">Сохранить в проект</string>
     <string name="inverted_v_details">Показать формулы</string>
     <string name="inverted_v_formula_alt">D = 2L × sin(α/2). h = H − L × cos(α/2).</string>
-    <string name="inverted_v_details_text">L — длина одного плеча, H — высота вершины, α — угол между плечами. D — горизонтальное расстояние между концами, h — высота концов над землёй. Начальная оценка длины плеча равна k × c / (4 × f).</string>
+    <string name="inverted_v_details_text">L — длина одного плеча, H — высота вершины, α — угол между плечами. D — горизонтальное расстояние между концами, h — высота концов над землей. Начальная оценка длины плеча равна k × c / (4 × f).</string>
     <string name="inverted_v_diagram_alt">Два равных плеча длиной по %1$s. Высота вершины %2$s, высота концов %3$s, горизонтальный разнос %4$s, угол при вершине %5$s°.</string>
-    <string name="references_inverted_v">Диполь «Перевёрнутая V»</string>
-    <string name="source_inverted_v_ru_description">В начале статьи описан подвес обычного диполя «перевёрнутая V». Основная часть посвящена варианту с петлевым вибратором.</string>
+    <string name="references_inverted_v">Диполь «Перевернутая V»</string>
+    <string name="source_inverted_v_ru_description">В начале статьи описан подвес обычного диполя «перевернутая V». Основная часть посвящена варианту с петлевым вибратором.</string>
     <string name="source_inverted_v_en_description">На рис. 2A показан диполь с наклонными плечами и питанием в центре. Автор объясняет, почему такой подвес занимает меньше места по горизонтали.</string>
     <string name="inverted_v_span_alt">D = 2L × sin(α/2).</string>
     <string name="inverted_v_height_alt">h = H − L × cos(α/2).</string>
     <string name="references_smith">Диаграмма Смита</string>
     <string name="references_ground_plane">Четвертьволновая антенна Ground Plane</string>
-    <string name="inverted_v_illustration">Два наклонённых вниз плеча диполя с точкой питания на вершине мачты.</string>
-    <string name="inverted_v_definition">Инвертед-V диполь — полуволновая дипольная антенна с центральной точкой питания, расположенной выше концов наклонённых вниз плеч.</string>
+    <string name="inverted_v_illustration">Два наклоненных вниз плеча диполя с точкой питания на вершине мачты.</string>
+    <string name="inverted_v_definition">Инвертед-V диполь — полуволновая дипольная антенна с центральной точкой питания, расположенной выше концов наклоненных вниз плеч.</string>
     <string name="source_ground_plane_m0ukd_description">Фотографии сборки и калькулятор четвертьволнового штыря с наклонными противовесами. Метод оценки длины противовесов отличается от модели приложения.</string>
     <string name="source_ground_plane_rlocman_description">Конструкция с горизонтальными противовесами и согласующим отрезком кабеля из журнала «Радио».</string>
     <string name="source_ground_plane_qrz_description">Глава об антеннах Си-Би, их питании и выборе высоты установки.</string>
@@ -178,8 +178,8 @@
     <string name="source_smith_radioskot_description">Интерактивная диаграмма и учебный пример компенсации реактивности для нагрузки 15 + j25 Ом на 144 МГц.</string>
     <string name="trimming_initial_estimate">Начальная оценка длины из расчета размеров: %1$s при %2$s</string>
     <string name="ground_plane_title">Ground Plane (GP) Антенна</string>
-    <string name="ground_plane_intro">Расчет начальных длин штыря и четырёх противовесов. Оценка размаха противовесов и высоты их концов над землёй.</string>
-    <string name="ground_plane_definition">Четвертьволновая вертикальная антенна с противовесами (граундплейн), или несимметричный заземлённый вибратор.</string>
+    <string name="ground_plane_intro">Расчет начальных длин штыря и четырех противовесов. Оценка размаха противовесов и высоты их концов над землей.</string>
+    <string name="ground_plane_definition">Четвертьволновая вертикальная антенна с противовесами (граундплейн), или несимметричный заземленный вибратор.</string>
     <string name="ground_plane_illustration">Вертикальный штырь на мачте с четырьмя наклонными противовесами у точки питания.</string>
     <string name="ground_plane_estimated">По частоте</string>
     <string name="ground_plane_manual">Фактические длины</string>
@@ -208,7 +208,7 @@
     <string name="ground_plane_clearance_alt">Высота концов равна высоте точки питания за вычетом длины противовеса, умноженной на синус бета.</string>
     <string name="references_smith_video">Видеолекции и практические демонстрации</string>
     <string name="references_smith_practical">Практические статьи и разборы</string>
-    <string name="references_smith_interactive">Интерактивные тренажёры</string>
+    <string name="references_smith_interactive">Интерактивные тренажеры</string>
     <string name="antenna_fundamental_estimate">Оценка основной частоты</string>
     <string name="ground_plane_fundamental_help">Оценка по формуле f₁ ≈ k·c/(4L), где L — длина штыря, k — его коэффициент укорочения. На фактический резонанс влияют длина и наклон противовесов, крепление и окружение.</string>
     <string name="inverted_v_fundamental_help">Оценка по формуле f₁ ≈ k·c/(4L), где L — длина одного из двух равных плеч, k — коэффициент укорочения. На фактический резонанс влияют угол между плечами, высота подвеса и провод.</string>

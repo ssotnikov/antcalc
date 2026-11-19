@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +25,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import kotlin.math.log2
 import local.antenna.calculator.R
@@ -84,11 +82,11 @@ internal fun CantennaReferencePanels(
 @Composable
 private fun CantennaReferencePanel(label: Int, tag: String, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val state = stringResource(if (expanded) R.string.jpole_expanded else R.string.jpole_collapsed)
     Column {
-        TextButton(
+        PanelButton(
+            expanded,
             onClick = { expanded = !expanded },
-            modifier = Modifier.testTag(tag).semantics { stateDescription = state },
+            modifier = Modifier.testTag(tag),
         ) { Text(stringResource(label)) }
         if (expanded) content()
     }

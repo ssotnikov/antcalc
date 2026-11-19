@@ -49,9 +49,9 @@ internal fun SmithReferencePanels(palette: SmithPalette, format: (Double) -> Str
         Row(Modifier.fillMaxWidth().clickable(role = Role.Button) { expanded = !expanded }
             .testTag("smith-tables").semantics { stateDescription = state }.padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            PanelChevron(expanded, MaterialTheme.colorScheme.secondary)
             Text(stringResource(R.string.smith_tables), Modifier.weight(1f), color = MaterialTheme.colorScheme.secondary,
                 style = MaterialTheme.typography.titleMedium)
-            Text(if (expanded) "▾" else "▸", color = MaterialTheme.colorScheme.secondary)
         }
         if (expanded) {
             SmithHeading(R.string.smith_table_swr)

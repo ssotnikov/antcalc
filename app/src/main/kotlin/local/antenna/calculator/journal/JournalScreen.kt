@@ -325,12 +325,14 @@ internal fun JournalScreen(
                                 stringResource(R.string.journal_calculation_input),
                                 calculation.inputs,
                                 titleDividerColor = MaterialTheme.colorScheme.outline,
+                                labelColor = MaterialTheme.colorScheme.secondary,
                                 selectable = !record.restrictedYagiMaterials,
                             )
                             JournalCalculationTable(
                                 stringResource(R.string.journal_calculation_output),
                                 calculation.outputs,
                                 titleDividerColor = MaterialTheme.colorScheme.primary,
+                                labelColor = MaterialTheme.colorScheme.primary,
                                 selectable = !record.restrictedYagiMaterials,
                             )
                         }
@@ -673,6 +675,7 @@ private fun JournalCalculationTable(
     title: String,
     details: List<Pair<String, String>>,
     titleDividerColor: Color,
+    labelColor: Color,
     selectable: Boolean = true,
 ) {
     if (details.isEmpty()) return
@@ -695,7 +698,7 @@ private fun JournalCalculationTable(
                         Text(
                             label,
                             Modifier.weight(3f).alignByBaseline(),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = labelColor,
                             style = MaterialTheme.typography.bodyMedium,
                         )
                         JournalLinkedText(
@@ -719,12 +722,25 @@ internal fun JournalDetails(details: List<Pair<String, String>>, spacing: Dp = 1
         Column(verticalArrangement = Arrangement.spacedBy(spacing)) {
             for ((label, value) in details) {
                 Column(Modifier.semantics(mergeDescendants = true) {}) {
-                    Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.secondary)
+                    JournalDetailLabel(label)
                     JournalLinkedText(value, style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }
     }
+}
+
+internal const val CALCULATION_LABEL_SEPARATOR = " · "
+
+@Composable
+internal fun JournalDetailLabel(label: String) {
+    val resultPrefix = stringResource(R.string.journal_calculation_output) + CALCULATION_LABEL_SEPARATOR
+    val colors = MaterialTheme.colorScheme
+    Text(
+        label,
+        style = MaterialTheme.typography.labelMedium,
+        color = if (label.startsWith(resultPrefix)) colors.primary else colors.secondary,
+    )
 }
 
 @Composable

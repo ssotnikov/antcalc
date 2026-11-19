@@ -144,12 +144,12 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         val text = copy()
         listOf("Симметричный диполь", "Полная длина двух плеч: 1000 мм", "Измеренная резонансная частота: 145,000 МГц",
             "Целевая частота: 155,000 МГц", "Оценка полной длины диполя: 935 мм", "Изменение каждого плеча: Уменьшение на 32 мм",
-            "Оценка длины каждого плеча: 468 мм", "Приближённый расчет").forEach { assertTrue(text, text.contains(it)) }
+            "Оценка длины каждого плеча: 468 мм", "Приближенный расчет").forEach { assertTrue(text, text.contains(it)) }
     }
 
     @Test fun unusualAntennaLengthShowsWarningWithTheEstimate() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "1900")
-        val warning = "Введённая длина отличается более чем на 25 %"
+        val warning = "Введенная длина отличается более чем на 25 %"
         compose.onNodeWithText(warning, substring = true).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("new-length").performScrollTo().assertTextContains("1777 мм")
         val text = copy()
@@ -183,7 +183,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         start()
         val text = copy()
         listOf("Частота: 145,000 МГц", "Коэффициент укорочения k: 0,95", "Четвертьволновый штырь: 491 мм",
-            "Полная длина диполя: 982 мм", "Длина одного плеча: 491 мм", "Длина волны λ: 2068 мм", "Приближённый расчет")
+            "Полная длина диполя: 982 мм", "Длина одного плеча: 491 мм", "Длина волны λ: 2068 мм", "Приближенный расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 
@@ -208,7 +208,7 @@ class CalculatorResultsTest : CalculatorUiFixture() {
         start(); trimming(); edit(FieldKey.ACTUAL_LENGTH, "500")
         val text = copy()
         listOf("Фактическая длина штыря: 500 мм", "Измеренная резонансная частота: 145,000 МГц", "Целевая частота: 155,000 МГц",
-            "Уменьшение на 32 мм", "Оценка новой длины штыря: 468 мм", "Приближённый расчет")
+            "Уменьшение на 32 мм", "Оценка новой длины штыря: 468 мм", "Приближенный расчет")
             .forEach { assertTrue(text, text.contains(it)) }
     }
 

@@ -32,7 +32,7 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         start()
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-yagi-calculator").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-yagi-calculator").performClick()
         val picker = compose.onNodeWithTag("yagi-profile").performScrollTo()
         val width = picker.fetchSemanticsNode().boundsInRoot.width
         picker.performClick()
@@ -67,9 +67,13 @@ class YagiCalculatorTest : CalculatorUiFixture() {
             start(fontScale = 2f)
             compose.onNodeWithTag("nav-TOOLS").performClick()
             compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-            compose.onNodeWithTag("open-yagi-calculator").performScrollTo().performClick()
+            compose.scrollToAntennaTool("open-yagi-calculator").performClick()
             compose.onNodeWithTag("yagi-calculator").assertExists()
-            compose.onNodeWithText("Размеры ведомости относятся к выбранной конструкции", substring = true)
+            val dimensions = hasAnyAncestor(hasTestTag("yagi-dimensions-table"))
+            for (designation in listOf("R", "DE", "D1", "D2")) {
+                compose.onNode(hasText(designation) and dimensions).assertExists()
+            }
+            compose.onNodeWithText("Размеры заготовок относятся к выбранной конструкции", substring = true)
                 .performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("yagi-open-guide").performScrollTo().performClick()
             compose.onNodeWithTag("yagi-guide").assertExists()
@@ -199,11 +203,11 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         compose.onNodeWithText("Опорная геометрия").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Пересчитанная геометрия").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("opennec-smith-plot").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("Жёлтый пунктир", substring = true).performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Желтый пунктир", substring = true).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("opennec-low").performScrollTo().performTextReplacement("174")
         compose.onNodeWithTag("opennec-result").assertDoesNotExist()
         compose.onNodeWithTag("ys-gap").performScrollTo().performTextReplacement("10")
-        compose.onNodeWithText("Модель питания для вибратора с физическим зазором ещё не проверена.",
+        compose.onNodeWithText("Модель питания для вибратора с физическим зазором еще не проверена.",
             substring = true).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("ys-result-diagram").assertExists()
     }

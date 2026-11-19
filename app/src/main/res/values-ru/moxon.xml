@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="moxon_title">Антенна Моксон</string>
-    <string name="moxon_card">Опубликованные конструкции и расчёт размеров по частоте и диаметру.</string>
+    <string name="moxon_card">Опубликованные конструкции и расчет размеров по частоте и диаметру.</string>
     <string name="moxon_published">Готовая конструкция</string>
     <string name="moxon_calculate">Расчет по частоте</string>
     <string name="moxon_mode">Режим</string>
@@ -34,7 +34,7 @@
     <string name="moxon_original">Размеры в исходных единицах</string>
     <string name="moxon_partial">В публикации есть отдельные параметры конструкции. Полный набор размеров элементов отсутствует.</string>
     <string name="moxon_facts">Дополнительные данные из публикации</string>
-    <string name="moxon_stock">Заготовки по публикации</string>
+    <string name="moxon_stock">Список заготовок</string>
     <string name="moxon_stock_piece">Заготовка %1$s</string>
     <string name="moxon_stock_boom">Траверса</string>
     <string name="moxon_allowance">Припуск на торец, мм</string>

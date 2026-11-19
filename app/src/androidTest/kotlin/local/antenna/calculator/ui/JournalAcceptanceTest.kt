@@ -128,7 +128,7 @@ class JournalAcceptanceTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-halo")
+        compose.scrollToAntennaTool("open-halo").performClick()
         click("halo-variant")
         compose.onNodeWithTag("halo-variant-SQUARE").performClick()
         edit("halo-frequency", "27.405")
@@ -191,7 +191,7 @@ class JournalAcceptanceTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-yagi-calculator")
+        compose.scrollToAntennaTool("open-yagi-calculator").performClick()
         val suffix = UUID.randomUUID().toString().take(6)
         for (profile in YagiProfile.entries) {
             val title = "Yagi ${profile.id} $suffix"
@@ -290,7 +290,7 @@ class JournalAcceptanceTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-slim-jim")
+        compose.scrollToAntennaTool("open-slim-jim").performClick()
 
         click("slim-jim-save")
         compose.onNodeWithTag("back").performClick()
@@ -323,7 +323,7 @@ class JournalAcceptanceTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-slim-jim")
+        compose.scrollToAntennaTool("open-slim-jim").performClick()
         val copy = compose.onNodeWithTag("slim-jim-copy").performScrollTo()
         val position = copy.fetchSemanticsNode().boundsInRoot.top
         for (menuItem in listOf("open-settings", "open-about", "open-references")) {
@@ -487,7 +487,7 @@ class JournalAcceptanceTest {
         repeat(2) { compose.onNodeWithTag("back").performClick() }
 
         click("open-antenna-parameter-tools")
-        click("open-inverted-v")
+        compose.scrollToAntennaTool("open-inverted-v").performClick()
         click("inverted-v-mode-MEASURED")
         click("inverted-v-length-unit-METERS")
         edit("inverted-v-ARM", "5")
@@ -524,7 +524,7 @@ class JournalAcceptanceTest {
         compose.onNodeWithTag("journal-projects").performScrollToNode(projectCard)
         compose.onNode(projectCard).performClick()
         waitFor("journal-history")
-        val title = hasText("Inverted-V dipole") or hasText("Диполь «Перевёрнутая V»")
+        val title = hasText("Inverted-V dipole") or hasText("Диполь «Перевернутая V»")
         compose.onNodeWithTag("journal-history").performScrollToNode(title)
         compose.onNode(title and hasClickAction()).performClick()
         waitFor("journal-record-details")
@@ -540,7 +540,7 @@ class JournalAcceptanceTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-inverted-v")
+        compose.scrollToAntennaTool("open-inverted-v").performClick()
         click("inverted-v-mode-MEASURED")
         click("inverted-v-length-unit-METERS")
         edit("inverted-v-ARM", "5")
@@ -589,7 +589,7 @@ class JournalAcceptanceTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-ground-plane")
+        compose.scrollToAntennaTool("open-ground-plane").performClick()
         click("ground-plane-mode-MANUAL")
         click("ground-plane-length-unit-METERS")
         edit("ground-plane-WHIP", "0.5")

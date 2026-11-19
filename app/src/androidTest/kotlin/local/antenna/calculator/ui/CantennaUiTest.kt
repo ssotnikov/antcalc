@@ -123,7 +123,7 @@ class CantennaUiTest : CalculatorUiFixture() {
         start(fontScale = 2f)
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-cantenna").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-cantenna").performClick()
         compose.onNodeWithTag("cantenna-screen").assertIsDisplayed()
         compose.onNodeWithTag("antenna-rotating-view").performTouchInput { doubleClick() }
         compose.onNodeWithTag("antenna-full-view").assertIsDisplayed()

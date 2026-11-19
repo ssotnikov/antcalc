@@ -70,6 +70,7 @@ internal fun ProjectPicker(
             .testTag("project-transfer-project-picker"),
     ) {
         header()
+        Spacer(Modifier.height(16.dp))
         ProjectSearchField(
             query, {
                 query = it

@@ -75,7 +75,7 @@ internal fun ProjectForm(
     JournalColumn {
         JournalAntennaIllustration(type)
         problem?.let { Text(stringResource(it.label()), color = MaterialTheme.colorScheme.error) }
-        JournalTextField(title, R.string.journal_project_name, R.string.journal_example_name, "journal-name", enabled,
+        JournalTextField(title, R.string.journal_project_name, null, "journal-name", enabled,
             modifier = Modifier.bringIntoViewRequester(titleLocation), limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { attempted && title.text.isBlank() })
         ChoicePicker(stringResource(R.string.antenna_type), AntennaType.entries, type,
             { stringResource(it.journalLabel()) }, { if (enabled) type = it }, "journal-type")

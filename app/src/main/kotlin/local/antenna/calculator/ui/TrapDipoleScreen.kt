@@ -365,6 +365,6 @@ private fun TrapDisclosure(label: Int, content: @Composable () -> Unit) {
 
 @Composable
 private fun TrapDisclosure(label: Int, open: Boolean, onOpen: (Boolean) -> Unit, content: @Composable () -> Unit) {
-    TextButton({ onOpen(!open) }, Modifier.testTag("trap-section-$label")) { Text(stringResource(label) + if (open) " ▴" else " ▾") }
+    PanelButton(open, { onOpen(!open) }, Modifier.testTag("trap-section-$label")) { Text(stringResource(label)) }
     if (open) Column(verticalArrangement = Arrangement.spacedBy(8.dp)) { content() }
 }

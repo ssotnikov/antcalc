@@ -7,7 +7,7 @@
     <string name="opennec_check">Проверить в NEC</string>
     <string name="opennec_conditions">OpenNEC 2.4.1. Свободное пространство, идеально проводящие круглые элементы, источник напряжения в центре вибратора, Z₀ = 50 Ом. Усиление показано в направлении директоров. F/B сравнивает направления 0° и 180°.</string>
     <string name="opennec_mounted">Для NEC нужны размеры прямых элементов из модели. Монтажные размеры доступны для пропорционального переноса.</string>
-    <string name="opennec_split">Модель питания для вибратора с физическим зазором ещё не проверена. Расчёт размеров доступен.</string>
+    <string name="opennec_split">Модель питания для вибратора с физическим зазором еще не проверена. Расчет размеров доступен.</string>
     <string name="opennec_unavailable">Ядро OpenNEC недоступно на этом устройстве.</string>
     <string name="opennec_low">От, МГц</string>
     <string name="opennec_high">До, МГц</string>
@@ -17,9 +17,9 @@
     <string name="opennec_invalid_band">Укажите возрастающие частоты с разницей не менее 20 Гц и порог КСВ от 1 до 99.</string>
     <string name="opennec_invalid_model">Размеры или число сегментов выходят за границы модели NEC.</string>
     <string name="opennec_run">Рассчитать</string>
-    <string name="opennec_cancel">Отменить расчёт</string>
-    <string name="opennec_cancelled">Расчёт NEC отменён.</string>
-    <string name="opennec_inputs_changed">Параметры изменились. Запустите расчёт для новых данных.</string>
+    <string name="opennec_cancel">Отменить расчет</string>
+    <string name="opennec_cancelled">Расчет NEC отменен.</string>
+    <string name="opennec_inputs_changed">Параметры изменились. Запустите расчет для новых данных.</string>
     <string name="opennec_failed">NEC не смог рассчитать эту геометрию.</string>
     <string name="opennec_at_frequency">Показатели на %1$s МГц</string>
     <string name="opennec_reference">Опорная геометрия</string>
@@ -36,10 +36,10 @@
     <string name="opennec_goal_reached">Цель достигнута на сетке. Максимальный КСВ %1$s.</string>
     <string name="opennec_goal_missed">Лучший проверенный вариант. Цель не достигнута, максимальный КСВ %1$s.</string>
     <string name="opennec_length_proposal">%1$s · %2$s → %3$s мм</string>
-    <string name="opennec_optimization_legend">Серая линия — расчёт по формуле. Цветная линия — предложение NEC.</string>
+    <string name="opennec_optimization_legend">Серая линия — расчет по формуле. Цветная линия — предложение NEC.</string>
     <string name="opennec_apply">Применить длины</string>
     <string name="opennec_applied">Применены длины по OpenNEC %1$s</string>
-    <string name="opennec_applied_length">Применённая длина</string>
+    <string name="opennec_applied_length">Примененная длина</string>
     <string name="opennec_applied_delta">Изменение по NEC</string>
     <string name="opennec_analytic_length">Длина по формуле</string>
     <string name="opennec_version">Версия OpenNEC</string>
@@ -48,7 +48,7 @@
     <string name="opennec_smith_plot">Диаграмма Смита · Z₀ = 50 Ом</string>
     <string name="opennec_smith_single_trace">Цветная линия показывает пересчитанную геометрию на всех частотах сетки.</string>
     <string name="opennec_smith_markers">Круглые маркеры · импеданс на %1$s МГц.</string>
-    <string name="opennec_smith_boundary">Жёлтый пунктир · КСВ %1$s. Внутри окружности КСВ ниже порога.</string>
+    <string name="opennec_smith_boundary">Желтый пунктир · КСВ %1$s. Внутри окружности КСВ ниже порога.</string>
     <string name="opennec_smith_center_only">При пороге КСВ 1 подходит только центр диаграммы.</string>
-    <string name="opennec_smith_grid">Круги сетки показывают постоянное R/Z₀, дуги — постоянное X/Z₀. Выше оси реактивность индуктивная (+j), ниже — ёмкостная (−j). Центр соответствует 50 + j0 Ом.</string>
+    <string name="opennec_smith_grid">Круги сетки показывают постоянное R/Z₀, дуги — постоянное X/Z₀. Выше оси реактивность индуктивная (+j), ниже — емкостная (−j). Центр соответствует 50 + j0 Ом.</string>
 </resources>

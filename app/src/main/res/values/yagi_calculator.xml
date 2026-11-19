@@ -12,7 +12,7 @@
     <string name="yagi_position">From reflector</string>
     <string name="yagi_spacing">Spacing</string>
     <string name="yagi_overall">Overall</string>
-    <string name="yagi_cuts">Cut list</string>
+    <string name="yagi_cuts">Blank lengths</string>
     <string name="yagi_allowance">Allowance per end, mm</string>
     <string name="yagi_rear">Behind reflector, mm</string>
     <string name="yagi_front">Beyond last element, mm</string>
@@ -20,7 +20,7 @@
     <string name="yagi_span">Span along the boom</string>
     <string name="yagi_boom">Total boom length</string>
     <string name="yagi_unset">Enter both margins</string>
-    <string name="yagi_copy">Copy cut list</string>
+    <string name="yagi_copy">Copy assembly dimensions</string>
     <string name="yagi_rights">Source and usage rights</string>
     <string name="yagi_policy">Author’s terms</string>
     <string name="yagi_original">Open original publication</string>

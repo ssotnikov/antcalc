@@ -22,7 +22,7 @@
     <string name="licenses_work_5_2">1/4 Wave Ground Plane Antenna Calculator</string>
     <string name="licenses_author_6">Стив Николс (G0KYA)</string>
     <string name="licenses_work_6_1">10m Slim Jim Antenna</string>
-    <string name="licenses_work_6_2">Заметки автора о пересчёте размеров и сборке OH2EUU</string>
+    <string name="licenses_work_6_2">Заметки автора о пересчете размеров и сборке OH2EUU</string>
     <string name="licenses_author_7">Эли Ково (4X4LH)</string>
     <string name="licenses_work_7_1">The 4X4 Slimtenna</string>
     <string name="licenses_author_8">Л. Б. Себик (W4RNL)</string>
@@ -67,7 +67,7 @@
     <string name="licenses_halo_aerial_models">Всенаправленные антенны горизонтальной поляризации · раздел «Антенна „Гало“»</string>
     <string name="licenses_halo_aerial_gamma">Гамма-согласующее устройство · схема и параметры</string>
     <string name="licenses_halo_ra3poy">Алексей (RA3POY)</string>
-    <string name="licenses_halo_w2eey">W2EEY/1 · отчёт о сборке объёмной антенны на Си-Би</string>
+    <string name="licenses_halo_w2eey">W2EEY/1 · отчет о сборке объемной антенны на Си-Би</string>
     <string name="licenses_ybn_dubus">YBN 2-5m · DUBUS 4/2012, рис. 17</string>
     <string name="licenses_gtv_bending">Гибка вибраторов GTV и калькулятор раскроя</string>
     <string name="licenses_dk7zb_duoband_article">Двухдиапазонные Яги · FUNKAMATEUR 6/2008, с. 638–639</string>

@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.text.NumberFormat
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.PanelButton
 import local.antenna.calculator.ui.rememberPageScrollState
 import local.antenna.calculator.core.measurements.S11Point
 import local.antenna.calculator.ui.SmithSweepGraphic
@@ -269,8 +270,8 @@ internal fun MeasurementScreen(
             val lastPage = points.lastIndex / PAGE_SIZE
             val visiblePage = tablePage.intValue.takeIf { it >= 0 }?.coerceAtMost(lastPage) ?: (index / PAGE_SIZE)
             var expanded by rememberSaveable { mutableStateOf(false) }
-            TextButton(onClick = { expanded = !expanded }, modifier = Modifier.testTag("sweep-table-toggle")) {
-                Text(stringResource(if (expanded) R.string.sweep_table_hide else R.string.sweep_table_show))
+            PanelButton(expanded, onClick = { expanded = !expanded }, modifier = Modifier.testTag("sweep-table-toggle")) {
+                Text(stringResource(R.string.sweep_table_label))
             }
             if (expanded) {
                 if (entries.size == 2) FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -291,8 +292,8 @@ internal fun MeasurementScreen(
             }
         }
         var formatExpanded by rememberSaveable { mutableStateOf(false) }
-        TextButton({ formatExpanded = !formatExpanded }) {
-            Text(stringResource(R.string.sweep_format_title) + if (formatExpanded) " ▴" else " ▾")
+        PanelButton(formatExpanded, { formatExpanded = !formatExpanded }) {
+            Text(stringResource(R.string.sweep_format_title))
         }
         if (formatExpanded) {
             HelpText(R.string.sweep_help)

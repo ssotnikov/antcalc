@@ -353,7 +353,7 @@ private fun <T> CantennaPicker(
 @Composable
 private fun CantennaFormulas() {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    TextButton(onClick = { expanded = !expanded }) { Text(stringResource(R.string.cantenna_formula) + if (expanded) " ▴" else " ▾") }
+    PanelButton(expanded, onClick = { expanded = !expanded }) { Text(stringResource(R.string.cantenna_formula)) }
     if (expanded) {
         SelectableText("c = 299 792 458 m/s\nfTE₁₁ = 1.841183781 c / (πD)\nfTM₀₁ = 2.404825558 c / (πD)\nλ₀ = c/f\nλg = λ₀ / √(1 − (fTE₁₁/f)²)")
         SelectableText("P = λ₀/4     A = λg/4     L ≈ 3λg/4")
@@ -363,16 +363,19 @@ private fun CantennaFormulas() {
 }
 
 @Composable
-internal fun CantennaSourceLinks(entries: List<CantennaSource> = CantennaSource.entries) {
+internal fun CantennaSourceLinks(
+    entries: List<CantennaSource> = CantennaSource.entries,
+    heading: @Composable () -> Unit = { CantennaHeading(R.string.cantenna_sources) },
+) {
     val context = LocalContext.current
-    CantennaHeading(R.string.cantenna_sources)
+    heading()
     entries.forEach { source ->
-        TextButton(onClick = { openSourceWithFeedback(context, source.url) }, Modifier.fillMaxWidth()) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, Modifier.fillMaxWidth()) {
             Text("${source.author} · ${stringResource(source.title)}", Modifier.fillMaxWidth())
         }
         source.terms?.let { HelpText(it) }
         source.termsUrl?.let { url ->
-            TextButton(onClick = { openSourceWithFeedback(context, url) }) {
+            WebLinkButton(onClick = { openSourceWithFeedback(context, url) }) {
                 Text(stringResource(R.string.cantenna_source_terms, source.author))
             }
         }

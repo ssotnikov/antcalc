@@ -1,0 +1,4 @@
+<resources>
+    <string name="calculation_formulas_label">Формулы</string>
+    <string name="sweep_table_label">Таблица данных</string>
+</resources>

@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -283,9 +282,8 @@ private fun SlimJimHeading(label: Int) {
 @Composable
 private fun SlimJimPanel(label: Int, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val state = stringResource(if (expanded) R.string.jpole_expanded else R.string.jpole_collapsed)
     Column {
-        TextButton(onClick = { expanded = !expanded }, modifier = modifier.semantics { stateDescription = state },
+        PanelButton(expanded, onClick = { expanded = !expanded }, modifier = modifier,
             contentPadding = PaddingValues(horizontal = 0.dp, vertical = 8.dp)) {
             Text(stringResource(label))
         }
@@ -296,7 +294,7 @@ private fun SlimJimPanel(label: Int, modifier: Modifier = Modifier, content: @Co
 @Composable
 private fun SlimJimLink(label: Int, url: String) {
     val context = LocalContext.current
-    TextButton(onClick = { openSourceWithFeedback(context, url) }) { Text(stringResource(label)) }
+    WebLinkButton(onClick = { openSourceWithFeedback(context, url) }) { Text(stringResource(label)) }
 }
 
 @Composable

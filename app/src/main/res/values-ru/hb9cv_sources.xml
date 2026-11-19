@@ -22,7 +22,7 @@
     <string name="hb9cv_author_sxc">Кабэ Мицуру (JG0SXC)</string>
     <string name="hb9cv_work_sxc">Разборная HB9CV на 50 МГц</string>
     <string name="hb9cv_author_asq">Юки Симидзу (JO2ASQ)</string>
-    <string name="hb9cv_work_asq">Облегчённая HB9CV на 50 МГц</string>
+    <string name="hb9cv_work_asq">Облегченная HB9CV на 50 МГц</string>
     <string name="hb9cv_author_jzj">DL2NET / OH4JZJ</string>
     <string name="hb9cv_work_jzj">Двухэлементная HB9CV на 435 МГц</string>
     <string name="hb9cv_author_bj">DL2NET / OH4JZJ по конструкции DC7BJ</string>
@@ -31,7 +31,7 @@
     <string name="hb9cv_work_pa">HB9CV на 23 см</string>
     <string name="hb9cv_author_lvt">Жан-Поль (F1LVT)</string>
     <string name="hb9cv_work_lvt">Складная HB9CV для УВЧ</string>
-    <string name="hb9cv_work_lvt_pcb">Чертёж печатной платы HB9CV</string>
+    <string name="hb9cv_work_lvt_pcb">Чертеж печатной платы HB9CV</string>
     <string name="hb9cv_author_iizs">Томислав Барич, Хрвое Главаш, Лиляна Радованович</string>
     <string name="hb9cv_work_iizs">HB9CV на 446 МГц, моделирование и измерения, IIZS 2025</string>
     <string name="hb9cv_author_roth">Карл Ротхаммель (DM2ABK)</string>

@@ -40,7 +40,7 @@ fun HelpScreen() {
         HelpText(R.string.modeling_help_results)
         HelpText(R.string.modeling_help_scaling)
         HelpText(R.string.modeling_help_solvers)
-        TextButton(
+        WebLinkButton(
             onClick = { openSourceWithFeedback(context, Hb9cvSource.AERIAL_CALCULATION.url) },
             modifier = Modifier.testTag("help-antenna-calculation-source"),
         ) {

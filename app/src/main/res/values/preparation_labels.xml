@@ -1,0 +1,7 @@
+<resources>
+    <string name="blank_dimensions">Blank dimensions</string>
+    <string name="blank_parts_list">Blank parts list</string>
+    <string name="assembly_dimensions_table">Assembly dimensions table</string>
+    <string name="assembly_dimensions">Assembly dimensions</string>
+    <string name="trap_total_blank_length">Total blank length</string>
+</resources>

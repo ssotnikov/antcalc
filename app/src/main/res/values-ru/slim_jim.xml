@@ -6,7 +6,7 @@
     <string name="slim_jim_material">Медная жила AWG 12 без изоляции</string>
     <string name="slim_jim_diagram">Общий вид</string>
     <string name="slim_jim_diagram_description">Slim Jim: верхняя перемычка, непрерывная левая ветвь, разрыв правой ветви, нижняя перемычка и два контакта питания.</string>
-    <string name="slim_jim_connections">Жёлтым выделены разрыв и контакты питания. Центральную жилу подключайте к непрерывной ветви, оплётку — к ветви с разрывом. Оба контакта находятся на высоте h от нижней перемычки. Схема вне масштаба.</string>
+    <string name="slim_jim_connections">Желтым выделены разрыв и контакты питания. Центральную жилу подключайте к непрерывной ветви, оплетку — к ветви с разрывом. Оба контакта находятся на высоте h от нижней перемычки. Схема вне масштаба.</string>
     <string name="slim_jim_sizes">Размеры конструкции</string>
     <string name="slim_jim_height">Высота от нижней до верхней перемычки</string>
     <string name="slim_jim_stub">Высота шлейфа от низа</string>
@@ -26,7 +26,7 @@
     <string name="slim_jim_ref_build">Проволочная конструкция, подключение коаксиала и измерения КСВ автора.</string>
     <string name="slim_jim_ref_formula">Начальные размеры и влияние геометрии проводников и шлейфа.</string>
     <string name="slim_jim_ref_theory">Сравнение вариантов J-антенны и объяснение работы складчатого излучателя.</string>
-    <string name="slim_jim_ref_measure">Измеренные и расчётные диаграммы направленности Slim Jim и J-антенны.</string>
+    <string name="slim_jim_ref_measure">Измеренные и расчетные диаграммы направленности Slim Jim и J-антенны.</string>
     <string name="slim_jim_10m_en_summary">@string/slim_jim_10m_ru_summary</string>
     <string name="slim_jim_20m_en_summary">Вертикал на 20 м с отдельным согласующим шлейфом. Статья в английском приложении, с. V–XI.</string>
     <string name="jpole_10m_en_summary">Две конструкции EI9GQ с четвертьволновым коаксиальным шлейфом. Англоязычная перепечатка.</string>

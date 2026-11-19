@@ -336,10 +336,10 @@ internal fun YagiScalingScreen(
         }
         ScalingDetails(R.string.ys_sources) {
             HelpText(R.string.ys_credits)
-            TextButton({ openSourceWithFeedback(context, YAGI_SCALING_URL) }) { Text(stringResource(R.string.ys_article)) }
-            TextButton({ openSourceWithFeedback(context, YAGI_SCALING_BOOK) }) { Text(stringResource(R.string.ys_book)) }
+            WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_URL) }) { Text(stringResource(R.string.ys_article)) }
+            WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_BOOK) }) { Text(stringResource(R.string.ys_book)) }
             HelpText(R.string.ys_rights)
-            TextButton({ openSourceWithFeedback(context, YAGI_SCALING_TERMS) }) { Text(stringResource(R.string.ys_terms)) }
+            WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_TERMS) }) { Text(stringResource(R.string.ys_terms)) }
         }
     }
 }
@@ -374,7 +374,7 @@ private fun ScalingTableRow(cells: List<String>) {
 @Composable
 private fun ScalingDetails(title: Int, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    TextButton({ expanded = !expanded }) { Text(stringResource(title) + if (expanded) " ▴" else " ▾") }
+    PanelButton(expanded, { expanded = !expanded }) { Text(stringResource(title)) }
     if (expanded) content()
 }
 

@@ -12,6 +12,7 @@ import local.antenna.calculator.state.AppLanguage
 import local.antenna.calculator.state.AppTheme
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,7 +28,7 @@ class MoxonTest : CalculatorUiFixture() {
         start(fontScale = 2f)
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-moxon").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-moxon").performClick()
         compose.onNodeWithTag("moxon-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("screen-title").performClick()
         compose.onNodeWithTag("moxon-art-ROD_A").assertIsDisplayed()
@@ -86,8 +87,10 @@ class MoxonTest : CalculatorUiFixture() {
     @Test fun savesBothBandsAndYagiElementPositionsInTheJournal() {
         lateinit var pending: PendingProjectCalculation
         compose.setContent {
-            MaterialTheme {
-                MoxonScreen({ snapshot, note -> pending = PendingProjectCalculation(snapshot, note = note) }, null, {})
+            LocalizedContent(AppLanguage.RUSSIAN) {
+                MaterialTheme {
+                    MoxonScreen({ snapshot, note -> pending = PendingProjectCalculation(snapshot, note = note) }, null, {})
+                }
             }
         }
         choose("moxon_satellite")
@@ -101,6 +104,9 @@ class MoxonTest : CalculatorUiFixture() {
             assertEquals(project, restored)
             assertNull(restored.target)
             assertNull(restored.initialLength)
+            val note = restored.records.single().note
+            assertTrue(note.contains("пруток Ø 3,2 мм"))
+            assertTrue(note.contains("радиус 3,2 мм (диаметр 6,4 мм)"))
             val saved = checkNotNull(restored.records.single().calculation)
             assertEquals("moxon_satellite", saved.model)
             assertEquals(436_500_000.0, saved.inputs.single { it.key == "moxon_second_frequency" }.value, 0.0)

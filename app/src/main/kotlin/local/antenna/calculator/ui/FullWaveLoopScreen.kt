@@ -172,7 +172,7 @@ internal fun FullWaveLoopScreen(
         ) { Text(stringResource(R.string.copy_result)) }
         HelpText(R.string.loop_limits)
 
-        TextButton(onClick = { matching = !matching }, modifier = Modifier.testTag("loop-match-toggle")) {
+        PanelButton(matching, onClick = { matching = !matching }, modifier = Modifier.testTag("loop-match-toggle")) {
             Text(stringResource(R.string.loop_matching), color = MaterialTheme.colorScheme.secondary)
         }
         if (matching) {
@@ -187,7 +187,7 @@ internal fun FullWaveLoopScreen(
             }
         }
         FullWaveLoopBandTable()
-        TextButton(onClick = { formulas = !formulas }) {
+        PanelButton(formulas, onClick = { formulas = !formulas }) {
             Text(stringResource(R.string.loop_formulas), color = MaterialTheme.colorScheme.secondary)
         }
         if (formulas) {

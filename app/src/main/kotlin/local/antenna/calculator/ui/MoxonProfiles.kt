@@ -348,7 +348,13 @@ internal val moxonProfiles = listOf(
         R.string.moxon_material_satellite,
         frequencies = listOf(145825000L, 436500000L),
         dimensions = MoxonDimensions(700.0, 106.0, 15.0, 150.0, 271.0),
-        facts = listOf(R.string.moxon_fact_satellite_1, R.string.moxon_fact_satellite_2, R.string.moxon_fact_satellite_3, R.string.moxon_fact_satellite_4, R.string.moxon_fact_satellite_5, R.string.moxon_fact_satellite_6, R.string.moxon_fact_satellite_7, R.string.moxon_fact_satellite_8),
+        facts = listOf(
+            R.string.moxon_fact_satellite_1, R.string.moxon_fact_satellite_2,
+            R.string.moxon_fact_satellite_3, R.string.moxon_fact_satellite_4,
+            R.string.moxon_fact_satellite_5, R.string.moxon_fact_satellite_6,
+            R.string.moxon_fact_satellite_model_diameter,
+            R.string.moxon_fact_satellite_7, R.string.moxon_fact_satellite_8,
+        ),
     ),
     MoxonProfile(
         "moxon_lora", "3dMikL · 868 MHz", MoxonSource.LORA, MoxonView.HOUSING,

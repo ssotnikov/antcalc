@@ -2,7 +2,7 @@
 <resources>
     <string name="sweep_smith_description">Диаграмма Смита по измеренным значениям S11. Значения выбранной точки приведены ниже.</string>
     <string name="sweep_smith_selection">%1$s · %2$s</string>
-    <string name="sweep_smith_legend">Нажмите на диаграмму или проведите пальцем вдоль активной трассы, чтобы выбрать измеренную частоту. Для каждой трассы используется своё опорное сопротивление Z₀.</string>
+    <string name="sweep_smith_legend">Нажмите на диаграмму или проведите пальцем вдоль активной трассы, чтобы выбрать измеренную частоту. Для каждой трассы используется свое опорное сопротивление Z₀.</string>
     <string name="sweep_smith_outside">Точки с |S11| больше 1 лежат за пределами диаграммы. Их значения доступны в таблице измерений.</string>
     <string name="additional_tools">Дополнительные инструменты</string>
     <string name="sweep_tool_title">Импорт измерений VNA анализатора</string>
@@ -50,7 +50,7 @@
     <string name="sweep_error_limit">Превышен предел размера файла, длины строки или числа точек.</string>
     <string name="sweep_error_read">Не удалось прочитать файл измерений.</string>
     <string name="sweep_error_write">Не удалось сохранить измерения. Проверьте доступное место.</string>
-    <string name="sweep_error_workspace">Сохранённые измерения повреждены или имеют неизвестный формат. Исходные данные сохранены.</string>
+    <string name="sweep_error_workspace">Сохраненные измерения повреждены или имеют неизвестный формат. Исходные данные сохранены.</string>
     <string name="sweep_error_missing">Файлы трасс отсутствуют на этом устройстве. Загрузите исходные S1P для сравнения.</string>
     <string name="sweep_graph_legend">Частота, МГц. Нажмите на график или проведите по нему пальцем, чтобы выбрать точку.</string>
     <string name="sweep_rx_legend">R — сплошная линия, X — пунктир.</string>
@@ -68,7 +68,7 @@
     <string name="sweep_previous_frequency">Предыдущая частота</string>
     <string name="sweep_next_frequency">Следующая частота</string>
     <string name="antenna_parameter_tools">Расчет параметров антенн</string>
-    <string name="antenna_parameter_tools_hint">Расчёт размеров и использование опубликованных конструкций антенн.</string>
-    <string name="sweep_plane_short">Для сравнения трасс используйте одну плоскость отсчёта.</string>
+    <string name="antenna_parameter_tools_hint">Расчет размеров и использование опубликованных конструкций антенн.</string>
+    <string name="sweep_plane_short">Для сравнения трасс используйте одну плоскость отсчета.</string>
     <string name="sweep_format_title">Формат и условия измерений</string>
 </resources>

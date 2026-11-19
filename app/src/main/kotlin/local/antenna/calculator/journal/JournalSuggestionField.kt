@@ -1,7 +1,10 @@
 package local.antenna.calculator.journal
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import local.antenna.calculator.ui.AppTextField
@@ -13,7 +16,9 @@ import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -59,12 +64,21 @@ internal fun JournalSuggestionField(
         if (suggestions.isNotEmpty()) {
             OutlinedCard(Modifier.fillMaxWidth().testTag(field.tag + "-suggestions")) {
                 suggestions.forEach { option ->
-                    ListItem(
-                        headlineContent = { Text(option) },
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            state.setTextAndPlaceCursorAtEnd(option)
-                        },
-                    )
+                    val select = { state.setTextAndPlaceCursorAtEnd(option) }
+                    if (field == JournalSuggestion.FEEDLINE) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                                .clickable(onClick = select).padding(horizontal = 16.dp, vertical = 8.dp),
+                            contentAlignment = Alignment.CenterStart,
+                        ) {
+                            Text(option, style = MaterialTheme.typography.bodyLarge)
+                        }
+                    } else {
+                        ListItem(
+                            headlineContent = { Text(option) },
+                            modifier = Modifier.fillMaxWidth().clickable(onClick = select),
+                        )
+                    }
                 }
             }
         }
@@ -76,7 +90,7 @@ internal fun JournalSuggestionField(
 internal fun JournalTextField(
     state: TextFieldState,
     label: Int,
-    example: Int,
+    example: Int?,
     tag: String,
     enabled: Boolean,
     modifier: Modifier = Modifier,
@@ -95,7 +109,7 @@ internal fun JournalTextField(
         state = state,
         enabled = enabled,
         label = stringResource(label),
-        example = stringResource(example),
+        example = example?.let { stringResource(it) },
         supportingText = supporting?.let { { Text(stringResource(it)) } },
         isError = error != null,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),

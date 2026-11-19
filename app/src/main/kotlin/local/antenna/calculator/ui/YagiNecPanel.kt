@@ -141,8 +141,8 @@ internal fun YagiNecPanel(
                 }
             }
             if (segments != null && lowHz != null && highHz != null) {
-                TextButton({ meshExpanded = !meshExpanded }, Modifier.testTag("opennec-mesh-expand")) {
-                    Text(stringResource(R.string.seg_panel) + if (meshExpanded) " ▴" else " ▾")
+                PanelButton(meshExpanded, { meshExpanded = !meshExpanded }, Modifier.testTag("opennec-mesh-expand")) {
+                    Text(stringResource(R.string.seg_panel))
                 }
                 if (meshExpanded) {
                     if (reference != null && referenceSegments != null) {

@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import java.io.IOException
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.PanelButton
 import local.antenna.calculator.core.journal.*
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.measurements.MeasurementTrace
@@ -51,7 +52,7 @@ internal fun JournalCalculationComparisonScreen(
         if (row != null) ComparisonGrid(left, right, listOf(row))
         Text(note, style = MaterialTheme.typography.bodySmall)
         var expanded by rememberSaveable { mutableStateOf(false) }
-        TextButton(onClick = { expanded = !expanded }) { Text(stringResource(R.string.journal_compare_both_details)) }
+        PanelButton(expanded, onClick = { expanded = !expanded }) { Text(stringResource(R.string.journal_compare_both_details)) }
         if (expanded) {
             JournalHeading(calculation.title)
             JournalDetails(calculationDetails, selectable = !calculation.restrictedYagiMaterials)

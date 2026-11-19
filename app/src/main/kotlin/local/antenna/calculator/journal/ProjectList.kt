@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
-import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,13 +32,15 @@ import androidx.compose.ui.unit.dp
 import java.util.UUID
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
+import local.antenna.calculator.ui.CardReorderEdgeScroll
 import local.antenna.calculator.ui.ProjectSearchField
 import local.antenna.calculator.ui.inputExampleColor
 import local.antenna.calculator.ui.cardListBounce
 import local.antenna.calculator.ui.rememberPageLazyListState
+import local.antenna.calculator.ui.reorderCardAt
+import local.antenna.calculator.ui.reorderTarget
 
 private data class ProjectCardText(val title: String, val summary: String)
 private data class ProjectDrag(
@@ -78,28 +79,15 @@ internal fun ProjectList(
     val margin = with(density) { 16.dp.toPx() }
     val cardSpacing = 12.dp
     val spacingPixels = with(density) { cardSpacing.roundToPx() }
-    val scrollEdge = with(density) { 54.dp.toPx() }
-    val scrollStep = with(density) { 12.dp.toPx() }
     val moveUp = stringResource(R.string.journal_project_move_up)
     val moveDown = stringResource(R.string.journal_project_move_down)
     val actionsLabel = stringResource(R.string.journal_project_actions)
     val idByKey: Map<Any, UUID> = ids.associateBy(UUID::toString)
     val indexById = ids.withIndex().associate { (index, id) -> id to index }
-    // Use the original slots for hit testing while the visible cards animate.
-    fun targetAt(dragged: ProjectDrag): UUID {
-        val layout = scroll.layoutInfo
-        val center = dragged.y - dragged.grabOffset + dragged.height / 2f + layout.viewportStartOffset
-        val origin = indexById.getValue(dragged.id)
-        var target = dragged.id
-        for (item in layout.visibleItemsInfo) {
-            val id = idByKey[item.key] ?: continue
-            val index = indexById.getValue(id)
-            val middle = item.offset + item.size / 2f
-            if (index < origin && center <= middle) return id
-            if (index > origin && center >= middle) target = id
-        }
-        return target
-    }
+    val positions = ids.withIndex().associate { (index, id) -> id.toString() to index }
+    fun targetAt(dragged: ProjectDrag): UUID = idByKey.getValue(
+        scroll.layoutInfo.reorderTarget(dragged.id.toString(), dragged.y - dragged.grabOffset, dragged.height, positions),
+    )
 
     val insertionTarget by remember(ids, enabled) {
         derivedStateOf { drag?.takeIf { it.moved }?.let(::targetAt) }
@@ -113,24 +101,7 @@ internal fun ProjectList(
             drop = null
         }
     }
-    val draggingId = drag?.id
-    LaunchedEffect(draggingId, ids) {
-        if (draggingId == null) return@LaunchedEffect
-        snapshotFlow {
-            val position = drag?.takeIf { it.moved }?.y ?: return@snapshotFlow 0f
-            val height = scroll.layoutInfo.viewportSize.height
-            when {
-                position < scrollEdge -> -scrollStep * ((scrollEdge - position) / scrollEdge).coerceIn(0f, 1f)
-                position > height - scrollEdge -> scrollStep * ((position - height + scrollEdge) / scrollEdge).coerceIn(0f, 1f)
-                else -> 0f
-            }
-        }.collectLatest { step ->
-            if (step == 0f) return@collectLatest
-            do {
-                withFrameNanos { }
-            } while (scroll.scrollBy(step) != 0f)
-        }
-    }
+    CardReorderEdgeScroll(scroll, drag?.id, ids) { drag?.takeIf { it.moved }?.y }
 
     Box(Modifier.fillMaxSize().clipToBounds()) {
         LazyColumn(
@@ -142,9 +113,7 @@ internal fun ProjectList(
                         if (down.position.x !in margin..(size.width - margin)) return@awaitEachGesture
                         val layout = scroll.layoutInfo
                         val y = down.position.y + layout.viewportStartOffset
-                        val item = layout.visibleItemsInfo.firstOrNull {
-                            it.key in idByKey && y >= it.offset && y < it.offset + it.size
-                        } ?: return@awaitEachGesture
+                        val item = layout.reorderCardAt(down.position.y, positions) ?: return@awaitEachGesture
                         val id = idByKey.getValue(item.key)
                         val held = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
                         val initial = ProjectDrag(id, y - item.offset, item.size, held.position.y)

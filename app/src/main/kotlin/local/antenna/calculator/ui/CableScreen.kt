@@ -226,7 +226,7 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             val text = cableCopy(context, currentState().draft.cable) ?: return@Button
             (context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText(appName, text)); onCopied()
         }, enabled = result != null, modifier = Modifier.fillMaxWidth().testTag("cable-copy")) { Text(stringResource(R.string.copy_result)) }
-        TextButton(onClick = { details = !details }, modifier = Modifier.testTag("cable-details")) { Text(stringResource(if (details) R.string.matching_less else R.string.cable_details)) }
+        PanelButton(details, onClick = { details = !details }, modifier = Modifier.testTag("cable-details")) { Text(stringResource(R.string.cable_details)) }
         if (details) {
             Text(stringResource(R.string.cable_principle), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             HelpText(R.string.cable_electrical_length_help)

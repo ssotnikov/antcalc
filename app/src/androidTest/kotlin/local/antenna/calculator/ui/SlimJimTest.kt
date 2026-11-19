@@ -71,7 +71,7 @@ class SlimJimTest : CalculatorUiFixture() {
             }
             compose.onNodeWithTag("nav-TOOLS").performClick()
             compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-            compose.onNodeWithTag("open-slim-jim").performScrollTo().performClick()
+            compose.scrollToAntennaTool("open-slim-jim").performClick()
             compose.onNodeWithText(if (russian) "просвету E = 25 мм" else "25 mm gap (E)", substring = true)
                 .performScrollTo().assertIsDisplayed()
             compose.onNodeWithTag("slim-jim-copy").performScrollTo().assertIsEnabled()
@@ -89,7 +89,7 @@ class SlimJimTest : CalculatorUiFixture() {
         start(fontScale = 2f)
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-slim-jim").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-slim-jim").performClick()
         compose.onNodeWithTag("slim-jim-copy").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("screen-title").performClick()
         compose.onNodeWithTag("slim-jim-hero").assertIsDisplayed()

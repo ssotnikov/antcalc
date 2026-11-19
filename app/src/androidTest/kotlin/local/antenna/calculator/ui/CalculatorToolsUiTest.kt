@@ -13,7 +13,7 @@ class CalculatorToolsUiTest : CalculatorUiFixture() {
         start()
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-jpole").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-jpole").performClick()
         compose.onNodeWithText("Варианты конструкции", substring = true).performScrollTo().performClick()
         compose.onNodeWithText("Длина кабеля").performScrollTo().performClick()
         compose.onNodeWithTag("cable-copy").assertExists()

@@ -31,6 +31,7 @@ import java.text.DecimalFormatSymbols
 import local.antenna.calculator.ui.AppTextField
 import local.antenna.calculator.ui.SelectableText
 import local.antenna.calculator.R
+import local.antenna.calculator.ui.PanelButton
 import local.antenna.calculator.ui.rememberPageLazyListState
 import local.antenna.calculator.ui.trapNumber
 import local.antenna.calculator.state.boundedNumericText
@@ -235,8 +236,8 @@ internal fun SwrBandwidthScreen(
             val symbol = "|S11|"
             SelectableText(method.replace(symbol, symbol.toList().joinToString("\u2060")), style = MaterialTheme.typography.bodySmall)
             Text(stringResource(R.string.bandwidth_scope), style = MaterialTheme.typography.bodySmall)
-            TextButton(onClick = { showFormula = !showFormula }) {
-                Text(stringResource(if (showFormula) R.string.bandwidth_hide_formula else R.string.bandwidth_show_formula))
+            PanelButton(showFormula, onClick = { showFormula = !showFormula }) {
+                Text(stringResource(R.string.calculation_formulas_label))
             }
             if (showFormula) FormulaPlate(
                 R.string.sweep_swr, R.drawable.formula_swr, R.string.matching_formula_swr_alt, "bandwidth-formula",

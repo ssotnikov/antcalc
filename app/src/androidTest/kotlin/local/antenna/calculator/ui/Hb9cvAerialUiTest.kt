@@ -17,7 +17,7 @@ class Hb9cvAerialUiTest : CalculatorUiFixture() {
         start(fontScale = 2f)
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-hb9cv").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-hb9cv").performClick()
         chooseAerial()
         editField("frequency", "435,000")
         compose.onNodeWithTag("hb9cv-aerial-copy").performScrollTo().assertIsEnabled()

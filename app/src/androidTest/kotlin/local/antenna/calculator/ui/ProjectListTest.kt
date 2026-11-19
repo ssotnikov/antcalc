@@ -10,7 +10,6 @@ import java.util.UUID
 import kotlinx.coroutines.runBlocking
 import local.antenna.calculator.CalculatorApplication
 import local.antenna.calculator.MainActivity
-import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
 import local.antenna.calculator.core.trimming.AntennaType
 import local.antenna.calculator.core.units.Frequency
@@ -61,7 +60,8 @@ class ProjectListTest {
             clearSearch.assertDoesNotExist()
             allCards.assertCountEquals(3)
 
-            val yagi = application.getString(R.string.yagi_title)
+            val yagi = firstCard.fetchSemanticsNode().config[SemanticsProperties.Text]
+                .single { "145" in it.text }.text.substringBefore(", ")
             search.performTextReplacement(yagi)
             search.performImeAction()
             allCards.assertCountEquals(2)
@@ -87,7 +87,7 @@ class ProjectListTest {
 
             search.performTextClearance()
             lastCard.performTouchInput { longClick() }
-            compose.onNodeWithText(application.getString(R.string.journal_edit_project)).assertIsDisplayed()
+            compose.onNode(isPopup()).assertIsDisplayed()
             compose.onNodeWithTag("journal-history").assertDoesNotExist()
         } finally {
             scenario.close()

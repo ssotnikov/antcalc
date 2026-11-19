@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -34,7 +35,6 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -123,7 +123,7 @@ internal fun YagiConstructionScreen(
                 )
                 for (index in 156 until blocks.length()) YagiArticleBlock(blocks.getJSONObject(index))
                 HelpText(R.string.construction_yagi_rights)
-                TextButton(onClick = { openSourceWithFeedback(context, LIZAALERT_YAGI_URL) }) {
+                WebLinkButton(onClick = { openSourceWithFeedback(context, LIZAALERT_YAGI_URL) }) {
                     Text(stringResource(R.string.construction_yagi_source_link))
                 }
             }
@@ -151,8 +151,8 @@ private fun YagiSectionHeader(section: YagiSection, expanded: Boolean, onToggle:
                 .semantics { heading(); stateDescription = state }.testTag("yagi-section-${section.name}").padding(vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(if (expanded) "▾" else "▸", Modifier.padding(end = 10.dp).clearAndSetSemantics { },
-                color = MaterialTheme.colorScheme.secondary)
+            PanelChevron(expanded, MaterialTheme.colorScheme.secondary)
+            Spacer(Modifier.width(10.dp))
             Text(section.step?.let { "$it. $label" } ?: label, style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.secondary)
         }

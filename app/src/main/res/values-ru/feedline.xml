@@ -36,13 +36,13 @@
     <string name="feedline_power_error">Введите мощность от 0 до 100 000 Вт или оставьте поле пустым.</string>
     <string name="feedline_pending">Результат появится после заполнения исходных данных.</string>
     <string name="feedline_formula_help">A — затухание в дБ, α — затухание на опорной длине L₀, T — доля мощности на выходе. 100 футов равны ровно 30,48 м.</string>
-    <string name="feedline_limits">Модель согласованной линии. Потери в разъёмах и рассогласование не учитываются. Расчет не определяет допустимую мощность кабеля.</string>
+    <string name="feedline_limits">Модель согласованной линии. Потери в разъемах и рассогласование не учитываются. Расчет не определяет допустимую мощность кабеля.</string>
     <string name="feedline_vf">Коэффициент скорости по паспорту</string>
     <string name="feedline_vf_reciprocal">VF вычислен как величина, обратная паспортному коэффициенту укорочения.</string>
-    <string name="feedline_preview_explanation">Для введённой частоты в паспорте нет точки. Справочный расчёт выполнен для ближайшей паспортной частоты %1$s. Выберите её или введите затухание вручную.</string>
+    <string name="feedline_preview_explanation">Для введенной частоты в паспорте нет точки. Справочный расчет выполнен для ближайшей паспортной частоты %1$s. Выберите ее или введите затухание вручную.</string>
     <string name="feedline_use_preview_frequency">Использовать %1$s</string>
     <string name="feedline_preview_result">Справочно · %1$s</string>
     <string name="feedline_provisional_label">Предварительно · подтвердите затухание</string>
-    <string name="feedline_enter_length">Введите длину кабеля для расчёта потерь.</string>
+    <string name="feedline_enter_length">Введите длину кабеля для расчета потерь.</string>
     <string name="feedline_enter_power">Введите входную мощность, чтобы увидеть результат в ваттах.</string>
 </resources>

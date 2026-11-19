@@ -10,7 +10,7 @@
     <string name="photo_comment">Комментарий</string>
     <string name="photo_description">Фото проекта, добавлено %1$s</string>
     <string name="photo_edit_comment">Комментарий к фото</string>
-    <string name="photo_discard">Удалить несохранённые изменения?</string>
+    <string name="photo_discard">Удалить несохраненные изменения?</string>
     <string name="photo_discard_action">Удалить изменения</string>
     <string name="photo_delete">Удалить фото</string>
     <string name="photo_delete_question">Удалить фото?</string>

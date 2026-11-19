@@ -21,8 +21,8 @@ class SmithChartScreenTest : CalculatorUiFixture() {
         compose.onNodeWithTag("smith-legend").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("smith-mode-circle").assertDoesNotExist()
         compose.onNodeWithTag("smith-mode-vector").assertDoesNotExist()
-        compose.onNodeWithText("Жёлтый маркер (Z)", substring = true).assertExists()
-        compose.onNodeWithText("Зелёный маркер (Γ(d))", substring = true).assertExists()
+        compose.onNodeWithText("Желтый маркер (Z)", substring = true).assertExists()
+        compose.onNodeWithText("Зеленый маркер (Γ(d))", substring = true).assertExists()
         val chart = compose.onNodeWithTag("smith-chart")
         chart.performScrollTo().assert(hasContentDescription("74", substring = true))
         chart.performTouchInput {
@@ -39,7 +39,8 @@ class SmithChartScreenTest : CalculatorUiFixture() {
 
         compose.onNodeWithTag("smith-distance").performScrollTo()
             .performSemanticsAction(SemanticsActions.SetProgress) { it(250f) }
-        compose.onNodeWithTag("smith-line-value").assertTextContains("0,25", substring = true)
+        compose.onNode(hasAnyAncestor(hasTestTag("smith-line-value")) and hasText("0,25", substring = true),
+            useUnmergedTree = true).assertExists()
         val reference = compose.onNodeWithTag("smith-field-REFERENCE")
         val export = compose.onNodeWithTag("smith-export")
         reference.performScrollTo().performTextReplacement("0")

@@ -145,8 +145,8 @@ internal class JournalPresentation(private val context: Context) {
     fun snapshotDetails(s: CalculationSnapshot, type: AntennaType): List<Pair<String, String>> =
         snapshotFields(s, type).let { fields ->
             listOf(fields.model) +
-                fields.inputs.map { (label, value) -> "${text(R.string.journal_calculation_input)} · $label" to value } +
-                fields.outputs.map { (label, value) -> "${text(R.string.journal_calculation_output)} · $label" to value } +
+                fields.inputs.map { (label, value) -> "${text(R.string.journal_calculation_input)}$CALCULATION_LABEL_SEPARATOR$label" to value } +
+                fields.outputs.map { (label, value) -> "${text(R.string.journal_calculation_output)}$CALCULATION_LABEL_SEPARATOR$label" to value } +
                 fields.metadata
         }
 

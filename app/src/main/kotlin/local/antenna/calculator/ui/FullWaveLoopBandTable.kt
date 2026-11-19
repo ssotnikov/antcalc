@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -65,10 +64,9 @@ internal fun FullWaveLoopBandTable() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            PanelChevron(expanded, MaterialTheme.colorScheme.secondary)
             Text(stringResource(R.string.loop_band_title), Modifier.weight(1f),
                 color = MaterialTheme.colorScheme.secondary, style = MaterialTheme.typography.titleMedium)
-            Text(if (expanded) "▾" else "▸", Modifier.clearAndSetSemantics { },
-                color = MaterialTheme.colorScheme.secondary)
         }
         if (expanded) {
             Column(Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp),

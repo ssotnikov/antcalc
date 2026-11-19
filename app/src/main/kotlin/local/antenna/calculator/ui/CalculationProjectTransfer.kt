@@ -74,7 +74,7 @@ internal fun TransferNewProject(
     JournalColumn(Modifier.widthIn(max = 680.dp).testTag("project-transfer-new-form")) {
         if (status.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         status.problem?.let { Text(stringResource(it.label()), color = MaterialTheme.colorScheme.error) }
-        JournalTextField(name, R.string.journal_project_name, R.string.journal_example_name,
+        JournalTextField(name, R.string.journal_project_name, null,
             "project-transfer-name", !status.busy, modifier = Modifier.bringIntoViewRequester(nameLocation),
             limit = JournalLimits.TITLE, error = R.string.journal_required.takeIf { invalidAttempts > 0 && name.text.isBlank() })
         TransferSummary(pending, type)

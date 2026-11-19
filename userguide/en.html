@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Calculate dimensions, build and tune your antenna, then save the measurements in a project.">
-<title>AntCalc · User Guide</title>
+<title>The app · User Guide</title>
 <link rel="alternate" hreflang="ru" href="ru.html">
 <style>
 :root{color-scheme:light;--paper:#f4f7f5;--ink:#17272e;--muted:#435963;--rule:#cdd9d7;--link:#12675c;--panel:#112832;--mint:#a8e1d3;--page:1340px}
@@ -16,14 +16,14 @@ a:hover{text-decoration-thickness:2px}
 :focus-visible{outline:2px solid #257b6e;outline-offset:4px}
 .skip{position:absolute;left:1rem;top:-10rem;background:white;padding:.5rem 1rem;z-index:4}
 .skip:focus{top:.35rem}
-.mast{background:var(--panel);color:#eef8f7;padding:1.1rem max(1rem,calc((100% - var(--page))/2 + 2rem)) 2.15rem;border-bottom:4px solid #78c6b3}
+.mast{background:var(--panel);color:#eef8f7;padding:1.1rem 1rem 2.15rem;padding:1.1rem max(1rem,calc((100% - var(--page))/2 + 2rem)) 2.15rem;border-bottom:4px solid #78c6b3}
 .mast a{color:var(--mint)}
 .brand{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1.7rem;padding-bottom:.65rem;border-bottom:1px solid #44626c}
 .brand strong{letter-spacing:.025em}
 .mast h1{font-size:clamp(2.1rem,4.5vw,3.55rem);letter-spacing:-.034em;line-height:1.08;margin:0 0 .6rem;text-wrap:balance}
 .mast p{max-width:66ch;margin:0;color:#c7dee0}
 .version{display:block;margin-top:.6rem;color:#d4e3e9;font-size:.9rem}
-.shell{max-width:var(--page);margin:0 auto;display:grid;grid-template-columns:minmax(205px,226px) minmax(0,1fr);gap:clamp(1.5rem,4vw,4.2rem);padding:2.1rem clamp(1rem,3vw,2.65rem)}
+.shell{max-width:var(--page);margin:0 auto;display:grid;grid-template-columns:minmax(205px,226px) minmax(0,1fr);gap:clamp(1.5rem,4vw,4.2rem);padding:2.1rem 1rem;padding:2.1rem clamp(1rem,3vw,2.65rem)}
 aside{position:sticky;top:1rem;align-self:start;max-height:calc(100vh - 2rem);overflow:auto}
 aside h2{font-size:.94rem;color:var(--muted);margin:0 0 .5rem}
 aside ul{list-style:none;margin:0;padding:0}
@@ -63,17 +63,50 @@ footer{border-top:1px solid var(--rule);padding:1.1rem max(1rem,calc((100% - var
 .app-links a:active{background:var(--note-bg,#e8f1ee)}
 .in-app th .app-links a{padding:.25rem 0;border:0;text-decoration:underline}
 body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule:#3c535f;--link:#a8e1d3;--panel:#152832;--note-bg:#1b303a}
-.dark thead th,.dark .note,.dark .skip,.dark aside a:hover,.dark aside a:focus-visible{background:var(--note-bg)}
+.dark thead th,.dark .note,.dark .skip,.dark aside a:hover{background:var(--note-bg)}
+.dark aside a:focus-visible{background:var(--note-bg)}
+
+.guide-search{display:none}
+.in-app .mast{border-bottom:0;padding-bottom:.8rem}
+.in-app .guide-search{display:block;position:relative;top:0;z-index:3;background:var(--panel);padding:.4rem 1rem .7rem;padding:.4rem max(1rem,calc((100% - var(--page))/2 + 2rem)) .7rem;border-bottom:4px solid #78c6b3}
+.in-app .guide-search.has-results{position:sticky;top:0}
+.guide-search-box{display:flex;align-items:center;min-height:48px;border-radius:28px;background:#e8edf2;color:#626f7b;padding-left:16px}
+.dark .guide-search-box{background:#243342;color:#a5b1bd}
+.guide-search-box svg{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:2}
+.guide-search-box input{flex:1;min-width:0;width:100%;border:0;background:transparent;color:#17272e;font:400 16px/1.5 Inter,"Segoe UI",Arial,sans-serif;padding:12px;outline-offset:-2px}
+.dark .guide-search-box input{color:#e3edf2}
+.guide-search-box input::placeholder{color:#626f7b;opacity:1}
+.dark .guide-search-box input::placeholder{color:#a5b1bd}
+.guide-search-box input::-webkit-search-cancel-button{display:none}
+.guide-search-clear{display:flex;align-items:center;justify-content:center;min-width:48px;min-height:48px;color:inherit}
+.guide-search-box input:placeholder-shown + .guide-search-clear{visibility:hidden}
+.guide-search-actions{display:flex;align-items:center;flex-wrap:wrap;gap:4px 12px;margin-top:6px;color:#c7dee0;font-size:.88rem}
+.guide-search-actions button,.guide-search-step{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:4px 10px;border:0;background:transparent;color:var(--mint);font:inherit;text-decoration:none;cursor:pointer}
+.guide-search-status{flex:1;min-width:5rem}
+mark{background:#f6dd8a;color:#302607;border-radius:2px}
+mark.guide-current{background:#edba55;color:#2b2006;outline:1px solid #855a12}
+.dark mark{background:#64552a;color:#fff1b8}
+.dark mark.guide-current{background:#b0832e;color:#fff8d8;outline-color:#f6d990}
+@media print{.in-app .guide-search{display:none}}
+.guide-web-icon{display:inline-block;width:1em;height:1em;margin-inline-end:.3em;vertical-align:-.12em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 </style>
 </head>
 <body>
 <a class="skip" href="#guide">Skip to guide</a>
 <header class="mast">
-  <div class="brand"><strong>AntCalc</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
+  <div class="brand"><strong>The app</strong><a class="language" href="ru.html" lang="ru" hreflang="ru">Русский</a></div>
   <h1>User Guide</h1>
   <p>Calculate dimensions, build and tune your antenna, then save the measurements in a project.</p>
   <span class="version">Version 2.1.0</span>
 </header>
+<form class="guide-search" id="guide-search" role="search" method="get" action="en.html#guide-match-0" aria-label="Search the guide">
+  <div class="guide-search-box">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 6 6"/></svg>
+    <input id="guide-search-input" name="q" type="search" maxlength="32" enterkeyhint="search" autocomplete="off" placeholder="Search the guide" aria-label="Search the guide" value="<!-- GUIDE_SEARCH_VALUE -->">
+    <a class="guide-search-clear" href="en.html#guide-search" aria-label="Clear search"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></a>
+  </div>
+  <div class="guide-search-actions"><button type="submit">Find</button><output class="guide-search-status" role="status" aria-live="polite"><!-- GUIDE_SEARCH_STATUS --></output><!-- GUIDE_SEARCH_STEPS --></div>
+</form>
 <div class="shell">
   <aside id="contents" aria-labelledby="contents-title">
     <h2 id="contents-title">Contents</h2>
@@ -89,20 +122,21 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <li><a href="#projects">Projects and tuning journals</a></li>
       <li><a href="#help">Help and updates</a></li>
     </ul></nav>
-<p>Empty fields use a muted label. When focused or filled, the label moves into the outline; units are included in the label. Examples are not input values and are not saved.</p>
   </aside>
   <main id="guide">
     <section class="chapter" id="start" aria-labelledby="start-title">
       <h2 id="start-title">Getting started</h2>
+<p>In the app, to search the guide, enter up to 32 characters below the version and press Find. Matches are highlighted in the text; Previous and Next cycle through them. The clear icon resets the query. Search works offline.</p>
       <div class="app-links"><a href="https://appassets.androidplatform.net/open/settings">Settings</a><a href="https://appassets.androidplatform.net/open/sizing">Antenna dimensions</a><a href="https://appassets.androidplatform.net/open/tuning">Antenna tuning</a><a href="https://appassets.androidplatform.net/open/tools">Tools</a></div>
-      <div>
+      <div class="with-images">
         <div class="prose">
-<p>AntCalc helps you estimate dimensions, tune a built antenna and save measurement results. It runs on Android 8.0 or later. Calculations, models and built-in guides work offline.</p>
+<p>The app helps you estimate dimensions, tune a built antenna and save measurement results. It runs on Android 8.0 or later. Calculations, models and built-in guides work offline.</p>
 <ol><li>Download <code>antcalc.apk</code> from the GitHub Direct release you want and open the file on your phone. Use a build with a compatible signature when updating.</li><li>Open the ⋮ menu and select <strong>Settings</strong>. Choose an interface language and the system, light or dark theme.</li><li>Use <strong>Antenna dimensions</strong>, <strong>Antenna tuning</strong> or <strong>Tools</strong> in the bottom bar. Tap the title of a long screen to scroll back to its start.</li></ol>
 <p>A right-hand chevron marks a card that opens a list of child cards. Cards for individual calculators, guides and workspaces open when tapped and have no chevron.</p>
-<p><a href="https://github.com/ssotnikov/antcalc/releases">AntCalc releases on GitHub</a></p>
+<p><a href="https://github.com/ssotnikov/antcalc/releases"><svg class="guide-web-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12,3a9,9 0,1 1,0 18a9,9 0,1 1,0 -18M3,12h18M12,3v18M12,3c-3,2.4 -4.5,5.4 -4.5,9s1.5,6.6 4.5,9M12,3c3,2.4 4.5,5.4 4.5,9s-1.5,6.6 -4.5,9"/></svg>Releases on GitHub</a></p>
         </div>
-      </div>
+      <div class="gallery"><figure><a href="images/en/userguide-search.webp"><img src="images/en/userguide-search.webp" width="1080" height="1920" alt="Searching the guide" loading="lazy" decoding="async"></a><figcaption>Searching the guide</figcaption></figure></div>
+</div>
     </section>
     <section class="chapter" id="sizing" aria-labelledby="sizing-title">
       <h2 id="sizing-title">Sizing and tuning</h2>
@@ -125,13 +159,14 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <div>
         <div class="prose">
 <p>Open <strong>Tools → Antenna parameter calculators</strong>. Choose a design or calculation mode. Check the table units and diagram labels before cutting. If the screen provides a cut list, compare it with the finished part dimensions.</p>
+<p>On the Antenna parameter calculators and Antenna construction screens, hold a card and drag it up or down. Each list saves its own order.</p>
 <p class="note">If a result is blank, check the input units and allowed ranges.</p>
 <table><thead><tr><th scope="col">Calculator</th><th scope="col">What to do</th></tr></thead><tbody>
 <tr><th scope="row"><span class="web-label">Inverted-V dipole and Ground Plane</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/inverted-v">Inverted-V dipole</a><a href="https://appassets.androidplatform.net/open/ground-plane">Ground Plane</a></span></th><td>Enter frequency and design parameters. Check the arm lengths, or the radiator and radials, for the selected setup.</td></tr>
 <tr><th scope="row"><span class="web-label">Full-wave loop</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/full-wave-loop">Full-wave loop</a><a href="https://appassets.androidplatform.net/open/quad-loop">Quad Loop</a><a href="https://appassets.androidplatform.net/open/delta-loop">Delta Loop</a></span></th><td>Choose Quad or Delta Loop. Calculate perimeter and sides from frequency, or frequency from a known perimeter. Choose the feedpoint shown on the diagram.</td></tr>
 <tr><th scope="row"><span class="web-label">J-pole and Slim Jim</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/j-pole">J-pole</a><a href="https://appassets.androidplatform.net/open/slim-jim">Slim Jim</a></span></th><td>Choose a variant or band. Check the lengths, gap and feedpoint against the labelled diagram. Start with the dimensions published for your variant.</td></tr>
-<tr><th scope="row"><span class="web-label">Yagi–Uda</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Yagi–Uda</a></span></th><td>Choose an author’s design and mounting variant. Check positions from the reflector, diameters, blanks and boom length. For a driven element with a two-piece cut list, the stated length is for each half. For DK7ZB 70 cm, enter the gap between the halves. For DK7ZB 70 cm, Fill empty fields from example fills the gap with a trial value. For a ready-made spacer, measure the gap with the tubes seated against their stops. Check the starting dimensions by measuring SWR. Follow the specified offsets and mounting method for tables based on a fixed setup. In builds that include DG7YBN’s YBN 2-5m and GTV 2-6m profiles, their published materials are available for viewing within AntCalc. When exporting a project, you can select the other records.</td></tr>
-<tr><th scope="row"><span class="web-label">Moxon antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/moxon">Moxon antenna</a></span></th><td>Choose a published design or calculate one from frequency and conductor diameter. Use the dimensions and gaps for your selected configuration.</td></tr>
+<tr><th scope="row"><span class="web-label">Yagi–Uda</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/yagi">Yagi–Uda</a></span></th><td>Choose an author’s design and mounting variant. Check positions from the reflector, diameters, blanks and boom length. In Blank lengths, the stated length for a split driven element is for each half. Copy assembly dimensions also includes finished dimensions and mounting positions. For DK7ZB 70 cm, enter the gap between the halves. For DK7ZB 70 cm, Fill empty fields from example fills the gap with a trial value. For a ready-made spacer, measure the gap with the tubes seated against their stops. Check the starting dimensions by measuring SWR. Follow the specified offsets and mounting method for tables based on a fixed setup. In builds that include DG7YBN’s YBN 2-5m and GTV 2-6m profiles, their published materials are available for viewing within the app. When exporting a project, you can select the other records.</td></tr>
+<tr><th scope="row"><span class="web-label">Moxon antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/moxon">Moxon antenna</a></span></th><td>Choose a published design or calculate one from frequency and conductor diameter. Use the dimensions and gaps for your selected configuration. For the M1GEO/G8OCV build, use 3.2 mm diameter rod. The 3.2 mm radius in the MMANA file corresponds to a 6.4 mm diameter. The article reports simulated SWR and gain.</td></tr>
 <tr><th scope="row"><span class="web-label">HB9CV antenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/hb9cv">HB9CV antenna</a></span></th><td>Choose a published design or calculate by frequency within 100–1500 MHz. Check the phasing line and any fields for dimensions that depend on assembly.</td></tr>
 <tr><th scope="row"><span class="web-label">Cantenna</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/cantenna">Cantenna</a></span></th><td>Enter a frequency or band, find a diameter and compare candidate cans. Check the probe position and usable band. Use the flat pattern when making a flare.</td></tr>
 <tr><th scope="row"><span class="web-label">Halo CB</span><span class="app-links"><a href="https://appassets.androidplatform.net/open/halo">Halo CB</a></span></th><td>Choose a circular or square loop and enter frequency, <var>k</var> and the gap. Check the conductor length on the diagram and review the gamma match.</td></tr>
@@ -277,7 +312,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
         <div class="prose">
 <ol><li>Export the <strong>S11</strong> sweep from your analyser as a one-port Touchstone <code>.s1p</code> file.</li><li>Open <strong>Tools → Additional tools → Import VNA measurements</strong> and tap <strong>Open S1P file</strong>.</li><li>Set the calibration plane, such as the feedpoint or transceiver end. To compare sweeps, add a second measurement and check frequency overlap, reference impedance and calibration plane.</li><li>Review SWR, impedance and Smith Chart views. Find the SWR minimum, then check where reactance approaches zero. The two frequencies can differ.</li><li>Open <strong>SWR bandwidth</strong>, select a sweep and set a threshold, for example 2.0. Use the previous and next frequency buttons to move the marker between measured points. An edge at the sweep boundary means a wider sweep is needed to determine the full bandwidth.</li><li>Use <strong>Save to project</strong> to keep sweeps with your calculations or measurements.</li></ol>
 <p class="note">If an S1P file fails to open, check that your analyser exported a one-port Touchstone file with the <code>.s1p</code> extension.</p>
-<p><a href="../examples/demo-dipole-145mhz-before.s1p" download>Example S1P before tuning</a> · <a href="../examples/demo-dipole-145mhz-after.s1p" download>Example S1P after tuning</a></p>
+<p><a href="../examples/demo-dipole-145mhz-before.s1p" download><svg class="guide-web-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12,3a9,9 0,1 1,0 18a9,9 0,1 1,0 -18M3,12h18M12,3v18M12,3c-3,2.4 -4.5,5.4 -4.5,9s1.5,6.6 4.5,9M12,3c3,2.4 4.5,5.4 4.5,9s-1.5,6.6 -4.5,9"/></svg>Example S1P before tuning</a> · <a href="../examples/demo-dipole-145mhz-after.s1p" download><svg class="guide-web-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12,3a9,9 0,1 1,0 18a9,9 0,1 1,0 -18M3,12h18M12,3v18M12,3c-3,2.4 -4.5,5.4 -4.5,9s1.5,6.6 4.5,9M12,3c3,2.4 4.5,5.4 4.5,9s-1.5,6.6 -4.5,9"/></svg>Example S1P after tuning</a></p>
         </div>
 <div class="gallery">
 <figure><a href="images/en/vna-import.webp"><img src="images/en/vna-import.webp" width="1080" height="2400" alt="S1P measurements screen with the Open S1P file button" loading="lazy" decoding="async"></a><figcaption>Opening the first S1P file</figcaption></figure>
@@ -300,7 +335,7 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
 <p>HTTPS links in record details and notes, including original antenna publications, are underlined and open in the external browser when tapped. They also work when comparing records. You can still select and copy the record text and the complete link address.</p>
 <p>In Changes, differences appear in parentheses: “+” means an increase from the initial record and “−” a decrease. Matching values show “unchanged”. Small length corrections are displayed in millimeters. Copied data uses the same notation. An unavailable difference does not mean that values are unchanged.</p>
 <h3>Measurements and data transfer</h3><ol><li>Open <strong>Tools → Projects and tuning journals</strong>, choose a project and add a record. Include mounting conditions and measurement results, plus an annotated photo if it helps you reproduce the setup.</li><li>Use <strong>Compare records</strong> to select two entries. Compare SWR and impedance under the same conditions and at the same connection point.</li><li>Use <strong>Export JSON</strong> and <strong>Import JSON</strong> to transfer a project. Import creates a separate project. Use the ZIP export to transfer photos.</li></ol>
-<p><a href="../examples/demo-dipole-journal-145mhz-en.json" download>145 MHz dipole demo project</a></p>
+<p><a href="../examples/demo-dipole-journal-145mhz-en.json" download><svg class="guide-web-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12,3a9,9 0,1 1,0 18a9,9 0,1 1,0 -18M3,12h18M12,3v18M12,3c-3,2.4 -4.5,5.4 -4.5,9s1.5,6.6 4.5,9M12,3c3,2.4 4.5,5.4 4.5,9s-1.5,6.6 -4.5,9"/></svg>145 MHz dipole demo project</a></p>
         </div>
 <div class="gallery">
 <figure><a href="images/en/project-search.webp"><img src="images/en/project-search.webp" width="680" height="1209" alt="Project frequency search and clear button" loading="lazy" decoding="async"></a><figcaption>Finding projects by frequency</figcaption></figure>
@@ -314,8 +349,8 @@ body.dark{color-scheme:dark;--paper:#101d26;--ink:#e3edf2;--muted:#b3c6cf;--rule
       <div class="app-links"><a href="https://appassets.androidplatform.net/open/help">Open Help</a><a href="https://appassets.androidplatform.net/open/references">Open References</a><a href="https://appassets.androidplatform.net/open/licenses">Open Licenses</a><a class="direct-link" href="https://appassets.androidplatform.net/open/check-updates">Check for updates</a></div>
       <div>
         <div class="prose">
-<ul><li><strong>Help</strong> in the menu contains information about the app. <strong>References</strong> links to articles and formulas. <strong>Licenses</strong> lists source publications and their terms.</li><li>Open <strong>User guide</strong> from the app menu to read it offline and jump directly to the tools described here. The guide and its screenshots follow the app's language and theme.</li><li>In the GitHub Direct build, select <strong>Check for updates</strong>. When a newer version is available, the app shows its details and opens the Android installer.</li></ul>
-<p><a href="../PRIVACY.md">Privacy policy</a> · <a href="https://github.com/ssotnikov/antcalc/issues">Report an issue</a></p>
+<ul><li><strong>Help</strong> in the menu contains information about the app. <strong>References</strong> presents articles, formulas and practical designs as cards with the author, language and a short description. Tap a card to open the publication in a browser; reading requires an internet connection. Usage terms remain in the relevant card. <strong>Licenses</strong> lists source publications and their terms. Links within full license texts are colored and underlined; tap a link to open its page in a browser.</li><li>Open <strong>User guide</strong> from the app menu to read it offline and jump directly to the tools described here. The guide and its screenshots follow the app's language and theme.</li><li>In the GitHub Direct build, select <strong>Check for updates</strong>. When a newer version is available, the app shows its details and opens the Android installer.</li></ul>
+<p><a href="../PRIVACY.md"><svg class="guide-web-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12,3a9,9 0,1 1,0 18a9,9 0,1 1,0 -18M3,12h18M12,3v18M12,3c-3,2.4 -4.5,5.4 -4.5,9s1.5,6.6 4.5,9M12,3c3,2.4 4.5,5.4 4.5,9s-1.5,6.6 -4.5,9"/></svg>Privacy policy</a> · <a href="https://github.com/ssotnikov/antcalc/issues"><svg class="guide-web-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12,3a9,9 0,1 1,0 18a9,9 0,1 1,0 -18M3,12h18M12,3v18M12,3c-3,2.4 -4.5,5.4 -4.5,9s1.5,6.6 4.5,9M12,3c3,2.4 4.5,5.4 4.5,9s-1.5,6.6 -4.5,9"/></svg>Report an issue</a></p>
         </div>
       </div>
     </section>

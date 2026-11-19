@@ -32,7 +32,7 @@ class InvertedVScreenTest : CalculatorUiFixture() {
         height.performScrollTo().performTextReplacement("7,5")
         back()
         compose.onNodeWithTag("antenna-parameter-tools").assertIsDisplayed()
-        compose.onNodeWithTag("open-inverted-v").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-inverted-v").performClick()
         height.performScrollTo().assertTextContains("7,5")
         compose.onNodeWithTag("nav-SIZING").performClick()
         field(FieldKey.SIZING_FREQUENCY).assertTextContains("145", substring = true)
@@ -48,6 +48,21 @@ class InvertedVScreenTest : CalculatorUiFixture() {
             }
             openTool()
             val russian = language == AppLanguage.RUSSIAN
+            val formulas = if (russian) "Формулы" else "Formulas"
+            val panel = compose.onNodeWithTag("inverted-v-details").performScrollTo()
+            panel.assertTextContains(formulas)
+                .assert(SemanticsMatcher.expectValue(
+                    androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                    if (russian) "Свернуто" else "Collapsed",
+                ))
+            panel.performClick().assertTextContains(formulas)
+                .assert(SemanticsMatcher.expectValue(
+                    androidx.compose.ui.semantics.SemanticsProperties.StateDescription,
+                    if (russian) "Развернуто" else "Expanded",
+                ))
+            compose.onNodeWithTag("inverted-v-span-formula").performScrollTo().assertIsDisplayed()
+            panel.performScrollTo().performClick()
+            compose.onNodeWithTag("inverted-v-span-formula").assertDoesNotExist()
             val title = if (russian) "Петлевой вибратор в антенне Inverted V" else "Here Is a Dipole"
             compose.onNodeWithTag("inverted-v-source").performScrollTo().assertIsDisplayed().assertTextContains(title)
             compose.onNodeWithTag("menu").performClick()
@@ -64,6 +79,6 @@ class InvertedVScreenTest : CalculatorUiFixture() {
     private fun openTool() {
         compose.onNodeWithTag("nav-TOOLS").performClick()
         compose.onNodeWithTag("open-antenna-parameter-tools").performScrollTo().performClick()
-        compose.onNodeWithTag("open-inverted-v").performScrollTo().performClick()
+        compose.scrollToAntennaTool("open-inverted-v").performClick()
     }
 }

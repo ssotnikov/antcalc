@@ -119,7 +119,7 @@ class TrapDipoleUiTest {
         waitFor("nav-TOOLS")
         compose.onNodeWithTag("nav-TOOLS").performClick()
         click("open-antenna-parameter-tools")
-        click("open-trap-dipole")
+        compose.scrollToAntennaTool("open-trap-dipole").performClick()
     }
 
     private fun click(tag: String) {

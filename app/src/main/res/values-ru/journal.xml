@@ -2,7 +2,7 @@
     <string name="journal_project_search">Название, частота или тип антенны</string>
     <string name="journal_clear_search">Очистить поиск</string>
     <string name="journal_project_no_match">Проекты по запросу не найдены.</string>
-    <string name="journal_project_reorder_hint">Удерживайте карточку и перетащите её вверх или вниз.</string>
+    <string name="journal_project_reorder_hint">Удерживайте карточку и перетащите ее вверх или вниз.</string>
     <string name="journal_project_move_up">Переместить проект выше</string>
     <string name="journal_project_move_down">Переместить проект ниже</string>
     <string name="journal_ideal_quarter_monopole">Идеальная λ/4 — штырь</string>
@@ -19,7 +19,7 @@
     <string name="journal_before">Исходная запись</string>
     <string name="journal_after">Контрольная запись</string>
     <string name="journal_delta">Изменения</string>
-    <string name="journal_no_projects">Создайте проект для антенны, чтобы хранить её расчеты и измерения вместе.</string>
+    <string name="journal_no_projects">Создайте проект для антенны, чтобы хранить ее расчеты и измерения вместе.</string>
     <string name="journal_no_records">Добавьте первое измерение или сохраните текущий расчет размеров либо подстройки.</string>
     <string name="journal_add_record">Добавить запись</string>
     <string name="journal_import">Импорт JSON</string>
@@ -46,7 +46,7 @@
     <string name="journal_point_radio">Со стороны трансивера</string>
     <string name="journal_point_unknown">Не указана</string>
     <string name="journal_measurement">Измерение</string>
-    <string name="journal_calculation">Сохранённый расчет</string>
+    <string name="journal_calculation">Сохраненный расчет</string>
     <string name="journal_calculation_input">Исходные данные расчета</string>
     <string name="journal_calculation_output">Результаты расчета</string>
     <string name="journal_choose_calc">Выберите текущий расчет, чтобы сохранить его в этой записи.</string>
@@ -72,9 +72,9 @@
     <string name="journal_not_comparable">Частоты замера различаются либо не указаны. Сравнивайте КСВ или импеданс на одной частоте.</string>
     <string name="journal_compare_points">Точки подключения анализатора различаются либо не указаны. Перед сравнением КСВ или импеданса проверьте условия замера.</string>
     <string name="journal_compare_types">В записях указаны разные типы антенн. Значения показаны отдельно.</string>
-    <string name="journal_compare_calculations">Это сохранённые результаты расчетов. Перед сравнением проверьте исходные данные и редакции моделей.</string>
+    <string name="journal_compare_calculations">Это сохраненные результаты расчетов. Перед сравнением проверьте исходные данные и редакции моделей.</string>
     <string name="journal_compare_mixed">Расчет и замер показаны отдельно. Перед выводами проверьте исходные данные и условия измерения.</string>
-    <string name="journal_scope">КСВ характеризует согласование. Для оценки КПД антенны нужны отдельные измерения. Расчет размеров и подстройка дают приближённые результаты.</string>
+    <string name="journal_scope">КСВ характеризует согласование. Для оценки КПД антенны нужны отдельные измерения. Расчет размеров и подстройка дают приближенные результаты.</string>
     <string name="journal_copy">Копировать данные</string>
     <string name="journal_retry">Повторить</string>
     <string name="journal_loading">Загрузка журнала…</string>
@@ -95,7 +95,7 @@
     <string name="journal_r_label">Сопротивление R</string>
     <string name="journal_x_label">Реактивность X</string>
     <string name="journal_test_frequency_label">Частота измерения КСВ или импеданса</string>
-    <string name="journal_help_workflow">Откройте «Инструменты» → «Проекты и журналы подстройки». Добавьте измерение или сохраните снимок текущего расчёта размеров либо подстройки. Записывайте условия установки и данные фидера вместе с измерением. При повторном замере укажите, что изменилось в размерах, креплении или питании. Чтобы перенести проект, экспортируйте его в JSON.</string>
+    <string name="journal_help_workflow">Откройте «Инструменты» → «Проекты и журналы подстройки». Добавьте измерение или сохраните снимок текущего расчета размеров либо подстройки. Записывайте условия установки и данные фидера вместе с измерением. При повторном замере укажите, что изменилось в размерах, креплении или питании. Чтобы перенести проект, экспортируйте его в JSON.</string>
     <string name="journal_help_comparison">Выберите две записи в проекте. Для сравнения КСВ измеряйте его на одной частоте и подключайте анализатор в одной точке, например непосредственно у точки питания антенны. Резонансная частота может отличаться от частоты измерения КСВ.</string>
     <string name="journal_project_summary">%1$s, %2$s</string>
     <string name="journal_property">%1$s: %2$s</string>
@@ -138,14 +138,14 @@
     <string name="project_transfer_create">+ Создать новый проект</string>
     <string name="project_transfer_save_existing">Сохранить в выбранный проект</string>
     <string name="project_transfer_save_new">Создать и сохранить</string>
-    <string name="project_transfer_saved">Расчет сохранён в проект</string>
+    <string name="project_transfer_saved">Расчет сохранен в проект</string>
     <string name="project_transfer_open">Открыть проект</string>
     <string name="project_transfer_initial_length">Исходная длина</string>
     <string name="project_transfer_first_entry">Первая запись журнала</string>
     <string name="project_transfer_length_outside_range">Длина вне диапазона поля проекта. Точный результат сохранится в записи журнала.</string>
     <string name="project_transfer_recommended_length">Рекомендуемая длина</string>
     <string name="journal_manual_records">Ручные измерения</string>
-    <string name="journal_saved_calculations">Сохранённые расчеты</string>
+    <string name="journal_saved_calculations">Сохраненные расчеты</string>
     <string name="journal_manual_short">Вручную</string>
     <string name="journal_reference">Опорное сопротивление Z₀</string>
     <string name="journal_reference_optional">Опорное сопротивление Z₀, Ом (необязательно)</string>

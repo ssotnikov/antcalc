@@ -263,7 +263,7 @@ internal fun MoxonScreen(
         MoxonHeading(R.string.yagi_rights)
         SelectableText(source.author)
         source.terms?.let { HelpText(it) }
-        TextButton(onClick = { openSourceWithFeedback(context, source.url) }) { Text(source.title) }
+        WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }) { Text(source.title) }
     }
 }
 
@@ -337,8 +337,8 @@ private fun MoxonHeading(label: Int) {
 private fun MoxonDisclosure(label: Int, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     Column {
-        TextButton(onClick = { expanded = !expanded }) {
-            Text(stringResource(label) + if (expanded) " ⌃" else " ⌄")
+        PanelButton(expanded, onClick = { expanded = !expanded }) {
+            Text(stringResource(label))
         }
         if (expanded) Column(verticalArrangement = Arrangement.spacedBy(6.dp)) { content() }
     }

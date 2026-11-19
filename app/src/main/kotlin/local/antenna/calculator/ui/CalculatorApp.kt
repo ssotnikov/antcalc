@@ -443,6 +443,7 @@ private fun LocalizedCalculatorApp(
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.contact_author)) },
+                                    leadingIcon = { WebGlobeIcon() },
                                     onClick = { menu = false; openAuthorContact(context) },
                                     modifier = Modifier.testTag("contact-author"),
                                 )
@@ -450,6 +451,7 @@ private fun LocalizedCalculatorApp(
                                     authorSupportPaymentUrl?.let { url ->
                                         DropdownMenuItem(
                                             text = { Text(stringResource(R.string.support_author)) },
+                                            leadingIcon = { WebGlobeIcon() },
                                             onClick = { menu = false; openSourceWithFeedback(context, url) },
                                             modifier = Modifier.testTag("menu-support-author"),
                                         )
@@ -465,6 +467,7 @@ private fun LocalizedCalculatorApp(
                                 }
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.report_bug)) },
+                                    leadingIcon = { WebGlobeIcon() },
                                     onClick = { menu = false; openSourceWithFeedback(context, BUG_REPORT_URL) },
                                     modifier = Modifier.testTag("menu-report-bug"),
                                 )
