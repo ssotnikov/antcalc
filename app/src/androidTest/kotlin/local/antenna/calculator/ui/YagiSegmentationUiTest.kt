@@ -52,6 +52,37 @@ class YagiSegmentationUiTest {
         text(R.string.seg_ground_table_key).assertDoesNotExist()
     }
 
+    @Test fun conflictingMeshDirectionsAreReported() {
+        val base = listOf(Element(0.0, 1.010, .010), Element(.210, .920, .010))
+        val candidate = base.toMutableList().apply { this[1] = this[1].copy(length = .925) }
+        val coarse = requireNotNull(OpenNec.segmentCounts(candidate, 146_450_000))
+        compose.setContent {
+            MaterialTheme {
+                Column(Modifier.verticalScroll(rememberPageScrollState())) {
+                    YagiNecPanel(base, candidate, 145_000_000, null, null,
+                        sweep = { geometry, counts, grid ->
+                            val peak = when {
+                                geometry == base -> 1.5
+                                counts == coarse -> 1.3
+                                else -> 1.6
+                            }
+                            grid.mapIndexed { index, hz ->
+                                val sampledPeak = if (geometry == base) grid.lastIndex else 0
+                                OpenNec.Point(hz, 30.0, 0.0, if (index == sampledPeak) peak else 1.1, List(73) { 3.0 })
+                            }
+                        }, onApply = {})
+                }
+            }
+        }
+        click("opennec-expand")
+        click("opennec-run")
+        click("opennec-direction")
+        compose.onNodeWithText(compose.activity.getString(R.string.opennec_direction_indeterminate))
+            .performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("opennec-low").performScrollTo().performTextReplacement("143")
+        compose.onNodeWithText(compose.activity.getString(R.string.opennec_direction_indeterminate)).assertDoesNotExist()
+    }
+
     @Test fun meshComparisonUsesTheSameBandAndIsInvalidatedOnEdit() {
         val geometry = listOf(Element(0.0, 1.010, .010), Element(.210, .920, .010))
         val calls = mutableListOf<Pair<List<Int>, List<Long>>>()

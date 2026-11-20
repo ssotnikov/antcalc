@@ -188,13 +188,12 @@ internal fun MatchingScreen(state: CalculatorUiState, onEvent: (CalculatorEvent)
             HelpText(R.string.matching_model)
             ReflectionIllustrations()
             TransmitterPowerExample()
-            listOf(R.drawable.formula_reflection to R.string.matching_formula_gamma_alt,
-                R.drawable.formula_swr to R.string.matching_formula_swr_alt,
-                R.drawable.formula_return_loss to R.string.matching_formula_rl_alt,
-                R.drawable.formula_reflected_power to R.string.matching_formula_power_alt).forEach { (image, alt) ->
-                Image(painterResource(image), contentDescription = stringResource(alt), contentScale = ContentScale.Fit,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), modifier = Modifier.fillMaxWidth().height(100.dp))
-            }
+            CalculatorFormulas(
+                CalculatorEquation("Γ = (Zₗ − Z₀) / (Zₗ + Z₀)", R.string.matching_formula_gamma_alt),
+                CalculatorEquation(stringResource(R.string.matching_swr) + " = (1 + |Γ|) / (1 − |Γ|)", R.string.matching_formula_swr_alt),
+                CalculatorEquation("RL = −20 log₁₀|Γ|", R.string.matching_formula_rl_alt),
+                CalculatorEquation("Pᵣ / Pᵢ = |Γ|²\nML = −10 log₁₀(1 − |Γ|²)", R.string.matching_formula_power_alt),
+            )
         }
     }
 }

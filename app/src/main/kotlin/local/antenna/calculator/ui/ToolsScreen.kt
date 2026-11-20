@@ -1,12 +1,14 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
@@ -89,9 +91,9 @@ private data class AntennaTool(val title: Int, val description: Int, val id: Str
 @Composable
 private fun AntennaToolsList(listId: String, cards: List<AntennaTool>) {
     val byId = cards.associateBy { it.id }
-    ReorderableToolCards(listId, cards.map { it.id }) { id, modifier ->
+    ReorderableToolCards(listId, cards.map { it.id }) { id, modifier, lifted ->
         val card = byId.getValue(id)
-        ToolCard(card.title, card.description, card.id, card.open, modifier = modifier)
+        ToolCard(card.title, card.description, card.id, card.open, modifier = modifier, lifted = lifted)
     }
 }
 
@@ -151,13 +153,12 @@ private fun ProjectsToolCard(onClick: () -> Unit) {
 private fun ToolCard(
     title: Int, description: Int, tag: String, onClick: () -> Unit,
     opensChildCards: Boolean = false, highlighted: Boolean = false,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier, lifted: Boolean = false,
 ) {
     val colors = MaterialTheme.colorScheme
     val dark = colors.surface.luminance() < 0.5f
     OutlinedCard(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth().testTag(tag),
+        modifier = modifier.fillMaxWidth(),
         colors = if (highlighted) CardDefaults.outlinedCardColors(
             containerColor = if (dark) Color(0xFF203D4E) else Color(0xFFDCECF4),
         ) else CardDefaults.outlinedCardColors(),
@@ -165,7 +166,8 @@ private fun ToolCard(
             else CardDefaults.outlinedCardBorder(),
     ) {
         Row(
-            Modifier.fillMaxWidth().padding(20.dp),
+            Modifier.fillMaxWidth().then(if (lifted) Modifier else Modifier.testTag(tag)
+                .clickable(role = Role.Button, onClick = onClick)).padding(20.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

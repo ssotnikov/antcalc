@@ -75,8 +75,8 @@ internal fun PanelButton(
 
 private const val WEB_LINK_INLINE_ICON = "web-link-icon"
 
-internal fun AnnotatedString.Builder.appendWebLink(label: String, address: String, color: Color, open: () -> Unit) {
-    appendInlineContent(WEB_LINK_INLINE_ICON, " ")
+internal fun AnnotatedString.Builder.appendWebLink(label: String, address: String, color: Color, showIcon: Boolean = true, open: () -> Unit) {
+    if (showIcon) appendInlineContent(WEB_LINK_INLINE_ICON, " ")
     withLink(LinkAnnotation.Clickable(
         tag = address,
         styles = TextLinkStyles(SpanStyle(color = color, textDecoration = TextDecoration.Underline)),

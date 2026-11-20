@@ -232,12 +232,11 @@ internal fun CableScreen(state: CalculatorUiState, onEvent: (CalculatorEvent) ->
             HelpText(R.string.cable_electrical_length_help)
             CableIllustrations()
             HelpText(R.string.cable_delay_help)
-            listOf(R.drawable.formula_cable_speed to R.string.cable_speed_alt,
-                R.drawable.formula_cable_phase to R.string.cable_phase_alt,
-                R.drawable.formula_cable_length to R.string.cable_length_alt).forEach { (image, alt) ->
-                Image(painterResource(image), stringResource(alt), contentScale = ContentScale.Fit,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), modifier = Modifier.fillMaxWidth().height(100.dp))
-            }
+            CalculatorFormulas(
+                CalculatorEquation("vₚ = VF × c", R.string.cable_speed_alt),
+                CalculatorEquation("θ = 360° × f × L / vₚ\nt = L / vₚ", R.string.cable_phase_alt),
+                CalculatorEquation("L = θ × vₚ / (360° × f)", R.string.cable_length_alt),
+            )
             Text(stringResource(R.string.cable_limits), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             HelpText(R.string.cable_model)
             HelpText(R.string.cable_vf_note)

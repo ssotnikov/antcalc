@@ -62,7 +62,7 @@ internal fun LicenseLinkedText(
         buildAnnotatedString {
             for (part in parts) {
                 when {
-                    part.address != null -> appendWebLink(part.text, part.address, color) {
+                    part.address != null -> appendWebLink(part.text, part.address, color, showIcon = !part.text.equals("MIT License", ignoreCase = true) || part.address !in licenseSourceAddresses) {
                         openSourceWithFeedback(context, part.address)
                     }
                     part.bold -> withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(part.text) }

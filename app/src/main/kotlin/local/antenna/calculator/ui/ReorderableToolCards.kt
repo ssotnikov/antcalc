@@ -1,6 +1,8 @@
 package local.antenna.calculator.ui
 
 import android.content.Context
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
@@ -34,7 +36,7 @@ private data class ToolCardDrag(val id: String, val grabOffset: Float, val heigh
 internal fun ReorderableToolCards(
     listId: String,
     cardIds: List<String>,
-    card: @Composable (id: String, modifier: Modifier) -> Unit,
+    card: @Composable (id: String, modifier: Modifier, lifted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val preferences = remember(context) { context.getSharedPreferences("tool_card_order", Context.MODE_PRIVATE) }
@@ -58,13 +60,14 @@ internal fun ReorderableToolCards(
     val spacingPx = with(density) { spacing.roundToPx() }
     val moveUp = stringResource(R.string.journal_project_move_up)
     val moveDown = stringResource(R.string.journal_project_move_down)
-    var drag by remember(order) { mutableStateOf<ToolCardDrag?>(null) }
+    var drag by remember(listId, cardIds) { mutableStateOf<ToolCardDrag?>(null) }
 
     val positions = order.withIndex().associate { (index, id) -> id to index }
     fun targetAt(current: ToolCardDrag): String = scroll.layoutInfo.reorderTarget(
         current.id, current.y - current.grabOffset, current.height, positions,
     )
 
+    val insertionTarget by remember(order) { derivedStateOf { drag?.let(::targetAt) } }
     CardReorderEdgeScroll(scroll, drag?.id, order) { drag?.y }
 
     Box(Modifier.widthIn(max = 680.dp).fillMaxSize().clipToBounds()) {
@@ -91,7 +94,9 @@ internal fun ReorderableToolCards(
                                     drag = initial.copy(y = change.position.y)
                                 }
                                 if (!change.pressed) {
-                                    drag?.let { move(id, targetAt(it)) }
+                                    val target = drag?.let(::targetAt)
+                                    drag = null
+                                    if (target != null) move(id, target)
                                     break
                                 }
                             }
@@ -105,7 +110,7 @@ internal fun ReorderableToolCards(
             verticalArrangement = Arrangement.spacedBy(spacing),
             overscrollEffect = null,
         ) {
-            item {
+            item("tool-reorder-help") {
                 Text(stringResource(R.string.journal_project_reorder_hint),
                     style = MaterialTheme.typography.bodySmall, color = inputExampleColor())
             }
@@ -113,7 +118,7 @@ internal fun ReorderableToolCards(
                 val index = order.indexOf(id)
                 val current = drag
                 val from = current?.let { order.indexOf(it.id) } ?: -1
-                val to = current?.let { order.indexOf(targetAt(it)) } ?: -1
+                val to = insertionTarget?.let(order::indexOf) ?: -1
                 val shift = when {
                     current == null -> 0
                     index > from && index <= to -> -(current.height + spacingPx)
@@ -130,14 +135,18 @@ internal fun ReorderableToolCards(
                         }
                     }
                 }
-                Box(Modifier.animateItem().offset { IntOffset(0, shift) }
-                    .alpha(if (current?.id == id) 0f else 1f)) { card(id, actions) }
+                val offset = key(order) { animateIntAsState(shift, tween(160), label = "tool insertion gap") }
+                val lifted = current?.id == id
+                Box(Modifier.animateItem(placementSpec = null).offset { IntOffset(0, offset.value) }
+                    .alpha(if (lifted) 0f else 1f)) {
+                    card(id, actions, false)
+                }
             }
         }
         drag?.let { current ->
             Box(Modifier.fillMaxWidth().padding(horizontal = margin)
                 .offset { IntOffset(0, (current.y - current.grabOffset).roundToInt()) }
-                .clearAndSetSemantics {}) { card(current.id, Modifier) }
+                .clearAndSetSemantics {}) { card(current.id, Modifier, true) }
         }
     }
 }

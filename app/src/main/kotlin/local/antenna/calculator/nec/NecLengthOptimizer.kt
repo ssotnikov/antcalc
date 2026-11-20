@@ -7,7 +7,7 @@ import local.antenna.calculator.core.layout.YagiScaling.Element
 import kotlin.time.TimeSource
 
 internal data class NecTrial(val elements: List<Element>, val points: List<OpenNec.Point>) {
-    val worstSwr = points.maxOf { it.swr }
+    val worstSwr = worstNecSwr(points).swr
 }
 
 internal data class NecOptimization(val initial: NecTrial, val best: NecTrial, val goal: Double) {

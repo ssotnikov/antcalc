@@ -7,7 +7,7 @@
     <string name="opennec_check">Проверить в NEC</string>
     <string name="opennec_conditions">OpenNEC 2.4.1. Свободное пространство, идеально проводящие круглые элементы, источник напряжения в центре вибратора, Z₀ = 50 Ом. Усиление показано в направлении директоров. F/B сравнивает направления 0° и 180°.</string>
     <string name="opennec_mounted">Для NEC нужны размеры прямых элементов из модели. Монтажные размеры доступны для пропорционального переноса.</string>
-    <string name="opennec_split">Модель питания для вибратора с физическим зазором еще не проверена. Расчет размеров доступен.</string>
+    <string name="opennec_split">Расчет размеров доступен. Проверка NEC и подбор для физического зазора требуют подтверждения модели питания. Результат зависит от узла питания и плоскости отсчета.</string>
     <string name="opennec_unavailable">Ядро OpenNEC недоступно на этом устройстве.</string>
     <string name="opennec_low">От, МГц</string>
     <string name="opennec_high">До, МГц</string>
@@ -51,4 +51,11 @@
     <string name="opennec_smith_boundary">Желтый пунктир · КСВ %1$s. Внутри окружности КСВ ниже порога.</string>
     <string name="opennec_smith_center_only">При пороге КСВ 1 подходит только центр диаграммы.</string>
     <string name="opennec_smith_grid">Круги сетки показывают постоянное R/Z₀, дуги — постоянное X/Z₀. Выше оси реактивность индуктивная (+j), ниже — емкостная (−j). Центр соответствует 50 + j0 Ом.</string>
+    <string name="opennec_worst_swr">Максимум КСВ на сетке %1$s при %2$s МГц</string>
+    <string name="opennec_mesh_impedance">Максимум |ΔZ| %1$s Ом при %2$s МГц</string>
+    <string name="opennec_direction_check">Проверить изменение КСВ на двух сетках</string>
+    <string name="opennec_direction_range">Изменение худшего КСВ на двух сетках · %1$s … %2$s</string>
+    <string name="opennec_direction_indeterminate">Направление не определено</string>
+    <string name="opennec_direction_incomplete">Проверка неполная. Нужны две допустимые сетки и совпадающие частоты.</string>
+    <string name="opennec_direction_help">Отрицательное значение означает уменьшение худшего КСВ. Диапазон показывает чувствительность модели к сегментации.</string>
 </resources>

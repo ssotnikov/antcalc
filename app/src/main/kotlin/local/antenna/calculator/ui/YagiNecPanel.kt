@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.ensureActive
 import local.antenna.calculator.R
 import local.antenna.calculator.core.layout.YagiScaling.Element
 import local.antenna.calculator.core.matching.matchingFromImpedance
@@ -44,11 +45,18 @@ import local.antenna.calculator.core.measurements.S11Sweep
 import local.antenna.calculator.nec.OpenNec
 import local.antenna.calculator.nec.NecOptimization
 import local.antenna.calculator.nec.optimizeNecLengths
+import local.antenna.calculator.nec.NecDirectionRange
+import local.antenna.calculator.nec.NecImpedanceShift
+import local.antenna.calculator.nec.maximumNecShift
+import local.antenna.calculator.nec.necDirectionRange
+import local.antenna.calculator.nec.worstNecSwr
 import local.antenna.calculator.state.boundedNumericText
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
+
+private data class NecMeshComparison(val differences: List<Double>, val impedance: NecImpedanceShift)
 
 @Composable
 internal fun YagiNecPanel(
@@ -81,7 +89,10 @@ internal fun YagiNecPanel(
     }
     var meshExpanded by rememberSaveable { mutableStateOf(false) }
     var meshDifferences by remember(reference, elements, targetHz, lower, upper, limit) {
-        mutableStateOf<List<Double>?>(null)
+        mutableStateOf<NecMeshComparison?>(null)
+    }
+    var direction by remember(reference, elements, targetHz, lower, upper, limit) {
+        mutableStateOf<NecDirectionRange?>(null)
     }
     var job by remember { mutableStateOf<Job?>(null) }
     val lowHz = scalingFrequency(lower)
@@ -105,6 +116,7 @@ internal fun YagiNecPanel(
         comparison = null
         optimization = null
         meshDifferences = null
+        direction = null
     }
     val colors = MaterialTheme.colorScheme
     val actionColors = ButtonDefaults.buttonColors(
@@ -167,24 +179,27 @@ internal fun YagiNecPanel(
                     if (refine) meshDifferences = null else {
                         comparison = null
                         optimization = null
+                        direction = null
                     }
                     status = null
                     job = scope.launch(start = CoroutineStart.LAZY) {
                         if (refine) {
                             val coarse = sweep(elements, currentSegments, frequencies)
                             val fine = coarse?.let { sweep(elements, requireNotNull(finer), frequencies) }
-                            meshDifferences = if (coarse != null && fine != null &&
-                                coarse.map { it.frequencyHz } == frequencies && fine.map { it.frequencyHz } == frequencies) {
-                                val samples = coarse.zip(fine)
-                                listOf(
-                                    samples.maxOf { (a, b) -> abs(a.resistance - b.resistance) },
-                                    samples.maxOf { (a, b) -> abs(a.reactance - b.reactance) },
-                                    samples.maxOf { (a, b) -> abs(a.swr - b.swr) },
-                                    samples.maxOf { (a, b) -> abs(a.forwardDbi - b.forwardDbi) },
-                                    samples.maxOf { (a, b) -> abs(a.frontToBackDb - b.frontToBackDb) },
-                                )
+                            ensureActive()
+                            meshDifferences = if (coarse != null && fine != null) {
+                                maximumNecShift(coarse, fine, frequencies)?.let { shift ->
+                                    val samples = coarse.zip(fine)
+                                    NecMeshComparison(listOf(
+                                        samples.maxOf { (a, b) -> abs(a.resistance - b.resistance) },
+                                        samples.maxOf { (a, b) -> abs(a.reactance - b.reactance) },
+                                        samples.maxOf { (a, b) -> abs(a.swr - b.swr) },
+                                        samples.maxOf { (a, b) -> abs(a.forwardDbi - b.forwardDbi) },
+                                        samples.maxOf { (a, b) -> abs(a.frontToBackDb - b.frontToBackDb) },
+                                    ), shift)
+                                }
                             } else null
-                            if (meshDifferences == null) status = R.string.opennec_failed
+                            if (meshDifferences == null) status = R.string.opennec_direction_incomplete
                         } else if (optimize) {
                             optimization = optimizeNecLengths(elements, requireNotNull(swrLimit)) { candidate ->
                                 sweep(candidate, currentSegments, frequencies)
@@ -212,6 +227,40 @@ internal fun YagiNecPanel(
                         Text(stringResource(R.string.seg_compare))
                     }
                 }
+                val initial = optimization?.initial
+                val best = optimization?.best
+                val baselineGeometry = initial?.elements ?: reference
+                val candidateGeometry = best?.elements ?: elements
+                val baselinePoints = initial?.points ?: comparison?.first
+                val candidatePoints = best?.points ?: comparison?.second
+                if (baselineGeometry != null && baselinePoints != null && candidatePoints != null) {
+                    val baselineFine = (if (initial != null) segments else referenceSegments)?.let {
+                        OpenNec.finerSegments(baselineGeometry, it)
+                    }
+                    val candidateFine = segments?.let { OpenNec.finerSegments(candidateGeometry, it) }
+                    if (baselineFine == null || candidateFine == null) {
+                        HelpText(R.string.opennec_direction_incomplete)
+                    } else {
+                        Button(onClick = {
+                            val frequencies = requireNotNull(grid)
+                            direction = null
+                            status = null
+                            job = scope.launch(start = CoroutineStart.LAZY) {
+                                val base = sweep(baselineGeometry, baselineFine, frequencies)
+                                val candidate = base?.let { sweep(candidateGeometry, candidateFine, frequencies) }
+                                ensureActive()
+                                direction = if (base != null && candidate != null) {
+                                    necDirectionRange(baselinePoints, candidatePoints, base, candidate, frequencies)
+                                } else null
+                                if (direction == null) status = R.string.opennec_direction_incomplete
+                                job = null
+                            }
+                            job?.start()
+                        }, enabled = canRun, modifier = Modifier.testTag("opennec-direction"), colors = actionColors) {
+                            Text(stringResource(R.string.opennec_direction_check))
+                        }
+                    }
+                }
                 Button(onClick = { start(true) }, enabled = canRun, modifier = Modifier.testTag("opennec-optimize"),
                     colors = actionColors) {
                     Text(stringResource(R.string.opennec_optimize))
@@ -233,9 +282,18 @@ internal fun YagiNecPanel(
                 Text(stringResource(R.string.seg_mesh_pair, segments.joinToString(" / "), finer.joinToString(" / ")))
                 val metrics = listOf("R (Ω)", "X (Ω)", stringResource(R.string.seg_swr),
                     stringResource(R.string.seg_gain), stringResource(R.string.seg_fb))
-                changes.forEachIndexed { index, change ->
+                changes.differences.forEachIndexed { index, change ->
                     Text(stringResource(R.string.seg_change, metrics[index], matchingNumber(context, change, 3)))
                 }
+                SelectableText(stringResource(R.string.opennec_mesh_impedance,
+                    matchingNumber(context, changes.impedance.ohms, 3),
+                    matchingNumber(context, changes.impedance.frequencyHz / 1e6, 6)))
+            }
+            direction?.let { result ->
+                if (result.indeterminate) HelpText(R.string.opennec_direction_indeterminate)
+                SelectableText(stringResource(R.string.opennec_direction_range,
+                    matchingNumber(context, result.low, 4), matchingNumber(context, result.high, 4)))
+                HelpText(R.string.opennec_direction_help)
             }
             comparison?.let { (base, adjusted) ->
                 val threshold = requireNotNull(swrLimit)
@@ -294,6 +352,9 @@ private fun NecMetrics(title: Int, points: List<OpenNec.Point>, selected: Int, l
         SelectableText(stringResource(R.string.opennec_impedance, number(point.resistance), number(point.reactance)))
         SelectableText(stringResource(R.string.opennec_metrics, number(point.swr),
             number(point.forwardDbi), number(point.frontToBackDb)))
+        val worst = worstNecSwr(points)
+        SelectableText(stringResource(R.string.opennec_worst_swr, number(worst.swr),
+            matchingNumber(context, worst.frequencyHz / 1e6, 6)))
         val bands = buildList {
             points.forEachIndexed { index, current ->
                 if (current.swr <= limit) {

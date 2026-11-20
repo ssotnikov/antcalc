@@ -1,0 +1,1 @@
+Improved tool-card reordering and unified the formula sections in three calculators. NEC checks now show the worst sampled SWR and its frequency, the complex impedance difference between meshes, and the sensitivity of the SWR change to segmentation.

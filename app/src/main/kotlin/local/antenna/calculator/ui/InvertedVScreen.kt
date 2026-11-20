@@ -161,10 +161,10 @@ internal fun InvertedVScreen(
             Text(stringResource(R.string.calculation_formulas_label))
         }
         if (showDetails) {
-            FormulaPlate(R.string.inverted_v_span, R.drawable.formula_inverted_v_span,
-                R.string.inverted_v_span_alt, "inverted-v-span-formula")
-            FormulaPlate(R.string.inverted_v_end_height, R.drawable.formula_inverted_v_height,
-                R.string.inverted_v_height_alt, "inverted-v-height-formula")
+            CalculatorFormulas(
+                CalculatorEquation("D = 2L × sin(α/2)", R.string.inverted_v_span_alt, "inverted-v-span-formula"),
+                CalculatorEquation("h = H − L × cos(α/2)", R.string.inverted_v_height_alt, "inverted-v-height-formula"),
+            )
             HelpText(R.string.inverted_v_details_text)
             HelpText(R.string.inverted_v_fundamental_help)
             HelpText(R.string.antenna_higher_modes_help)

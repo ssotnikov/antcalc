@@ -7,7 +7,7 @@
     <string name="opennec_check">Check in NEC</string>
     <string name="opennec_conditions">OpenNEC 2.4.1. Free space, perfectly conducting round elements, a voltage source at the driven element center and 50 Ω reference impedance. Forward gain is along the boom toward the directors. F/B compares 0° and 180°.</string>
     <string name="opennec_mounted">NEC requires straight-element model dimensions. Mounted dimensions support proportional scaling.</string>
-    <string name="opennec_split">The feed model for a driven element with a physical gap is awaiting verification. Scaling remains available.</string>
+    <string name="opennec_split">Dimension calculations are available. NEC checks and optimization for a physical feed gap require validation of the feed model. The result depends on the feed assembly and reference plane.</string>
     <string name="opennec_unavailable">The OpenNEC engine is unavailable on this device.</string>
     <string name="opennec_low">From, MHz</string>
     <string name="opennec_high">To, MHz</string>
@@ -51,4 +51,11 @@
     <string name="opennec_smith_boundary">Dashed yellow circle · SWR %1$s. Inside the circle, SWR is below the limit.</string>
     <string name="opennec_smith_center_only">At an SWR limit of 1, only the chart center meets the limit.</string>
     <string name="opennec_smith_grid">Grid circles show constant R/Z₀ and arcs show constant X/Z₀. Above the axis, reactance is inductive (+j). Below it, reactance is capacitive (−j). The center is 50 + j0 Ω.</string>
+    <string name="opennec_worst_swr">Worst sampled SWR %1$s at %2$s MHz</string>
+    <string name="opennec_mesh_impedance">Maximum |ΔZ| %1$s Ω at %2$s MHz</string>
+    <string name="opennec_direction_check">Check SWR change on two meshes</string>
+    <string name="opennec_direction_range">Change in worst SWR on two meshes · %1$s … %2$s</string>
+    <string name="opennec_direction_indeterminate">Direction undetermined</string>
+    <string name="opennec_direction_incomplete">Mesh check incomplete. Two valid meshes and matching frequencies are required.</string>
+    <string name="opennec_direction_help">Negative values indicate a decrease in worst SWR. The range describes sensitivity to segmentation in this model.</string>
 </resources>
