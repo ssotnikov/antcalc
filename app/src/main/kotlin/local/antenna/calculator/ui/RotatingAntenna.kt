@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
@@ -61,7 +62,10 @@ internal data class AntennaPoint(val x: Float, val y: Float, val z: Float) {
     val length get() = sqrt(x * x + y * y + z * z)
 }
 
-internal data class AntennaRod(val first: AntennaPoint, val last: AntennaPoint, val width: Float, val material: Int)
+internal data class AntennaRod(
+    val first: AntennaPoint, val last: AntennaPoint, val width: Float, val material: Int,
+    val ribbonHalfWidth: AntennaPoint? = null,
+)
 internal data class AntennaJoint(val point: AntennaPoint, val diameter: Float, val material: Int)
 internal data class AntennaVector(val rods: List<AntennaRod>, val joints: List<AntennaJoint>) {
     fun normalize(): AntennaVector {
@@ -76,7 +80,11 @@ internal data class AntennaVector(val rods: List<AntennaRod>, val joints: List<A
             val delta = last - first
             val pieces = ceil(delta.length / 27).toInt().coerceAtLeast(1)
             List(pieces) { index ->
-                rod.copy(first = first + delta * (index.toFloat() / pieces), last = first + delta * ((index + 1f) / pieces))
+                rod.copy(
+                    first = first + delta * (index.toFloat() / pieces),
+                    last = first + delta * ((index + 1f) / pieces),
+                    ribbonHalfWidth = rod.ribbonHalfWidth?.times(158 / radius),
+                )
             }
         }, joints.map { it.copy(point = fit(it.point)) })
     }
@@ -101,6 +109,7 @@ internal data class AntennaView(val yaw: Float, val pitch: Float, val roll: Floa
 }
 
 internal fun initialAntennaView(id: String): AntennaView = when {
+    id == "yagi-nt1k" -> AntennaView(-8f, 28f, -14f)
     id == "yagi-5" -> AntennaView(5f, 76f, 35f)
     id.startsWith("yagi-") -> AntennaView(-8f, 65f, -12f)
     id.startsWith("hb-") -> AntennaView(8f, 69f, 28f)
@@ -151,8 +160,16 @@ internal fun AntennaVector.frame(): AntennaFrame {
         bottom = maxOf(bottom, point.y + margin)
     }
     for (rod in rods) {
-        include(rod.first, rod.width)
-        include(rod.last, rod.width)
+        val ribbon = rod.ribbonHalfWidth
+        if (ribbon == null) {
+            include(rod.first, rod.width)
+            include(rod.last, rod.width)
+        } else {
+            include(rod.first - ribbon, 0f)
+            include(rod.first + ribbon, 0f)
+            include(rod.last - ribbon, 0f)
+            include(rod.last + ribbon, 0f)
+        }
     }
     for (joint in joints) include(joint.point, joint.diameter)
     return AntennaFrame(left, top, right, bottom)
@@ -160,8 +177,10 @@ internal fun AntennaVector.frame(): AntennaFrame {
 
 private fun AntennaVector.project(view: AntennaView): AntennaVector {
     val project = view.projection()
-    return AntennaVector(rods.map { it.copy(first = project(it.first), last = project(it.last)) },
-        joints.map { it.copy(point = project(it.point)) })
+    return AntennaVector(rods.map { rod ->
+        rod.copy(first = project(rod.first), last = project(rod.last),
+            ribbonHalfWidth = rod.ribbonHalfWidth?.let(project))
+    }, joints.map { it.copy(point = project(it.point)) })
 }
 
 private val antennaPalette = listOf(
@@ -171,6 +190,7 @@ private val antennaPalette = listOf(
     listOf(Color(0xff344f6e), Color(0xff648eb2), Color(0xffb1d1ec)),
     listOf(Color(0xff587583), Color(0xffadc6ca), Color(0xffe4e9dd)),
     listOf(Color(0xff59877e), Color(0xff93d2c2), Color(0xffd4f0e6)),
+    listOf(Color(0xff9a7322), Color(0xffebc34e), Color(0xfffbe09a)),
 )
 
 private fun JSONArray.point(index: Int) = AntennaPoint(getDouble(index).toFloat(), getDouble(index + 1).toFloat(), getDouble(index + 2).toFloat())
@@ -366,6 +386,28 @@ private fun AntennaSurface(
                 val last = screen(rod.last)
                 val (edge, base, light) = antennaPalette[rod.material]
                 val along = last - first
+                val ribbon = rod.ribbonHalfWidth
+                if (ribbon != null) {
+                    val across = Offset(ribbon.x, ribbon.y) * scale
+                    val span = along.getDistance()
+                    if (span < .5f) {
+                        drawLine(edge, first - across, first + across, 1.dp.toPx())
+                    } else {
+                        val overlap = along * (.45f / span)
+                        val start = first - overlap
+                        val end = last + overlap
+                        drawPath(Path().apply {
+                            moveTo(start.x - across.x, start.y - across.y)
+                            lineTo(end.x - across.x, end.y - across.y)
+                            lineTo(end.x + across.x, end.y + across.y)
+                            lineTo(start.x + across.x, start.y + across.y)
+                            close()
+                        }, base)
+                        drawLine(edge, start - across, end - across, .7.dp.toPx())
+                        drawLine(light, start + across * .38f, end + across * .38f, .6.dp.toPx())
+                    }
+                    continue
+                }
                 val length = along.getDistance()
                 if (length < .5f) {
                     drawCircle(edge, (rod.width + 1.4f) * scale / 2, first)

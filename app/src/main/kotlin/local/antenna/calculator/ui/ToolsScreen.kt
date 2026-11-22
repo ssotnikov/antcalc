@@ -110,7 +110,10 @@ internal fun AdditionalToolsScreen(
             .verticalScroll(scroll, overscrollEffect = null).padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        if (onOpenYagiScaling != null) ToolCard(R.string.ys_title, R.string.ys_intro, "open-yagi-scaling", onOpenYagiScaling)
+        if (onOpenYagiScaling != null) {
+            ToolCard(R.string.ys_title, R.string.ys_intro, "open-yagi-scaling", onOpenYagiScaling,
+                subtitle = R.string.ys_experimental)
+        }
         if (onOpenSegmentation != null) {
             ToolCard(R.string.seg_tool, R.string.seg_tool_hint, "open-yagi-segmentation", onOpenSegmentation)
         }
@@ -153,7 +156,7 @@ private fun ProjectsToolCard(onClick: () -> Unit) {
 private fun ToolCard(
     title: Int, description: Int, tag: String, onClick: () -> Unit,
     opensChildCards: Boolean = false, highlighted: Boolean = false,
-    modifier: Modifier = Modifier, lifted: Boolean = false,
+    modifier: Modifier = Modifier, lifted: Boolean = false, subtitle: Int? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     val dark = colors.surface.luminance() < 0.5f
@@ -172,7 +175,12 @@ private fun ToolCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(stringResource(title), style = MaterialTheme.typography.titleLarge, color = colors.secondary)
+                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    Text(stringResource(title), style = MaterialTheme.typography.titleLarge, color = colors.secondary)
+                    subtitle?.let {
+                        Text(stringResource(it), style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
+                    }
+                }
                 Text(stringResource(description), style = MaterialTheme.typography.bodyMedium)
             }
             if (opensChildCards) Icon(painterResource(R.drawable.ic_chevron_end), contentDescription = null,

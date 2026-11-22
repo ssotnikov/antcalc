@@ -84,7 +84,7 @@
 - **«Радиосхемы» (RadioSkot)** — [Интерактивная диаграмма Смита](https://radioskot.com/calc/interaktivnaya-diagramma-smita)
 - **Кьяра Рамелла, Паоло Колантонио и Марко Пирола** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042). Статья опубликована по лицензии CC BY 4.0.
 - **NT1K** — [Open Stub J-Pole Project – Completed (Many Times)](https://nt1k.com/open-stub-j-pole-project-completed-many-times/)
-- **Джеффри Бейл (NT1K)** — [Трехэлементная Яги из ленты рулетки](https://nt1k.com/vhf-3el-tape-measure-yagi/), [сборочный чертеж](https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf). В приложении использованы размеры. Оригинальные чертеж и фотографии доступны в публикации.
+- **Джеффри Бейл (NT1K)** — [Трехэлементная Яги из ленты рулетки](https://nt1k.com/vhf-3el-tape-measure-yagi/), [сборочный чертеж](https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf). В приложении использованы размеры по чертежу, а векторная иллюстрация выполнена по фотографиям сборки. Авторский КСВ приведен по [графику NT1K](https://nt1k.com/wp-content/uploads/2012/11/3ElyagiVNA.jpg).
 - **Евгений Солодовников** — [Петлевой вибратор в антенне Inverted V](https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/)
 - **Джеймс У. Хили (NJ2L)** — [Antenna Here Is a Dipole](https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf)
 - **Патрик У. Финк** — [Wireless Network Communications Overview for Space Mission Operations (CCSDS)](https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf)
@@ -256,7 +256,7 @@ The project draws on materials from the following authors and publishers.
 - **RadioSkot (Радиосхемы)** — [Interactive Smith Chart (Russian original)](https://radioskot.com/calc/interaktivnaya-diagramma-smita)
 - **Chiara Ramella, Paolo Colantonio and Marco Pirola** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042). The article is published under CC BY 4.0.
 - **NT1K** — [Open Stub J-Pole Project – Completed (Many Times)](https://nt1k.com/open-stub-j-pole-project-completed-many-times/)
-- **Jeffrey Bail (NT1K)** — [Three-element tape-measure Yagi](https://nt1k.com/vhf-3el-tape-measure-yagi/), [assembly drawing](https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf). The app uses the dimensions. The publication hosts the original drawing and photographs.
+- **Jeffrey Bail (NT1K)** — [Three-element tape-measure Yagi](https://nt1k.com/vhf-3el-tape-measure-yagi/), [assembly drawing](https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf). The app uses the drawing dimensions and an original vector illustration based on the assembly photos. The published SWR is from [NT1K’s measurement plot](https://nt1k.com/wp-content/uploads/2012/11/3ElyagiVNA.jpg).
 - **Evgeny Solodovnikov** — [Folded Dipole in an Inverted V (Russian original)](https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/)
 - **James W. Healy (NJ2L)** — [Antenna Here Is a Dipole](https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf)
 - **Patrick W. Fink** — [Wireless Network Communications Overview for Space Mission Operations (CCSDS)](https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf)

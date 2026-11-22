@@ -214,7 +214,11 @@ internal fun YagiCalculatorScreen(
                 }
             } else null
         }
-        if (!profile.design.usesTape) {
+        if (profile == YagiProfile.NT1K) {
+            val tapeAssembly = remember { nt1kYagiVector() }
+            RotatingAntenna("yagi-nt1k", stringResource(R.string.yagi_nt1k_illustration),
+                geometry = tapeAssembly, baseHeight = 150.dp)
+        } else {
             RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), geometry = geometry, baseHeight = 160.dp)
         }
         YagiProfilePicker(profile, profileLabel) { selected ->
@@ -225,8 +229,7 @@ internal fun YagiCalculatorScreen(
             }
             profile = selected
         }
-        val frequencyLabel = if (profile == YagiProfile.NT1K) R.string.yagi_nt1k_measure_frequency else R.string.frequency
-        YagiProperty(frequencyLabel, profile.frequency(context))
+        if (profile != YagiProfile.NT1K) YagiProperty(R.string.frequency, profile.frequency(context))
         if (profile.usesNominalXpolFrequency) HelpText(R.string.yagi_xpol_nominal)
         YagiProperty(R.string.yagi_mount, stringResource(profile.mount))
         YagiProperty(R.string.yagi_feed, stringResource(profile.feed))
@@ -253,10 +256,11 @@ internal fun YagiCalculatorScreen(
             YagiDiagram(elements, isGtv, tip, scheme)
             HelpText(scheme)
         }
-        if (onSegmentation != null) {
+        if (profile.design.usesTape) {
+            HelpText(R.string.yagi_nt1k_nec)
+        } else if (onSegmentation != null) {
             YagiHeading(R.string.seg_catalog_title)
             HelpText(when {
-                profile.design.usesTape -> R.string.yagi_nt1k_nec
                 profile.dualPlane || profile == YagiProfile.DUO -> R.string.seg_catalog_dual
                 profile.hasBentDipole || profile == YagiProfile.R3 -> R.string.seg_catalog_bent
                 else -> R.string.seg_catalog_gap
@@ -401,11 +405,25 @@ internal fun YagiCalculatorScreen(
             TextButton(onClick = onGuide, modifier = Modifier.testTag("yagi-open-guide")) { Text(stringResource(R.string.yagi_guide)) }
         } else {
             WebLinkButton(onClick = { openSourceWithFeedback(context, profile.buildSource) }) {
-                Text(stringResource(R.string.yagi_external_guide))
+                Text(stringResource(if (profile == YagiProfile.NT1K) R.string.yagi_nt1k_open_drawing
+                    else R.string.yagi_external_guide))
             }
         }
         YagiHeading(R.string.yagi_check)
-        HelpText(profile.measure)
+        if (profile == YagiProfile.NT1K) {
+            Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.fillMaxWidth().padding(12.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(R.string.yagi_nt1k_measure_result),
+                        style = MaterialTheme.typography.titleSmall)
+                    HelpText(profile.measure)
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, NT1K_TAPE_YAGI_MEASUREMENT_URL) }) {
+                        Text(stringResource(R.string.yagi_nt1k_open_measurement))
+                    }
+                }
+            }
+        } else {
+            HelpText(profile.measure)
+        }
         if (onMeasurements != null) {
             TextButton(onClick = onMeasurements) { Text(stringResource(R.string.sweep_tool_title)) }
         }
