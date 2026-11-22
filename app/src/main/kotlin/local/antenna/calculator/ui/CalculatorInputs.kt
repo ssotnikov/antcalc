@@ -178,6 +178,6 @@ fun <T> ChoicePicker(label: String, options: List<T>, selected: T, text: @Compos
 }
 
 @Composable
-fun HelpText(resource: Int) {
-    SelectableText(stringResource(resource), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+fun HelpText(resource: Int, vararg formatArgs: Any) {
+    SelectableText(stringResource(resource, *formatArgs), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }

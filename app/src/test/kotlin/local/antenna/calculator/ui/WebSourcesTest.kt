@@ -81,7 +81,11 @@ class WebSourcesTest {
 
     @Test fun antennaMeasurementReferencesPermitOnlyTheirExactHttpsAddresses() {
         for (url in listOf(
-            "https://github.com/jopecl/wifi-antenna-design-nec/blob/main/data/lab1-measurements.xlsx",
+            "https://web.archive.org/web/20231114044718id_/http://theleggios.net/wb2hol/projects/rdf/tape_bm.htm",
+            "https://nt1k.com/vhf-3el-tape-measure-yagi/",
+            "https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf",
+            "https://www.printables.com/model/1169207-tape-measure-yagi-antenna-2m",
+            "https://github.com/jopecl/wifi-antenna-design-nec",
             "https://www.ieice.org/cs/isap/ISAP_Archives/2010/pdf/91.pdf",
             "https://edu.tusur.ru/publications/2796",
         )) {

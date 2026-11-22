@@ -67,16 +67,24 @@ enum class YagiDesign(
     GTV_SAT("gtv_sat", revision = 1),
     GTV_XPOL_THROUGH4("gtv_xpol_through_4", revision = 1),
     GTV_XPOL_THROUGH476("gtv_xpol_through_476", revision = 1),
+    // NT1K assembly drawing, sheets 2–3. Inches converted exactly to millimeters.
+    NT1K("nt1k_tape_measure_2m", listOf(
+        YagiElement("r", null, 0.0, 1050.925, tapeWidthMm = 25.4),
+        YagiElement("de", null, 201.676, 917.575, tapeWidthMm = 25.4),
+        YagiElement("d1", null, 517.6774, 892.175, tapeWidthMm = 25.4),
+    ), drivenCut = YagiDrivenCut(gapMm = 15.875, halfBlankMm = 450.85)),
     ;
 
     val model = "yagi_$id"
     val restricted get() = id == "ybn_2_5m" || id.startsWith("gtv")
     val dualPlane get() = id.startsWith("gtv_xpol") || this == GTV_SAT
     val available get() = elements.isNotEmpty()
+    val usesTape get() = elements.firstOrNull()?.tapeWidthMm != null
 
     init {
         require(elements.isEmpty() || (elements.size >= 2 && elements.first().positionMm == 0.0))
         require(elements.map(YagiElement::id).distinct().size == elements.size)
+        require((elements + verticalElements).all { (it.tapeWidthMm != null) == usesTape })
         require(elements.zipWithNext().all { (left, right) -> left.positionMm < right.positionMm })
         if (verticalElements.isNotEmpty()) {
             require(verticalElements.map(YagiElement::id) == elements.map(YagiElement::id))

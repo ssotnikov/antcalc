@@ -30,7 +30,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import java.util.UUID
-import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.AntennaProject
@@ -40,6 +39,7 @@ import local.antenna.calculator.ui.inputExampleColor
 import local.antenna.calculator.ui.cardListBounce
 import local.antenna.calculator.ui.rememberPageLazyListState
 import local.antenna.calculator.ui.reorderCardAt
+import local.antenna.calculator.ui.reorderOverlayTop
 import local.antenna.calculator.ui.reorderTarget
 
 private data class ProjectCardText(val title: String, val summary: String)
@@ -206,7 +206,11 @@ internal fun ProjectList(
         preview?.drag?.let { current ->
             val project = projects.first { it.id == current.id }
             ElevatedCard(Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-                .offset { IntOffset(0, (current.y - current.grabOffset).roundToInt()) }
+                .offset {
+                    IntOffset(0, scroll.layoutInfo.reorderOverlayTop(
+                        current.y - current.grabOffset, current.height, ids.first().toString(), ids.last().toString(),
+                    ))
+                }
                 .clearAndSetSemantics {}) {
                 ProjectCardContent(project, cards.getValue(project.id), search, Modifier.fillMaxWidth())
             }

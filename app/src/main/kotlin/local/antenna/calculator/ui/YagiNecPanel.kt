@@ -133,7 +133,7 @@ internal fun YagiNecPanel(
     Surface(shape = MaterialTheme.shapes.large, color = MaterialTheme.colorScheme.surfaceContainerLow) {
         Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Text(stringResource(R.string.opennec_panel_title), style = MaterialTheme.typography.titleMedium)
-            HelpText(R.string.opennec_conditions)
+            HelpText(R.string.opennec_conditions, OpenNec.VERSION)
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 NecInput(lower, R.string.opennec_low, "opennec-low", Modifier.weight(1f)) { lower = it }
                 NecInput(upper, R.string.opennec_high, "opennec-high", Modifier.weight(1f)) { upper = it }

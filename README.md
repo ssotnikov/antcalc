@@ -6,7 +6,7 @@
 ![Languages](https://img.shields.io/badge/Languages-RU%20%7C%20EN-blue?style=flat&labelColor=365563)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat&labelColor=365563)
 [![NEC2 Engine](https://img.shields.io/badge/NEC2-Engine-orange?style=flat&labelColor=365563)](https://www.nec2.org/)
-[![OpenNEC 2.4.1](https://img.shields.io/badge/OpenNEC-2.4.1-a0e2d4?style=flat&labelColor=365563)](https://github.com/maurymarkowitz/OpenNEC)
+[![OpenNEC 2.4.2](https://img.shields.io/badge/OpenNEC-2.4.2-a0e2d4?style=flat&labelColor=365563)](https://github.com/maurymarkowitz/OpenNEC)
 
 [Русский](#русский) · [English](#english)
 
@@ -49,7 +49,7 @@
 
 ### Лицензии
 
-- **OpenNEC 2.4.1, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. Приложение использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчёта входного импеданса, КСВ, усиления, отношения вперёд/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.1](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
+- **OpenNEC 2.4.2, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. Приложение использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчёта входного импеданса, КСВ, усиления, отношения вперёд/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.2](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · Код приложения распространяется по лицензии MIT.
 
@@ -84,6 +84,7 @@
 - **«Радиосхемы» (RadioSkot)** — [Интерактивная диаграмма Смита](https://radioskot.com/calc/interaktivnaya-diagramma-smita)
 - **Кьяра Рамелла, Паоло Колантонио и Марко Пирола** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042). Статья опубликована по лицензии CC BY 4.0.
 - **NT1K** — [Open Stub J-Pole Project – Completed (Many Times)](https://nt1k.com/open-stub-j-pole-project-completed-many-times/)
+- **Джеффри Бейл (NT1K)** — [Трехэлементная Яги из ленты рулетки](https://nt1k.com/vhf-3el-tape-measure-yagi/), [сборочный чертеж](https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf). В приложении использованы размеры. Оригинальные чертеж и фотографии доступны в публикации.
 - **Евгений Солодовников** — [Петлевой вибратор в антенне Inverted V](https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/)
 - **Джеймс У. Хили (NJ2L)** — [Antenna Here Is a Dipole](https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf)
 - **Патрик У. Финк** — [Wireless Network Communications Overview for Space Mission Operations (CCSDS)](https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf)
@@ -220,7 +221,7 @@ Calculations, formulas and diagrams are available offline. Choose English or Rus
 
 ### Licenses
 
-- **OpenNEC 2.4.1, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. The application uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.1 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
+- **OpenNEC 2.4.2, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. The application uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.2 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · The app’s source code is licensed under the MIT License.
 
@@ -255,6 +256,7 @@ The project draws on materials from the following authors and publishers.
 - **RadioSkot (Радиосхемы)** — [Interactive Smith Chart (Russian original)](https://radioskot.com/calc/interaktivnaya-diagramma-smita)
 - **Chiara Ramella, Paolo Colantonio and Marco Pirola** — [A Comprehensive Harmonic Analysis of Current-Mode Power Amplifiers](https://www.mdpi.com/1996-1073/14/21/7042). The article is published under CC BY 4.0.
 - **NT1K** — [Open Stub J-Pole Project – Completed (Many Times)](https://nt1k.com/open-stub-j-pole-project-completed-many-times/)
+- **Jeffrey Bail (NT1K)** — [Three-element tape-measure Yagi](https://nt1k.com/vhf-3el-tape-measure-yagi/), [assembly drawing](https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf). The app uses the dimensions. The publication hosts the original drawing and photographs.
 - **Evgeny Solodovnikov** — [Folded Dipole in an Inverted V (Russian original)](https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/)
 - **James W. Healy (NJ2L)** — [Antenna Here Is a Dipole](https://www.arrl.org/files/file/Technology/tis/info/pdf/9106023.pdf)
 - **Patrick W. Fink** — [Wireless Network Communications Overview for Space Mission Operations (CCSDS)](https://ntrs.nasa.gov/api/citations/20090029239/downloads/20090029239.pdf)

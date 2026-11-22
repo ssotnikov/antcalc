@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="opennec_component">OpenNEC %1$s · Мори Марковиц (Maury Markowitz) · MIT</string>
-    <string name="opennec_license_link">Лицензия OpenNEC</string>
+    <string name="opennec_license_link">Лицензия OpenNEC %1$s</string>
     <string name="opennec_badge_link">NEC2 Engine. Открыть сайт NEC-2</string>
     <string name="opennec_source">Исходный код OpenNEC</string>
     <string name="opennec_check">Проверить в NEC</string>
-    <string name="opennec_conditions">OpenNEC 2.4.1. Свободное пространство, идеально проводящие круглые элементы, источник напряжения в центре вибратора, Z₀ = 50 Ом. Усиление показано в направлении директоров. F/B сравнивает направления 0° и 180°.</string>
+    <string name="opennec_conditions">OpenNEC %1$s. Свободное пространство, идеально проводящие круглые элементы, источник напряжения в центре вибратора, Z₀ = 50 Ом. Усиление показано в направлении директоров. F/B сравнивает направления 0° и 180°.</string>
     <string name="opennec_mounted">Для NEC нужны размеры прямых элементов из модели. Монтажные размеры доступны для пропорционального переноса.</string>
     <string name="opennec_split">Расчет размеров доступен. Проверка NEC и подбор для физического зазора требуют подтверждения модели питания. Результат зависит от узла питания и плоскости отсчета.</string>
     <string name="opennec_unavailable">Ядро OpenNEC недоступно на этом устройстве.</string>

@@ -132,7 +132,7 @@ internal data class YagiScalingDraft(
             source = plain(R3udkYagi.FREQUENCY_HZ / 1e6),
             target = "146",
             rows = R3udkYagi.elements.map { element ->
-                ScalingRow(plain(element.positionMm), plain(element.overallMm), plain(element.diameterMm))
+                ScalingRow(plain(element.positionMm), plain(element.overallMm), plain(checkNotNull(element.diameterMm)))
             },
         ).inUnit(unit)
 

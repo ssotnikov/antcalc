@@ -1,0 +1,1 @@
+Added the three-element NT1K tape-measure Yagi profile, with dimensions, cut lengths and a link to a Printables variant. Updated OpenNEC to 2.4.2. Expanded Yagi mesh comparison diagnostics for impedance and SWR changes. Added tape-measure Yagi publications and measurement data sources to the references.

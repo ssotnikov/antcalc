@@ -89,6 +89,9 @@ internal enum class YagiProfile(
         R.string.yagi_mount_gtv_sat, R.string.yagi_sat_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
     GTV_XPOL_THROUGH4(YagiDesign.GTV_XPOL_THROUGH4, "DG7YBN · GTV 2‑6m · xpol · Ø4", listOf(144_100_000),
         R.string.yagi_mount_gtv_xpol_through4, R.string.yagi_xpol_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
+    NT1K(YagiDesign.NT1K, "NT1K · Tape Measure Yagi · 2 m", listOf(147_054_176),
+        R.string.yagi_nt1k_mount, R.string.yagi_nt1k_feed, NT1K_TAPE_YAGI_URL, null,
+        R.string.yagi_nt1k_rights, R.string.yagi_nt1k_measure),
     GTV_XPOL_THROUGH476(YagiDesign.GTV_XPOL_THROUGH476, "DG7YBN · GTV 2‑6m · xpol · Ø4.76", listOf(144_100_000),
         R.string.yagi_mount_gtv_xpol_through476, R.string.yagi_xpol_feed, DG_HOME + "144MHz/144_GTV2_6m.htm", DG_HOME, R.string.yagi_dg_rights),
     ;
@@ -111,6 +114,7 @@ internal enum class YagiProfile(
     val buildSource get() = when (this) {
         DK2 -> DK_HOME + "PVC-Yagis/PVC-details.htm"
         DK28 -> DK_HOME + "70cm/70cm-kurz.htm"
+        NT1K -> NT1K_TAPE_YAGI_DRAWING_URL
         else -> original
     }
 
@@ -196,7 +200,9 @@ internal fun YagiCalculatorScreen(
     val elements = profile.design.elements
     val cut = if (errors.none { it } && driverErrors.none { it }) calculateYagiCutList(profile.design, values[0] ?: 0.0, values[1], values[2]) else null
     val driven = listOf(horizontalCut, verticalCut)
-    val profileLabel: (YagiProfile) -> String = { "${it.label} · ${it.frequency(context)}" }
+    val profileLabel: (YagiProfile) -> String = {
+        if (it == YagiProfile.NT1K) it.label else "${it.label} · ${it.frequency(context)}"
+    }
     Column(
         Modifier.widthIn(max = 680.dp).fillMaxSize().verticalScroll(rememberPageScrollState())
             .padding(20.dp).testTag("yagi-calculator"), verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -208,7 +214,9 @@ internal fun YagiCalculatorScreen(
                 }
             } else null
         }
-        RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), geometry = geometry, baseHeight = 160.dp)
+        if (!profile.design.usesTape) {
+            RotatingAntenna("yagi-${profile.design.ordinal}", profileLabel(profile), geometry = geometry, baseHeight = 160.dp)
+        }
         YagiProfilePicker(profile, profileLabel) { selected ->
             val previousId = profile.id
             if (record == null) prefs.edit {
@@ -217,7 +225,8 @@ internal fun YagiCalculatorScreen(
             }
             profile = selected
         }
-        YagiProperty(R.string.frequency, profile.frequency(context))
+        val frequencyLabel = if (profile == YagiProfile.NT1K) R.string.yagi_nt1k_measure_frequency else R.string.frequency
+        YagiProperty(frequencyLabel, profile.frequency(context))
         if (profile.usesNominalXpolFrequency) HelpText(R.string.yagi_xpol_nominal)
         YagiProperty(R.string.yagi_mount, stringResource(profile.mount))
         YagiProperty(R.string.yagi_feed, stringResource(profile.feed))
@@ -247,6 +256,7 @@ internal fun YagiCalculatorScreen(
         if (onSegmentation != null) {
             YagiHeading(R.string.seg_catalog_title)
             HelpText(when {
+                profile.design.usesTape -> R.string.yagi_nt1k_nec
                 profile.dualPlane || profile == YagiProfile.DUO -> R.string.seg_catalog_dual
                 profile.hasBentDipole || profile == YagiProfile.R3 -> R.string.seg_catalog_bent
                 else -> R.string.seg_catalog_gap
@@ -289,7 +299,7 @@ internal fun YagiCalculatorScreen(
             HelpText(published)
         }
         YagiHeading(R.string.yagi_cuts)
-        HelpText(R.string.yagi_model_conditions)
+        HelpText(profile.cutConditions())
         inputFields.forEachIndexed { index, label ->
             if (profile.dualPlane && index > 0) return@forEachIndexed
             AppTextField(
@@ -368,7 +378,7 @@ internal fun YagiCalculatorScreen(
                 YagiProperty(cable.label(), stringResource(R.string.yagi_matching_pair, yagiLength(context, cable.sectionMm, unit)))
             }
         }
-        HelpText(if (profile == YagiProfile.R3) R.string.yagi_formed else R.string.yagi_limited)
+        HelpText(profile.cutNote())
         if (profile.design.restricted) HelpText(R.string.yagi_dg_no_transfer)
         if (onSave != null) {
             Button(onClick = {
@@ -413,6 +423,11 @@ internal fun YagiCalculatorScreen(
         }
         profile.terms?.let { terms ->
             WebLinkButton(onClick = { openSourceWithFeedback(context, terms) }) { Text(stringResource(R.string.yagi_policy)) }
+        }
+        if (profile == YagiProfile.NT1K) {
+            WebLinkButton(onClick = { openSourceWithFeedback(context, HACKERMAGNET_TAPE_YAGI_URL) }) {
+                Text(stringResource(R.string.yagi_nt1k_printables))
+            }
         }
     }
 }
@@ -520,8 +535,9 @@ private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Bool
     val scale = LocalDensity.current.fontScale.coerceAtLeast(1f)
     val width = if (rearMm != null) 700.dp else 580.dp
     ScrollableTable(Modifier.width(width * scale).testTag("yagi-dimensions-table")) {
+        val transverseLabel = elements.first().transverseLabel()
         val headers = buildList {
-            addAll(listOf(R.string.yagi_element, R.string.yagi_diameter, if (axialCoordinates) R.string.yagi_gtv_position else R.string.yagi_position))
+            addAll(listOf(R.string.yagi_element, transverseLabel, if (axialCoordinates) R.string.yagi_gtv_position else R.string.yagi_position))
             if (rearMm != null) add(R.string.yagi_gtv_position)
             add(R.string.yagi_spacing)
             add(if (isGtv) R.string.yagi_gtv_table_length else R.string.yagi_overall)
@@ -532,7 +548,7 @@ private fun YagiTable(elements: List<YagiElement>, unit: LengthUnit, isGtv: Bool
             val gap = elements.getOrNull(index - 1)?.let { element.positionMm - it.positionMm }
             YagiRow(buildList {
                 add(stringResource(yagiElementLabel(element.id)))
-                add(yagiLength(context, element.diameterMm, unit))
+                add(yagiLength(context, element.transverseSizeMm, unit))
                 add(yagiLength(context, element.positionMm, unit))
                 if (rearMm != null) add(yagiLength(context, element.positionMm + rearMm, unit))
                 add(gap?.let { yagiLength(context, it, unit) } ?: "—")
@@ -608,7 +624,10 @@ private fun yagiSnapshot(
             }
         }
         if (profile != YagiProfile.R3) {
-            profile.design.elements.forEach { add(lengthMetric("yagi_${it.id}_diameter", it.diameterMm)) }
+            profile.design.elements.forEach { element ->
+                val dimension = if (element.tapeWidthMm != null) "width" else "diameter"
+                add(lengthMetric("yagi_${element.id}_$dimension", element.transverseSizeMm))
+            }
         }
         if (profile.dualPlane) {
             // Keep the published lengths in the inputs and the calculated blanks in the results.
@@ -636,7 +655,7 @@ private fun yagiSnapshot(
             add(lengthMetric("yagi_${element.id}_position", element.positionMm))
             val lengthKey = if (profile.hasBentDipole) "table" else "overall"
             if (!profile.dualPlane) add(lengthMetric("yagi_${element.id}_$lengthKey", element.overallMm))
-            if (profile == YagiProfile.R3) add(lengthMetric("yagi_${element.id}_diameter", element.diameterMm))
+            if (profile == YagiProfile.R3) add(lengthMetric("yagi_${element.id}_diameter", checkNotNull(element.diameterMm)))
             cut.blanksMm[index]?.let { add(lengthMetric("yagi_${element.id}_blank", it)) }
         }
         profile.design.verticalElements.forEachIndexed { index, element ->
@@ -676,6 +695,18 @@ private fun drivenCutValue(context: Context, profile: YagiProfile, mm: Double, u
     return if (profile == YagiProfile.DUO) "≈ $value" else value
 }
 
+private fun YagiElement.transverseLabel() =
+    if (tapeWidthMm != null) R.string.yagi_tape_width else R.string.yagi_diameter
+
+private fun YagiProfile.cutConditions() =
+    if (design.usesTape) R.string.yagi_nt1k_cut_conditions else R.string.yagi_model_conditions
+
+private fun YagiProfile.cutNote() = when (this) {
+    YagiProfile.R3 -> R.string.yagi_formed
+    YagiProfile.NT1K -> R.string.yagi_nt1k_cut_note
+    else -> R.string.yagi_limited
+}
+
 private fun yagiReport(
     context: Context, profile: YagiProfile, cut: YagiCutList, values: List<Double?>, unit: LengthUnit,
     driverGeometry: List<YagiDriverGeometry?> = emptyList(),
@@ -691,11 +722,14 @@ private fun yagiReport(
         }
     }
     val revision = if (driverGeometry.any { it != null }) 2 else profile.design.revision
-    appendLine("${profile.label} · ${profile.frequency(context)} · #$revision")
+    if (profile == YagiProfile.NT1K) {
+        appendLine("${profile.label} · #$revision")
+        line(R.string.yagi_nt1k_measure_frequency, profile.frequency(context))
+    } else appendLine("${profile.label} · ${profile.frequency(context)} · #$revision")
     appendLine()
     appendLine(context.getString(profile.mount))
     appendLine(context.getString(profile.feed))
-    appendLine(context.getString(R.string.yagi_model_conditions))
+    appendLine(context.getString(profile.cutConditions()))
     appendLine()
     inputFields.forEachIndexed { index, label ->
         if (profile.dualPlane && index > 0) return@forEachIndexed
@@ -710,7 +744,7 @@ private fun yagiReport(
     profile.design.elements.forEachIndexed { index, element ->
         appendLine()
         appendLine(context.getString(yagiElementLabel(element.id)))
-        line(R.string.yagi_diameter, yagiLength(context, element.diameterMm, unit))
+        line(element.transverseLabel(), yagiLength(context, element.transverseSizeMm, unit))
         line(if (profile.dualPlane) R.string.yagi_gtv_position else R.string.yagi_position, yagiLength(context, element.positionMm, unit))
         profile.design.elements.getOrNull(index - 1)?.let { previous ->
             line(R.string.yagi_spacing, yagiLength(context, element.positionMm - previous.positionMm, unit))
@@ -731,7 +765,7 @@ private fun yagiReport(
         appendLine(context.getString(R.string.yagi_vertical_plane))
         profile.design.verticalElements.forEachIndexed { index, element ->
             appendLine(context.getString(yagiElementLabel(element.id)))
-            line(R.string.yagi_diameter, yagiLength(context, element.diameterMm, unit))
+            line(element.transverseLabel(), yagiLength(context, element.transverseSizeMm, unit))
             line(R.string.yagi_gtv_position, yagiLength(context, element.positionMm, unit))
             line(R.string.yagi_gtv_table_length, yagiLength(context, element.overallMm, unit))
             val driver = driven.getOrNull(1)
@@ -744,10 +778,14 @@ private fun yagiReport(
     profile.matchingCables.forEach { cable ->
         line(cable.label(), context.getString(R.string.yagi_matching_pair, yagiLength(context, cable.sectionMm, unit)))
     }
-    appendLine(context.getString(if (profile == YagiProfile.R3) R.string.yagi_formed else R.string.yagi_limited))
+    appendLine(context.getString(profile.cutNote()))
     if (driverGeometry.any { it != null }) appendLine(context.getString(R.string.yagi_driver_input_basis))
     profile.publishedNotes?.let { appendLine(context.getString(it)) }
     if (profile.buildSource != profile.original) appendLine(profile.buildSource)
     profile.drivenCutSource?.let { appendLine(it) }
     append(profile.original)
+    if (profile == YagiProfile.NT1K) {
+        appendLine()
+        line(R.string.yagi_nt1k_printables, HACKERMAGNET_TAPE_YAGI_URL)
+    }
 }

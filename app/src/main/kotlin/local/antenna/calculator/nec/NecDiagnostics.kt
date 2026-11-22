@@ -17,7 +17,30 @@ internal fun maximumNecShift(
     }.minWith(compareByDescending<NecImpedanceShift> { it.ohms }.thenBy { it.frequencyHz })
 }
 
-internal data class NecDirectionRange(val low: Double, val high: Double) {
+internal data class NecWorstSwrChange(val before: OpenNec.Point, val after: OpenNec.Point) {
+    val delta get() = after.swr - before.swr
+}
+
+internal data class NecImpedanceDelta(val resistance: Double, val reactance: Double) {
+    val ohms get() = hypot(resistance, reactance)
+}
+
+internal data class NecDirectionPoint(
+    val frequencyHz: Long,
+    val coarse: NecImpedanceDelta,
+    val fine: NecImpedanceDelta,
+    val commonShift: NecImpedanceDelta,
+    val residual: NecImpedanceDelta,
+)
+
+internal data class NecDirectionRange(
+    val coarse: NecWorstSwrChange,
+    val fine: NecWorstSwrChange,
+    val largestCommonShift: NecDirectionPoint,
+    val largestResidual: NecDirectionPoint,
+) {
+    val low get() = minOf(coarse.delta, fine.delta)
+    val high get() = maxOf(coarse.delta, fine.delta)
     val indeterminate get() = low <= 0.0 && high >= 0.0
 }
 
@@ -27,7 +50,32 @@ internal fun necDirectionRange(
 ): NecDirectionRange? {
     if (frequencies.isEmpty() || listOf(coarseBase, coarseCandidate, fineBase, fineCandidate)
             .any { series -> series.map { it.frequencyHz } != frequencies }) return null
-    val coarse = worstNecSwr(coarseCandidate).swr - worstNecSwr(coarseBase).swr
-    val fine = worstNecSwr(fineCandidate).swr - worstNecSwr(fineBase).swr
-    return NecDirectionRange(minOf(coarse, fine), maxOf(coarse, fine))
+
+    val points = frequencies.mapIndexed { index, frequency ->
+        val before = coarseBase[index]
+        val after = coarseCandidate[index]
+        val fineBefore = fineBase[index]
+        val fineAfter = fineCandidate[index]
+        val coarse = impedanceChange(before, after)
+        val fine = impedanceChange(fineBefore, fineAfter)
+        NecDirectionPoint(
+            frequency,
+            coarse,
+            fine,
+            NecImpedanceDelta(
+                ((fineBefore.resistance - before.resistance) + (fineAfter.resistance - after.resistance)) / 2,
+                ((fineBefore.reactance - before.reactance) + (fineAfter.reactance - after.reactance)) / 2,
+            ),
+            NecImpedanceDelta(fine.resistance - coarse.resistance, fine.reactance - coarse.reactance),
+        )
+    }
+    return NecDirectionRange(
+        NecWorstSwrChange(worstNecSwr(coarseBase), worstNecSwr(coarseCandidate)),
+        NecWorstSwrChange(worstNecSwr(fineBase), worstNecSwr(fineCandidate)),
+        points.minWith(compareByDescending<NecDirectionPoint> { it.commonShift.ohms }.thenBy { it.frequencyHz }),
+        points.minWith(compareByDescending<NecDirectionPoint> { it.residual.ohms }.thenBy { it.frequencyHz }),
+    )
 }
+
+private fun impedanceChange(before: OpenNec.Point, after: OpenNec.Point) =
+    NecImpedanceDelta(after.resistance - before.resistance, after.reactance - before.reactance)

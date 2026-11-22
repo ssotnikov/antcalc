@@ -179,6 +179,7 @@ internal class JournalPresentation(private val context: Context) {
             s.inputs.firstOrNull { it.key == "frequency" && it.unit == SnapshotUnit.HERTZ }?.value?.div(1e6)
         } else null
         fun fieldLabel(key: String): String? {
+            if (yagi == YagiProfile.NT1K && key == "frequency") return text(R.string.yagi_nt1k_measure_frequency)
             if (yagi?.dualPlane == true) return yagiMetricLabel(key, dualPlane = true)
             if (s.model != YagiScaling.MODEL) return null
             val simple = when (key) {
@@ -500,6 +501,7 @@ internal class JournalPresentation(private val context: Context) {
             "overall" -> R.string.yagi_overall
             "table" -> R.string.yagi_gtv_table_length
             "diameter" -> R.string.yagi_diameter
+            "width" -> R.string.yagi_tape_width
             "blank" -> R.string.yagi_record_blank
             else -> return null
         }

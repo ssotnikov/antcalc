@@ -113,4 +113,17 @@
     <string name="yagi_dg_no_transfer">DG7YBN design materials can be viewed within AntCalc.</string>
     <string name="yagi_dg_export_notice">Select the records to export. This list contains records available for transfer outside AntCalc.</string>
     <string name="yagi_dg_notice" translatable="false">Design by DG7YBN, no republishing or distribution outside this app, not for commercial use.</string>
+    <string name="yagi_tape_width">Tape width</string>
+    <string name="yagi_nt1k_mount">The boom uses ½″ Schedule 40 PVC pipe. Hose clamps secure the 25.4 mm tape to the cross fittings. Check the center-to-center spacing after seating the pipes in the fittings.</string>
+    <string name="yagi_nt1k_feed">A U-shaped copper hairpin of AWG 12 or 14 wire connects across the driven-element terminals. The wire blank is 127 mm long and the outside width is 19.05 mm. Six turns of RG-58 are wound on the boom.</string>
+    <string name="yagi_nt1k_published">Dimensions are from sheets 2 and 3 of the NT1K drawing. The 15.875 mm gap is derived from the full span and the two half lengths. Adjust the gap by sliding the halves in their mounts.</string>
+    <string name="yagi_nt1k_nec">Simulation requires a model of the tape and hairpin feed. The segmentation calculator supports straight round elements.</string>
+    <string name="yagi_nt1k_measure_frequency">NT1K measurement reference frequency</string>
+    <string name="yagi_nt1k_measure">NT1K reported an SWR of 1.12 at 147.054 MHz for a build with a gap of about 25.4 mm. The analyzer was connected at the end of the feedline. Measure SWR after assembling your antenna.</string>
+    <string name="yagi_nt1k_cut_conditions">Tape lengths and center positions come from the drawing. Offsets set the overall boom length. Check the assembly drawing for the lengths of pipe between fittings.</string>
+    <string name="yagi_nt1k_cut_note">The driven length is specified per half. The cut allowance applies to the reflector and director blanks.</string>
+    <string name="yagi_nt1k_article">NT1K · Three-element tape-measure Yagi</string>
+    <string name="yagi_nt1k_drawing">NT1K · Assembly drawing</string>
+    <string name="yagi_nt1k_rights">Jeffrey Bail (NT1K). Dimensions are from the original assembly drawing. Follow the publication links for the drawing and photographs.</string>
+    <string name="yagi_nt1k_printables">Printables · hackermagnet variant with 19 mm tape</string>
 </resources>

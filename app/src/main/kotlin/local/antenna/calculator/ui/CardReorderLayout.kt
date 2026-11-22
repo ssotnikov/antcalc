@@ -13,6 +13,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.roundToInt
 
 internal fun LazyListLayoutInfo.reorderCardAt(
     pointerY: Float, positions: Map<String, Int>,
@@ -35,6 +36,23 @@ internal fun LazyListLayoutInfo.reorderTarget(
         if (index > origin && center >= middle) target = itemKey
     }
     return target
+}
+
+internal fun LazyListLayoutInfo.reorderOverlayTop(
+    desiredTop: Float, cardHeight: Int, firstKey: Any, lastKey: Any,
+): Int {
+    // Lazy item offsets include start padding in the viewport's coordinate system.
+    val first = visibleItemsInfo.firstOrNull { it.key == firstKey }
+    val last = visibleItemsInfo.firstOrNull { it.key == lastKey }
+    val overhang = cardHeight / 3
+    var top = desiredTop.roundToInt()
+    if (first != null) {
+        top = maxOf(top, first.offset - viewportStartOffset - overhang)
+    }
+    if (last != null) {
+        top = minOf(top, last.offset + last.size - viewportStartOffset - cardHeight + overhang)
+    }
+    return top
 }
 
 @Composable

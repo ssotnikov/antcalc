@@ -2,14 +2,18 @@ package local.antenna.calculator.core.layout
 
 data class YagiElement(
     val id: String,
-    val diameterMm: Double,
+    val diameterMm: Double?,
     val positionMm: Double,
     val overallMm: Double,
     val blankMm: Double? = null,
+    val tapeWidthMm: Double? = null,
 ) {
+    val transverseSizeMm: Double get() = diameterMm ?: checkNotNull(tapeWidthMm)
+
     init {
         require(id.matches(Regex("[a-z][a-z0-9]{0,15}")))
-        require(diameterMm in 0.001..1000.0 && positionMm in 0.0..100_000.0 && overallMm in 0.001..100_000.0)
+        require((diameterMm == null) != (tapeWidthMm == null))
+        require(transverseSizeMm in 0.001..1000.0 && positionMm in 0.0..100_000.0 && overallMm in 0.001..100_000.0)
         require(blankMm == null || blankMm in 0.001..100_000.0)
     }
 }

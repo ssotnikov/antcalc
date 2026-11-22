@@ -12,6 +12,7 @@ internal const val GTV_BEND_FRACTION = GTV_BEND_FROM_CENTER_MM / GTV_MODEL_HALF_
 internal val YagiProfile.publishedNotes: Int?
     get() = when (this) {
         YagiProfile.R3 -> null
+        YagiProfile.NT1K -> R.string.yagi_nt1k_published
         YagiProfile.YBN -> R.string.yagi_ybn_published
         YagiProfile.DK2 -> R.string.yagi_dk2_published
         YagiProfile.DK50 -> R.string.yagi_dk50_published

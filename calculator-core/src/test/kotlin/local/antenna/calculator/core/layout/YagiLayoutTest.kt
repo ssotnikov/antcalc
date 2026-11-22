@@ -33,6 +33,28 @@ class YagiLayoutTest {
     }
 
     @Test
+    fun tapeYagiUsesDrawingDimensionsAndStoresWidthSeparately() {
+        val design = YagiDesign.NT1K
+        val inchMm = 25.4
+        assertEquals(true, design.usesTape)
+        design.elements.forEach {
+            assertNull(it.diameterMm)
+            assertEquals(inchMm, checkNotNull(it.tapeWidthMm), 0.0)
+        }
+        val (reflector, driven, director) = design.elements
+        val split = checkNotNull(design.drivenCut)
+        assertEquals(41.375 * inchMm, reflector.overallMm, 1e-9)
+        assertEquals(36.125 * inchMm, driven.overallMm, 1e-9)
+        assertEquals(35.125 * inchMm, director.overallMm, 1e-9)
+        assertEquals(7.940 * inchMm, driven.positionMm, 1e-9)
+        assertEquals(12.441 * inchMm, director.positionMm - driven.positionMm, 1e-9)
+        assertEquals(17.75 * inchMm, split.halfBlankMm, 1e-9)
+        assertEquals(driven.overallMm - 2 * split.halfBlankMm, split.gapMm, 1e-9)
+        assertEquals(listOf(reflector.overallMm, null, director.overallMm),
+            calculateYagiCutList(design, 0.0, null, null).blanksMm)
+    }
+
+    @Test
     fun invalidInputsAreRejected() {
         assertThrows(IllegalArgumentException::class.java) { calculateR3udkCutList(-1.0, null, null) }
         assertThrows(IllegalArgumentException::class.java) { calculateR3udkCutList(0.0, 1001.0, 0.0) }
@@ -42,7 +64,7 @@ class YagiLayoutTest {
     fun publishedProfilesKeepUnknownBlanksAndUseConfirmedLengths() {
         val designs = YagiDesign.entries
         assertEquals(designs.size, designs.map(YagiDesign::model).distinct().size)
-        val publicDesigns = designs.filterNot { it.restricted }
+        val publicDesigns = designs.filterNot { it.restricted || it.usesTape }
         assertEquals(listOf(4, 3, 5, 5, 4), publicDesigns.map { it.elements.size })
         assertEquals(listOf(868.0, 470.0, 590.0, 630.0, 392.0),
             publicDesigns.map { calculateYagiCutList(it, 0.0, null, null).spanMm })

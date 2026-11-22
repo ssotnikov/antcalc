@@ -49,6 +49,8 @@
     <string name="ref_card_dk7zb_pvc">Building lightweight portable Yagis with PVC booms, element mounts, driven-element assembly and feed connections.</string>
     <string name="ref_card_dk7zb_five_elements">Two five-element 70 cm Yagis for 28 and 50 ohms, with element dimensions, positions and radiation patterns.</string>
     <string name="ref_card_nuxcom_dk7zb">Assembly instructions for 144/432 MHz DK7ZB Yagi kits: boom layout, element mounts, driven element and feed assembly.</string>
+    <string name="ref_card_yagi_tape_measure_wb2hol">Archived original article with dimensions for a three-element 2 m Yagi, a hairpin match and feed gap adjustment.</string>
+    <string name="ref_card_yagi_tape_measure_nt1k">Three-element tape measure Yagi with an assembly drawing, a hairpin match and miniVNA Pro measurements at the feed line end.</string>
     <string name="ref_card_yagi_open_measurements">Measurement tables for a 2.4 GHz Yagi, including frequency, return loss, reflection phase, SWR and complex input impedance.</string>
     <string name="ref_card_balanced_antenna_measurements">A two-port VNA method for measuring a balanced antenna while removing test-fixture effects.</string>
     <string name="ref_card_tusur_antenna_measurements">Laboratory guide to measuring antenna radiation patterns and input impedance.</string>

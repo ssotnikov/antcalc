@@ -1,6 +1,6 @@
 # Сверка OpenNEC и NEC-2 из 4nec2
 
-AntCalc собирает OpenNEC 2.4.1 из коммита
+Исходная сверка выполнена с OpenNEC 2.4.1 из коммита
 `c9ee90bb7fa49bed7302f6b7ba1208cad6a69415` с исходным матричным решателем.
 На ПК проверены сборка из того же тега и установленный Windows OpenNEC.
 Эталон — `nec2dxs1K5.exe` из 4nec2 5.9.3, NEC-2 double precision,

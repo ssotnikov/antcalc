@@ -27,7 +27,6 @@ import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
 import local.antenna.calculator.R
 
 private data class ToolCardDrag(val id: String, val grabOffset: Float, val height: Int, val y: Float)
@@ -145,7 +144,11 @@ internal fun ReorderableToolCards(
         }
         drag?.let { current ->
             Box(Modifier.fillMaxWidth().padding(horizontal = margin)
-                .offset { IntOffset(0, (current.y - current.grabOffset).roundToInt()) }
+                .offset {
+                    IntOffset(0, scroll.layoutInfo.reorderOverlayTop(
+                        current.y - current.grabOffset, current.height, order.first(), order.last(),
+                    ))
+                }
                 .clearAndSetSemantics {}) { card(current.id, Modifier, true) }
         }
     }

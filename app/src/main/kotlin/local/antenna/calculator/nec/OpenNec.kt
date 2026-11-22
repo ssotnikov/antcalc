@@ -10,9 +10,9 @@ import local.antenna.calculator.core.matching.matchingFromImpedance
 import kotlin.math.ceil
 
 internal object OpenNec {
-    const val VERSION = "2.4.1"
-    const val VERSION_CODE = 20401
-    const val SOURCE = "https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1"
+    const val VERSION = "2.4.2"
+    const val VERSION_CODE = 20402
+    const val SOURCE = "https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2"
     const val AZIMUTH_STEP = 5
     private const val MAX_SEGMENTS = 241
     private const val MAX_POINTS = 41

@@ -27,6 +27,8 @@
     <string name="source_radiolab_description">Паспорта коаксиальных кабелей с характеристиками конкретных моделей. Ищите в паспорте коэффициент укорочения.</string>
     <string name="source_rfi_dielectrics">Сводка RFI по типам диэлектрика</string>
     <string name="source_rfi_dielectrics_description">Типичные диапазоны VF для разных диэлектриков и примеры коаксиальных кабелей.</string>
+    <string name="source_yagi_tape_measure_wb2hol">Исходная конструкция Яги из ленты рулетки</string>
+    <string name="source_yagi_tape_measure_nt1k">Яги из ленты рулетки на 2 м</string>
     <string name="references_antenna_measurements">Измерение импеданса антенн</string>
     <string name="references_yagi_open_measurements">Открытые измерения Яги</string>
     <string name="references_yagi_open_measurements_description">Трассы VNA для Яги на 2,4 ГГц с модулем и фазой отражения и комплексным импедансом.</string>

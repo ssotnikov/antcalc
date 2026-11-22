@@ -102,6 +102,8 @@ private val publicationCredits = listOf(
     ), PublicationTerms(R.string.licenses_cc_by_terms, "https://www.mdpi.com/1996-1073/14/21/7042")),
     PublicationCredit(R.string.licenses_author_13, listOf(
         CreditedPublication(R.string.licenses_work_13_1, "https://nt1k.com/open-stub-j-pole-project-completed-many-times/"),
+        CreditedPublication(R.string.yagi_nt1k_article, NT1K_TAPE_YAGI_URL),
+        CreditedPublication(R.string.yagi_nt1k_drawing, NT1K_TAPE_YAGI_DRAWING_URL),
     )),
     PublicationCredit(R.string.licenses_author_14, listOf(
         CreditedPublication(R.string.licenses_work_14_1, INVERTED_V_SOURCE_RU),

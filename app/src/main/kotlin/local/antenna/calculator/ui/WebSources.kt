@@ -34,6 +34,9 @@ internal const val SLIM_JIM_CEBIK_URL = "https://antenna2.github.io/cebik/conten
 private val moxonSourceAddresses = MoxonSource.entries.map { it.url }.toSet()
 private val hb9cvSourceAddresses = Hb9cvSource.entries.map { it.url }.toSet()
 
+internal const val NT1K_TAPE_YAGI_URL = "https://nt1k.com/vhf-3el-tape-measure-yagi/"
+internal const val NT1K_TAPE_YAGI_DRAWING_URL = "https://nt1k.com/wp-content/uploads/2012/11/3L-Tape-Measure-Yagi-Assy.pdf"
+internal const val HACKERMAGNET_TAPE_YAGI_URL = "https://www.printables.com/model/1169207-tape-measure-yagi-antenna-2m"
 internal const val YBN_DUBUS_URL = "https://www.ok2kkw.com/next/dubus412w.pdf"
 internal const val DG7YBN_BENT_DIPOLE_URL = "https://dg7ybn.de/Bent_DE/Bent_DE.htm#Online_Calc"
 internal const val DK7ZB_DUOBAND_ARTICLE_URL = "https://www.worldradiohistory.com/INTERNATIONAL/Funkschau/FunkAmateur-2008-06.pdf"
@@ -43,7 +46,7 @@ internal const val NUXCOM_DK7ZB_URL = "https://web.archive.org/web/2024111020340
 private val additionalSourceAddresses = setOf(
     FEEDLINE_LOSS_METHOD_URL,
     NUXCOM_DK7ZB_URL,
-    "https://github.com/jopecl/wifi-antenna-design-nec/blob/main/data/lab1-measurements.xlsx",
+    "https://github.com/jopecl/wifi-antenna-design-nec",
     "https://www.ieice.org/cs/isap/ISAP_Archives/2010/pdf/91.pdf",
     "https://edu.tusur.ru/publications/2796",
     YBN_DUBUS_URL,
@@ -86,6 +89,10 @@ private val additionalSourceAddresses = setOf(
     "https://www.qsl.net/dk7zb/J_Pole/wiremanjpole.htm",
     SLIM_JIM_CEBIK_URL,
     "https://antenna2.github.io/cebik/content/vhf/jp4.html",
+    "https://web.archive.org/web/20231114044718id_/http://theleggios.net/wb2hol/projects/rdf/tape_bm.htm",
+    NT1K_TAPE_YAGI_URL,
+    NT1K_TAPE_YAGI_DRAWING_URL,
+    HACKERMAGNET_TAPE_YAGI_URL,
     "https://nt1k.com/open-stub-j-pole-project-completed-many-times/",
     "https://www.radioman.ru/shem/anteny/an-kvad.php",
     "https://gef79.narod.ru/Shem/Antens/119.htm",

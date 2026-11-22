@@ -28,6 +28,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.BuildConfig
 import local.antenna.calculator.R
+import local.antenna.calculator.nec.OpenNec
 import local.antenna.calculator.state.*
 
 @Composable
@@ -92,7 +93,7 @@ internal fun SettingsScreen(
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Nec2EngineBadge { openSourceWithFeedback(context, NEC2_URL) }
                     TextButton(onClick = onOpenNecLicense, modifier = Modifier.testTag("settings-opennec-license")) {
-                        Text(stringResource(R.string.opennec_license_link))
+                        Text(stringResource(R.string.opennec_license_link, OpenNec.VERSION))
                     }
                 }
                 HorizontalDivider()

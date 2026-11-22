@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="opennec_component">OpenNEC %1$s · Maury Markowitz · MIT</string>
-    <string name="opennec_license_link">OpenNEC license</string>
+    <string name="opennec_license_link">OpenNEC %1$s license</string>
     <string name="opennec_badge_link">NEC2 Engine. Open the NEC-2 website</string>
     <string name="opennec_source">OpenNEC source code</string>
     <string name="opennec_check">Check in NEC</string>
-    <string name="opennec_conditions">OpenNEC 2.4.1. Free space, perfectly conducting round elements, a voltage source at the driven element center and 50 Ω reference impedance. Forward gain is along the boom toward the directors. F/B compares 0° and 180°.</string>
+    <string name="opennec_conditions">OpenNEC %1$s. Free space, perfectly conducting round elements, a voltage source at the driven element center and 50 Ω reference impedance. Forward gain is along the boom toward the directors. F/B compares 0° and 180°.</string>
     <string name="opennec_mounted">NEC requires straight-element model dimensions. Mounted dimensions support proportional scaling.</string>
     <string name="opennec_split">Dimension calculations are available. NEC checks and optimization for a physical feed gap require validation of the feed model. The result depends on the feed assembly and reference plane.</string>
     <string name="opennec_unavailable">The OpenNEC engine is unavailable on this device.</string>

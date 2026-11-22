@@ -28,8 +28,8 @@ android {
         applicationId = "local.antenna.calculator"
         minSdk = 26
         targetSdk = 37
-        versionCode = 140
-        versionName = "2.3.0"
+        versionCode = 143
+        versionName = "2.4.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -93,7 +93,7 @@ tasks.register("writeReleaseDependencyInventory") {
         val modules = configurations.getByName(classpath).incoming.resolutionResult.allComponents
             .mapNotNull { it.id as? org.gradle.api.artifacts.component.ModuleComponentIdentifier }
             .map { "${it.group}:${it.module}:${it.version}" }.sorted()
-        val nativeComponents = listOf("OpenNEC:2.4.1 (MIT, c9ee90bb7fa49bed7302f6b7ba1208cad6a69415)")
+        val nativeComponents = listOf("OpenNEC:2.4.2 (MIT, 28f49f127698185f89b7bf8d9cbb3779f2968a80)")
         output.get().asFile.apply {
             parentFile.mkdirs()
             writeText((modules + nativeComponents).sorted().joinToString("\n", postfix = "\n"))

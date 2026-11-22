@@ -4,9 +4,9 @@
   "nativeComponents": [
     {
       "name": "OpenNEC",
-      "version": "2.4.1",
-      "revision": "c9ee90bb7fa49bed7302f6b7ba1208cad6a69415",
-      "source": "https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1",
+      "version": "2.4.2",
+      "revision": "28f49f127698185f89b7bf8d9cbb3779f2968a80",
+      "source": "https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2",
       "spdx": "MIT"
     }
   ],

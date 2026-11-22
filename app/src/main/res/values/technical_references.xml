@@ -51,6 +51,10 @@
     <string name="source_rfi_dielectrics">Coaxial Cable Dielectrics – Velocity of Propagation and Attenuation</string>
     <string name="source_rfi_dielectrics_url" translatable="false" formatted="false">https://products.rfi.com.au/hubfs/Wireless%20download%20library/Coaxial%20Cable%20Dielectrics%20%20Velocity%20of%20Propagation%20and%20Attenuation.pdf?hsLang=en</string>
     <string name="source_rfi_dielectrics_description">Typical velocity factor ranges by dielectric material, with examples of coaxial cables.</string>
+    <string name="source_yagi_tape_measure_wb2hol">Original 2 m tape measure beam</string>
+    <string name="source_yagi_tape_measure_wb2hol_url" translatable="false">https://web.archive.org/web/20231114044718id_/http://theleggios.net/wb2hol/projects/rdf/tape_bm.htm</string>
+    <string name="source_yagi_tape_measure_nt1k">2 m tape measure Yagi</string>
+    <string name="source_yagi_tape_measure_nt1k_url" translatable="false">https://nt1k.com/vhf-3el-tape-measure-yagi/</string>
     <string name="references_antenna_measurements">Antenna impedance measurements</string>
     <string name="references_yagi_open_measurements">Open Yagi measurements</string>
     <string name="references_yagi_open_measurements_description">VNA sweeps of a 2.4 GHz Yagi with reflection magnitude, phase and complex impedance.</string>
@@ -58,7 +62,7 @@
     <string name="references_balanced_measurements_description">Two-port VNA technique for measuring a balanced antenna and removing the effects of the test fixture.</string>
     <string name="references_tusur_measurements">TUSUR antenna measurement guide</string>
     <string name="references_tusur_measurements_description">Russian-language laboratory guide to measuring antenna input impedance and radiation patterns.</string>
-    <string name="references_yagi_open_measurements_url" translatable="false">https://github.com/jopecl/wifi-antenna-design-nec/blob/main/data/lab1-measurements.xlsx</string>
+    <string name="references_yagi_open_measurements_url" translatable="false">https://github.com/jopecl/wifi-antenna-design-nec</string>
     <string name="references_balanced_measurements_url" translatable="false">https://www.ieice.org/cs/isap/ISAP_Archives/2010/pdf/91.pdf</string>
     <string name="references_tusur_measurements_url" translatable="false">https://edu.tusur.ru/publications/2796</string>
 </resources>

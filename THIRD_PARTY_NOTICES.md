@@ -37,7 +37,7 @@ They are not relicensed by this application or distributed inside its APK.
 
 ## OpenNEC
 
-OpenNEC 2.4.1 is compiled into the application from [the v.2.4.1 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.1). The complete upstream LICENSE follows.
+OpenNEC 2.4.2 is compiled into the application from [the v.2.4.2 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2). The complete upstream LICENSE follows.
 
 **Copyright © 2026 Maury Markowitz**
 
