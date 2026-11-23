@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="ys_title">Yagi–Uda scaling</string>
-    <string name="ys_experimental">(experimental calculations)</string>
+    <string name="ys_experimental">experimental feature</string>
     <string name="ys_intro">Scale a Yagi to another frequency or change element diameters.</string>
     <string name="ys_mode">What do you want to change?</string>
     <string name="ys_frequency">Move to another frequency</string>
