@@ -103,7 +103,7 @@ class JournalAcceptanceTest {
         val analytic = checkNotNull(YagiScalingDraft.restore(snapshot)?.result())
         val applied = checkNotNull(snapshot.appliedNecLengths(analytic))
         assertTrue(applied != analytic.elements.map { it.length })
-        assertEquals(20402, snapshot.appliedNecVersion())
+        assertEquals(20403, snapshot.appliedNecVersion())
         compose.onNodeWithTag("back").performClick()
         compose.onNodeWithTag("back").performClick()
         click("open-journal")
@@ -113,7 +113,8 @@ class JournalAcceptanceTest {
         waitFor("journal-history")
         val record = hasText(saved.title) and hasClickAction()
         compose.onNodeWithTag("journal-history").performScrollToNode(record)
-        compose.onAllNodes(record).onFirst().performClick()
+        compose.onNode(record).performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.OnClick)
+        waitFor("journal-record-details")
         click("journal-open-yagi-scaling")
         compose.onNodeWithTag("opennec-applied").performScrollTo().assertIsDisplayed()
         compose.waitUntil(15_000) { compose.activity.hasWindowFocus() }
@@ -121,7 +122,7 @@ class JournalAcceptanceTest {
         compose.runOnIdle {
             val clipboard = compose.activity.getSystemService(ClipboardManager::class.java)
             val report = checkNotNull(clipboard.primaryClip).getItemAt(0).text.toString()
-            assertTrue(report.contains("OpenNEC 2.4.2"))
+            assertTrue(report.contains("OpenNEC 2.4.3"))
             val director = report.lineSequence().first { it.startsWith("D1 |") }.split(" | ")
             assertEquals(applied[2] * 1000, director[2].replace(',', '.').toDouble(), .00005)
         }

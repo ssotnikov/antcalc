@@ -38,13 +38,15 @@ void init_card_state(card_state_t *state)
     state->total_cards_processed = 0;  /* mpcnt */
     
     /* Processing stages */
-    state->processing_stage = 0;  /* igo - Not started */
+    /* NEC-2 starts ready to solve at its default frequency unless an FR card
+     * replaces it before an execution card is encountered. */
+    state->processing_stage = 1;  /* igo - Need matrix */
     state->card_sequence_state = 0; /* iflow - Not started */
     
     /* Frequency parameters */
     state->num_frequencies = 1;  /* nfrq */
     state->freq_stepping_mode = 0;  /* ifrq - Linear frequency stepping */
-    state->current_frequency_mhz = 0.0;  /* fmhz */
+    state->current_frequency_mhz = CVEL;  /* NEC-2 default: 299.8 MHz */
     state->frequency_delta = 0.0;  /* delfrq */
     state->freq_iteration = 0;  /* mhz */
     
@@ -1953,7 +1955,10 @@ static int execute_frequency_loop_sequential(context_t *ctx, deck_t *deck,
     geometry_t *geom = &ctx->geometry;
     
     /* Allocate matrix and other structures for frequency loop */
-    if (allocate_frequency_loop_storage(ctx, geom->num_segs + geom->num_patches) != 0) {
+    /* Each patch carries two unknowns (NEC-2's NEQ = N + 2M), as
+     * process_deck_sequential() and control.c both count them; N + M made
+     * factor_block_matrix() reject every deck with a surface patch. */
+    if (allocate_frequency_loop_storage(ctx, geom->num_segs + 2 * geom->num_patches) != 0) {
         add_error(ctx, &ctx->errors, "Failed to allocate frequency loop storage", FATAL);
         return -1;
     }

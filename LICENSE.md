@@ -20,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-OpenNEC 2.4.2 is Copyright © 2026 Maury Markowitz and is distributed under the
+OpenNEC 2.4.3 is Copyright © 2026 Maury Markowitz and is distributed under the
 MIT license. See the [OpenNEC notice](THIRD_PARTY_NOTICES.md#opennec) for the
 complete license and the original NEC-2 notice.
 

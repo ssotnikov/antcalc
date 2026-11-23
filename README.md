@@ -6,7 +6,7 @@
 ![Languages](https://img.shields.io/badge/Languages-RU%20%7C%20EN-blue?style=flat&labelColor=365563)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat&labelColor=365563)
 [![NEC2 Engine](https://img.shields.io/badge/NEC2-Engine-orange?style=flat&labelColor=365563)](https://www.nec2.org/)
-[![OpenNEC 2.4.2](https://img.shields.io/badge/OpenNEC-2.4.2-a0e2d4?style=flat&labelColor=365563)](https://github.com/maurymarkowitz/OpenNEC)
+[![OpenNEC 2.4.3](https://img.shields.io/badge/OpenNEC-2.4.3-a0e2d4?style=flat&labelColor=365563)](https://github.com/maurymarkowitz/OpenNEC)
 
 [Русский](#русский) · [English](#english)
 
@@ -49,7 +49,7 @@
 
 ### Лицензии
 
-- **OpenNEC 2.4.2, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. Приложение использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчёта входного импеданса, КСВ, усиления, отношения вперёд/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.2](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
+- **OpenNEC 2.4.3, Мори Марковиц (Maury Markowitz), MIT.** Реализация NEC-2 для электромагнитного моделирования антенн. Приложение использует встроенное ядро на экране «Масштабирование Яги — Уда» для офлайн-расчета входного импеданса, КСВ, усиления, отношения вперед/назад (F/B) и диаграммы направленности. При подборе длин элементов приложение сравнивает максимальный КСВ на частотной сетке в заданной полосе. [Репозиторий OpenNEC](https://github.com/maurymarkowitz/OpenNEC) · [Исходники версии 2.4.3](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.3) · [Уведомление и лицензия](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · Код приложения распространяется по лицензии MIT.
 
@@ -221,7 +221,7 @@ Calculations, formulas and diagrams are available offline. Choose English or Rus
 
 ### Licenses
 
-- **OpenNEC 2.4.2, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. The application uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.2 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
+- **OpenNEC 2.4.3, Maury Markowitz, MIT.** A NEC-2 implementation for electromagnetic antenna simulation. The application uses the embedded engine on the Yagi–Uda scaling screen to calculate input impedance, SWR, gain, front-to-back ratio (F/B) and radiation patterns offline. When optimizing element lengths, the app compares the worst SWR across sampled frequencies in the selected band. [OpenNEC repository](https://github.com/maurymarkowitz/OpenNEC) · [Version 2.4.3 source](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.3) · [Notice and license](THIRD_PARTY_NOTICES.md#opennec)
 
 [LICENSE.md](LICENSE.md) · The app’s source code is licensed under the MIT License.
 

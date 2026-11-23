@@ -1,9 +1,9 @@
-# OpenNEC 2.4.2
+# OpenNEC 2.4.3
 
-Source [v.2.4.2](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2),
-revision `28f49f127698185f89b7bf8d9cbb3779f2968a80`.
+Source [v.2.4.3](https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.3),
+revision `c51b6e0af2808279b3295b447966d4434f910add`.
 The SHA-256 of the upstream tag ZIP is
-`8a41ae8864531569d3d3b9607998a5f10681da3d670eaec966fe3710fbf4b35e`.
+`a2b2bb5f855ae71799db7d2a09262a9781a62ae3d602341c1e3307c8d2feebca`.
 
 This directory contains the upstream C library sources and headers under
 `src/`, along with the unmodified `LICENSE`. The upstream console entry point

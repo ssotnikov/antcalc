@@ -98,14 +98,16 @@ class YagiScalingDraftTest {
         val lengths = analytic.elements.map { it.length * 1.02 }
         val saved = draft.snapshot(analytic, lengths)
         assertEquals(2, saved.revision)
-        assertEquals(20402, saved.appliedNecVersion())
+        assertEquals(20403, saved.appliedNecVersion())
         val reopened = checkNotNull(YagiScalingDraft.restore(saved))
         val restored = checkNotNull(reopened.result())
         assertEquals(lengths, saved.appliedNecLengths(restored))
-        val legacy = draft.snapshot(analytic, lengths, 20401)
-        val legacyResult = checkNotNull(YagiScalingDraft.restore(legacy)?.result())
-        assertEquals(20401, legacy.appliedNecVersion())
-        assertEquals(lengths, legacy.appliedNecLengths(legacyResult))
+        for (version in listOf(20401, 20402)) {
+            val legacy = draft.snapshot(analytic, lengths, version)
+            val legacyResult = checkNotNull(YagiScalingDraft.restore(legacy)?.result())
+            assertEquals(version, legacy.appliedNecVersion())
+            assertEquals(lengths, legacy.appliedNecLengths(legacyResult))
+        }
         analytic.elements.zip(restored.elements).forEach { (expected, actual) ->
             assertEquals(expected.length, actual.length, 1e-12)
             assertEquals(expected.position, actual.position, 1e-12)

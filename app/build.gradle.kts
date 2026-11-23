@@ -93,7 +93,7 @@ tasks.register("writeReleaseDependencyInventory") {
         val modules = configurations.getByName(classpath).incoming.resolutionResult.allComponents
             .mapNotNull { it.id as? org.gradle.api.artifacts.component.ModuleComponentIdentifier }
             .map { "${it.group}:${it.module}:${it.version}" }.sorted()
-        val nativeComponents = listOf("OpenNEC:2.4.2 (MIT, 28f49f127698185f89b7bf8d9cbb3779f2968a80)")
+        val nativeComponents = listOf("OpenNEC:2.4.3 (MIT, c51b6e0af2808279b3295b447966d4434f910add)")
         output.get().asFile.apply {
             parentFile.mkdirs()
             writeText((modules + nativeComponents).sorted().joinToString("\n", postfix = "\n"))
