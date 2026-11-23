@@ -334,12 +334,13 @@ internal fun YagiScalingScreen(
             SelectableText("k = f₁ / f₂\nλ = c / f₂\nC(d) = 430,3 log₁₀(2λ/d) − 320\nL₂ = λ/2 × [1 + C(d₁)/C(d₂) × (2L₁/λ − 1)]")
             HelpText(R.string.ys_formula_help)
         }
-        ScalingDetails(R.string.ys_sources) {
+        ScalingDetails(R.string.ys_sources, Modifier.testTag("ys-method-sources")) {
             HelpText(R.string.ys_credits)
             WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_URL) }) { Text(stringResource(R.string.ys_article)) }
             WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_BOOK) }) { Text(stringResource(R.string.ys_book)) }
             HelpText(R.string.ys_rights)
             WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_TERMS) }) { Text(stringResource(R.string.ys_terms)) }
+            NecMethodExamples()
         }
     }
 }
@@ -360,7 +361,7 @@ internal fun ScalingField(
 }
 
 @Composable
-private fun ScalingTableRow(cells: List<String>) {
+internal fun ScalingTableRow(cells: List<String>) {
     Row(Modifier.fillMaxWidth()) {
         cells.forEachIndexed { index, value ->
             Text(value, Modifier.weight(if (index == 0) 1.4f else 1f).padding(end = 4.dp),
@@ -372,9 +373,9 @@ private fun ScalingTableRow(cells: List<String>) {
 }
 
 @Composable
-private fun ScalingDetails(title: Int, content: @Composable () -> Unit) {
+internal fun ScalingDetails(title: Int, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    PanelButton(expanded, { expanded = !expanded }) { Text(stringResource(title)) }
+    PanelButton(expanded, { expanded = !expanded }, modifier) { Text(stringResource(title)) }
     if (expanded) content()
 }
 

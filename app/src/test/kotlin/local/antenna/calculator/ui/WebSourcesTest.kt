@@ -11,6 +11,13 @@ class WebSourcesTest {
         assertNull(validatedSourceAddress(FEEDLINE_LOSS_METHOD_URL + "other/"))
     }
 
+    @Test fun necExamplesUseOnlyTheirExactReferences() {
+        assertEquals(NGSOLVE_PML_SOURCE, validatedSourceAddress(NGSOLVE_PML_SOURCE))
+        assertEquals(ARCHIVED_OPENNEC_SOURCE, validatedSourceAddress(ARCHIVED_OPENNEC_SOURCE))
+        assertNull(validatedSourceAddress("$NGSOLVE_PML_SOURCE?other=true"))
+        assertNull(validatedSourceAddress(ARCHIVED_OPENNEC_SOURCE.replace("https://", "http://")))
+    }
+
     @Test fun necLinksPermitOnlyTheApprovedAddresses() {
         assertEquals("https://www.nec2.org/", validatedSourceAddress(NEC2_URL))
         assertEquals(OpenNec.SOURCE, validatedSourceAddress(OpenNec.SOURCE))

@@ -19,6 +19,22 @@ class YagiNecGuideCaptureTest : CalculatorUiFixture() {
     @Test fun englishDark() = capture(AppLanguage.ENGLISH, AppTheme.DARK)
     @Test fun englishLight() = capture(AppLanguage.ENGLISH, AppTheme.LIGHT)
 
+    @Test fun russianMethods() = captureMethods(AppLanguage.RUSSIAN)
+    @Test fun englishMethods() = captureMethods(AppLanguage.ENGLISH)
+
+    private fun captureMethods(language: AppLanguage) {
+        assumeTrue(InstrumentationRegistry.getArguments().getString("captureNecGuide") == "1")
+        val draft = CalculatorDraft.defaults()
+        start(draft.copy(settings = draft.settings.copy(language = language, theme = AppTheme.DARK)))
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        click("open-additional-tools")
+        click("open-yagi-scaling")
+        click("ys-method-sources")
+        click("opennec-pml-example")
+        val tag = "opennec-pml-table"
+        save(tag, "nec-pml-${language.name.lowercase()}.png", tag)
+    }
+
     private fun capture(language: AppLanguage, theme: AppTheme) {
         assumeTrue(InstrumentationRegistry.getArguments().getString("captureNecGuide") == "1")
         val draft = CalculatorDraft.defaults()

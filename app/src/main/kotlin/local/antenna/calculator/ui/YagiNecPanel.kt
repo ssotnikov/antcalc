@@ -293,6 +293,7 @@ internal fun YagiNecPanel(
                 if (result.indeterminate) HelpText(R.string.opennec_direction_indeterminate)
                 SelectableText(stringResource(R.string.opennec_direction_range,
                     matchingNumber(context, result.low, 4), matchingNumber(context, result.high, 4)))
+                NecDirectionDetails(result)
                 HelpText(R.string.opennec_direction_help)
             }
             comparison?.let { (base, adjusted) ->

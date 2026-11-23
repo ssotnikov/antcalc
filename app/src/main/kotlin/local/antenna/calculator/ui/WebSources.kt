@@ -170,7 +170,8 @@ internal fun validatedSourceAddress(address: String): String? {
     val url = uri.toASCIIString()
     if (url == authorSupportPaymentUrl) return url
     if (url == PRIVACY_POLICY_URL) return url
-    if (url == NEC2_URL || url == OpenNec.SOURCE || url in licenseSourceAddresses) return url
+    if (url == NEC2_URL || url == OpenNec.SOURCE || url == ARCHIVED_OPENNEC_SOURCE ||
+        url == NGSOLVE_PML_SOURCE || url in licenseSourceAddresses) return url
     if (url in guideExampleUrls) return url
     return when (url) {
         YAGI_SCALING_URL, YAGI_SCALING_BOOK, BUG_REPORT_URL, LIZAALERT_URL, GITHUB_RELEASES_URL, AUTHOR_TELEGRAM_WEB, INVERTED_V_SOURCE_RU, RFI_DIELECTRICS_URL, RADIOLAB_CABLES_URL -> url

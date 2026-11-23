@@ -82,6 +82,22 @@ class NecDiagnosticsTest {
         assertFalse(result.indeterminate)
     }
 
+    @Test fun displayedArchiveMatchesAllThreeReferenceSweeps() {
+        val reference = archivedDirection("near-997", "OpenNEC 2.4.2 h8", "OpenNEC 2.4.2 h4")
+        val pml = archivedDirection("near-997", "OpenNEC 2.4.2 h4", "NGSolve PML8")
+        val expected = listOf(reference.coarse, reference.fine, pml.fine)
+        val displayed = listOf(NecReferenceExamples.wire8, NecReferenceExamples.wire4, NecReferenceExamples.pml8)
+        assertEquals(expected, displayed)
+        assertEquals(-0.0022696096784320385, displayed[0].delta, 1e-12)
+        assertEquals(-0.002339238465255411, displayed[1].delta, 1e-12)
+        assertEquals(0.0025777756220262127, displayed[2].delta, 1e-12)
+
+        val lower = archivedDirection("near-997", "OpenNEC 2.4.2 h8", "NGSolve PML8")
+        assertTrue(lower.largestResidual.coarse.resistance > 0.0)
+        assertTrue(lower.largestResidual.fine.reactance > 0.0)
+        assertEquals(0.005035, lower.largestResidual.residual.ohms, 1e-6)
+    }
+
     @Test fun archivedRadialRefinementPreservesSignedSwrDifferences() {
         val before = listOf(
             fromImpedance(143_000_000L, 29.78160969202366, 6.170185190589157),
@@ -91,6 +107,12 @@ class NecDiagnosticsTest {
             fromImpedance(143_000_000L, 29.78015625554852, 6.169313328158862),
             fromImpedance(147_000_000L, 29.294433754377515, -2.4788028157271307),
         )
+        val samples = NecReferenceExamples.radial
+        assertEquals(before, samples.map { it.eightLayers })
+        assertEquals(after, samples.map { it.twelveLayers })
+        assertEquals(0.001694881023739839, samples[0].deltaImpedance, 1e-12)
+        assertEquals(0.00007091935322312004, samples[0].deltaSwr, 1e-12)
+        assertEquals(-0.0000765469694807841, samples[1].deltaSwr, 1e-12)
         val shift = checkNotNull(maximumNecShift(before, after, before.map { it.frequencyHz }))
         assertEquals(147_000_000L, shift.frequencyHz)
         assertEquals(0.0017213610491074633, shift.ohms, 1e-12)
