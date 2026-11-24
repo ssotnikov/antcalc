@@ -44,8 +44,9 @@ internal enum class GuideDestination(
     val page: Page,
     val section: Section? = null,
     val shape: LoopShape? = null,
+    val anchor: String = slug,
 ) {
-    SIZING("sizing", Page.CALCULATOR, Section.SIZING),
+    SIZING("sizing", Page.CALCULATOR, Section.SIZING, anchor = "starting-dimensions"),
     TUNING("tuning", Page.CALCULATOR, Section.TRIMMING),
     TOOLS("tools", Page.CALCULATOR, Section.TOOLS),
     ANTENNA_CALCULATORS("antenna-calculators", Page.ANTENNA_PARAMETER_TOOLS),
@@ -85,6 +86,36 @@ internal enum class GuideDestination(
 internal fun guideDestination(address: String): GuideDestination? =
     GuideDestination.entries.firstOrNull { address == ROUTE_PREFIX + it.slug }
 
+internal fun toolGuideDestination(page: Page, section: Section, projectsList: Boolean): GuideDestination? = when (page) {
+    Page.CALCULATOR -> when (section) {
+        Section.SIZING -> GuideDestination.SIZING
+        Section.TRIMMING -> GuideDestination.TUNING
+        Section.TOOLS -> null
+    }
+    Page.MATCHING -> GuideDestination.SWR
+    Page.SMITH_CHART -> GuideDestination.SMITH
+    Page.CABLE -> GuideDestination.CABLE
+    Page.FEEDLINE -> GuideDestination.FEEDLINE
+    Page.INVERTED_V -> GuideDestination.INVERTED_V
+    Page.GROUND_PLANE -> GuideDestination.GROUND_PLANE
+    Page.FULL_WAVE_LOOP -> GuideDestination.FULL_WAVE_LOOP
+    Page.J_POLE -> GuideDestination.J_POLE
+    Page.SLIM_JIM -> GuideDestination.SLIM_JIM
+    Page.MOXON -> GuideDestination.MOXON
+    Page.HB9CV -> GuideDestination.HB9CV
+    Page.CANTENNA -> GuideDestination.CANTENNA
+    Page.HALO_CB -> GuideDestination.HALO
+    Page.TRAP_DIPOLE -> GuideDestination.TRAP_DIPOLE
+    Page.YAGI_CALCULATOR -> GuideDestination.YAGI
+    Page.CONSTRUCTION_YAGI -> GuideDestination.R3UDK_GUIDE
+    Page.YAGI_SCALING -> GuideDestination.YAGI_SCALING
+    Page.YAGI_SEGMENTATION -> GuideDestination.YAGI_SEGMENTATION
+    Page.MEASUREMENTS -> GuideDestination.VNA
+    Page.SWR_BANDWIDTH -> GuideDestination.BANDWIDTH
+    Page.JOURNAL -> GuideDestination.PROJECTS.takeIf { projectsList }
+    else -> null
+}
+
 private const val SEGMENTATION_GUIDE_IMAGE = "images/yagi-segmentation.svg"
 private val guideImage = Regex("""images/(en|ru)/(light/)?[a-z0-9-]+\.webp""")
 private val guideImageReference = Regex("""((?:href|src)="images/(?:en|ru)/)([a-z0-9-]+\.webp")""")
@@ -102,11 +133,12 @@ internal fun guideAssetPath(address: String): String? {
 
 @Composable
 internal fun UserGuideScreen(
-    language: AppLanguage, dark: Boolean, canCheckForUpdates: Boolean, onOpen: (GuideDestination) -> Unit,
+    language: AppLanguage, dark: Boolean, canCheckForUpdates: Boolean, anchor: String?,
+    onOpen: (GuideDestination) -> Unit,
 ) {
     val context = LocalContext.current
     val document = if (language == AppLanguage.RUSSIAN) "ru.html" else "en.html"
-    var scrollY by key(language.tag) { rememberSaveable { mutableIntStateOf(0) } }
+    var scrollY by key(language.tag) { rememberSaveable { mutableStateOf<Int?>(null) } }
     var searchQuery by key(language.tag) { rememberSaveable { mutableStateOf("") } }
     var searchMatch by key(language.tag) { rememberSaveable { mutableIntStateOf(0) } }
     var imagePath by key(language.tag, dark) { rememberSaveable { mutableStateOf<String?>(null) } }
@@ -124,6 +156,7 @@ internal fun UserGuideScreen(
             factory = { viewContext ->
                 createGuideView(viewContext, document, scrollY, dark, canCheckForUpdates, background,
                     search = GuideSearchRequest(document, searchQuery, searchMatch),
+                    anchor = anchor,
                     onSearch = { searchQuery = it.query; searchMatch = it.match },
                     onScroll = { scrollY = it },
                     onImage = { imagePath = it },
@@ -155,8 +188,8 @@ internal fun UserGuideScreen(
 
 @SuppressLint("SetJavaScriptEnabled")
 private fun createGuideView(
-    context: Context, document: String, initialY: Int, dark: Boolean, canCheckForUpdates: Boolean,
-    background: Int, search: GuideSearchRequest, onSearch: (GuideSearchRequest) -> Unit,
+    context: Context, document: String, initialY: Int?, dark: Boolean, canCheckForUpdates: Boolean,
+    background: Int, search: GuideSearchRequest, anchor: String?, onSearch: (GuideSearchRequest) -> Unit,
     onScroll: (Int) -> Unit, onImage: (String) -> Unit,
     onOpen: (GuideDestination) -> Unit,
 ): WebView {
@@ -226,7 +259,7 @@ private fun createGuideView(
                 view.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
                     override fun onComplete(requestId: Long) {
                         if (!restored && loadedSearch == search) {
-                            view.scrollTo(0, initialY)
+                            initialY?.let { view.scrollTo(0, it) }
                         } else if (loadedSearch.query.isNotEmpty() && loadedUrl.contains("#guide-match-")) {
                             // Leave the matched text below the persistent search controls.
                             @Suppress("DEPRECATION")
@@ -238,7 +271,8 @@ private fun createGuideView(
                 })
             }
         }
-        loadUrl(guideSearchAddress(search))
+        val initialAddress = guideSearchAddress(search)
+        loadUrl(if (initialY == null && search.query.isEmpty() && anchor != null) "$initialAddress#$anchor" else initialAddress)
     }
 }
 

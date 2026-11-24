@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ import local.antenna.calculator.core.TrapDipole.Band
 internal enum class Page { CALCULATOR, MATCHING, SMITH_CHART, CABLE, FEEDLINE, INVERTED_V, GROUND_PLANE, FULL_WAVE_LOOP, J_POLE, SLIM_JIM, MOXON, HB9CV, YAGI_CALCULATOR, TRANSFER_TYPE, TRANSFER_PICKER, TRANSFER_NEW, SETTINGS, ABOUT, REFERENCES, LICENSES, JOURNAL, ANTENNA_PARAMETER_TOOLS, ANTENNA_CONSTRUCTION, CONSTRUCTION_YAGI, ADDITIONAL_TOOLS, MEASUREMENTS, SWR_BANDWIDTH, CANTENNA, HALO_CB, TRAP_DIPOLE, YAGI_SCALING, YAGI_SEGMENTATION, USER_GUIDE }
 
 private data class GuideVisit(val page: Page, val menuDepth: Int, val previousSection: Section?) : Serializable
+private data class ToolGuideEntry(val menuDepth: Int, val destination: GuideDestination) : Serializable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,6 +94,7 @@ private fun LocalizedCalculatorApp(
     var segmentationInput by rememberSaveable { mutableStateOf<ArrayList<String>?>(null) }
     var menuParents by rememberSaveable { mutableStateOf(arrayListOf<String>()) }
     var guideVisits by rememberSaveable { mutableStateOf<List<GuideVisit>>(emptyList()) }
+    var toolGuideEntries by rememberSaveable { mutableStateOf<List<ToolGuideEntry>>(emptyList()) }
     var menu by remember { mutableStateOf(false) }
     var cableParent by rememberSaveable { mutableStateOf(Page.CALCULATOR) }
     var measurementsParent by rememberSaveable { mutableStateOf(Page.ADDITIONAL_TOOLS) }
@@ -117,6 +120,8 @@ private fun LocalizedCalculatorApp(
     val focus = LocalFocusManager.current
     val keyboard = LocalSoftwareKeyboardController.current
     val settings = state.draft.settings
+    val toolGuideEntry = toolGuideEntries.lastOrNull { it.menuDepth == menuParents.size }
+    val guideStateKey = if (toolGuideEntry == null) "user-guide-${menuParents.size}" else "tool-guide-${menuParents.size}"
     val returnToGuide = guideVisits.lastOrNull()?.takeIf { visit ->
         visit.page == page && visit.menuDepth == menuParents.size && recordRestore?.page != page && when (page) {
             Page.JOURNAL -> journalPage == JournalPage.PROJECTS
@@ -173,6 +178,10 @@ private fun LocalizedCalculatorApp(
         if (recordRestore?.page == page) {
             if (page == Page.CALCULATOR) onEvent(CalculatorEvent.Settings(currentState().draft.settings.copy(section = recordReturnSection)))
             page = Page.JOURNAL; recordRestore = null; return
+        }
+        if (page == Page.USER_GUIDE && toolGuideEntry != null) {
+            screenStates.removeState(guideStateKey)
+            toolGuideEntries = toolGuideEntries.dropLast(1)
         }
         when (page) {
             Page.SETTINGS, Page.ABOUT, Page.REFERENCES, Page.LICENSES, Page.USER_GUIDE -> {
@@ -257,6 +266,10 @@ private fun LocalizedCalculatorApp(
         page = destination
     }
     fun openGuideDestination(destination: GuideDestination) {
+        if (destination == toolGuideEntry?.destination) {
+            goBack()
+            return
+        }
         leaveInput()
         guideVisits = guideVisits + GuideVisit(destination.page, menuParents.size,
             settings.section.takeIf { destination.section != null })
@@ -321,6 +334,7 @@ private fun LocalizedCalculatorApp(
         val offerAllowed = !menu && !transferring && WindowInsets.ime.getBottom(LocalDensity.current) == 0
         val updateActions = rememberUpdateMenuActions(offerAllowed, page == Page.CALCULATOR, snackbar)
         val guideUpdateAction = updateActions.firstOrNull { it.tag == "check-for-updates" }
+        val toolGuide = toolGuideDestination(page, settings.section, journalPage == JournalPage.PROJECTS)
         val title = when (page) {
             Page.ANTENNA_CONSTRUCTION -> R.string.construction_title
             Page.CONSTRUCTION_YAGI -> R.string.construction_yagi_title
@@ -363,7 +377,7 @@ private fun LocalizedCalculatorApp(
         Scaffold(
             modifier = Modifier.fillMaxSize().imePadding(),
             contentWindowInsets = WindowInsets.safeDrawing,
-            topBar = {
+            topBar = { Column {
                 TopAppBar(title = {
                     val action = scrollToTop.action
                     val sweep = remember(page, title) { Animatable(1f) }
@@ -443,7 +457,6 @@ private fun LocalizedCalculatorApp(
                                 )
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.contact_author)) },
-                                    leadingIcon = { WebGlobeIcon() },
                                     onClick = { menu = false; openAuthorContact(context) },
                                     modifier = Modifier.testTag("contact-author"),
                                 )
@@ -451,7 +464,6 @@ private fun LocalizedCalculatorApp(
                                     authorSupportPaymentUrl?.let { url ->
                                         DropdownMenuItem(
                                             text = { Text(stringResource(R.string.support_author)) },
-                                            leadingIcon = { WebGlobeIcon() },
                                             onClick = { menu = false; openSourceWithFeedback(context, url) },
                                             modifier = Modifier.testTag("menu-support-author"),
                                         )
@@ -467,14 +479,26 @@ private fun LocalizedCalculatorApp(
                                 }
                                 DropdownMenuItem(
                                     text = { Text(stringResource(R.string.report_bug)) },
-                                    leadingIcon = { WebGlobeIcon() },
                                     onClick = { menu = false; openSourceWithFeedback(context, BUG_REPORT_URL) },
                                     modifier = Modifier.testTag("menu-report-bug"),
                                 )
                             }
                         }
                     })
-            },
+                if (toolGuide != null) {
+                    TextButton(
+                        onClick = {
+                            leaveInput()
+                            openMenuPage(Page.USER_GUIDE)
+                            toolGuideEntries = toolGuideEntries + ToolGuideEntry(menuParents.size, toolGuide)
+                        },
+                        modifier = Modifier.padding(start = 20.dp).heightIn(min = 48.dp).testTag("open-tool-guide"),
+                        contentPadding = PaddingValues(0.dp),
+                    ) {
+                        Text(stringResource(R.string.user_guide), textDecoration = TextDecoration.Underline)
+                    }
+                }
+            } },
             bottomBar = {
                 if (page == Page.CALCULATOR || page == Page.MATCHING || page == Page.SMITH_CHART || page == Page.CABLE || page == Page.FEEDLINE || page == Page.INVERTED_V || page == Page.GROUND_PLANE || page == Page.FULL_WAVE_LOOP || page == Page.J_POLE || page == Page.SLIM_JIM || page == Page.MOXON || page == Page.HB9CV || page == Page.YAGI_CALCULATOR || page == Page.JOURNAL || page == Page.ANTENNA_PARAMETER_TOOLS || page == Page.ANTENNA_CONSTRUCTION || page == Page.CONSTRUCTION_YAGI || page == Page.ADDITIONAL_TOOLS || page == Page.MEASUREMENTS || page == Page.SWR_BANDWIDTH || page == Page.CANTENNA || page == Page.HALO_CB || page == Page.TRAP_DIPOLE || page == Page.YAGI_SCALING || page == Page.YAGI_SEGMENTATION) NavigationBar(Modifier.heightIn(min =
                     80.dp * LocalDensity.current.fontScale.coerceAtLeast(1f) +
@@ -484,6 +508,8 @@ private fun LocalizedCalculatorApp(
                         NavigationBarItem(selected = settings.section == section, onClick = {
                             if (guideVisits.isNotEmpty()) {
                                 guideVisits = emptyList()
+                                toolGuideEntries.forEach { screenStates.removeState("tool-guide-${it.menuDepth}") }
+                                toolGuideEntries = emptyList()
                                 menuParents = arrayListOf()
                             }
                             leaveInput(); recordRestore = null; page = Page.CALCULATOR; onEvent(CalculatorEvent.Settings(settings.copy(section = section)))
@@ -630,13 +656,14 @@ private fun LocalizedCalculatorApp(
                             onOpenNecLicense = { openMenuPage(Page.LICENSES) })
                     }
                     Page.ABOUT -> screenStates.SaveableStateProvider("help-${menuParents.size}") { HelpScreen() }
-                    Page.USER_GUIDE -> screenStates.SaveableStateProvider("user-guide-${menuParents.size}") {
+                    Page.USER_GUIDE -> screenStates.SaveableStateProvider(guideStateKey) {
                         val dark = when (settings.theme) {
                             AppTheme.SYSTEM -> isSystemInDarkTheme()
                             AppTheme.LIGHT -> false
                             AppTheme.DARK -> true
                         }
-                        UserGuideScreen(settings.language, dark, guideUpdateAction != null) { destination ->
+                        UserGuideScreen(settings.language, dark, guideUpdateAction != null,
+                            anchor = toolGuideEntry?.destination?.anchor) { destination ->
                             if (destination == GuideDestination.CHECK_UPDATES) {
                                 guideUpdateAction?.takeIf { it.enabled }?.onClick?.invoke()
                             } else openGuideDestination(destination)

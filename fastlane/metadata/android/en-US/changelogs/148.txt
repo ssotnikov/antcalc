@@ -1,0 +1,1 @@
+Tool screens now link directly to the relevant user guide section. Globe icons have been removed from the app menu.

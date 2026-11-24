@@ -23,6 +23,21 @@ class GuideSearchAcceptanceTest : CalculatorUiFixture() {
     @Test fun russianSearchInLightTheme() = exercise(true, AppTheme.LIGHT)
     @Test fun englishSearchInDarkTheme() = exercise(false, AppTheme.DARK)
 
+    @Test fun sizingGuideOpensAtItsSectionAndBackReturnsToTheTool() {
+        start()
+        compose.onNodeWithTag("open-tool-guide").performClick()
+        compose.waitUntil(15_000) {
+            compose.runOnIdle {
+                val view = compose.activity.window.decorView.guideWebView()
+                view?.url == "$GUIDE_ORIGIN/userguide/ru.html#starting-dimensions" && view.scrollY > 0
+            }
+        }
+        compose.onNodeWithTag("back").performClick()
+        compose.onNodeWithTag("open-tool-guide").assertExists()
+        compose.onNodeWithTag("nav-TOOLS").performClick()
+        compose.onNodeWithTag("open-tool-guide").assertDoesNotExist()
+    }
+
     private fun exercise(russian: Boolean, theme: AppTheme = if (russian) AppTheme.DARK else AppTheme.LIGHT) {
         // Connect accessibility before WebView creates its virtual node tree on first load.
         val automation = InstrumentationRegistry.getInstrumentation().uiAutomation

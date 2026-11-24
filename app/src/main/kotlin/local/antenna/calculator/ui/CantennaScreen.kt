@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +49,11 @@ internal fun CantennaScreen(
     val resources = LocalResources.current
     val prefs = remember(context) { context.getSharedPreferences("cantenna_calculator", Context.MODE_PRIVATE) }
     val record = LocalCalculatorRecord.current
-    var draft by remember(prefs) { mutableStateOf(record?.cantennaDraft() ?: CantennaDraft.restore(prefs.getString("draft", null))) }
+    var draft by rememberSaveable(stateSaver = Saver<CantennaDraft, String>(
+        save = { it.json() }, restore = { CantennaDraft.restore(it) },
+    )) {
+        mutableStateOf(record?.cantennaDraft() ?: CantennaDraft.restore(prefs.getString("draft", null)))
+    }
     SideEffect {
         val data = draft.json()
         if (record == null && prefs.getString("draft", null) != data) prefs.edit().putString("draft", data).apply()
