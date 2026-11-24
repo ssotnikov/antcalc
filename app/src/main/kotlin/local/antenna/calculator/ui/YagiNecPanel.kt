@@ -65,7 +65,7 @@ internal fun YagiNecPanel(
     targetHz: Long,
     blocked: Int?,
     appliedLengths: List<Double>?,
-    combinedMode: Boolean,
+    combinedMode: Boolean = false,
     sweep: suspend (List<Element>, List<Int>, List<Long>) -> List<OpenNec.Point>? =
         { geometry, segments, frequencies -> OpenNec.sweep(geometry, segments, 1, frequencies) },
     onSegmentation: ((ArrayList<String>) -> Unit)? = null,
@@ -296,8 +296,11 @@ internal fun YagiNecPanel(
                 if (result.indeterminate) HelpText(R.string.opennec_direction_indeterminate)
                 SelectableText(stringResource(R.string.opennec_direction_range,
                     matchingNumber(context, result.low, 4), matchingNumber(context, result.high, 4)))
+                HelpText(
+                    if (result.indeterminate) R.string.opennec_direction_indeterminate_help
+                    else R.string.opennec_direction_help,
+                )
                 NecDirectionDetails(result)
-                HelpText(R.string.opennec_direction_help)
             }
             comparison?.let { (base, adjusted) ->
                 val threshold = requireNotNull(swrLimit)

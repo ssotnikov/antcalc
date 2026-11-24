@@ -13,6 +13,8 @@ import java.util.Locale
 
 enum class SourceOpenResult { OPENED, NO_BROWSER, BLOCKED }
 
+internal const val NGSOLVE_PML_SOURCE = "https://docu.ngsolve.org/latest/how_to/pml.html"
+internal const val ARCHIVED_OPENNEC_SOURCE = "https://github.com/maurymarkowitz/OpenNEC/tree/v.2.4.2"
 internal const val INVERTED_V_SOURCE_RU = "https://ruqrz.com/petlevoj-vibrator-v-antenne-inverted-v-2/"
 internal const val RFI_DIELECTRICS_URL = "https://products.rfi.com.au/hubfs/Wireless%20download%20library/Coaxial%20Cable%20Dielectrics%20%20Velocity%20of%20Propagation%20and%20Attenuation.pdf?hsLang=en"
 internal const val FEEDLINE_LOSS_METHOD_URL = "https://timesmicrowave.com/interpretation-of-electrical-test-data-with-regards-to-microwave-cable-assemblies/"

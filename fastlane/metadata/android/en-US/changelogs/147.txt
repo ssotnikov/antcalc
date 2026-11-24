@@ -1,0 +1,1 @@
+Clarified the OpenNEC “Direction undetermined” result in Yagi–Uda scaling. The worked example on changes in worst SWR is now in Questions and answers in the offline guide.

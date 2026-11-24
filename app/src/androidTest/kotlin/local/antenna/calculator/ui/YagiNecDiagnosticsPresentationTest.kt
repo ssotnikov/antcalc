@@ -23,7 +23,7 @@ class YagiNecDiagnosticsPresentationTest {
     @Test fun displaysPeaksAndImpedanceWhenTheWorstFrequencyMoves() = direction(moves = true)
     @Test fun displaysPeaksAndImpedanceWhenTheWorstFrequencyStays() = direction(moves = false)
 
-    @Test fun methodExamplesAreBundledAndPhysicalGapKeepsNecUnavailable() {
+    @Test fun methodSourcesOmitArchiveAndPhysicalGapKeepsNecUnavailable() {
         compose.setContent {
             MaterialTheme {
                 YagiScalingScreen(initial = null, onSave = null, necAvailable = { true }, onCopied = {})
@@ -34,12 +34,8 @@ class YagiNecDiagnosticsPresentationTest {
         compose.onNodeWithTag("ys-copy").performScrollTo().assertIsEnabled()
         compose.onNodeWithTag("opennec-expand").assertDoesNotExist()
         click("ys-method-sources")
-        click("opennec-pml-example")
-        compose.onNodeWithTag("opennec-pml-table").performScrollTo().assertIsDisplayed()
-        click("opennec-band-example")
-        compose.onNodeWithTag("opennec-band-table").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText(compose.activity.getString(R.string.opennec_direction_indeterminate))
-            .performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("opennec-pml-example").assertDoesNotExist()
+        compose.onNodeWithTag("opennec-band-example").assertDoesNotExist()
         compose.onNodeWithTag("opennec-optimize").assertDoesNotExist()
         compose.onNodeWithTag("opennec-apply").assertDoesNotExist()
     }
@@ -69,6 +65,8 @@ class YagiNecDiagnosticsPresentationTest {
         click("opennec-direction")
         compose.onNodeWithTag("opennec-direction-peaks").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText(compose.activity.getString(R.string.opennec_direction_indeterminate))
+            .performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(compose.activity.getString(R.string.opennec_direction_indeterminate_help))
             .performScrollTo().assertIsDisplayed()
         click("opennec-direction-details")
         compose.onNodeWithText(compose.activity.getString(R.string.opennec_diag_residual, matchingNumber(compose.activity, 0.2, 4)))

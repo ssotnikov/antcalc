@@ -413,7 +413,6 @@ internal fun YagiScalingScreen(
             WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_BOOK) }) { Text(stringResource(R.string.ys_book)) }
             HelpText(R.string.ys_rights)
             WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_TERMS) }) { Text(stringResource(R.string.ys_terms)) }
-            NecMethodExamples()
         }
     }
 }
