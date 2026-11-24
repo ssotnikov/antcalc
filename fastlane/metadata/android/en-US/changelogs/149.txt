@@ -1,0 +1,1 @@
+Updated both languages of the user guide with current instructions for calculators, S1P measurements and project journals. Text search and direct section links work offline.
