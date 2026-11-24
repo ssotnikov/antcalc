@@ -131,9 +131,7 @@ private fun ReferenceCard(
         modifier = Modifier.fillMaxWidth().testTag("source-$id"),
     ) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            WebLinkLabel(tint = MaterialTheme.colorScheme.primary) {
-                SelectableText(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
-            }
+            SelectableText(title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
             SelectableText(
                 listOfNotNull(publisher, language, section).joinToString(" · "),
                 style = MaterialTheme.typography.labelMedium,
@@ -142,7 +140,7 @@ private fun ReferenceCard(
             HelpText(summary.description)
             terms?.let { HelpText(it) }
             termsUrl?.let { address ->
-                WebLinkButton(onClick = { openSourceWithFeedback(context, address) }) {
+                WebLinkButton(onClick = { openSourceWithFeedback(context, address) }, showGlobe = false) {
                     Text(stringResource(R.string.cantenna_source_terms, publisher))
                 }
             }

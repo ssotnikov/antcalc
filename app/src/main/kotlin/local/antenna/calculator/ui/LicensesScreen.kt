@@ -1,6 +1,7 @@
 package local.antenna.calculator.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,12 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
@@ -24,12 +26,13 @@ import local.antenna.calculator.core.TrapDipole.Profile
 import local.antenna.calculator.nec.OpenNec
 
 private data class CreditedPublication(val title: Int, val url: String)
-private data class PublicationTerms(val description: Int, val url: String)
+private data class PublicationTerms(val description: Int?, val url: String)
 
 private data class PublicationCredit(
     val author: Int,
     val publications: List<CreditedPublication>,
     val terms: PublicationTerms? = null,
+    val callout: (@Composable () -> Unit)? = null,
 )
 
 private val publicationCredits = listOf(
@@ -51,7 +54,7 @@ private val publicationCredits = listOf(
         CreditedPublication(R.string.licenses_ybn_dubus, YBN_DUBUS_URL),
         CreditedPublication(R.string.licenses_gtv_bending, DG7YBN_BENT_DIPOLE_URL),
         CreditedPublication(R.string.licenses_work_2_2, "https://www.dg7ybn.de/144MHz/144_GTV2_6m.htm"),
-    ), PublicationTerms(R.string.yagi_dg_notice, "https://www.dg7ybn.de/")),
+    ), PublicationTerms(null, "https://www.dg7ybn.de/"), callout = { Dg7ybnLicenseCallout() }),
     PublicationCredit(R.string.ys_book_authors, listOf(CreditedPublication(R.string.ys_book, YAGI_SCALING_BOOK)),
         PublicationTerms(R.string.ys_book_rights, YAGI_SCALING_BOOK)),
     PublicationCredit(R.string.licenses_author_3, listOf(
@@ -151,7 +154,7 @@ internal val haloSourceAddresses = haloPublicationCredits.flatMap { credit ->
 }.toSet()
 
 @Composable
-private fun PublicationCreditCard(credit: PublicationCredit) {
+private fun PublicationCreditCard(credit: PublicationCredit, showGlobe: Boolean) {
     val context = LocalContext.current
     Column {
         SelectableText(
@@ -160,21 +163,19 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.secondary,
         )
+        credit.callout?.invoke()
         credit.publications.forEach { publication ->
             WebLinkButton(
                 onClick = { openSourceWithFeedback(context, publication.url) },
                 modifier = Modifier.fillMaxWidth(),
+                showGlobe = showGlobe,
             ) {
                 Text(stringResource(publication.title), modifier = Modifier.fillMaxWidth())
             }
         }
         credit.terms?.let { terms ->
-            LicenseHelpText(terms.description)
-            if (terms.description == R.string.yagi_dg_notice &&
-                LocalConfiguration.current.locales[0].language == "ru") {
-                LicenseHelpText(R.string.yagi_dg_rights)
-            }
-            WebLinkButton(onClick = { openSourceWithFeedback(context, terms.url) }) {
+            terms.description?.let { LicenseHelpText(it, showGlobe) }
+            WebLinkButton(onClick = { openSourceWithFeedback(context, terms.url) }, showGlobe = showGlobe) {
                 Text(stringResource(R.string.licenses_author_terms))
             }
         }
@@ -182,29 +183,29 @@ private fun PublicationCreditCard(credit: PublicationCredit) {
 }
 
 @Composable
-internal fun TrapPublicationLinks(profile: Profile? = null) {
+internal fun TrapPublicationLinks(profile: Profile? = null, showGlobe: Boolean = true) {
     val titles = listOf(R.string.trap_source_r2auk, R.string.trap_source_vk2evb, R.string.trap_source_aa4lr)
     val context = LocalContext.current
     val profiles = profile?.let(::listOf) ?: Profile.entries
     profiles.forEach {
         PublicationCreditCard(PublicationCredit(trapAuthors[it.ordinal],
-            listOf(CreditedPublication(titles[it.ordinal], trapPublications[it.ordinal]))))
+            listOf(CreditedPublication(titles[it.ordinal], trapPublications[it.ordinal]))), showGlobe)
     }
     if (profile == null || profile == Profile.VK2EVB) {
-        WebLinkButton(onClick = { openSourceWithFeedback(context, TRAP_ZL1BJQ_URL) }, modifier = Modifier.fillMaxWidth()) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, TRAP_ZL1BJQ_URL) }, modifier = Modifier.fillMaxWidth(), showGlobe = showGlobe) {
             Text(stringResource(R.string.trap_zl1bjq_source), modifier = Modifier.fillMaxWidth())
         }
     }
     listOf(R.string.trap_arrl_source to TRAP_ARRL_URL, R.string.trap_wheeler_source to TRAP_WHEELER_URL).forEach { (title, url) ->
-        WebLinkButton(onClick = { openSourceWithFeedback(context, url) }, modifier = Modifier.fillMaxWidth()) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, url) }, modifier = Modifier.fillMaxWidth(), showGlobe = showGlobe) {
             Text(stringResource(title), modifier = Modifier.fillMaxWidth())
         }
     }
 }
 
 @Composable
-internal fun HaloPublicationLinks() {
-    haloPublicationCredits.forEach { PublicationCreditCard(it) }
+internal fun HaloPublicationLinks(showGlobe: Boolean = true) {
+    haloPublicationCredits.forEach { PublicationCreditCard(it, showGlobe) }
 }
 
 @Composable
@@ -218,13 +219,13 @@ internal fun LicensesScreen() {
         LicenseHelpText(R.string.licenses_mit)
         OpenNecLicense()
         LicenseHelpText(R.string.licenses_intro)
-        publicationCredits.forEach { PublicationCreditCard(it) }
+        publicationCredits.forEach { PublicationCreditCard(it, showGlobe = false) }
         MoxonSource.entries.groupBy { it.author }.forEach { (author, sources) ->
             Column {
                 SelectableText(author, Modifier.semantics { heading() }, style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary)
                 sources.forEach { source ->
-                    WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth(), showGlobe = false) {
                         Text(source.title, modifier = Modifier.fillMaxWidth())
                     }
                 }
@@ -243,23 +244,23 @@ internal fun LicensesScreen() {
                     style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.secondary,
                 )
                 sources.forEach { source ->
-                    WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth()) {
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, modifier = Modifier.fillMaxWidth(), showGlobe = false) {
                         Text(stringResource(source.title), modifier = Modifier.fillMaxWidth())
                     }
                 }
                 sources.mapNotNull { it.terms }.distinct().forEach { LicenseHelpText(it) }
             }
         }
-        CantennaSourceLinks()
+        CantennaSourceLinks(showGlobe = false)
         Text(
             stringResource(R.string.licenses_halo_sources),
             modifier = Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
         )
-        HaloPublicationLinks()
+        HaloPublicationLinks(showGlobe = false)
         Text(stringResource(R.string.trap_sources), Modifier.semantics { heading() }, style = MaterialTheme.typography.titleLarge)
         LicenseHelpText(R.string.trap_rights)
-        TrapPublicationLinks()
+        TrapPublicationLinks(showGlobe = false)
         LicenseHelpText(R.string.licenses_rights)
     }
 }
@@ -276,15 +277,34 @@ private fun OpenNecLicense() {
             Modifier.semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
         )
-        WebLinkButton(onClick = { openSourceWithFeedback(context, OpenNec.SOURCE) }) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, OpenNec.SOURCE) }, showGlobe = false) {
             Text(stringResource(R.string.opennec_source))
         }
-        LicenseLinkedText(license, style = MaterialTheme.typography.bodySmall)
+        LicenseLinkedText(license, style = MaterialTheme.typography.bodySmall, showGlobe = false)
     }
 }
 
 @Composable
-private fun LicenseHelpText(resource: Int) {
+private fun LicenseHelpText(resource: Int, showGlobe: Boolean = false) {
     LicenseLinkedText(stringResource(resource), style = MaterialTheme.typography.bodyMedium,
-        textColor = MaterialTheme.colorScheme.onSurfaceVariant)
+        textColor = MaterialTheme.colorScheme.onSurfaceVariant, showGlobe = showGlobe)
+}
+
+@Composable
+private fun Dg7ybnLicenseCallout() {
+    val colors = MaterialTheme.colorScheme
+    Surface(
+        Modifier.fillMaxWidth().padding(vertical = 8.dp),
+        shape = MaterialTheme.shapes.small,
+        color = colors.secondaryContainer,
+    ) {
+        Box(Modifier.drawBehind { drawRect(colors.primary, size = size.copy(width = 3.dp.toPx())) }
+            .padding(horizontal = 14.dp, vertical = 12.dp)) {
+            LicenseLinkedText(
+                stringResource(R.string.licenses_dg7ybn_callout, stringResource(R.string.yagi_dg_notice)),
+                textColor = colors.onSecondaryContainer,
+                showGlobe = false,
+            )
+        }
+    }
 }

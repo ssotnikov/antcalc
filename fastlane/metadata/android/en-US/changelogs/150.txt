@@ -1,0 +1,1 @@
+Refined link styling in Settings, Licenses, and Materials and Sources. The app version appears directly below the Settings title. The Licenses screen highlights the author's terms for YBN 2-5m and GTV 2-6m.

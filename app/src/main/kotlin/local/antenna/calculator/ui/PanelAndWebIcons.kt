@@ -52,9 +52,14 @@ internal fun WebLinkLabel(tint: Color = LocalContentColor.current, content: @Com
 @Composable
 internal fun WebLinkButton(
     onClick: () -> Unit, modifier: Modifier = Modifier,
+    showGlobe: Boolean = true,
     content: @Composable RowScope.() -> Unit,
 ) {
-    TextButton(onClick, modifier) { WebLinkLabel(content = content) }
+    if (showGlobe) {
+        TextButton(onClick, modifier) { WebLinkLabel(content = content) }
+    } else {
+        TextButton(onClick, modifier, contentPadding = PaddingValues(vertical = 8.dp), content = content)
+    }
 }
 
 @Composable

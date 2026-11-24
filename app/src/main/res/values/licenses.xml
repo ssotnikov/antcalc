@@ -6,6 +6,7 @@
     <string name="licenses_author_1">R3UDK</string>
     <string name="licenses_work_1_1">Building a Yagi–Uda Antenna (Russian original)</string>
     <string name="licenses_author_2">Hartmut Klüver (DG7YBN)</string>
+    <string name="licenses_dg7ybn_callout" translatable="false">The author retains the rights to the original designs.\n\nThe **YBN 2-5m** and **GTV 2-6m** profile materials are subject to the author\'s terms: “%1$s”</string>
     <string name="licenses_work_2_1">YBN 2-5m</string>
     <string name="licenses_work_2_2">GTV 2-6m</string>
     <string name="licenses_author_3">Martin Steyer (DK7ZB)</string>

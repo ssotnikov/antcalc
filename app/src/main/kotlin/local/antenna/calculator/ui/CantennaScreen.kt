@@ -370,17 +370,18 @@ private fun CantennaFormulas() {
 @Composable
 internal fun CantennaSourceLinks(
     entries: List<CantennaSource> = CantennaSource.entries,
+    showGlobe: Boolean = true,
     heading: @Composable () -> Unit = { CantennaHeading(R.string.cantenna_sources) },
 ) {
     val context = LocalContext.current
     heading()
     entries.forEach { source ->
-        WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, Modifier.fillMaxWidth()) {
+        WebLinkButton(onClick = { openSourceWithFeedback(context, source.url) }, Modifier.fillMaxWidth(), showGlobe = showGlobe) {
             Text("${source.author} · ${stringResource(source.title)}", Modifier.fillMaxWidth())
         }
         source.terms?.let { HelpText(it) }
         source.termsUrl?.let { url ->
-            WebLinkButton(onClick = { openSourceWithFeedback(context, url) }) {
+            WebLinkButton(onClick = { openSourceWithFeedback(context, url) }, showGlobe = showGlobe) {
                 Text(stringResource(R.string.cantenna_source_terms, source.author))
             }
         }

@@ -54,15 +54,19 @@ internal fun LicenseLinkedText(
     value: String,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     textColor: Color = Color.Unspecified,
+    showGlobe: Boolean = true,
 ) {
     val context = LocalContext.current
     val color = MaterialTheme.colorScheme.primary
     val parts = remember(value) { licenseTextParts(value) }
-    val text = remember(parts, color, context) {
+    val text = remember(parts, color, context, showGlobe) {
         buildAnnotatedString {
             for (part in parts) {
                 when {
-                    part.address != null -> appendWebLink(part.text, part.address, color, showIcon = !part.text.equals("MIT License", ignoreCase = true) || part.address !in licenseSourceAddresses) {
+                    part.address != null -> appendWebLink(
+                        part.text, part.address, color,
+                        showIcon = showGlobe && (!part.text.equals("MIT License", ignoreCase = true) || part.address !in licenseSourceAddresses),
+                    ) {
                         openSourceWithFeedback(context, part.address)
                     }
                     part.bold -> withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(part.text) }

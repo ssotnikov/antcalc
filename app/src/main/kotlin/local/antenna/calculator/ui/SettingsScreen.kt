@@ -57,6 +57,7 @@ internal fun SettingsScreen(
                 .padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = bottomGap),
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+                Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
                 ChoicePicker(stringResource(R.string.language), AppLanguage.entries, settings.language, {
                     stringResource(if (it == AppLanguage.RUSSIAN) R.string.language_russian else R.string.language_english)
                 }, { onEvent(CalculatorEvent.Settings(settings.copy(language = it))) }, "language")
@@ -81,18 +82,23 @@ internal fun SettingsScreen(
                                     contentColor = Color.White,
                                 ),
                             ) {
-                                WebLinkLabel { Text(stringResource(R.string.support_author)) }
+                                Icon(painterResource(R.drawable.ic_author_support), null, Modifier.size(24.dp))
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.support_author))
                             }
                         }
                     }
-                    WebLinkButton(onClick = { openSourceWithFeedback(context, PRIVACY_POLICY_URL) }) {
-                        Text(stringResource(R.string.privacy_policy))
-                    }
                 }
-                Text(stringResource(R.string.app_version, BuildConfig.VERSION_NAME), style = MaterialTheme.typography.labelLarge)
+                WebLinkButton(onClick = { openSourceWithFeedback(context, PRIVACY_POLICY_URL) }, showGlobe = false) {
+                    Text(stringResource(R.string.privacy_policy))
+                }
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Nec2EngineBadge { openSourceWithFeedback(context, NEC2_URL) }
-                    TextButton(onClick = onOpenNecLicense, modifier = Modifier.testTag("settings-opennec-license")) {
+                    TextButton(
+                        onClick = onOpenNecLicense,
+                        modifier = Modifier.testTag("settings-opennec-license"),
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                    ) {
                         Text(stringResource(R.string.opennec_license_link, OpenNec.VERSION))
                     }
                 }
@@ -103,19 +109,23 @@ internal fun SettingsScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(stringResource(R.string.license_mit), style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    WebLinkButton(onClick = { openSourceWithFeedback(context, website) }, modifier = Modifier.testTag("source-author")) {
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, website) }, modifier = Modifier.testTag("source-author"), showGlobe = false) {
                         Text(stringResource(R.string.author_website_label))
                     }
-                    WebLinkButton(onClick = { openSourceWithFeedback(context, BUG_REPORT_URL) }, modifier = Modifier.testTag("report-bug")) {
+                    WebLinkButton(onClick = { openSourceWithFeedback(context, BUG_REPORT_URL) }, modifier = Modifier.testTag("report-bug"), showGlobe = false) {
                         Text(stringResource(R.string.report_bug))
                     }
                 }
             }
             Spacer(Modifier.weight(1f))
-            Row(
+            Image(
+                painter = painterResource(bannerImage),
+                contentDescription = stringResource(R.string.lizaalert_banner_description),
                 modifier = Modifier
                     .padding(top = 8.dp)
                     .fillMaxWidth()
+                    .aspectRatio(1280f / 427f)
+                    .clip(MaterialTheme.shapes.small)
                     .pointerHoverIcon(PointerIcon.Hand)
                     .pointerInput(Unit) {
                         // A horizontal drag across the image must cancel the link press.
@@ -123,17 +133,7 @@ internal fun SettingsScreen(
                     }
                     .clickable(role = Role.Button) { openSourceWithFeedback(context, LIZAALERT_URL) }
                     .testTag("lizaalert-banner"),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                WebGlobeIcon(tint = MaterialTheme.colorScheme.primary)
-                Image(
-                    painter = painterResource(bannerImage),
-                    contentDescription = stringResource(R.string.lizaalert_banner_description),
-                    modifier = Modifier.weight(1f).aspectRatio(1280f / 427f)
-                        .clip(MaterialTheme.shapes.small),
-                )
-            }
+            )
         }
     }
 }
@@ -149,13 +149,11 @@ private fun Nec2EngineBadge(onClick: () -> Unit) {
             .padding(vertical = 10.dp),
         contentAlignment = Alignment.Center,
     ) {
-        WebLinkLabel(tint = MaterialTheme.colorScheme.primary) {
-            Row(Modifier.clip(RoundedCornerShape(4.dp)).clearAndSetSemantics {}) {
-                Text("NEC2", Modifier.background(Color(0xFF4F5356)).padding(horizontal = 8.dp, vertical = 4.dp),
-                    color = Color.White, style = MaterialTheme.typography.labelLarge)
-                Text("Engine", Modifier.background(Color(0xFFE86C29)).padding(horizontal = 8.dp, vertical = 4.dp),
-                    color = Color(0xFF1A100B), style = MaterialTheme.typography.labelLarge)
-            }
+        Row(Modifier.clip(RoundedCornerShape(4.dp)).clearAndSetSemantics {}) {
+            Text("NEC2", Modifier.background(Color(0xFF4F5356)).padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color.White, style = MaterialTheme.typography.labelLarge)
+            Text("Engine", Modifier.background(Color(0xFFE86C29)).padding(horizontal = 8.dp, vertical = 4.dp),
+                color = Color(0xFF1A100B), style = MaterialTheme.typography.labelLarge)
         }
     }
 }
