@@ -136,6 +136,19 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         diagramElement.performScrollTo().assertIsDisplayed()
     }
 
+    @Test fun mountedScalingOnlyAllowsProportionalTransfer() {
+        compose.setContent {
+            MaterialTheme { YagiScalingScreen(initial = null, onSave = null, onCopied = {}) }
+        }
+        compose.onNodeWithTag("ys-example").performClick()
+        compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-geometry-MOUNTED").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-mode-BOTH").performScrollTo().assertIsNotEnabled()
+        compose.onNodeWithTag("ys-dimensions-table").performScrollTo().assertExists()
+        compose.onNodeWithTag("opennec-blocked").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("opennec-expand").assertDoesNotExist()
+    }
+
     @Test fun scalingDiagramSelectsAnElementFromEitherGeometry() {
         compose.setContent {
             MaterialTheme { YagiScalingScreen(initial = null, onSave = null, onCopied = {}) }
@@ -171,8 +184,10 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         edit("ys-target", "50,1")
         edit("ys-diameter", "10")
         edit("ys-length-2", "900")
+        compose.onNodeWithTag("ys-element-diameters-2").performScrollTo().performClick()
         edit("ys-target-d-2", "12")
         compose.onNodeWithTag("ys-diagram-selection-2").performScrollTo().performClick()
+        compose.onNodeWithTag("ys-comparison").performScrollTo().performClick()
         for (line in listOf("Длина после переноса частоты", "Поправка на диаметр", "Полное изменение длины",
             "2656,5", "2588,6", "+67,9", "+1756,5")) {
             compose.onNodeWithText(line).performScrollTo().assertIsDisplayed()
@@ -200,8 +215,9 @@ class YagiCalculatorTest : CalculatorUiFixture() {
         compose.onNodeWithText("Проверка в NEC").assertExists()
         compose.onNodeWithTag("opennec-run").performScrollTo().performClick()
         compose.waitUntil(15_000) { compose.onAllNodesWithTag("opennec-result").fetchSemanticsNodes().isNotEmpty() }
-        compose.onNodeWithText("Опорная геометрия").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("После переноса частоты, до поправки на диаметр").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Пересчитанная геометрия").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("opennec-pattern-details").performScrollTo().performClick()
         compose.onNodeWithTag("opennec-smith-plot").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Желтый пунктир", substring = true).performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("opennec-low").performScrollTo().performTextReplacement("174")

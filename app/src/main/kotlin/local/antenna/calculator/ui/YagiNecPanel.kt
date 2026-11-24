@@ -65,16 +65,19 @@ internal fun YagiNecPanel(
     targetHz: Long,
     blocked: Int?,
     appliedLengths: List<Double>?,
+    combinedMode: Boolean,
     sweep: suspend (List<Element>, List<Int>, List<Long>) -> List<OpenNec.Point>? =
         { geometry, segments, frequencies -> OpenNec.sweep(geometry, segments, 1, frequencies) },
     onSegmentation: ((ArrayList<String>) -> Unit)? = null,
     onApply: (List<Element>) -> Unit,
 ) {
     if (blocked != null) {
-        HelpText(blocked)
+        Column(Modifier.testTag("opennec-blocked")) { HelpText(blocked) }
         return
     }
     val context = LocalContext.current
+    val referenceTitle = if (combinedMode) R.string.opennec_frequency_reference else R.string.opennec_reference
+    val referenceLegend = if (combinedMode) R.string.opennec_frequency_legend else R.string.opennec_plot_legend
     val scope = rememberCoroutineScope()
     var expanded by rememberSaveable { mutableStateOf(false) }
     var lower by rememberSaveable(targetHz) { mutableStateOf(mhzInput(maxOf(100_000L, targetHz - targetHz / 100))) }
@@ -158,7 +161,7 @@ internal fun YagiNecPanel(
                 }
                 if (meshExpanded) {
                     if (reference != null && referenceSegments != null) {
-                        Text(stringResource(R.string.opennec_reference), style = MaterialTheme.typography.titleSmall)
+                        Text(stringResource(referenceTitle), style = MaterialTheme.typography.titleSmall)
                         SegmentTable(reference, referenceSegments, referencePlan.wavelength, 1)
                         if (onSegmentation != null) TextButton({
                             onSegmentation(segmentationSeed(reference, lowHz, highHz, 1))
@@ -303,24 +306,28 @@ internal fun YagiNecPanel(
                 val refPoint = base?.get(closest)
                 Text(stringResource(R.string.opennec_at_frequency, matchingNumber(context, selected.frequencyHz / 1e6, 6)),
                     Modifier.testTag("opennec-result"))
-                if (base != null) NecMetrics(R.string.opennec_reference, base, closest, threshold)
+                HelpText(R.string.ys_experimental_result)
+                if (base != null) NecMetrics(referenceTitle, base, closest, threshold)
                 NecMetrics(R.string.opennec_adjusted, adjusted, closest, threshold)
-                NecPlots(selected, refPoint, adjusted, base, threshold)
+                NecPlots(selected, refPoint, adjusted, base, threshold, referenceLegend)
             }
             optimization?.let { outcome ->
                 val base = outcome.initial.points
                 val best = outcome.best.points
                 val selected = best.indices.minBy { abs(best[it].frequencyHz - targetHz) }
+                HelpText(R.string.ys_experimental_result)
                 Text(stringResource(if (outcome.reachedGoal) R.string.opennec_goal_reached else R.string.opennec_goal_missed,
                     matchingNumber(context, outcome.best.worstSwr, 3)), Modifier.testTag("opennec-optimization"))
                 NecMetrics(R.string.opennec_adjusted, base, selected, outcome.goal)
                 NecMetrics(R.string.opennec_proposed, best, selected, outcome.goal)
                 outcome.best.elements.forEachIndexed { index, element ->
-                    Text(stringResource(R.string.opennec_length_proposal, scalingElementLabel(index),
-                        matchingNumber(context, outcome.initial.elements[index].length * 1000, 3),
-                        matchingNumber(context, element.length * 1000, 3)))
+                    val previous = outcome.initial.elements[index].length
+                    if (element.length != previous) {
+                        Text(stringResource(R.string.opennec_length_proposal, scalingElementLabel(index),
+                            matchingNumber(context, previous * 1000, 2),
+                            matchingNumber(context, element.length * 1000, 2)))
+                    }
                 }
-                NecPlots(best[selected], base[selected], best, base, outcome.goal, R.string.opennec_optimization_legend)
                 if (appliedLengths == outcome.best.elements.map { it.length }) {
                     Text(stringResource(R.string.opennec_applied, OpenNec.VERSION), color = MaterialTheme.colorScheme.primary)
                 } else {
@@ -329,6 +336,7 @@ internal fun YagiNecPanel(
                         Text(stringResource(R.string.opennec_apply))
                     }
                 }
+                NecPlots(best[selected], base[selected], best, base, outcome.goal, R.string.opennec_optimization_legend)
             }
         }
     }
@@ -354,8 +362,10 @@ private fun NecMetrics(title: Int, points: List<OpenNec.Point>, selected: Int, l
         SelectableText(stringResource(R.string.opennec_metrics, number(point.swr),
             number(point.forwardDbi), number(point.frontToBackDb)))
         val worst = worstNecSwr(points)
-        SelectableText(stringResource(R.string.opennec_worst_swr, number(worst.swr),
-            matchingNumber(context, worst.frequencyHz / 1e6, 6)))
+        val stepKHz = (points.last().frequencyHz - points.first().frequencyHz) / (1000.0 * points.lastIndex)
+        SelectableText(stringResource(R.string.opennec_worst_grid, number(worst.swr),
+            matchingNumber(context, worst.frequencyHz / 1e6, 6), points.size,
+            matchingNumber(context, stepKHz, 3)))
         val bands = buildList {
             points.forEachIndexed { index, current ->
                 if (current.swr <= limit) {
@@ -383,39 +393,43 @@ private fun NecPlots(
     legend: Int = R.string.opennec_plot_legend,
 ) {
     val colors = MaterialTheme.colorScheme
-    val swrTitle = stringResource(R.string.opennec_swr_plot)
-    val azimuthTitle = stringResource(R.string.opennec_azimuth_plot)
-    Text(swrTitle, style = MaterialTheme.typography.titleSmall)
-    Canvas(Modifier.fillMaxWidth().height(135.dp).testTag("opennec-swr-plot")
-        .semantics { contentDescription = swrTitle }) {
-        val ceiling = maxOf(limit, adjusted.maxOf { it.swr }, reference?.maxOf { it.swr } ?: 1.0, 1.1)
-        fun y(swr: Double) = size.height * (1.0 - (swr - 1.0) / (ceiling - 1.0)).toFloat()
-        fun line(points: List<OpenNec.Point>, color: Color) {
-            val dx = size.width / points.lastIndex
-            points.zipWithNext().forEachIndexed { i, (a, b) ->
-                drawLine(color, Offset(i * dx, y(a.swr)), Offset((i + 1) * dx, y(b.swr)), 2.dp.toPx())
+    ScalingDetails(R.string.opennec_swr_plot, Modifier.testTag("opennec-swr-details")) {
+        val swrTitle = stringResource(R.string.opennec_swr_plot)
+        Text(swrTitle, style = MaterialTheme.typography.titleSmall)
+        Canvas(Modifier.fillMaxWidth().height(135.dp).testTag("opennec-swr-plot")
+            .semantics { contentDescription = swrTitle }) {
+            val ceiling = maxOf(limit, adjusted.maxOf { it.swr }, reference?.maxOf { it.swr } ?: 1.0, 1.1)
+            fun y(swr: Double) = size.height * (1.0 - (swr - 1.0) / (ceiling - 1.0)).toFloat()
+            fun line(points: List<OpenNec.Point>, color: Color) {
+                val dx = size.width / points.lastIndex
+                points.zipWithNext().forEachIndexed { i, (a, b) ->
+                    drawLine(color, Offset(i * dx, y(a.swr)), Offset((i + 1) * dx, y(b.swr)), 2.dp.toPx())
+                }
             }
+            drawLine(colors.outline, Offset(0f, y(limit)), Offset(size.width, y(limit)))
+            reference?.let { line(it, colors.onSurfaceVariant) }
+            line(adjusted, colors.primary)
         }
-        drawLine(colors.outline, Offset(0f, y(limit)), Offset(size.width, y(limit)))
-        reference?.let { line(it, colors.onSurfaceVariant) }
-        line(adjusted, colors.primary)
     }
-    NecSmithPlot(selected.frequencyHz, adjusted, reference, limit, legend)
-    Text(azimuthTitle, style = MaterialTheme.typography.titleSmall)
-    Canvas(Modifier.fillMaxWidth().height(170.dp).semantics { contentDescription = azimuthTitle }) {
-        val radius = size.minDimension * .46f
-        val peak = maxOf(selected.azimuthDbi.max(), referencePoint?.azimuthDbi?.max() ?: -1000.0)
-        drawCircle(colors.outline, radius, style = androidx.compose.ui.graphics.drawscope.Stroke(1.dp.toPx()))
-        drawLine(colors.outline, Offset(center.x - radius, center.y), Offset(center.x + radius, center.y))
-        fun line(point: OpenNec.Point, color: Color) {
-            point.azimuthDbi.mapIndexed { index, gain ->
-                val angle = index * OpenNec.AZIMUTH_STEP * PI / 180.0
-                val r = radius * ((gain - peak + 40.0) / 40.0).coerceIn(0.0, 1.0)
-                center + Offset((r * cos(angle)).toFloat(), (-r * sin(angle)).toFloat())
-            }.zipWithNext().forEach { (a, b) -> drawLine(color, a, b, 2.dp.toPx()) }
+    ScalingDetails(R.string.opennec_pattern_details, Modifier.testTag("opennec-pattern-details")) {
+        NecSmithPlot(selected.frequencyHz, adjusted, reference, limit, legend)
+        val azimuthTitle = stringResource(R.string.opennec_azimuth_plot)
+        Text(azimuthTitle, style = MaterialTheme.typography.titleSmall)
+        Canvas(Modifier.fillMaxWidth().height(170.dp).semantics { contentDescription = azimuthTitle }) {
+            val radius = size.minDimension * .46f
+            val peak = maxOf(selected.azimuthDbi.max(), referencePoint?.azimuthDbi?.max() ?: -1000.0)
+            drawCircle(colors.outline, radius, style = androidx.compose.ui.graphics.drawscope.Stroke(1.dp.toPx()))
+            drawLine(colors.outline, Offset(center.x - radius, center.y), Offset(center.x + radius, center.y))
+            fun line(point: OpenNec.Point, color: Color) {
+                point.azimuthDbi.mapIndexed { index, gain ->
+                    val angle = index * OpenNec.AZIMUTH_STEP * PI / 180.0
+                    val r = radius * ((gain - peak + 40.0) / 40.0).coerceIn(0.0, 1.0)
+                    center + Offset((r * cos(angle)).toFloat(), (-r * sin(angle)).toFloat())
+                }.zipWithNext().forEach { (a, b) -> drawLine(color, a, b, 2.dp.toPx()) }
+            }
+            referencePoint?.let { line(it, colors.onSurfaceVariant) }
+            line(selected, colors.primary)
         }
-        referencePoint?.let { line(it, colors.onSurfaceVariant) }
-        line(selected, colors.primary)
     }
 }
 
@@ -450,5 +464,5 @@ private fun NecSmithPlot(
     val boundaryText = if (limit == 1.0) stringResource(R.string.opennec_smith_center_only)
         else stringResource(R.string.opennec_smith_boundary, matchingNumber(context, limit, 3))
     Text(boundaryText, style = MaterialTheme.typography.bodySmall, color = Color(smithPalette().load))
-    HelpText(R.string.opennec_smith_grid)
+    ScalingDetails(R.string.opennec_smith_grid_label) { HelpText(R.string.opennec_smith_grid) }
 }

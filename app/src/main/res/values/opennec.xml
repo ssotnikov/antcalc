@@ -7,7 +7,7 @@
     <string name="opennec_check">Check in NEC</string>
     <string name="opennec_conditions">OpenNEC %1$s. Free space, perfectly conducting round elements, a voltage source at the driven element center and 50 Ω reference impedance. Forward gain is along the boom toward the directors. F/B compares 0° and 180°.</string>
     <string name="opennec_mounted">NEC requires straight-element model dimensions. Mounted dimensions support proportional scaling.</string>
-    <string name="opennec_split">Dimension calculations are available. NEC checks and optimization for a physical feed gap require validation of the feed model. The result depends on the feed assembly and reference plane.</string>
+    <string name="opennec_split">The feed model for a physically split driven element still needs validation. Dimension scaling is available.</string>
     <string name="opennec_unavailable">The OpenNEC engine is unavailable on this device.</string>
     <string name="opennec_low">From, MHz</string>
     <string name="opennec_high">To, MHz</string>
@@ -22,7 +22,7 @@
     <string name="opennec_inputs_changed">Inputs changed. Run the simulation for the new inputs.</string>
     <string name="opennec_failed">NEC could not solve this geometry.</string>
     <string name="opennec_at_frequency">Metrics at %1$s MHz</string>
-    <string name="opennec_reference">Reference geometry</string>
+    <string name="opennec_reference">Original geometry</string>
     <string name="opennec_adjusted">Scaled geometry</string>
     <string name="opennec_impedance">Impedance · R %1$s Ω · X %2$s Ω</string>
     <string name="opennec_metrics">SWR %1$s · gain %2$s dBi · F/B %3$s dB</string>
@@ -30,15 +30,15 @@
     <string name="opennec_no_band">No sampled points in the band meet the SWR threshold.</string>
     <string name="opennec_swr_plot">SWR by frequency</string>
     <string name="opennec_azimuth_plot">Azimuth pattern in the element plane · 40 dB below the common peak</string>
-    <string name="opennec_plot_legend">Gray line shows the reference geometry. The accent line shows the scaled geometry.</string>
+    <string name="opennec_plot_legend">Gray: original geometry. Color: after diameter correction.</string>
     <string name="opennec_optimize">Optimize element lengths for SWR</string>
     <string name="opennec_proposed">Proposed geometry</string>
     <string name="opennec_goal_reached">Goal reached on the grid. Maximum SWR %1$s.</string>
     <string name="opennec_goal_missed">Best tested candidate. Goal missed, maximum SWR %1$s.</string>
     <string name="opennec_length_proposal">%1$s · %2$s → %3$s mm</string>
     <string name="opennec_optimization_legend">Gray line shows the calculated geometry. The accent line shows the NEC proposal.</string>
-    <string name="opennec_apply">Apply lengths</string>
-    <string name="opennec_applied">Lengths applied from OpenNEC %1$s</string>
+    <string name="opennec_apply">Use in calculated variant</string>
+    <string name="opennec_applied">Calculated variant · lengths from OpenNEC %1$s</string>
     <string name="opennec_applied_length">Applied length</string>
     <string name="opennec_applied_delta">Change from NEC</string>
     <string name="opennec_analytic_length">Calculated length</string>
@@ -87,4 +87,9 @@
     <string name="opennec_band_source">OpenNEC 2.4.2 source code</string>
     <string name="opennec_examples_scope">Both examples apply to the models shown. NEC checks and optimization for a real antenna with a physical gap require a validated feed model.</string>
     <string name="opennec_band_delta_range">Range of worst SWR changes · %1$s … %2$s</string>
+    <string name="opennec_frequency_reference">After frequency scaling, before diameter correction</string>
+    <string name="opennec_frequency_legend">Gray: after frequency scaling, before diameter correction. Color: after correction.</string>
+    <string name="opennec_worst_grid">SWR at 50 Ω · maximum %1$s at %2$s MHz · %3$d samples, step %4$s kHz</string>
+    <string name="opennec_pattern_details">Smith chart and radiation pattern</string>
+    <string name="opennec_smith_grid_label">How to read the Smith chart grid</string>
 </resources>

@@ -48,16 +48,18 @@ class YagiNecGuideCaptureTest : CalculatorUiFixture() {
         edit("ys-target", "50.1")
         edit("ys-diameter", "10")
         edit("ys-length-2", "900")
+        click("ys-element-diameters-2")
         edit("ys-target-d-2", "12")
         click("opennec-expand")
         edit("opennec-limit", "1.01")
         closeSoftKeyboard()
         click("opennec-run")
         val suffix = "${language.name.lowercase()}-${theme.name.lowercase()}"
-        save("opennec-result", "nec-comparison-$suffix.png")
+        save("opennec-result", "nec-comparison-$suffix.png", "opennec-result")
+        click("opennec-pattern-details")
         save("opennec-result", "nec-smith-$suffix.png", "opennec-smith-plot")
         click("opennec-optimize")
-        save("opennec-optimization", "nec-optimization-$suffix.png")
+        save("opennec-optimization", "nec-optimization-$suffix.png", "opennec-optimization")
     }
 
     private fun save(tag: String, fileName: String, plotTag: String = "opennec-swr-plot") {

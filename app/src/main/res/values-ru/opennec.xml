@@ -7,7 +7,7 @@
     <string name="opennec_check">Проверить в NEC</string>
     <string name="opennec_conditions">OpenNEC %1$s. Свободное пространство, идеально проводящие круглые элементы, источник напряжения в центре вибратора, Z₀ = 50 Ом. Усиление показано в направлении директоров. F/B сравнивает направления 0° и 180°.</string>
     <string name="opennec_mounted">Для NEC нужны размеры прямых элементов из модели. Монтажные размеры доступны для пропорционального переноса.</string>
-    <string name="opennec_split">Расчет размеров доступен. Проверка NEC и подбор для физического зазора требуют подтверждения модели питания. Результат зависит от узла питания и плоскости отсчета.</string>
+    <string name="opennec_split">Модель питания для вибратора с физическим зазором еще не проверена. Расчет размеров доступен.</string>
     <string name="opennec_unavailable">Ядро OpenNEC недоступно на этом устройстве.</string>
     <string name="opennec_low">От, МГц</string>
     <string name="opennec_high">До, МГц</string>
@@ -22,7 +22,7 @@
     <string name="opennec_inputs_changed">Параметры изменились. Запустите расчет для новых данных.</string>
     <string name="opennec_failed">NEC не смог рассчитать эту геометрию.</string>
     <string name="opennec_at_frequency">Показатели на %1$s МГц</string>
-    <string name="opennec_reference">Опорная геометрия</string>
+    <string name="opennec_reference">Исходная геометрия</string>
     <string name="opennec_adjusted">Пересчитанная геометрия</string>
     <string name="opennec_impedance">Импеданс · R %1$s Ом · X %2$s Ом</string>
     <string name="opennec_metrics">КСВ %1$s · усиление %2$s dBi · F/B %3$s дБ</string>
@@ -30,15 +30,15 @@
     <string name="opennec_no_band">В заданной полосе нет точек ниже или на уровне порога КСВ.</string>
     <string name="opennec_swr_plot">КСВ по частоте</string>
     <string name="opennec_azimuth_plot">Диаграмма в плоскости элементов · 40 дБ от общего максимума</string>
-    <string name="opennec_plot_legend">Серая линия — опорная геометрия. Цветная линия — пересчитанная геометрия.</string>
+    <string name="opennec_plot_legend">Серая линия — исходная геометрия. Цветная линия — после поправки на диаметр.</string>
     <string name="opennec_optimize">Подобрать длины по КСВ</string>
     <string name="opennec_proposed">Предложенная геометрия</string>
     <string name="opennec_goal_reached">Цель достигнута на сетке. Максимальный КСВ %1$s.</string>
     <string name="opennec_goal_missed">Лучший проверенный вариант. Цель не достигнута, максимальный КСВ %1$s.</string>
     <string name="opennec_length_proposal">%1$s · %2$s → %3$s мм</string>
     <string name="opennec_optimization_legend">Серая линия — расчет по формуле. Цветная линия — предложение NEC.</string>
-    <string name="opennec_apply">Применить длины</string>
-    <string name="opennec_applied">Применены длины по OpenNEC %1$s</string>
+    <string name="opennec_apply">Использовать в расчетном варианте</string>
+    <string name="opennec_applied">Расчетный вариант · длины по OpenNEC %1$s</string>
     <string name="opennec_applied_length">Примененная длина</string>
     <string name="opennec_applied_delta">Изменение по NEC</string>
     <string name="opennec_analytic_length">Длина по формуле</string>
@@ -87,4 +87,9 @@
     <string name="opennec_band_source">Исходный код OpenNEC 2.4.2</string>
     <string name="opennec_examples_scope">Оба примера относятся к указанным моделям. Для проверки NEC и подбора на реальной антенне с физическим зазором требуется подтверждение модели питания.</string>
     <string name="opennec_band_delta_range">Диапазон изменения худшего КСВ · %1$s … %2$s</string>
+    <string name="opennec_frequency_reference">После переноса частоты, до поправки на диаметр</string>
+    <string name="opennec_frequency_legend">Серая линия — после переноса частоты, до поправки на диаметр. Цветная линия — после поправки.</string>
+    <string name="opennec_worst_grid">КСВ к 50 Ом · максимум %1$s при %2$s МГц · сетка из %3$d частот, шаг %4$s кГц</string>
+    <string name="opennec_pattern_details">Диаграмма Смита и направленность</string>
+    <string name="opennec_smith_grid_label">Как читать сетку диаграммы Смита</string>
 </resources>

@@ -4,6 +4,9 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,19 +17,21 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import local.antenna.calculator.R
 import local.antenna.calculator.core.journal.CalculationSnapshot
@@ -76,7 +81,6 @@ internal fun YagiScalingScreen(
         draft.split, adjustmentGeometry) {
         mutableIntStateOf(if (draft == loaded) initial?.appliedNecVersion() ?: OpenNec.VERSION_CODE else OpenNec.VERSION_CODE)
     }
-    val geometryIncomplete = draft.rows.any { it.position.isBlank() || it.length.isBlank() }
     val diameterMode = draft.mode != Mode.FREQUENCY
     val unitLabel = stringResource(draft.unit.labelResource())
     val before = if (result == null) emptyList() else draft.rows.mapIndexed { index, row -> requireNotNull(draft.element(row, index)) }
@@ -95,6 +99,18 @@ internal fun YagiScalingScreen(
             else -> if (value > 0) "+$formatted" else formatted
         }
     }
+    val resultNumber: (Double) -> String = {
+        matchingNumber(context, it * 1e9 / draft.unit.nanometersPerUnit, lengthPlaces)
+    }
+    val diameterNumber: (Double) -> String = {
+        matchingNumber(context, it * 1e9 / draft.unit.nanometersPerUnit, lengthPlaces + 1)
+    }
+    val detailDelta: (Double) -> String = { delta ->
+        val value = resultNumber(delta)
+        if (delta != 0.0 && (value == "0" || value == "-0")) {
+            (if (delta > 0) "+" else "−") + "< " + resultNumber(draft.unit.nanometersPerUnit / 1e9 / Math.pow(10.0, lengthPlaces.toDouble()))
+        } else if (delta > 0) "+$value" else value
+    }
     val source = stringResource(if (draft.mode == Mode.FREQUENCY) R.string.ys_frequency_source else R.string.ys_formula_source)
 
     Column(Modifier.widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberPageScrollState())
@@ -103,99 +119,134 @@ internal fun YagiScalingScreen(
             HelpText(R.string.ys_invalid_saved)
             return@Column
         }
-        ScalingIllustration(draft)
+        val mounted = draft.geometry == Geometry.MOUNTED
+        Column(Modifier.selectableGroup()) {
+            Text(stringResource(R.string.ys_geometry), style = MaterialTheme.typography.titleMedium)
+            Geometry.entries.forEach { geometry ->
+                val active = draft.geometry == geometry
+                Row(
+                    Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                        .testTag("ys-geometry-$geometry")
+                        .selectable(active, role = Role.RadioButton) {
+                            draft = draft.copy(geometry = geometry,
+                                mode = if (geometry == Geometry.MOUNTED) Mode.FREQUENCY else draft.mode)
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    RadioButton(selected = active, onClick = null)
+                    Text(stringResource(geometry.scalingLabel()))
+                }
+            }
+        }
+        HelpText(if (mounted) R.string.ys_mounted_error else R.string.ys_model_hint)
+        TextButton({
+            draft = YagiScalingDraft.example().copy(mode = draft.mode, target = "435", targetDiameter = "8").inUnit(draft.unit)
+        }, Modifier.testTag("ys-example")) { Text(stringResource(R.string.ys_example)) }
+        TextButton({
+            draft = YagiScalingDraft.r3udkExample(draft.unit)
+        }, Modifier.testTag("ys-example-r3udk")) { Text(stringResource(R.string.ys_example_r3udk)) }
+        if (mounted) HelpText(R.string.ys_example_r3udk_scope)
+
         Text(stringResource(R.string.ys_mode), style = MaterialTheme.typography.titleMedium)
         Mode.entries.forEach { mode ->
             val choose = { draft = draft.copy(mode = mode) }
             val modifier = Modifier.fillMaxWidth().testTag("ys-mode-${mode.name}")
             if (draft.mode == mode) FilledTonalButton(choose, modifier) {
                 Text(stringResource(mode.scalingLabel()), Modifier.fillMaxWidth())
-            } else OutlinedButton(choose, modifier) {
+            } else OutlinedButton(choose, modifier, enabled = !mounted || mode == Mode.FREQUENCY) {
                 Text(stringResource(mode.scalingLabel()), Modifier.fillMaxWidth())
             }
         }
-        Surface(
-            shape = MaterialTheme.shapes.medium,
-            color = MaterialTheme.colorScheme.surfaceContainerLow,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ) {
-            Column(
-                Modifier.fillMaxWidth().padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Text(
-                    stringResource(when (draft.mode) {
-                        Mode.FREQUENCY -> R.string.ys_effect_frequency
-                        Mode.DIAMETER -> R.string.ys_effect_diameter
-                        Mode.BOTH -> R.string.ys_effect_both
-                    }),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                if (result == null) HelpText(
-                    if (draft.geometry == Geometry.MOUNTED && diameterMode) R.string.ys_mounted_error
-                    else R.string.ys_pending,
-                )
-            }
-        }
+        HelpText(when (draft.mode) {
+            Mode.FREQUENCY -> R.string.ys_effect_frequency
+            Mode.DIAMETER -> R.string.ys_effect_diameter
+            Mode.BOTH -> R.string.ys_effect_both
+        })
         Text(stringResource(R.string.ys_source_parameters), style = MaterialTheme.typography.titleMedium)
-        ScalingField(draft.source, if (draft.mode == Mode.DIAMETER) R.string.ys_working_hz else R.string.ys_source_hz,
-            "ys-source", Modifier.fillMaxWidth(), invalid = draft.source.isNotBlank() && draft.sourceHz == null) {
-            draft = draft.copy(source = it)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ScalingField(draft.source, if (draft.mode == Mode.DIAMETER)
+                R.string.ys_working_hz else R.string.ys_source_hz, "ys-source",
+                Modifier.weight(1f), invalid = draft.sourceHz == null, errorText = R.string.ys_frequency_invalid) {
+                draft = draft.copy(source = it)
+            }
+            if (draft.mode != Mode.DIAMETER) {
+                ScalingField(draft.target, R.string.ys_target_hz, "ys-target", Modifier.weight(1f),
+                    invalid = draft.targetHz == null, errorText = R.string.ys_frequency_invalid) {
+                    draft = draft.copy(target = it)
+                }
+            }
         }
         ChoicePicker(stringResource(R.string.ys_unit), LengthUnit.entries, draft.unit,
             { stringResource(it.labelResource()) }, { draft = draft.inUnit(it) }, "ys-unit")
-        ScalingField(draft.diameter, R.string.ys_common_d, "ys-diameter", Modifier.fillMaxWidth(), unitLabel) {
-            draft = draft.copy(diameter = it)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ScalingField(draft.diameter, R.string.ys_common_d, "ys-diameter", Modifier.weight(1f), unitLabel,
+                invalid = draft.diameter.isNotBlank() && scalingDecimal(draft.diameter)?.let { it > 0 } != true,
+                errorText = R.string.ys_positive_invalid) { draft = draft.copy(diameter = it) }
+            if (diameterMode) {
+                ScalingField(draft.targetDiameter, R.string.ys_common_target_d, "ys-target-diameter",
+                    Modifier.weight(1f), unitLabel,
+                    invalid = draft.targetDiameter.isNotBlank() && scalingDecimal(draft.targetDiameter)?.let { it > 0 } != true,
+                    errorText = R.string.ys_positive_invalid) { draft = draft.copy(targetDiameter = it) }
+            }
         }
         HelpText(R.string.ys_default_d_help)
-        Text(stringResource(R.string.ys_target_parameters), style = MaterialTheme.typography.titleMedium)
-        if (draft.mode != Mode.DIAMETER) ScalingField(draft.target, R.string.ys_target_hz, "ys-target",
-            Modifier.fillMaxWidth(), invalid = draft.target.isNotBlank() && draft.targetHz == null) {
-            draft = draft.copy(target = it)
-        }
-        if (diameterMode) ScalingField(draft.targetDiameter, R.string.ys_common_target_d, "ys-target-diameter",
-            Modifier.fillMaxWidth(), unitLabel) { draft = draft.copy(targetDiameter = it) }
         Text(stringResource(R.string.ys_elements, draft.rows.size), style = MaterialTheme.typography.titleMedium)
-        if (geometryIncomplete) HelpText(R.string.ys_geometry_required)
-        ChoicePicker(stringResource(R.string.ys_geometry), Geometry.entries, draft.geometry,
-            { stringResource(it.scalingLabel()) }, { draft = draft.copy(geometry = it) }, "ys-geometry")
-        ScalingField(draft.gap, R.string.ys_gap, "ys-gap", Modifier.fillMaxWidth(), unitLabel) { draft = draft.copy(gap = it) }
+        val gap = scalingDecimal(draft.gap)
+        val drivenSpan = scalingDecimal(draft.rows[1].length)
+        val invalidGap = draft.gap.isNotBlank() &&
+            (gap == null || gap < 0 || drivenSpan != null && gap >= drivenSpan)
+        ScalingField(draft.gap, R.string.ys_gap, "ys-gap", Modifier.fillMaxWidth(), unitLabel,
+            invalid = invalidGap, errorText = R.string.ys_gap_invalid) { draft = draft.copy(gap = it) }
         HelpText(R.string.ys_gap_help)
         draft.rows.forEachIndexed { index, row ->
-            fun edit(next: ScalingRow) {
-                draft = draft.copy(rows = draft.rows.toMutableList().also { it[index] = next })
-            }
-            OutlinedCard(Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text(scalingElementLabel(index), style = MaterialTheme.typography.titleMedium)
-                        if (index > 1) TextButton({
-                            draft = draft.copy(rows = draft.rows.filterIndexed { i, _ -> i != index })
-                        }) { Text(stringResource(R.string.ys_remove)) }
-                    }
-                    if (index == 0) {
-                        Text(
-                            stringResource(R.string.ys_reflector_origin, unitLabel),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        ScalingField(row.length, R.string.ys_length, "ys-length-$index",
-                            Modifier.fillMaxWidth(), unitLabel) { edit(row.copy(length = it)) }
-                    } else {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            ScalingField(row.position, R.string.ys_position, "ys-position-$index",
-                                Modifier.weight(1f), unitLabel) { edit(row.copy(position = it)) }
-                            ScalingField(row.length, R.string.ys_length, "ys-length-$index",
-                                Modifier.weight(1f), unitLabel) { edit(row.copy(length = it)) }
+            key(index) {
+                val position = scalingDecimal(row.position)
+                val previous = draft.rows.getOrNull(index - 1)?.let { scalingDecimal(it.position) }
+                val length = scalingDecimal(row.length)
+                val diameter = scalingDecimal(row.diameter.ifBlank { draft.diameter })
+                val targetDiameter = scalingDecimal(row.target.ifBlank { draft.targetDiameter })
+                fun edit(next: ScalingRow) {
+                    draft = draft.copy(rows = draft.rows.toMutableList().also { it[index] = next })
+                }
+                OutlinedCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween) {
+                            Text(scalingElementLabel(index), style = MaterialTheme.typography.titleMedium)
+                            if (index > 1) TextButton({
+                                draft = draft.copy(rows = draft.rows.filterIndexed { i, _ -> i != index })
+                            }) { Text(stringResource(R.string.ys_remove)) }
                         }
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        ScalingField(row.diameter, R.string.ys_d, "ys-d-$index",
-                            Modifier.weight(1f), unitLabel) { edit(row.copy(diameter = it)) }
-                        if (diameterMode && !(index == 1 && draft.split)) {
-                            ScalingField(row.target, R.string.ys_target_d, "ys-target-d-$index",
-                                Modifier.weight(1f), unitLabel) { edit(row.copy(target = it)) }
+                        if (index == 0) {
+                            HelpText(R.string.ys_reflector_origin, unitLabel)
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            if (index != 0) {
+                                ScalingField(row.position, R.string.ys_position, "ys-position-$index",
+                                    Modifier.weight(1f), unitLabel,
+                                    invalid = position == null || position <= 0 || previous != null && position <= previous,
+                                    errorText = R.string.ys_position_invalid) { edit(row.copy(position = it)) }
+                            }
+                            ScalingField(row.length, R.string.ys_length, "ys-length-$index",
+                                Modifier.weight(1f), unitLabel, invalid = length == null || length <= 0,
+                                errorText = R.string.ys_positive_invalid) { edit(row.copy(length = it)) }
+                        }
+                        ScalingDetails(R.string.ys_element_diameters, Modifier.testTag("ys-element-diameters-$index"),
+                            initiallyExpanded = row.diameter.isNotBlank() || row.target.isNotBlank()) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                ScalingField(row.diameter, R.string.ys_d, "ys-d-$index",
+                                    Modifier.weight(1f), unitLabel,
+                                    invalid = row.diameter.isNotBlank() &&
+                                        (diameter == null || diameter <= 0 || length != null && diameter >= length),
+                                    errorText = R.string.ys_diameter_invalid) { edit(row.copy(diameter = it)) }
+                                if (diameterMode && !(index == 1 && draft.split)) {
+                                    ScalingField(row.target, R.string.ys_target_d, "ys-target-d-$index",
+                                        Modifier.weight(1f), unitLabel,
+                                        invalid = row.target.isNotBlank() && (targetDiameter == null || targetDiameter <= 0),
+                                        errorText = R.string.ys_positive_invalid) { edit(row.copy(target = it)) }
+                                }
+                            }
                         }
                     }
                 }
@@ -203,28 +254,14 @@ internal fun YagiScalingScreen(
         }
         OutlinedButton({ draft = draft.copy(rows = draft.rows + ScalingRow("", "")) },
             enabled = draft.rows.size < YagiScaling.MAX_ELEMENTS) { Text(stringResource(R.string.ys_add)) }
-        if (result == null && draft.hasMissingRequiredData()) {
-            Surface(
-                modifier = Modifier.fillMaxWidth().testTag("ys-missing-data"),
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.errorContainer,
-                contentColor = MaterialTheme.colorScheme.onErrorContainer,
-            ) {
-                Text(
-                    stringResource(R.string.ys_missing_data),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-        TextButton({ draft = YagiScalingDraft.example().copy(mode = draft.mode) }, Modifier.testTag("ys-example")) {
-            Text(stringResource(R.string.ys_example))
-        }
-        if (draft.mode == Mode.FREQUENCY) {
-            TextButton({ draft = YagiScalingDraft.r3udkExample(draft.unit) }, Modifier.testTag("ys-example-r3udk")) {
-                Text(stringResource(R.string.ys_example_r3udk))
-            }
-            HelpText(R.string.ys_example_r3udk_scope)
+        if (result == null) {
+            val missing = draft.hasMissingRequiredData()
+            SelectableText(
+                stringResource(if (missing) R.string.ys_missing_data else R.string.ys_pending),
+                modifier = Modifier.testTag("ys-missing-data"),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         if (result != null) {
             HorizontalDivider()
@@ -259,29 +296,56 @@ internal fun YagiScalingScreen(
             SelectionContainer {
                 Column(verticalArrangement = Arrangement.spacedBy(7.dp)) {
                     if (draft.mode != Mode.DIAMETER) Text(stringResource(R.string.ys_factor, factor), color = MaterialTheme.colorScheme.primary)
-                    gapText?.let { Text(it) }
                 }
+            }
+            if (diameterMode || appliedLengths != null) {
+                Text(stringResource(R.string.ys_experimental_result), color = MaterialTheme.colorScheme.tertiary)
             }
             val current = selected.coerceIn(result.elements.indices)
             val working = result.elements.mapIndexed { index, element ->
                 appliedLengths?.get(index)?.let { element.copy(length = it) } ?: element
             }
-            ScalingDrawing(before, working, current) { selected = it }
-            ChoicePicker(stringResource(R.string.ys_element), result.elements.indices.toList(), current,
-                { scalingElementLabel(it) }, { selected = it }, "ys-diagram-selection")
+            ScalingDrawing(before, working, draft.enteredGap, result.feedGap, current) { selected = it }
             SelectionContainer {
-                ScalingComparison(before[current], result.elements[current], frequencyLengths?.get(current),
-                    scaleNumber, lengthNumber, signedNumber, unitLabel, appliedLengths?.get(current))
-            }
-            ScalingDetails(R.string.ys_all) {
-                before.indices.forEach { index ->
-                    Text(scalingElementLabel(index), style = MaterialTheme.typography.titleSmall)
-                    ScalingComparison(before[index], result.elements[index], frequencyLengths?.get(index),
-                        scaleNumber, lengthNumber, signedNumber, unitLabel, appliedLengths?.get(index))
+                Column(Modifier.selectableGroup().testTag("ys-dimensions-table")) {
+                    ScalingTableRow(listOf(stringResource(R.string.ys_element),
+                        stringResource(R.string.ys_position_short, unitLabel),
+                        stringResource(R.string.ys_length_short, unitLabel),
+                        stringResource(R.string.ys_diameter_short, unitLabel)))
+                    working.forEachIndexed { index, element ->
+                        val active = current == index
+                        ScalingTableRow(
+                            listOf("${scalingElementName(index)} · ${scalingElementLabel(index)}",
+                                resultNumber(element.position), resultNumber(element.length), diameterNumber(element.diameter)),
+                            Modifier.fillMaxWidth().testTag("ys-diagram-selection-$index")
+                                .background(if (active) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surface)
+                                .selectable(active, role = Role.RadioButton) { selected = index }
+                                .heightIn(min = 48.dp).padding(horizontal = 4.dp, vertical = 8.dp),
+                        )
+                    }
                 }
             }
-            SelectableText(source)
-            if (diameterMode) HelpText(R.string.ys_estimate)
+            val resultGap = result.feedGap
+            if (resultGap != null && resultGap > 0.0) {
+                val span = working[1].length
+                HelpText(R.string.ys_driven_span, resultNumber(span), resultNumber(resultGap), unitLabel)
+                if (draft.geometry == Geometry.FREE_ELEMENTS) {
+                    HelpText(R.string.ys_driven_arm, resultNumber((span - resultGap) / 2.0), unitLabel)
+                }
+            }
+            ScalingDetails(R.string.ys_all, Modifier.testTag("ys-comparison")) {
+                before.indices.forEach { index ->
+                    Text(scalingElementLabel(index), style = MaterialTheme.typography.titleSmall)
+                    SelectionContainer {
+                        ScalingComparison(before[index], result.elements[index], frequencyLengths?.get(index),
+                            resultNumber, diameterNumber, detailDelta, unitLabel, appliedLengths?.get(index))
+                    }
+                }
+            }
+            if (diameterMode) {
+                HelpText(R.string.ys_estimate)
+                WebLinkButton({ openSourceWithFeedback(context, YAGI_SCALING_URL) }) { Text(stringResource(R.string.ys_article)) }
+            }
             if (draft.geometry == Geometry.MOUNTED) HelpText(R.string.ys_similarity)
             val necReference = when (draft.mode) {
                 Mode.FREQUENCY -> null
@@ -302,7 +366,15 @@ internal fun YagiScalingScreen(
                 !necAvailable() -> R.string.opennec_unavailable
                 else -> null
             }
-            YagiNecPanel(necReference, result.elements, requireNotNull(draft.targetHz), blockedNec, appliedLengths, onSegmentation = onSegmentation) { found ->
+            YagiNecPanel(
+                reference = necReference,
+                elements = result.elements,
+                targetHz = requireNotNull(draft.targetHz),
+                blocked = blockedNec,
+                appliedLengths = appliedLengths,
+                combinedMode = draft.mode == Mode.BOTH,
+                onSegmentation = onSegmentation,
+            ) { found ->
                 appliedLengths = ArrayList(found.map { it.length })
                 appliedVersion = OpenNec.VERSION_CODE
             }
@@ -320,6 +392,7 @@ internal fun YagiScalingScreen(
                     appendLine(labels.joinToString(" | "))
                     rows.forEach { appendLine(it.joinToString(" | ")) }
                     gapText?.let { appendLine(it) }
+                    if (diameterMode || appliedLengths != null) appendLine(resources.getString(R.string.ys_experimental_result))
                     appendLine(source)
                     if (diameterMode) appendLine(resources.getString(R.string.ys_estimate))
                     if (draft.geometry == Geometry.MOUNTED) appendLine(resources.getString(R.string.ys_similarity))
@@ -348,21 +421,28 @@ internal fun YagiScalingScreen(
 @Composable
 internal fun ScalingField(
     value: String, label: Int, tag: String, modifier: Modifier, unit: String = "",
-    invalid: Boolean = false, onChange: (String) -> Unit,
+    invalid: Boolean = false, errorText: Int = R.string.ys_positive_invalid, onChange: (String) -> Unit,
 ) {
+    var touched by rememberSaveable { mutableStateOf(false) }
+    var wasFocused by remember { mutableStateOf(false) }
+    val showError = (value.isNotBlank() || touched) && (invalid || value.isNotBlank() && scalingDecimal(value) == null)
     AppTextField(
         value, { if (it.acceptsDecimalEdit()) onChange(it.boundedNumericText()) },
-        modifier.testTag(tag),
+        modifier.testTag(tag).onFocusChanged {
+            if (!it.isFocused && wasFocused) touched = true
+            wasFocused = it.isFocused
+        },
         label = stringResource(label) + if (unit.isEmpty()) "" else ", $unit",
         singleLine = true,
-        isError = invalid || value.isNotBlank() && scalingDecimal(value) == null,
+        isError = showError,
+        supportingText = if (showError) ({ Text(stringResource(errorText)) }) else null,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
     )
 }
 
 @Composable
-internal fun ScalingTableRow(cells: List<String>) {
-    Row(Modifier.fillMaxWidth()) {
+internal fun ScalingTableRow(cells: List<String>, modifier: Modifier = Modifier.fillMaxWidth()) {
+    Row(modifier) {
         cells.forEachIndexed { index, value ->
             Text(value, Modifier.weight(if (index == 0) 1.4f else 1f).padding(end = 4.dp),
                 style = MaterialTheme.typography.bodySmall,
@@ -373,71 +453,26 @@ internal fun ScalingTableRow(cells: List<String>) {
 }
 
 @Composable
-internal fun ScalingDetails(title: Int, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
+internal fun ScalingDetails(
+    title: Int,
+    modifier: Modifier = Modifier,
+    initiallyExpanded: Boolean = false,
+    content: @Composable () -> Unit,
+) {
+    var expanded by rememberSaveable { mutableStateOf(initiallyExpanded) }
     PanelButton(expanded, { expanded = !expanded }, modifier) { Text(stringResource(title)) }
     if (expanded) content()
 }
 
 @Composable
-private fun ScalingIllustration(draft: YagiScalingDraft) {
-    val sourceHz = draft.sourceHz
-    val targetHz = draft.targetHz
-    val colors = MaterialTheme.colorScheme
-    val description = stringResource(R.string.ys_illustration)
-    val targetScale = when {
-        draft.mode == Mode.DIAMETER -> 1f
-        sourceHz == null || targetHz == null -> .78f
-        else -> (sourceHz.toDouble() / targetHz).toFloat().coerceIn(.55f, 1.38f)
-    }
-    val originalScale = 1f / maxOf(1f, targetScale)
-    val originalDiameter = scalingDecimal(draft.diameter)?.takeIf { it > 0 }
-    val requestedDiameter = scalingDecimal(draft.targetDiameter)?.takeIf { it > 0 }
-    val tubeScale = when {
-        draft.mode == Mode.FREQUENCY -> targetScale
-        originalDiameter != null && requestedDiameter != null -> (requestedDiameter / originalDiameter).toFloat()
-        else -> 1f
-    }.coerceIn(.6f, 1.65f)
-
-    Column(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-        Canvas(Modifier.fillMaxWidth().height(104.dp).semantics { contentDescription = description }) {
-            val radius = minOf(size.width * .15f, size.height * .42f)
-            val centerY = size.height / 2
-            fun antenna(centerX: Float, multiplier: Float, original: Boolean) {
-                val color = if (original) colors.onSurfaceVariant else colors.primary
-                val center = Offset(centerX, centerY)
-                val r = radius * multiplier
-                val boom = Offset(r * .91f, -r * .31f)
-                val element = Offset(r * .44f, r * .84f)
-                val tube = (2.5f * if (original) 1f else tubeScale).dp.toPx()
-                drawLine(colors.outline, center - boom, center + boom, 4.dp.toPx(), StrokeCap.Round)
-                listOf(1f, .88f, .77f, .69f).forEachIndexed { i, length ->
-                    val mount = center + boom * (-.82f + i * .55f)
-                    val conductor = element * length
-                    drawLine(color, mount - conductor, mount + conductor, tube, StrokeCap.Round)
-                    drawCircle(colors.surfaceContainer, 3.dp.toPx(), mount)
-                    drawCircle(color, 1.35.dp.toPx(), mount)
-                }
-            }
-            antenna(size.width * .23f, originalScale, original = true)
-            antenna(size.width * .77f, originalScale * targetScale, original = false)
-            val arrow = 11.dp.toPx()
-            val tip = Offset(size.width / 2 + arrow, centerY)
-            drawLine(colors.outline, Offset(tip.x - 2 * arrow, tip.y), tip, 2.dp.toPx(), StrokeCap.Round)
-            drawLine(colors.outline, Offset(tip.x - arrow / 2, tip.y - arrow / 2), tip, 2.dp.toPx(), StrokeCap.Round)
-            drawLine(colors.outline, Offset(tip.x - arrow / 2, tip.y + arrow / 2), tip, 2.dp.toPx(), StrokeCap.Round)
-        }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
-            Text(stringResource(R.string.ys_before), style = MaterialTheme.typography.labelMedium, color = colors.onSurfaceVariant)
-            Text(stringResource(R.string.ys_after), style = MaterialTheme.typography.labelMedium, color = colors.primary)
-        }
-    }
-}
-
-@Composable
-private fun ScalingDrawing(before: List<Element>, after: List<Element>, selected: Int, onSelect: (Int) -> Unit) {
+private fun ScalingDrawing(
+    before: List<Element>, after: List<Element>, beforeGap: Double?, afterGap: Double?,
+    selected: Int, onSelect: (Int) -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
     val description = stringResource(R.string.ys_diagram)
+    val measurer = rememberTextMeasurer()
+    val markerStyle = MaterialTheme.typography.labelSmall
     val all = before + after
     val span = all.maxOf(Element::position).coerceAtLeast(0.000001)
     val length = all.maxOf(Element::length)
@@ -472,9 +507,30 @@ private fun ScalingDrawing(before: List<Element>, after: List<Element>, selected
                     elements.forEachIndexed { index, element ->
                         val (top, bottom) = elementSegment(element, size)
                         val color = if (original) colors.onSurfaceVariant else if (index == selected) colors.tertiary else colors.primary
-                        drawLine(color, top, bottom,
-                            (if (original) 2 else 3).dp.toPx(), pathEffect = if (original) dash else null)
+                        val width = (if (original) 2 else 3).dp.toPx()
+                        val path = if (original) dash else null
+                        val gap = if (original) beforeGap else afterGap
+                        if (index == 1 && gap != null && gap > 0.0) {
+                            val halfGap = ((bottom.y - top.y) * gap / (2 * element.length)).toFloat()
+                            drawLine(color, top, Offset(top.x, center - halfGap), width, pathEffect = path)
+                            drawLine(color, Offset(top.x, center + halfGap), bottom, width, pathEffect = path)
+                        } else {
+                            drawLine(color, top, bottom, width, pathEffect = path)
+                        }
                     }
+                }
+                val labelBottom = 16.dp.toPx()
+                val occupied = mutableListOf<Pair<Float, Float>>()
+                val order = listOf(selected) + after.indices.filter { it != selected }
+                for (index in order) {
+                    val (top, _) = elementSegment(after[index], size)
+                    val text = measurer.measure(scalingElementName(index), markerStyle)
+                    val from = (top.x - text.size.width / 2f).coerceIn(0f, (size.width - text.size.width).coerceAtLeast(0f))
+                    val right = from + text.size.width + 4.dp.toPx()
+                    if (occupied.any { (a, b) -> from < b && right > a }) continue
+                    occupied += from to right
+                    drawText(text, color = if (index == selected) colors.tertiary else colors.onSurfaceVariant,
+                        topLeft = Offset(from, (labelBottom - text.size.height).coerceAtLeast(0f)))
                 }
             }
             Text(description, style = MaterialTheme.typography.bodySmall, color = colors.onSurfaceVariant)
@@ -495,25 +551,25 @@ private fun ScalingComparison(
     before: Element,
     after: Element,
     frequencyLength: Double?,
-    number: (Double) -> String,
     lengthNumber: (Double) -> String,
+    diameterNumber: (Double) -> String,
     signedNumber: (Double) -> String,
     unit: String,
     appliedLength: Double?,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(5.dp)) {
         ScalingTableRow(listOf(unit, stringResource(R.string.ys_before), stringResource(R.string.ys_after)))
-        ScalingTableRow(listOf(stringResource(R.string.ys_length), number(before.length), lengthNumber(after.length)))
-        ScalingTableRow(listOf(stringResource(R.string.ys_position), number(before.position), number(after.position)))
-        ScalingTableRow(listOf(stringResource(R.string.ys_d), number(before.diameter), number(after.diameter)))
+        ScalingTableRow(listOf(stringResource(R.string.ys_length), lengthNumber(before.length), lengthNumber(after.length)))
+        ScalingTableRow(listOf(stringResource(R.string.ys_position), lengthNumber(before.position), lengthNumber(after.position)))
+        ScalingTableRow(listOf(stringResource(R.string.ys_d), diameterNumber(before.diameter), diameterNumber(after.diameter)))
         if (frequencyLength != null) {
             ScalingTableRow(listOf(stringResource(R.string.ys_frequency_length), "—", lengthNumber(frequencyLength)))
             ScalingTableRow(listOf(stringResource(R.string.ys_diameter_delta), "—", signedNumber(after.length - frequencyLength)))
-            ScalingTableRow(listOf(stringResource(R.string.ys_total_delta), "—", signedNumber(after.length - before.length)))
         }
+        ScalingTableRow(listOf(stringResource(R.string.ys_total_delta), "—", signedNumber(after.length - before.length)))
         if (appliedLength != null) {
-            ScalingTableRow(listOf(stringResource(R.string.opennec_applied_length), "—", number(appliedLength)))
-            ScalingTableRow(listOf(stringResource(R.string.opennec_applied_delta), "—", number(appliedLength - after.length)))
+            ScalingTableRow(listOf(stringResource(R.string.opennec_applied_length), "—", lengthNumber(appliedLength)))
+            ScalingTableRow(listOf(stringResource(R.string.opennec_applied_delta), "—", signedNumber(appliedLength - after.length)))
         }
     }
 }
